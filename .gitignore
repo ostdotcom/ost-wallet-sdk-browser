@@ -1,3 +1,6 @@
+# IDE specicif
+.idea/
+
 # Logs
 logs
 *.log
