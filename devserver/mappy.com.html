@@ -5,24 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 <div class="container">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(function() {
+
+        $("#signupBtn").click(function () {
+            $.post("/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/login",
+                {
+
+                    username: document.getElementById("usernameTb").value,
+                    password: document.getElementById("password").value
+
+                },
+                function (data, status) {
+                    alert("Data: " + data + "\nStatus: " + status);
+                   // Make another api call to fetch current user info.
+                    $.ajax({
+                        type: 'GET',
+                        url: '/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/users',
+                        data: {
+                            // username: document.getElementById("usernameTb").value,
+                            // password: document.getElementById("password").value
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (jsonData) {
+
+                            alert(jsonData.data.users[0].username);
+                            console.log(jsonData.data.users[0].token_id);
+                            uploadUserData(jsonData);
+
+
+
+
+                        },
+                        error: function (error) {
+                            alert('Error loading username=' + document.getElementById("usernameTb").value + error);
+                        }
+                    });
+                });
+        });
+    })
+    function uploadUserData(jsonData) {
+        console.log("user data is going to be add in this function")
+
+        document.getElementById("signUpForm").innerHTML = "";
+        document.getElementById("icon").innerHTML = "";
+
+        var table = document.getElementById("usersTable");
+        table.setAttribute("border","1");
+
+        table.setAttribute("cellpadding","20");
+        table.setAttribute("cellspacing","5");
+
+        for(i=0 ; i<10 ; i++){
+            var row = table.insertRow(i);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+
+            cell1.innerHTML = i;
+
+            cell2.innerHTML = jsonData.data.users[i].username;
+            cell2.setAttribute("colspan",10);
+            cell3.innerHTML = "Balance=0";
+            cell3.setAttribute("colspan",10);
+           
+
+
+        }
+
+    }
+</script>
 <h1 class="display-3"><%= htmlWebpackPlugin.options.title %></h1>
-    <blockquote class="blockquote">
-        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-    </blockquote>
-    <img src="https://source.unsplash.com/300x400/?nature,water" class="img-fluid rounded float-left pr-2" />
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut fringilla commodo purus, at mattis nibh dignissim sit amet. Ut hendrerit magna tortor, nec egestas justo lacinia vel. Ut nisi risus, condimentum at purus in, cursus eleifend ante. Proin scelerisque nulla quam. Aenean urna tellus, cursus in lorem sed, tempor dictum lorem. Quisque quis elit vitae nulla scelerisque porttitor. Integer eget nibh sollicitudin arcu fringilla sagittis. Vestibulum gravida augue et felis congue lobortis. Pellentesque at arcu elit. Fusce varius massa sit amet nisl scelerisque, nec commodo mi condimentum.
-    </p>
-    <p>
-        Fusce sagittis tincidunt auctor. Morbi vitae varius eros. Sed sit amet sapien sit amet velit tempus aliquet id aliquam purus. Sed volutpat, arcu sit amet placerat convallis, turpis dolor pretium enim, sed fringilla urna felis ut diam. Pellentesque euismod a sapien quis sagittis. Sed pellentesque placerat turpis quis scelerisque. Pellentesque pellentesque felis ac nibh efficitur consequat. Sed tincidunt, velit nec ornare vehicula, est purus ornare ligula, elementum bibendum quam diam non odio. Quisque malesuada, ligula at porta tristique, quam libero vulputate libero, ut laoreet mauris orci eget metus. Praesent sagittis vulputate ex, sed laoreet orci dignissim eu. Ut non mi lacinia, venenatis odio et, condimentum ligula.
-    </p>
-    <p>
-        Aliquam malesuada leo nulla, ut vulputate nisi iaculis nec. Nulla sed ipsum vitae magna iaculis ultricies vel in sem. Sed dictum consequat lectus, consectetur euismod lacus lacinia ac. Nunc et leo cursus, egestas lacus eget, molestie nulla. Vestibulum magna lectus, laoreet id ultrices in, semper vitae tortor. Pellentesque non nulla in velit rhoncus vestibulum. Nulla faucibus nulla augue, at sodales dui lobortis egestas. Curabitur dapibus elit sed velit volutpat interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel arcu ac enim consequat rutrum et id quam. Vestibulum scelerisque mollis sem, eget dictum nulla suscipit quis. Nulla vel eros sit amet justo egestas aliquam et a leo. Pellentesque at consectetur tellus, a pulvinar magna. Donec vestibulum interdum velit ut ultricies. Cras urna diam, feugiat vel auctor auctor, posuere et quam.
-    </p>
-    <iframe src="http://localhost:9001/" width="100%" height="200"></iframe>
+
+
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+        <!-- Tabs Titles -->
+
+        <!-- Icon -->
+        <div class="fadeIn first">
+            <img src="https://cdn.dribbble.com/users/12/screenshots/4188789/ost.jpg" id="icon" alt="User Icon" />
+        </div>
+        <div id="usersData">
+            <table id="usersTable"></table>
+        </div>
+        <!-- Login Form -->
+        <div id="signUpForm" name="signUp">
+            
+            <input type="text" id="usernameTb" class="fadeIn second" name="username" placeholder="Username">
+            <input type="password" id="password" class="fadeIn third" name="password" placeholder="password">
+            <input type="submit" id="signupBtn" class="fadeIn fourth" value="Log In">
+        </div>
+
+        <!-- Remind Passowrd -->
+
+
+    </div>
+</div>
+   
+
+<!--    <iframe src="http://localhost:9001/" width="100%" height="200"></iframe>-->
 </div>
 </body>
 </html>

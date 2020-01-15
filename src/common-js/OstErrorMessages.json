@@ -3,6 +3,7 @@
   "INVALID_OST_MESSAGE": "OstMessage you have passed is improperly built. Please rectify and try again.",
   "INVALID_SIGNER": "Signer object is invalid. init method of `OstBrowserMessenger` is not called or Promise is not resolved. Please rectify and try again.",
   "INVALID_TARGET_WINDOW": "Sending message to self.",
+  "ILLEAGAL_ARGUMENT": "Illeagal argument in indexedDb",
 
   "UNKNOWN": "Something expected happen."
 }

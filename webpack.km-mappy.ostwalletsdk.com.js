@@ -3,10 +3,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
-    entry: './src/OstSdkKeyManager/index.js',
+    entry: ['@babel/polyfill', './src/OstWalletSdk/index.js'],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'OstSdkKeyManager.js',
+        filename: 'OstWalletSdk.js',
     },
     module: {
         rules: [
@@ -21,6 +21,10 @@ const commonConfig = {
                         ]
                     }
                 }
+            },
+            {
+                test: /\.css$/, 
+                use: ['style-loader','css-loader' ]
             }
         ]
     },
