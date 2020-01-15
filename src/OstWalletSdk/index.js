@@ -1,50 +1,129 @@
-import uuidv4 from 'uuid/v4';
 import '../styles/login.css'
+
 import {OstBrowserMessenger} from "../common-js/OstBrowserMessenger";
 import OstHelpers from "../common-js/OstHelpers";
+import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
+import OstError from "../common-js/OstError";
 
-//document.querySelector(".blockquote").innerHTML = `uuidv4() from OstWalletSdk.js: ${uuidv4()}`;
+(function() {
 
-console.log("================= walletSdk/index");
+  console.log("================= walletSdk/index");
 
-window.addEventListener("message", receiveMessage, false);
+  class OstWalletSdk {
+    constructor(onMessageReceived) {
+      console.log("OstWalletSdk init");
 
-function receiveMessage(event) {
-  console.log("========= Inside OstWalletSdk.init :: receiveMessage", event)
-}
+      this.ostBrowserMessenger = null;
+      this.onMessageReceived = onMessageReceived
+    }
 
-let ostBrowserMessenger = new OstBrowserMessenger();
+    perform() {
+      window.addEventListener("message", receiveMessage, false);
 
-ostBrowserMessenger.perform()
-  .then(() => {
-    createSdkMappyIframe();
-  })
-  .catch( () => {
-    console.log("catch createSdkMappyIframe");
-  });
+      this.ostBrowserMessenger = new OstBrowserMessenger();
+      return this.ostBrowserMessenger.perform()
+        .then(() => {
 
-function createSdkMappyIframe() {
-  console.log("createSdkMappyIframe");
-  var ifrm = document.createElement('iframe');
-  ifrm.setAttribute('id', 'sdkMappyIFrame');
+        })
+        .catch((err) => {
+          if (err instanceof OstError) {
+            throw err;
+          }
+          throw new OstError('ows_i_p_1', 'SKD_INTERNAL_ERROR', err);
+        });
+    }
 
-  document.getElementById('sdkMappy').appendChild(ifrm);
-  const url = 'http://localhost:9001';
+    receiveMessage(event) {
+      const eventData = event.data;
+      const message = eventData.message;
+      if (message) {
+        console.log(message);
+        if ("WALLET_SETUP_COMPLETE" === eventData.message.type) {
+          return walletSdk.setChildPublicKey(eventData);
+        }else {
+          this.onMessageReceived(eventData.message.content, eventData.message.type);
+        }
+      }
+    }
 
-  let dataToSign = `${url}/?publicKeyHex=${ostBrowserMessenger.publicKeyHex}&timestamp=${Date.now()}`;
+    signDataWithPrivateKey(stringToSign) {
+      return this.ostBrowserMessenger.getSignature(stringToSign);
+    }
 
-  ostBrowserMessenger.getSignature(dataToSign)
-    .then((signedMessage) => {
-      const signature = OstHelpers.byteArrayToHex(signedMessage);
-      let url = dataToSign+`&signature=${signature}`;
+    getPublicKeyHex() {
+      return this.ostBrowserMessenger.getPublicKeyHex();
+    }
 
-      ifrm.setAttribute('src', url);
-      ifrm.setAttribute('width', '100%');
-      ifrm.setAttribute('height', '200');
+    setChildPublicKey(eventData) {
+      let childPublicKeyHex = eventData.message.content.publicKeyHex;
+      this.ostBrowserMessenger.setChildPublicKeyHex(childPublicKeyHex)
+        .then(() => {
+          return this.ostBrowserMessenger.verifyChildMessage(eventData)
+        })
+        .then((isVerified) => {
+          console.log("child public key verified: ", isVerified);
+          return Promise.resolve();
+        })
+        .catch((err) => {
+          if (err instanceof OstError) {
+            throw err;
+          }
+          throw new OstError('ows_i_owsc_1', 'SKD_INTERNAL_ERROR', err);
+        })
+    }
+  }
+
+
+  const walletSdk = new OstWalletSdk(onMessageReceivedComplete);
+  walletSdk.perform()
+    .then(() => {
+      return createSdkMappyIframe();
+    })
+    .then(() => {
+      console.log("iframe created successfully");
     })
     .catch((err) => {
-
+      if (err instanceof OstError) {
+        throw err;
+      }
+      throw new OstError('ows_i_p_1', 'SKD_INTERNAL_ERROR', err);
     });
 
+  function createSdkMappyIframe() {
 
-}
+    var ifrm = document.createElement('iframe');
+    ifrm.setAttribute('id', 'sdkMappyIFrame');
+
+    const url = 'http://localhost:9001';
+
+    let params = {
+      publicKeyHex: walletSdk.getPublicKeyHex()
+    };
+
+    let stringToSign = OstURLHelpers.getStringToSign(url, params );
+
+    walletSdk.signDataWithPrivateKey(stringToSign)
+      .then((signedMessage) => {
+
+        const signature = OstHelpers.byteArrayToHex(signedMessage);
+        let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
+
+        ifrm.setAttribute('src', iframeURL);
+        ifrm.setAttribute('width', '100%');
+        ifrm.setAttribute('height', '200');
+
+        document.body.appendChild(ifrm);
+      })
+      .catch((err) => {
+        if (err instanceof OstError) {
+          throw err;
+        }
+        throw new OstError('ows_i_csmif_1', 'SKD_INTERNAL_ERROR', err);
+      })
+  }
+
+  const onMessageReceivedComplete = function (content, type) {
+    console.log("content: ", content, "type: ", type);
+  };
+
+})();

@@ -1,84 +1,105 @@
-import uuidv4 from 'uuid/v4';
 import {SOURCE, OstBrowserMessenger} from '../common-js/OstBrowserMessenger'
-<<<<<<< HEAD
-import OstErrorCodes from '../common-js/OstErrorCodes'
-=======
+import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
+import OstError from "../common-js/OstError";
 import OstMessage from '../common-js/OstMessage'
 
-const qs = require('querystring');
->>>>>>> 3359f2ac3d7ddaf54c775a9ff8e55e06fc3c05d4
-
-console.log("Checking error codes", OstErrorCodes);
-
-<<<<<<< HEAD
 // window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-//document.querySelector(".blockquote").innerHTML = `uuidv4() from OstSdk: ${uuidv4()}`;
 function createDatabase(tokenId){
   if(!window.indexedDB){
     alert("indexed Db not supported");
   }
   let request = window.indexedDB.open("EntitiesDB"+tokenId,1), db, tx, store;
-  
-    
-
 }
 
 function createTable(name){
   let db = window.request.result;
   store = db.createObjectStore(name,{keypath: "userId"})
-  
-}
-window.addEventListener("message", receiveMessage, false);
 
-
-function receiveMessage(event)
-{
-  console.log("========= Inside OstSdk.init :: receiveMessage", event)
-=======
-console.log("================= ostSdk/index");
-
-var url = window.location.search.substring(0);
-console.log("url : ", url);
-
-let urlparams = getUrlVars();
-console.log("urlparams : ", urlparams);
-
-let signature = urlparams.signature;
-delete urlparams['signature']
-let parentPublicKeyHex = urlparams.publicKeyHex;
-
-let params = qs.stringify(urlparams);
-console.log("qs params: ", params);
-
-function getUrlVars() {
-  var vars = {};
-  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-    vars[key] = value;
-  });
-  return vars;
->>>>>>> 3359f2ac3d7ddaf54c775a9ff8e55e06fc3c05d4
 }
 
-function sendMessage() {
-  let browserMessenger = new OstBrowserMessenger();
-  browserMessenger.perform()
-    .then( () => {
-      browserMessenger.setParentPublicKeyHex(parentPublicKeyHex)
+(function () {
+
+  const locationObj = window.location;
+
+  class OstSdk {
+    constructor(location){
+      console.log("ostsdk init");
+      this.location = location;
+      this.urlParams = null;
+      this.browserMessenger = null;
+    }
+
+    getURLParams() {
+      this.urlParams = OstURLHelpers.getParamsFromURL(this.location);
+    }
+
+    perform() {
+      this.getURLParams();
+
+      return this.createBowserMessengerObject()
         .then(() => {
-
-          let url = `${window.location.origin}/?publicKeyHex=${urlparams.publicKeyHex}&timestamp=${urlparams.timestamp}`;
-
-          browserMessenger.verify(url, signature)
-            .then((isVerified) => {
-              console.log("isVerified: ", isVerified);
-            })
+          return this.setParentPublicKey();
         })
+        .then(() => {
+          return this.verifyPassedData();
+        })
+        .then((isVerified) => {
+          console.log("isVerified: ", isVerified);
+          this.sendPublicKey();
+        })
+        .catch((err) => {
+          if (err instanceof OstError) {
+            throw err;
+          }
+          throw new OstError('os_i_p_1', 'SKD_INTERNAL_ERROR', err);
+        });
+    }
 
-      // browserMessenger.sendMessage(messageObj, SOURCE.UPSTREAM);
-    }).catch((error) => {
-      console.log("error occurred while sending data =======", error)
-  });
-}
+    createBowserMessengerObject () {
+      this.browserMessenger = new OstBrowserMessenger();
+      return this.browserMessenger.perform()
+    }
 
-sendMessage();
+    setParentPublicKey() {
+      let parentPublicKeyHex = this.urlParams.publicKeyHex;
+
+      if (!parentPublicKeyHex) {
+        throw new OstError('os_i_sppk_1', 'INVALID_PARENT_PUBLIC_KEY');
+      }
+      return this.browserMessenger.setParentPublicKeyHex(parentPublicKeyHex)
+    }
+
+    verifyPassedData() {
+      const signature = this.urlParams.signature;
+      this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
+
+      let url = OstURLHelpers.getStringToSign(locationObj.origin+locationObj.pathname, this.urlParams);
+      return this.browserMessenger.verify(url, signature, this.browserMessenger.parentPublicKey);
+    }
+
+    sendPublicKey() {
+      console.log("here");
+      const messagePayload = {
+        msg: "wallet up complete",
+        publicKeyHex: this.browserMessenger.publicKeyHex
+      };
+      const message = new OstMessage(messagePayload, "WALLET_SETUP_COMPLETE");
+      this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
+    }
+
+  }
+
+  const ostSdkObj = new OstSdk(locationObj);
+  ostSdkObj.perform()
+    .then(() => {
+      console.log("OstSdk init success");
+    })
+    .catch((err) => {
+      if (err instanceof OstError) {
+        throw err;
+      }
+      throw new OstError('os_i_os_1', 'SKD_INTERNAL_ERROR', err);
+    });
+
+})();

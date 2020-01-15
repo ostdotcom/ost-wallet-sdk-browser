@@ -9,11 +9,13 @@
   "INVALID_VERIFIER": "Verifier is not set or is invalid.",
   "INVALID_SIGNATURE": "Signature is not valid.",
   "INVALID_PARAM_SIGNATURE": "Signature parameter is not present.",
+  "INVALID_PARENT_PUBLIC_KEY": "Invalid parent public key.",
+  "INVALID_CHILD_PUBLIC_KEY": "Invalid child public key.",
 
   "__developer_Error": {
 
   },
 >>>>>>> 3359f2ac3d7ddaf54c775a9ff8e55e06fc3c05d4
 
-  "UNKNOWN": "Something expected happen."
+  "SKD_INTERNAL_ERROR": "Something expected happen."
 }

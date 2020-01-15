@@ -6,7 +6,7 @@ class OstMessage {
 
   getPayloadToSign() {
     let payloadToSign = {
-      contnet: this.payload,
+      content: this.payload,
       type: this.type
     };
 

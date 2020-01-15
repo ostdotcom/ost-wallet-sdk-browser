@@ -20,9 +20,14 @@ class OstBrowserMessenger {
   constructor() {
     this.signer = null;
     this.downStreamOrigin = null;
+
+    this.publicKeyHex = null;
+
     this.parentPublicKeyHex = null;
     this.parentPublicKey = null;
-    this.publicKeyHex = null;
+
+    this.childPublicKeyHex = null;
+    this.childPublicKey = null;
   }
 
   perform() {
@@ -59,11 +64,7 @@ class OstBrowserMessenger {
 
   importPublicKey(hex) {
     const arrayBuffer = OstHelpers.hexToByteArray(hex);
-
-    return crypto.subtle.importKey('spki', arrayBuffer, {name: 'RSASSA-PKCS1-v1_5', hash: 'sha-256'}, true, ['verify'])
-      .then((cryptoKey) => {
-        this.parentPublicKey = cryptoKey;
-      })
+    return crypto.subtle.importKey('spki', arrayBuffer, {name: 'RSASSA-PKCS1-v1_5', hash: 'sha-256'}, true, ['verify']);
   }
 
   //Setter
@@ -74,7 +75,30 @@ class OstBrowserMessenger {
 
   setParentPublicKeyHex(hex) {
     this.parentPublicKeyHex = hex;
-    return this.importPublicKey(this.parentPublicKeyHex);
+    return this.importPublicKey(this.parentPublicKeyHex)
+      .then((cryptoKey) => {
+        this.parentPublicKey = cryptoKey;
+      })
+      .catch((err) => {
+        if (err instanceof OstError) {
+          throw err;
+        }
+        throw new OstError('cj_obm_sppkh_1', 'SKD_INTERNAL_ERROR', err);
+      });
+  }
+
+  setChildPublicKeyHex(hex) {
+    this.childPublicKeyHex = hex;
+    return this.importPublicKey(this.childPublicKeyHex)
+      .then((cryptoKey) => {
+        this.childPublicKey = cryptoKey;
+      })
+      .catch((err) => {
+        if (err instanceof OstError) {
+          throw err;
+        }
+        throw new OstError('cj_obm_scpkh_1', 'SKD_INTERNAL_ERROR', err);
+      });
   }
 
   //getter
@@ -97,6 +121,10 @@ class OstBrowserMessenger {
     return self;
   }
 
+  getPublicKeyHex() {
+    return this.publicKeyHex;
+  }
+
   //Verify
 
   isValidSigner() {
@@ -117,6 +145,14 @@ class OstBrowserMessenger {
     }
 
     return (this.parentPublicKey instanceof CryptoKey)
+  }
+
+  isValidChildPublicKey() {
+    if (!this.childPublicKey) {
+      return false
+    }
+
+    return (this.childPublicKey instanceof CryptoKey)
   }
 
   //Performable
@@ -156,34 +192,47 @@ class OstBrowserMessenger {
 
         targetWindow.postMessage(dataToPost, '*');
       }).catch((err)=>{
-        console.log("err", err);
-      });
+      if (err instanceof OstError) {
+        throw err;
+      }
+      throw new OstError('cj_obm_sm_5', 'SKD_INTERNAL_ERROR', err);
+    });
   }
-
 
   getSignature(payload) {
     return crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.signer.privateKey, OstHelpers.getDataToSign(payload));
   }
 
-  verifyMessage(data) {
+  verifyParentMessage(data) {
     if (!this.isValidParentPublicKey()) {
-      throw new OstError('cj_obm_vm_1', 'INVALID_ENUM')
+      throw new OstError('cj_obm_vpm_1', 'INVALID_PARENT_PUBLIC_KEY')
     }
 
     const signature = data.signature;
     if (!signature || typeof signature !== 'string') {
-      throw new OstError('cj_obm_vm_2', 'INVALID_PARAM_SIGNATURE')
+      throw new OstError('cj_obm_vpm_2', 'INVALID_PARAM_SIGNATURE')
     }
 
     const message = data.message;
-    return this.verify(message, signature);
+    return this.verify(message, signature, this.parentPublicKey);
   }
 
-  verify(message, signature) {
-    console.log("message : ", message);
-    console.log("signature : ", signature);
+  verifyChildMessage(data) {
+    if (!this.isValidChildPublicKey()) {
+      throw new OstError('cj_obm_vcm_1', 'INVALID_CHILD_PUBLIC_KEY')
+    }
 
-    return crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.parentPublicKey, OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(message))
+    const signature = data.signature;
+    if (!signature || typeof signature !== 'string') {
+      throw new OstError('cj_obm_vcm_2', 'INVALID_PARAM_SIGNATURE')
+    }
+
+    const message = data.message;
+    return this.verify(message, signature, this.childPublicKey);
+  }
+
+  verify(message, signature, publicKey) {
+    return crypto.subtle.verify('RSASSA-PKCS1-v1_5', publicKey, OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(message))
   }
 }
 
