@@ -11,6 +11,7 @@
     "d-sdk-km": "webpack-dev-server --open --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
     "b-sdk-km": "webpack --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=prod",
     "develop-all": "concurrently \"npm run d-sdk-w\" \"npm run d-sdk\" \"npm run d-sdk-km\"",
+    "sdkWallet": "npm run d-sdk-w",
     "run-app": "node src/AppServer/index.js"
   },
   "repository": {
@@ -38,7 +39,8 @@
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.4.2",
     "@babel/cli": "^7.0.0",
-    "babel-core": "7.0.0-bridge.0"
+    "babel-core": "7.0.0-bridge.0",
+    "query-string": "6.9.0"
   },
   "dependencies": {
     "axios": "^0.19.0",
