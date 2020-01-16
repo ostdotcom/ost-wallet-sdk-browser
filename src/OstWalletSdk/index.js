@@ -1,17 +1,16 @@
 import '../styles/login.css';
 
-import {OstBrowserMessenger} from "../common-js/OstBrowserMessenger";
 import OstHelpers from "../common-js/OstHelpers";
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
+import {MESSAGE_TYPE} from "../common-js/OstMessage";
 
 (function(window) {
 
-
   class OstWalletSdk extends OstBaseSdk {
     constructor(onMessageReceivedCallback) {
-      super(null);
+      super();
       this.onMessageReceivedCallback = onMessageReceivedCallback
     }
 
@@ -27,12 +26,17 @@ import OstBaseSdk from '../common-js/OstBaseSdk'
         });
     }
 
+    onSetupComplete(eventData) {
+      if (MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE === eventData.message.type) {
+        this.setChildPublicKey(eventData);
+      }
+    }
+
     onMessageReceived(content, type) {
       console.log("ost wallet sdk => message received");
       console.log("content : ", content, " type :", type);
     }
   }
-
 
   const walletSdk = new OstWalletSdk();
   walletSdk.perform()

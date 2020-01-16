@@ -1,17 +1,21 @@
 import OstURLHelpers from "./OstHelpers/OstUrlHelper";
 import OstError from "./OstError";
-import OstMessage from "./OstMessage";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
+import {MESSAGE_TYPE} from "./OstMessage";
 
 class OstBaseSdk {
-  constructor(location){
-    this.locationObj = location;
+  constructor(origin, pathname, ancestorOrigins, searchParams){
+    this.origin = origin;
+    this.pathname = pathname;
+    this.ancestorOrigins = ancestorOrigins;
+    this.searchParams = searchParams;
+
     this.urlParams = null;
     this.browserMessenger = null;
   }
 
   getURLParams() {
-    this.urlParams = OstURLHelpers.getParamsFromURL(this.locationObj);
+    this.urlParams = OstURLHelpers.getParamsFromURL(this.searchParams);
   }
 
   perform() {
@@ -22,9 +26,11 @@ class OstBaseSdk {
       })
   }
 
+  //Setter
+
   setParentOrigin() {
-    if (this.locationObj) {
-      let ancestorOrigins = this.locationObj.ancestorOrigins;
+    if (this.ancestorOrigins) {
+      let ancestorOrigins = this.ancestorOrigins;
       let parentOrigin = ancestorOrigins[0];
       this.browserMessenger.setUpStreamOrigin(parentOrigin);
     }
@@ -48,13 +54,19 @@ class OstBaseSdk {
     const eventData = event.data;
     const message = eventData.message;
     if (message) {
-      if ("WALLET_SETUP_COMPLETE" === eventData.message.type) {
-        this.setChildPublicKey(eventData);
+      if ([MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE,
+          MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE].includes(eventData.message.type)) {
+
+        this.onSetupComplete(eventData);
 
       }else if (this.onMessageReceived){
         this.onMessageReceived(eventData.message.content, eventData.message.type);
       }
     }
+  }
+
+  onSetupComplete(eventData) {
+
   }
 
   validateReceivedMessage(eventData) {
@@ -104,7 +116,7 @@ class OstBaseSdk {
     const signature = this.urlParams.signature;
     this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
 
-    let url = OstURLHelpers.getStringToSign(this.locationObj.origin+ this.locationObj.pathname, this.urlParams);
+    let url = OstURLHelpers.getStringToSign(this.origin+ this.pathname, this.urlParams);
     return this.browserMessenger.verify(url, signature, this.browserMessenger.parentPublicKey);
   }
 

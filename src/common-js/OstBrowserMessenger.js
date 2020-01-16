@@ -7,7 +7,7 @@
  */
 
 import OstError from "./OstError";
-import OstMessage from "./OstMessage";
+import {OstMessage} from "./OstMessage";
 import OstHelpers from "./OstHelpers";
 
 const SOURCE = {
@@ -234,7 +234,6 @@ class OstBrowserMessenger {
         const signature = OstHelpers.byteArrayToHex(signedMessage);
 
         const dataToPost = OstHelpers.getPostMessageData(signature, ostMessage, this.publicKeyHex);
-
 
         targetWindow.postMessage(dataToPost, targetOrigin);
       }).catch((err)=>{

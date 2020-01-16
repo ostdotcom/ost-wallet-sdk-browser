@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import OstURLHelpers from "../common-js/OstHelpers/OstUrlHelper";
-import OstMessage from "../common-js/OstMessage";
+import {MESSAGE_TYPE, OstMessage} from "../common-js/OstMessage";
 import {OstBrowserMessenger, SOURCE} from "../common-js/OstBrowserMessenger";
 import OstError from "../common-js/OstError";
 import OstBaseSdk from "../common-js/OstBaseSdk";
@@ -12,11 +12,19 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 // const persig = ikm.personalSign(wallet, "message");
 
 
-(function() {
+(function(window) {
+
+  const location = window.location
+    , origin = location.origin
+    , pathname = location.pathname
+    , ancestorOrigins = location.ancestorOrigins
+    , searchParams = location.search
+  ;
 
   class OstSdkKeyManager extends OstBaseSdk {
-    constructor(location, onMessageReceiveCallback){
-      super(location);
+    constructor(origin, pathname, ancestorOrigins, searchParams, onMessageReceiveCallback){
+      super(origin, pathname, ancestorOrigins, searchParams);
+
       this.onMessageReceiveCallback = onMessageReceiveCallback;
     }
 
@@ -59,20 +67,20 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         msg: "key manager up complete",
         publicKeyHex: this.browserMessenger.publicKeyHex
       };
-      const message = new OstMessage(messagePayload, "WALLET_SETUP_COMPLETE");
+      const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE);
       this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
     }
   }
 
 
-  let sdkKmManager = new OstSdkKeyManager(window.location);
+  let sdkKmManager = new OstSdkKeyManager(origin, pathname, ancestorOrigins, searchParams);
   sdkKmManager.perform()
     .then(() => {
     })
     .catch((err) => {
 
     })
-})();
+})(window);
 
 
 

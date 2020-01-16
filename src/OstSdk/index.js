@@ -1,7 +1,7 @@
-import {SOURCE, OstBrowserMessenger} from '../common-js/OstBrowserMessenger'
+import {SOURCE} from '../common-js/OstBrowserMessenger'
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
-import OstMessage from '../common-js/OstMessage'
+import {MESSAGE_TYPE, OstMessage} from '../common-js/OstMessage'
 import OstHelpers from "../common-js/OstHelpers";
 import OstBaseSdk from "../common-js/OstBaseSdk";
 
@@ -20,13 +20,18 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 //
 // }
 
-(function () {
+(function (window) {
 
-  const location = window.location;
+  const location = window.location
+    , origin = location.origin
+    , pathname = location.pathname
+    , ancestorOrigins = location.ancestorOrigins
+    , searchParams = location.search
+  ;
 
   class OstSdk extends OstBaseSdk {
-    constructor(location, onMessageReceivedCallback){
-      super(location);
+    constructor(origin, pathname, ancestorOrigins, searchParams, onMessageReceivedCallback){
+      super(origin, pathname, ancestorOrigins, searchParams);
       this.onMessageReceivedCallback = onMessageReceivedCallback;
     }
 
@@ -59,6 +64,12 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         });
     }
 
+    onSetupComplete(eventData) {
+      if (MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE === eventData.message.type) {
+        this.setChildPublicKey(eventData);
+      }
+    }
+
     onMessageReceived(content, type) {
       console.log("ost sdk => message received");
       console.log("content : ", content, " type :", type);
@@ -75,7 +86,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
     }
   }
 
-  const ostSdkObj = new OstSdk(location);
+  const ostSdkObj = new OstSdk(origin, pathname, ancestorOrigins, searchParams);
   ostSdkObj.perform()
     .then(() => {
       createSdkKeyManagerIframe();
@@ -133,4 +144,4 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
     let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
     ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
   }, 3000)
-})();
+})(window);
