@@ -1,4 +1,4 @@
-import '../styles/login.css'
+// import '../styles/login.css'
 
 import {OstBrowserMessenger} from "../common-js/OstBrowserMessenger";
 import OstHelpers from "../common-js/OstHelpers";
@@ -18,7 +18,10 @@ import OstError from "../common-js/OstError";
     }
 
     perform() {
-      window.addEventListener("message", receiveMessage, false);
+      console.log("1");
+      window.addEventListener("message", (event) => {
+        this.receiveMessage(event);
+      }, false);
 
       this.ostBrowserMessenger = new OstBrowserMessenger();
       return this.ostBrowserMessenger.perform()
@@ -36,11 +39,11 @@ import OstError from "../common-js/OstError";
     receiveMessage(event) {
       const eventData = event.data;
       const message = eventData.message;
+      console.log("walletSdk => receiveMessage", eventData);
       if (message) {
-        console.log(message);
         if ("WALLET_SETUP_COMPLETE" === eventData.message.type) {
-          return walletSdk.setChildPublicKey(eventData);
-        }else {
+          this.setChildPublicKey(eventData);
+        }else if (this.onMessageReceived){
           this.onMessageReceived(eventData.message.content, eventData.message.type);
         }
       }
@@ -56,7 +59,7 @@ import OstError from "../common-js/OstError";
 
     setChildPublicKey(eventData) {
       let childPublicKeyHex = eventData.message.content.publicKeyHex;
-      this.ostBrowserMessenger.setChildPublicKeyHex(childPublicKeyHex)
+      return this.ostBrowserMessenger.setChildPublicKeyHex(childPublicKeyHex)
         .then(() => {
           return this.ostBrowserMessenger.verifyChildMessage(eventData)
         })
@@ -77,6 +80,7 @@ import OstError from "../common-js/OstError";
   const walletSdk = new OstWalletSdk(onMessageReceivedComplete);
   walletSdk.perform()
     .then(() => {
+
       return createSdkMappyIframe();
     })
     .then(() => {
@@ -90,7 +94,7 @@ import OstError from "../common-js/OstError";
     });
 
   function createSdkMappyIframe() {
-
+    console.log("2");
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'sdkMappyIFrame');
 
@@ -104,15 +108,16 @@ import OstError from "../common-js/OstError";
 
     walletSdk.signDataWithPrivateKey(stringToSign)
       .then((signedMessage) => {
-
+        console.log("3");
         const signature = OstHelpers.byteArrayToHex(signedMessage);
         let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
-
+        console.log("3.1.1");
         ifrm.setAttribute('src', iframeURL);
         ifrm.setAttribute('width', '100%');
         ifrm.setAttribute('height', '200');
 
         document.body.appendChild(ifrm);
+        console.log("3.1.2");
       })
       .catch((err) => {
         if (err instanceof OstError) {
