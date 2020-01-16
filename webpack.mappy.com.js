@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
-    entry: ['@babel/polyfill', './src/OstWalletSdk/index.js'],
+    entry: './src/OstWalletSdk/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'OstWalletSdk.js',

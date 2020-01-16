@@ -1,4 +1,4 @@
-// import '../styles/login.css'
+import '../styles/login.css';
 
 import {OstBrowserMessenger} from "../common-js/OstBrowserMessenger";
 import OstHelpers from "../common-js/OstHelpers";

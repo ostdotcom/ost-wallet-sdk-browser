@@ -3,11 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
-<<<<<<< HEAD
     entry: './src/OstSdk/index.js',
-=======
-    entry: ['@babel/polyfill', './src/OstSdk/index.js'],
->>>>>>> 2fb9f78ddf6181fc1d1a7808bd74a4c5aea0b5e9
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'OstSdk.js',
