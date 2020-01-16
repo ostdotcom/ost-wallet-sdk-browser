@@ -6,7 +6,7 @@ const commonConfig = {
     entry: ['@babel/polyfill', './src/OstSdkKeyManager/index.js'],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'OstWalletSdk.js',
+        filename: 'OstSdkKeyManager.js',
     },
     module: {
         rules: [

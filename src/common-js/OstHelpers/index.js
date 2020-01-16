@@ -1,10 +1,9 @@
-import OstMessage from '../OstMessage'
 
 class OstHelpers {
 
   static getPostMessageData(signature, ostMessage, signer) {
 
-    const msg = OstHelpers.getMessageToSign(ostMessage,signer);
+    const msg = OstHelpers.getMessageToSign(ostMessage, signer);
     return {
       signature: signature,
       message: msg
