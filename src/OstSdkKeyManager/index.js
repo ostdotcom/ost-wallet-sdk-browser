@@ -3,6 +3,7 @@ import OstURLHelpers from "../common-js/OstHelpers/OstUrlHelper";
 import OstMessage from "../common-js/OstMessage";
 import {OstBrowserMessenger, SOURCE} from "../common-js/OstBrowserMessenger";
 import OstError from "../common-js/OstError";
+import OstBaseSdk from "../common-js/OstBaseSdk";
 // import IKM from './ecKeyInteracts/internalKeyManager'
 //
 // const ikm = new IKM(uuidv4());
@@ -13,26 +14,18 @@ import OstError from "../common-js/OstError";
 
 (function() {
 
-  class OstSdkKeyManager {
-    constructor(location){
-      console.log("ostsdk init");
-      this.locationObj = location;
-      this.urlParams = null;
-      this.browserMessenger = null;
-      this.onMessageReceived = null;
-    }
-
-    getURLParams() {
-      this.urlParams = OstURLHelpers.getParamsFromURL(this.locationObj);
+  class OstSdkKeyManager extends OstBaseSdk {
+    constructor(location, onMessageReceiveCallback){
+      super(location);
+      this.onMessageReceiveCallback = onMessageReceiveCallback;
     }
 
     perform() {
-      console.log("sdkKeyManager perform");
-      window.addEventListener("message", this.receiveMessage, false);
+      super.perform();
 
       this.getURLParams();
 
-      return this.createBowserMessengerObject()
+      return this.createBrowserMessengerObject()
         .then(() => {
           return this.setParentPublicKey();
         })
@@ -40,10 +33,15 @@ import OstError from "../common-js/OstError";
           return this.verifyPassedData();
         })
         .then((isVerified) => {
-          console.log("isVerified: ", isVerified);
+          if (!isVerified) {
+            throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
+          }
+
           this.sendPublicKey();
         })
         .catch((err) => {
+          this.browserMessenger.removeParentPublicKey();
+
           if (err instanceof OstError) {
             throw err;
           }
@@ -51,54 +49,12 @@ import OstError from "../common-js/OstError";
         });
     }
 
-    receiveMessage(event) {
-
-      const eventData = event.data;
-      const message = eventData.message;
-
-      console.log("KeyManager => receiveMessage", eventData);
-
-      if (message) {
-        console.log(message);
-        if (this.onMessageReceived){
-          this.onMessageReceived(eventData.message.content, eventData.message.type);
-        }
-      }
-    }
-
-    getPublicKeyHex () {
-      return this.browserMessenger.getPublicKeyHex();
-    }
-
-    signDataWithPrivateKey(stringToSign) {
-      return this.browserMessenger.getSignature(stringToSign);
-    }
-
-    createBowserMessengerObject () {
-      this.browserMessenger = new OstBrowserMessenger();
-      return this.browserMessenger.perform()
-    }
-
-    setParentPublicKey() {
-      let parentPublicKeyHex = this.urlParams.publicKeyHex;
-
-      if (!parentPublicKeyHex) {
-        throw new OstError('os_i_sppk_1', 'INVALID_PARENT_PUBLIC_KEY');
-      }
-      return this.browserMessenger.setParentPublicKeyHex(parentPublicKeyHex)
-    }
-
-    verifyPassedData() {
-      const signature = this.urlParams.signature;
-      this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
-
-      let url = OstURLHelpers.getStringToSign(this.locationObj.origin+ this.locationObj.pathname, this.urlParams);
-      return this.browserMessenger.verify(url, signature, this.browserMessenger.parentPublicKey);
+    onMessageReceived(content, type) {
+      console.log("ost sdk key manager=> message received");
+      console.log("content : ", content, " type :", type);
     }
 
     sendPublicKey() {
-      console.log("ostsdkKM sendPublicKey");
-
       const messagePayload = {
         msg: "key manager up complete",
         publicKeyHex: this.browserMessenger.publicKeyHex
@@ -112,7 +68,6 @@ import OstError from "../common-js/OstError";
   let sdkKmManager = new OstSdkKeyManager(window.location);
   sdkKmManager.perform()
     .then(() => {
-      console.log("sdkKeyManager then of perform");
     })
     .catch((err) => {
 

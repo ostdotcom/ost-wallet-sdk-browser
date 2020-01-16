@@ -69,6 +69,17 @@ class OstBrowserMessenger {
 
   //Setter
 
+  setUpStreamOrigin( upStreamOrigin ) {
+    this.upStreamOrigin = upStreamOrigin;
+  }
+
+  setDownStreamWindow( downStreamWindow ) {
+    if ( typeof window !== 'object' || typeof self !== 'object' || window !== self ) {
+      throw new OstError('cj_obm_obm_1', 'INVALID_TARGET_WINDOW');
+    }
+    this.downStreamWindow = downStreamWindow;
+  }
+
   setDownStreamOrigin( downStreamOrigin ) {
     this.downStreamOrigin = downStreamOrigin;
   }
@@ -101,30 +112,65 @@ class OstBrowserMessenger {
       });
   }
 
+  removeParentPublicKey() {
+    this.childPublicKey = null;
+    this.childPublicKeyHex = null;
+  }
+
+  removeChildPublicKey() {
+    this.parentPublicKey = null;
+    this.parentPublicKeyHex = null;
+  }
+
   //getter
 
-  getUpStreamOrigin() {
-    // 1. Validate window/self.
+  getUpStreamWindow() {
     if ( typeof window !== 'object' || typeof self !== 'object' || window !== self ) {
-      throw new OstError('cj_obm_guso_1', 'INVALID_TARGET_WINDOW');
+      throw new OstError('cj_obm_gusw_1', 'INVALID_TARGET_WINDOW');
     }
 
     return window.parent;
   }
 
-  getTargetOrigin(targetWindow) {
-    return targetWindow.origin;
+  getUpStreamOrigin() {
+    if (!this.upStreamOrigin || typeof this.upStreamOrigin !== 'string' ) {
+      throw new OstError('cj_obm_guso_1', 'INVALID_UPSTREAM_ORIGIN');
+    }
+
+    return this.upStreamOrigin;
   }
 
-  getCurrentWindow() {
-    //Don't know how secure this is.
-    return self;
+  getDownStreamWindow() {
+    let windowRef = this.downStreamWindow;
+
+    if (!windowRef || typeof windowRef !== 'object') {
+      throw new OstError('cj_obm_gusw_1', 'INVALID_TARGET_WINDOW');
+    }
+
+    return windowRef;
   }
+
+  getDownStreamOrigin() {
+    if (!this.downStreamOrigin || typeof this.downStreamOrigin !== 'string') {
+      throw new OstError('cj_obm_gdso_1', 'INVALID_DOWNSTREAM_ORIGIN');
+    }
+
+    return this.downStreamOrigin
+  }
+
 
   getPublicKeyHex() {
     return this.publicKeyHex;
   }
 
+
+  isParentPublicKey(hex) {
+    return this.parentPublicKeyHex === hex;
+  }
+
+  isChildPublicKey(hex) {
+    return this.childPublicKeyHex === hex;
+  }
   //Verify
 
   isValidSigner() {
@@ -171,14 +217,13 @@ class OstBrowserMessenger {
     }
 
     let targetWindow;
+    let targetOrigin;
     if (SOURCE.DOWNSTREAM == receiverSourceEnum) {
-      targetWindow = this.downStreamOrigin;
+      targetWindow = this.getDownStreamWindow();
+      targetOrigin = this.getDownStreamOrigin();
     } else if (SOURCE.UPSTREAM == receiverSourceEnum) {
-      targetWindow = this.getUpStreamOrigin();
-    }
-
-    if (!targetWindow || targetWindow === self) {
-      throw new OstError('cj_obm_sm_4', 'INVALID_TARGET_WINDOW');
+      targetWindow = this.getUpStreamWindow();
+      targetOrigin = this.getUpStreamOrigin();
     }
 
     const dataToSign = OstHelpers.getMessageToSign(ostMessage, this.publicKeyHex);
@@ -190,7 +235,8 @@ class OstBrowserMessenger {
 
         const dataToPost = OstHelpers.getPostMessageData(signature, ostMessage, this.publicKeyHex);
 
-        targetWindow.postMessage(dataToPost, '*');
+
+        targetWindow.postMessage(dataToPost, targetOrigin);
       }).catch((err)=>{
       if (err instanceof OstError) {
         throw err;

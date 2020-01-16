@@ -3,6 +3,7 @@ import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstMessage from '../common-js/OstMessage'
 import OstHelpers from "../common-js/OstHelpers";
+import OstBaseSdk from "../common-js/OstBaseSdk";
 
 // window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
@@ -23,24 +24,14 @@ import OstHelpers from "../common-js/OstHelpers";
 
   const location = window.location;
 
-  class OstSdk {
-    constructor(location){
-      console.log("ostsdk init");
-      this.locationObj = location;
-      this.urlParams = null;
-      this.browserMessenger = null;
-      this.onMessageReceived = null;
-    }
-
-    getURLParams() {
-      this.urlParams = OstURLHelpers.getParamsFromURL(this.locationObj);
+  class OstSdk extends OstBaseSdk {
+    constructor(location, onMessageReceivedCallback){
+      super(location);
+      this.onMessageReceivedCallback = onMessageReceivedCallback;
     }
 
     perform() {
-      console.log("ostsdk perform");
-      window.addEventListener("message", (event) => {
-        this.receiveMessage(event);
-      }, false);
+      super.perform();
 
       this.getURLParams();
 
@@ -52,10 +43,15 @@ import OstHelpers from "../common-js/OstHelpers";
           return this.verifyPassedData();
         })
         .then((isVerified) => {
-          console.log("isVerified: ", isVerified);
+          if (!isVerified) {
+            throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
+          }
+
           this.sendPublicKey();
         })
         .catch((err) => {
+          this.browserMessenger.removeParentPublicKey();
+
           if (err instanceof OstError) {
             throw err;
           }
@@ -63,69 +59,12 @@ import OstHelpers from "../common-js/OstHelpers";
         });
     }
 
-    receiveMessage(event) {
-      const eventData = event.data;
-      const message = eventData.message;
-      console.log("OstSdk => receiveMessage", eventData);
-      if (message) {
-        if ("WALLET_SETUP_COMPLETE" === eventData.message.type) {
-          this.setChildPublicKey(eventData);
-        }else if (this.onMessageReceived){
-          this.onMessageReceived(eventData.message.content, eventData.message.type);
-        }
-      }
-    }
-
-    getPublicKeyHex () {
-      return this.browserMessenger.getPublicKeyHex();
-    }
-
-    signDataWithPrivateKey(stringToSign) {
-      return this.browserMessenger.getSignature(stringToSign);
-    }
-
-    createBrowserMessengerObject () {
-      this.browserMessenger = new OstBrowserMessenger();
-      return this.browserMessenger.perform()
-    }
-
-    setParentPublicKey() {
-      let parentPublicKeyHex = this.urlParams.publicKeyHex;
-
-      if (!parentPublicKeyHex) {
-        throw new OstError('os_i_sppk_1', 'INVALID_PARENT_PUBLIC_KEY');
-      }
-      return this.browserMessenger.setParentPublicKeyHex(parentPublicKeyHex)
-    }
-
-    verifyPassedData() {
-      const signature = this.urlParams.signature;
-      this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
-
-      let url = OstURLHelpers.getStringToSign(this.locationObj.origin+ this.locationObj.pathname, this.urlParams);
-      return this.browserMessenger.verify(url, signature, this.browserMessenger.parentPublicKey);
-    }
-
-    setChildPublicKey(eventData) {
-      let childPublicKeyHex = eventData.message.content.publicKeyHex;
-      return this.browserMessenger.setChildPublicKeyHex(childPublicKeyHex)
-        .then(() => {
-          return this.browserMessenger.verifyChildMessage(eventData)
-        })
-        .then((isVerified) => {
-          console.log("child public key verified: ", isVerified);
-          return Promise.resolve();
-        })
-        .catch((err) => {
-          if (err instanceof OstError) {
-            throw err;
-          }
-          throw new OstError('os_i_scpk_1', 'SKD_INTERNAL_ERROR', err);
-        })
+    onMessageReceived(content, type) {
+      console.log("ost sdk => message received");
+      console.log("content : ", content, " type :", type);
     }
 
     sendPublicKey() {
-      console.log("ostsdk sendPublicKey");
 
       const messagePayload = {
         msg: "sdk up complete",
@@ -134,13 +73,11 @@ import OstHelpers from "../common-js/OstHelpers";
       const message = new OstMessage(messagePayload, "WALLET_SETUP_COMPLETE");
       this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
     }
-
   }
 
   const ostSdkObj = new OstSdk(location);
   ostSdkObj.perform()
     .then(() => {
-      console.log("OstSdk init success");
       createSdkKeyManagerIframe();
     })
     .catch((err) => {
@@ -152,7 +89,6 @@ import OstHelpers from "../common-js/OstHelpers";
 
 
   function createSdkKeyManagerIframe() {
-    console.log("OstSdk createSdkKeyManagerIframe");
 
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'kmMappyIFrame');
@@ -167,7 +103,6 @@ import OstHelpers from "../common-js/OstHelpers";
 
     ostSdkObj.signDataWithPrivateKey(stringToSign)
       .then((signedMessage) => {
-        console.log("OstSdk signDataWithPrivateKey");
         const signature = OstHelpers.byteArrayToHex(signedMessage);
         let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
 
@@ -176,7 +111,9 @@ import OstHelpers from "../common-js/OstHelpers";
         ifrm.setAttribute('height', '200');
 
         document.body.appendChild(ifrm);
-        console.log("OstSdk signDataWithPrivateKey done");
+        ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
+        ostSdkObj.setDownStreamOrigin(url);
+
       })
       .catch((err) => {
         if (err instanceof OstError) {
@@ -185,4 +122,15 @@ import OstHelpers from "../common-js/OstHelpers";
         throw new OstError('os_i_sdwpk_1', 'SKD_INTERNAL_ERROR', err);
       })
   }
+
+
+  setTimeout(() => {
+
+    let component = document.getElementById('kmMappyIFrame');
+    let message = new OstMessage({msg: "sending message to down"}, "OTHER");
+    ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
+
+    let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
+    ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
+  }, 3000)
 })();
