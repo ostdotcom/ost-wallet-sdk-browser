@@ -76,6 +76,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
   let sdkKmManager = new OstSdkKeyManager(origin, pathname, ancestorOrigins, searchParams);
   sdkKmManager.perform()
     .then(() => {
+
     })
     .catch((err) => {
 

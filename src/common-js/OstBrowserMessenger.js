@@ -228,7 +228,7 @@ class OstBrowserMessenger {
 
     const dataToSign = OstHelpers.getMessageToSign(ostMessage, this.publicKeyHex);
 
-    this.getSignature(dataToSign)
+    return this.getSignature(dataToSign)
       .then((signedMessage)=>{
 
         const signature = OstHelpers.byteArrayToHex(signedMessage);

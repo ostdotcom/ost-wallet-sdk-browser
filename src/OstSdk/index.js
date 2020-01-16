@@ -136,8 +136,6 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 
 
   setTimeout(() => {
-
-    let component = document.getElementById('kmMappyIFrame');
     let message = new OstMessage({msg: "sending message to down"}, "OTHER");
     ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
 

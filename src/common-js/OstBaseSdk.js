@@ -143,7 +143,7 @@ class OstBaseSdk {
   }
 
   sendMessage(ostMessage, receiverSource) {
-    this.browserMessenger.sendMessage(ostMessage, receiverSource)
+    return this.browserMessenger.sendMessage(ostMessage, receiverSource)
   }
 }
 
