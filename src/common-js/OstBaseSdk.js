@@ -3,6 +3,8 @@ import OstError from "./OstError";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
 import {MESSAGE_TYPE} from "./OstMessage";
 
+const MESSAGE_TIMESTAMP_THRESHOLD = '1000';
+
 class OstBaseSdk {
   constructor(origin, pathname, ancestorOrigins, searchParams){
     this.origin = origin;
@@ -53,7 +55,11 @@ class OstBaseSdk {
   receiveMessage(event) {
     const eventData = event.data;
     const message = eventData.message;
-    if (message) {
+    if (message && this.isValidTimeStamp(message.timestamp)) {
+
+
+
+
       if ([MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE,
           MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE].includes(eventData.message.type)) {
 
@@ -63,6 +69,14 @@ class OstBaseSdk {
         this.onMessageReceived(eventData.message.content, eventData.message.type);
       }
     }
+  }
+
+  isValidTimeStamp( timestamp ) {
+    const currentDate = Date.now();
+    if ((currentDate - MESSAGE_TIMESTAMP_THRESHOLD) < timestamp || (currentDate + MESSAGE_TIMESTAMP_THRESHOLD) > timestamp ) {
+      return true;
+    }
+    return false;
   }
 
   onSetupComplete(eventData) {

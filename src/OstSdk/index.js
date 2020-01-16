@@ -84,6 +84,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
       const message = new OstMessage(messagePayload, "WALLET_SETUP_COMPLETE");
       this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
     }
+
   }
 
   const ostSdkObj = new OstSdk(origin, pathname, ancestorOrigins, searchParams);

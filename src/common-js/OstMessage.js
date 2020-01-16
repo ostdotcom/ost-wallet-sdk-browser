@@ -8,14 +8,21 @@ class OstMessage {
   constructor(payload, type) {
     this.payload = payload;
     this.type  = type;
-    this.timestamp = Date.now();
+    this.timestamp = null;
+  }
+
+  getTimeStamp() {
+    if (!this.timestamp) {
+      this.timestamp = Date.now();
+    }
+    return this.timestamp;
   }
 
   getPayloadToSign() {
     let payloadToSign = {
       content: this.payload,
       type: this.type,
-      timestamp: this.timestamp
+      timestamp: this.getTimeStamp()
     };
 
     return payloadToSign
