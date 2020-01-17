@@ -5,6 +5,7 @@ import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
 import {MESSAGE_TYPE} from "../common-js/OstMessage";
+import OstErrorHelper from "../common-js/OstErrorHelper";
 
 (function(window) {
 
@@ -19,10 +20,7 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
         .then(() => {
         })
         .catch((err) => {
-          if (err instanceof OstError) {
-            throw err;
-          }
-          throw new OstError('ows_i_p_1', 'SKD_INTERNAL_ERROR', err);
+          throw OstError.sdkError(err, 'ows_i_p_1');
         });
     }
 
@@ -46,10 +44,7 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
     .then(() => {
     })
     .catch((err) => {
-      if (err instanceof OstError) {
-        throw err;
-      }
-      throw new OstError('ows_i_p_1', 'SKD_INTERNAL_ERROR', err);
+			throw OstError.sdkError(err, 'ows_i_p_2');
     });
 
   function createSdkMappyIframe() {
@@ -80,10 +75,7 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
 
       })
       .catch((err) => {
-        if (err instanceof OstError) {
-          throw err;
-        }
-        throw new OstError('ows_i_csmif_1', 'SKD_INTERNAL_ERROR', err);
+				throw OstError.sdkError(err, 'ows_i_csmif_1');
       })
   }
 
