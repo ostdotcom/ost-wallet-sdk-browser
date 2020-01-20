@@ -14,11 +14,14 @@ class OstBaseSdk {
     this.browserMessenger = null;
   }
 
-  getURLParams() {
-    this.urlParams = OstURLHelpers.getParamsFromURL(this.searchParams);
+  setURLParams() {
+    if (this.searchParams) {
+      this.urlParams = OstURLHelpers.getParamsFromURL(this.searchParams);
+    }
   }
 
   perform() {
+    this.setURLParams();
     return this.createBrowserMessengerObject()
       .then(() => {
         this.setParentOrigin();

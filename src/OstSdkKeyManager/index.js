@@ -29,9 +29,6 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
     }
 
     perform() {
-
-      this.getURLParams();
-
       return super.perform()
         .then(() => {
           return this.setParentPublicKey();

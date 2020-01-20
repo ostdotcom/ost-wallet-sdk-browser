@@ -36,8 +36,6 @@ import OstKeyManager from "./keyManagerProxy/ostKeyManager";
     }
 
     perform() {
-      this.getURLParams();
-
       return  super.perform()
         .then(() => {
           return this.setParentPublicKey();
