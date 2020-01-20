@@ -22,10 +22,8 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
   ;
 
   class OstSdkKeyManager extends OstBaseSdk {
-    constructor(origin, pathname, ancestorOrigins, searchParams, onMessageReceiveCallback){
+    constructor(origin, pathname, ancestorOrigins, searchParams){
       super(origin, pathname, ancestorOrigins, searchParams);
-
-      this.onMessageReceiveCallback = onMessageReceiveCallback;
     }
 
     perform() {
@@ -40,7 +38,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
           if (!isVerified) {
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
-					this.registerOther();
+          this.registerOther();
           this.sendPublicKey();
         })
         .catch((err) => {
@@ -53,10 +51,10 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         });
     }
 
-		registerOther() {
-				this.register("OTHER", (msg) => {
-					console.log("KM :: registerOther :: msg => ", msg)
-				});
+    registerOther() {
+      this.register("OTHER", (msg) => {
+        console.log("KM :: registerOther :: msg => ", msg)
+      });
     }
 
     sendPublicKey() {

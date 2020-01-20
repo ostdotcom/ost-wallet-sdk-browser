@@ -46,10 +46,6 @@ class OstBaseSdk {
     this.browserMessenger.setDownStreamOrigin( origin );
   }
 
-  onSetupComplete(eventData) {
-
-  }
-
   createBrowserMessengerObject () {
     this.browserMessenger = new OstBrowserMessenger();
     return this.browserMessenger.perform()
@@ -106,6 +102,8 @@ class OstBaseSdk {
     return this.browserMessenger.sendMessage(ostMessage, receiverSource)
   }
 
+
+  //Register listener
   registerOnce(type, callback) {
     this.browserMessenger.registerOnce(type, callback);
   }

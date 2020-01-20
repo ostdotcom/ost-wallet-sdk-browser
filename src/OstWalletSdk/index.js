@@ -16,26 +16,26 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
     perform() {
       return super.perform()
         .then(() => {
-					this.registerSetupCompleterMessage();
-					this.registerOther();
+          this.registerSetupCompleterMessage();
+          this.registerOther();
         })
         .catch((err) => {
           throw OstError.sdkError(err, 'ows_i_p_1');
         });
     }
 
-		registerSetupCompleterMessage() {
-			console.log("registerSetupCompleterMessage done");
+    registerSetupCompleterMessage() {
+      console.log("registerSetupCompleterMessage done");
 
-			this.registerOnce(MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE, (eventData) => {
-			  console.log("registerSetupCompleterMessage : OST_SKD_SETUP_COMPLETE", eventData);
-				this.setChildPublicKey(eventData);
+      this.registerOnce(MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE, (eventData) => {
+        console.log("registerSetupCompleterMessage : OST_SKD_SETUP_COMPLETE", eventData);
+        this.setChildPublicKey(eventData);
       });
     }
 
     registerOther() {
       this.register("OTHER", (e) => {
-				console.log("WalletSdk : registerOther", e);
+        console.log("WalletSdk : registerOther", e);
       });
     }
   }
@@ -46,7 +46,7 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
       return createSdkMappyIframe();
     })
     .catch((err) => {
-			throw OstError.sdkError(err, 'ows_i_p_2');
+      throw OstError.sdkError(err, 'ows_i_p_2');
     });
 
   function createSdkMappyIframe() {
@@ -76,10 +76,10 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
         walletSdk.setDownStreamWindow(ifrm.contentWindow);
         walletSdk.setDownStreamOrigin(url);
 
-				console.log("createSdkMappyIframe Completed");
+        console.log("createSdkMappyIframe Completed");
       })
       .catch((err) => {
-				throw OstError.sdkError(err, 'ows_i_csmif_1');
+        throw OstError.sdkError(err, 'ows_i_csmif_1');
       })
   }
 
