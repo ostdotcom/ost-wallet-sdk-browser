@@ -4,6 +4,7 @@ import OstError from "../common-js/OstError";
 import {MESSAGE_TYPE, OstMessage} from '../common-js/OstMessage'
 import OstHelpers from "../common-js/OstHelpers";
 import OstBaseSdk from "../common-js/OstBaseSdk";
+import OstKeyManager from "./keyManagerProxy/ostKeyManager";
 
 // window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
@@ -30,17 +31,14 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
   ;
 
   class OstSdk extends OstBaseSdk {
-    constructor(origin, pathname, ancestorOrigins, searchParams, onMessageReceivedCallback){
+    constructor(origin, pathname, ancestorOrigins, searchParams){
       super(origin, pathname, ancestorOrigins, searchParams);
-      this.onMessageReceivedCallback = onMessageReceivedCallback;
     }
 
     perform() {
-      super.perform();
-
       this.getURLParams();
 
-      return this.createBrowserMessengerObject()
+      return  super.perform()
         .then(() => {
           return this.setParentPublicKey();
         })
@@ -52,6 +50,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
 
+          this.registerKMSetupComplete();
           this.sendPublicKey();
         })
         .catch((err) => {
@@ -64,15 +63,11 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         });
     }
 
-    onSetupComplete(eventData) {
-      if (MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE === eventData.message.type) {
-        this.setChildPublicKey(eventData);
-      }
-    }
-
-    onMessageReceived(content, type) {
-      console.log("ost sdk => message received");
-      console.log("content : ", content, " type :", type);
+    registerKMSetupComplete() {
+      this.registerOnce(MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE, (eventData) => {
+				console.log("registerSetupCompleterMessage : OST_SKD_KM_SETUP_COMPLETE", eventData);
+				this.setChildPublicKey(eventData);
+      });
     }
 
     sendPublicKey() {
@@ -81,7 +76,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         msg: "sdk up complete",
         publicKeyHex: this.browserMessenger.publicKeyHex
       };
-      const message = new OstMessage(messagePayload, "WALLET_SETUP_COMPLETE");
+      const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE);
       this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
     }
 
@@ -125,6 +120,8 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         document.body.appendChild(ifrm);
         ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
         ostSdkObj.setDownStreamOrigin(url);
+
+				ostSdkObj.browserMessenger.iframeObj = ifrm
 
       })
       .catch((err) => {

@@ -5,34 +5,38 @@ import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
 import {MESSAGE_TYPE} from "../common-js/OstMessage";
-import OstErrorHelper from "../common-js/OstErrorHelper";
 
 (function(window) {
 
   class OstWalletSdk extends OstBaseSdk {
-    constructor(onMessageReceivedCallback) {
+    constructor() {
       super();
-      this.onMessageReceivedCallback = onMessageReceivedCallback
     }
 
     perform() {
       return super.perform()
         .then(() => {
+					this.registerSetupCompleterMessage();
+					this.registerOther();
         })
         .catch((err) => {
           throw OstError.sdkError(err, 'ows_i_p_1');
         });
     }
 
-    onSetupComplete(eventData) {
-      if (MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE === eventData.message.type) {
-        this.setChildPublicKey(eventData);
-      }
+		registerSetupCompleterMessage() {
+			console.log("registerSetupCompleterMessage done");
+
+			this.registerOnce(MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE, (eventData) => {
+			  console.log("registerSetupCompleterMessage : OST_SKD_SETUP_COMPLETE", eventData);
+				this.setChildPublicKey(eventData);
+      });
     }
 
-    onMessageReceived(content, type) {
-      console.log("ost wallet sdk => message received");
-      console.log("content : ", content, " type :", type);
+    registerOther() {
+      this.register("OTHER", (e) => {
+				console.log("WalletSdk : registerOther", e);
+      });
     }
   }
 
@@ -41,13 +45,12 @@ import OstErrorHelper from "../common-js/OstErrorHelper";
     .then(() => {
       return createSdkMappyIframe();
     })
-    .then(() => {
-    })
     .catch((err) => {
 			throw OstError.sdkError(err, 'ows_i_p_2');
     });
 
   function createSdkMappyIframe() {
+    console.log("createSdkMappyIframe Started");
 
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'sdkMappyIFrame');
@@ -73,6 +76,7 @@ import OstErrorHelper from "../common-js/OstErrorHelper";
         walletSdk.setDownStreamWindow(ifrm.contentWindow);
         walletSdk.setDownStreamOrigin(url);
 
+				console.log("createSdkMappyIframe Completed");
       })
       .catch((err) => {
 				throw OstError.sdkError(err, 'ows_i_csmif_1');

@@ -3,8 +3,6 @@ import OstError from "./OstError";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
 import {MESSAGE_TYPE} from "./OstMessage";
 
-const MESSAGE_TIMESTAMP_THRESHOLD = '1000';
-
 class OstBaseSdk {
   constructor(origin, pathname, ancestorOrigins, searchParams){
     this.origin = origin;
@@ -21,7 +19,6 @@ class OstBaseSdk {
   }
 
   perform() {
-    this.registerListener();
     return this.createBrowserMessengerObject()
       .then(() => {
         this.setParentOrigin();
@@ -46,61 +43,7 @@ class OstBaseSdk {
     this.browserMessenger.setDownStreamOrigin( origin );
   }
 
-  registerListener() {
-    window.addEventListener("message", (event) => {
-      this.receiveMessage(event);
-    }, false);
-  }
-
-  receiveMessage(event) {
-    const eventData = event.data;
-    const message = eventData.message;
-    if (message && this.isValidTimeStamp(message.timestamp)) {
-
-
-
-
-      if ([MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE,
-          MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE].includes(eventData.message.type)) {
-
-        this.onSetupComplete(eventData);
-
-      }else if (this.onMessageReceived){
-        this.onMessageReceived(eventData.message.content, eventData.message.type);
-      }
-    }
-  }
-
-  isValidTimeStamp( timestamp ) {
-    const currentDate = Date.now();
-    if ((currentDate - MESSAGE_TIMESTAMP_THRESHOLD) < timestamp || (currentDate + MESSAGE_TIMESTAMP_THRESHOLD) > timestamp ) {
-      return true;
-    }
-    return false;
-  }
-
   onSetupComplete(eventData) {
-
-  }
-
-  validateReceivedMessage(eventData) {
-    let signer = eventData.message.signer;
-
-    const verifiedCallback = (isVerified) => {
-      if (isVerified) {
-        this.onMessageReceived(eventData.message.content, eventData.message.type);
-      }
-    };
-    if (this.browserMessenger.isParentPublicKey(signer)) {
-      this.browserMessenger.verifyParentMessage(eventData)
-        .then(verifiedCallback)
-    }else if (this.browserMessenger.isChildPublicKey(signer)){
-      this.browserMessenger.verifyChildMessage(eventData)
-        .then(verifiedCallback)
-    }
-  }
-
-  onMessageReceived(content, type) {
 
   }
 
@@ -158,6 +101,18 @@ class OstBaseSdk {
 
   sendMessage(ostMessage, receiverSource) {
     return this.browserMessenger.sendMessage(ostMessage, receiverSource)
+  }
+
+  registerOnce(type, callback) {
+    this.browserMessenger.registerOnce(type, callback);
+  }
+
+  register(type, callback) {
+		this.browserMessenger.register(type, callback);
+  }
+
+  unRegister(type, callback) {
+		this.browserMessenger.unRegister(type, callback);
   }
 }
 

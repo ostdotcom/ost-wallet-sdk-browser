@@ -29,11 +29,10 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
     }
 
     perform() {
-      super.perform();
 
       this.getURLParams();
 
-      return this.createBrowserMessengerObject()
+      return super.perform()
         .then(() => {
           return this.setParentPublicKey();
         })
@@ -44,7 +43,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
           if (!isVerified) {
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
-
+					this.registerOther();
           this.sendPublicKey();
         })
         .catch((err) => {
@@ -57,9 +56,10 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
         });
     }
 
-    onMessageReceived(content, type) {
-      console.log("ost sdk key manager=> message received");
-      console.log("content : ", content, " type :", type);
+		registerOther() {
+				this.register("OTHER", (msg) => {
+					console.log("KM :: registerOther :: msg => ", msg)
+				});
     }
 
     sendPublicKey() {
