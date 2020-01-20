@@ -10,7 +10,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 // const wallet = ikm.generateHDWallet();
 // const gensig = ikm.signMessage(wallet, "message");
 // const persig = ikm.personalSign(wallet, "message");
-
+import OstKeyManager from './keyManagerAssist/ostKeyManager'
 
 (function(window) {
 
@@ -24,9 +24,11 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
   class OstSdkKeyManager extends OstBaseSdk {
     constructor(origin, pathname, ancestorOrigins, searchParams){
       super(origin, pathname, ancestorOrigins, searchParams);
+			this.ostKeyManager = null;
     }
 
     perform() {
+      const oThis = this;
       return super.perform()
         .then(() => {
           return this.setParentPublicKey();
@@ -38,7 +40,10 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
           if (!isVerified) {
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
-          this.registerOther();
+
+					oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
+					oThis.ostKeyManager.registerRequestListeners();
+
           this.sendPublicKey();
         })
         .catch((err) => {

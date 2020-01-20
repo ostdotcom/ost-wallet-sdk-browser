@@ -127,7 +127,7 @@ class OstBrowserMessenger {
   {
     if (isVerified) {
      //Event emitter
-      console.log("onValidateReceivedMessageCallback : message => ",message);
+      console.log("onValidateReceivedMessageCallback : message => ", message.type, message);
       this.eventEmitter.emit(message.type, message);
     }
   }

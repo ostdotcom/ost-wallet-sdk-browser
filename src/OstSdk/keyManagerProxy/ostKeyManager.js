@@ -6,17 +6,36 @@ export default class OstKeyManager {
 	constructor(ostSdkObj, userId){
 		this.ostSdkObj = ostSdkObj;
 		this.userId = userId;
-		const initKeyManger = new OstMessage({userId: userId}, MESSAGE_TYPE.OST_KM_INIT);
-		this.ostSdkObj.sendMessage(initKeyManger, SOURCE.DOWNSTREAM);
+	}
+
+	init() {
+		return this.get(MESSAGE_TYPE.OST_KM_INIT);
 	}
 
 	getDeviceAddress() {
-		const initKeyManger = new OstMessage({userId: userId}, MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS);
-		this.ostSdkObj.sendMessage(initKeyManger, SOURCE.DOWNSTREAM);
-		ostSdkObj.register
+		return this.get(MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS);
 	}
 
 	getApiKeyAddress() {
+		return this.get(MESSAGE_TYPE.OST_KM_GET_API_ADDRESS);
+	}
 
+
+	get(msgType) {
+		const oThis = this;
+
+		return new Promise(function (resolve, reject) {
+			const initKeyManger = new OstMessage({userId: oThis.userId}, msgType);
+			oThis.ostSdkObj.sendMessage(initKeyManger, SOURCE.DOWNSTREAM);
+			oThis.ostSdkObj.registerOnce(msgType,
+				(msg) => {
+					console.log("Entity response", msgType, msg);
+					if (!msg) {
+						return reject(msgType ,"Entity not found");
+					}
+					return resolve(msg);
+				}
+			);
+		});
 	}
 }

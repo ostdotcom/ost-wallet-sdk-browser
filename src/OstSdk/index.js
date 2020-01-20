@@ -5,6 +5,7 @@ import {MESSAGE_TYPE, OstMessage} from '../common-js/OstMessage'
 import OstHelpers from "../common-js/OstHelpers";
 import OstBaseSdk from "../common-js/OstBaseSdk";
 import OstKeyManager from "./keyManagerProxy/ostKeyManager";
+import uuidv4 from "uuid/v4";
 
 // window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
@@ -131,11 +132,22 @@ import OstKeyManager from "./keyManagerProxy/ostKeyManager";
   }
 
 
-  setTimeout(() => {
-    let message = new OstMessage({msg: "sending message to down"}, "OTHER");
-    ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
+	setTimeout(() => {
+		let message = new OstMessage({msg: "sending message to down"}, "OTHER");
+		ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
 
-    let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
-    ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
-  }, 3000)
+		let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
+		ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
+
+		const ostKeyManager = new OstKeyManager(ostSdkObj, uuidv4());
+		ostKeyManager.init()
+			.then((msg) => {
+				console.log('OstSdk :: init', msg);
+				return ostKeyManager.getDeviceAddress();
+			}).then((msg) => {
+			console.log('OstSdk :: getDeviceAddress', msg);
+		}).catch((err) => {
+			console.log('OstSdk :: err', err);
+		});
+	}, 3000);
 })(window);
