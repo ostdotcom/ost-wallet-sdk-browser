@@ -42,7 +42,7 @@ import uuidv4 from "uuid/v4";
           return this.setParentPublicKey();
         })
         .then(() => {
-          return this.verifyPassedData();
+          return this.verifyIframeInitData();
         })
         .then((isVerified) => {
           if (!isVerified) {
@@ -64,8 +64,8 @@ import uuidv4 from "uuid/v4";
 
     registerKMSetupComplete() {
       this.registerOnce(MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE, (eventData) => {
-				console.log("registerSetupCompleterMessage : OST_SKD_KM_SETUP_COMPLETE", eventData);
-				this.setChildPublicKey(eventData);
+        console.log("registerSetupCompleterMessage : OST_SKD_KM_SETUP_COMPLETE", eventData);
+        this.setDownstreamPublicKey(eventData);
       });
     }
 

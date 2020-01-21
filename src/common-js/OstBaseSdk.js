@@ -68,33 +68,22 @@ class OstBaseSdk {
     return this.browserMessenger.setUpstreamPublicKeyHex(parentPublicKeyHex)
   }
 
-  verifyPassedData() {
+  verifyIframeInitData() {
+    console.log("verifyIframeInitData : ", this.urlParams);
     const signature = this.urlParams.signature;
     this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
 
     let url = OstURLHelpers.getStringToSign(this.origin+ this.pathname, this.urlParams);
-    return this.browserMessenger.verify(url, signature, this.browserMessenger.upstreamPublicKey);
+    return this.browserMessenger.verifyIframeInit(url, signature);
   }
 
-  setChildPublicKey(eventData) {
-    let childPublicKeyHex = eventData.ostMessage.content.publicKeyHex;
-    return this.browserMessenger.setDownstreamPublicKeyHex(childPublicKeyHex)
+  setDownstreamPublicKey(eventData) {
+    let downstreamPublicKeyHex = eventData.ostMessage.content.publicKeyHex;
+    return this.browserMessenger.setDownstreamPublicKeyHex(downstreamPublicKeyHex)
       .then(() => {
-        return this.browserMessenger.verifyDownstreamReceivedMessage(eventData)
       })
-      .then((isVerified) => {
-        if (!isVerified) {
-          throw new OstError('cj_obs_scpk_1', 'INVALID_VERIFIER')
-        }
-        return Promise.resolve();
-      })
-      .catch((err) => {
-        this.browserMessenger.removeDownstreamPublicKey();
+      .catch(() => {
 
-        if (err instanceof OstError) {
-          throw err;
-        }
-        throw new OstError('os_i_scpk_1', 'SKD_INTERNAL_ERROR', err);
       })
   }
 
@@ -109,11 +98,11 @@ class OstBaseSdk {
   }
 
   register(type, callback) {
-		this.browserMessenger.register(type, callback);
+    this.browserMessenger.register(type, callback);
   }
 
   unRegister(type, callback) {
-		this.browserMessenger.unRegister(type, callback);
+    this.browserMessenger.unRegister(type, callback);
   }
 }
 

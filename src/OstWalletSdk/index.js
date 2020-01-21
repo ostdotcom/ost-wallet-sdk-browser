@@ -29,7 +29,7 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
 
       this.registerOnce(MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE, (eventData) => {
         console.log("registerSetupCompleterMessage : OST_SKD_SETUP_COMPLETE", eventData);
-        this.setChildPublicKey(eventData);
+        this.setDownstreamPublicKey(eventData);
       });
     }
 

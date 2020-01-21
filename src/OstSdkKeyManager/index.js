@@ -24,7 +24,7 @@ import OstKeyManager from './keyManagerAssist/ostKeyManager'
   class OstSdkKeyManager extends OstBaseSdk {
     constructor(origin, pathname, ancestorOrigins, searchParams){
       super(origin, pathname, ancestorOrigins, searchParams);
-			this.ostKeyManager = null;
+      this.ostKeyManager = null;
     }
 
     perform() {
@@ -34,15 +34,15 @@ import OstKeyManager from './keyManagerAssist/ostKeyManager'
           return this.setParentPublicKey();
         })
         .then(() => {
-          return this.verifyPassedData();
+          return this.verifyIframeInitData();
         })
         .then((isVerified) => {
           if (!isVerified) {
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
 
-					oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
-					oThis.ostKeyManager.registerRequestListeners();
+          oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
+          oThis.ostKeyManager.registerRequestListeners();
 
           this.sendPublicKey();
         })

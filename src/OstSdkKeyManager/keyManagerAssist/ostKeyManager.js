@@ -12,16 +12,16 @@ export default class OstKeyManager {
 	registerRequestListeners() {
 		const oThis = this;
 		this.messengerObj.register(MESSAGE_TYPE.OST_KM_INIT, (msg) => {
-			console.log("KM :: register", MESSAGE_TYPE.OST_KM_INIT, msg.content);
-			oThis.init(msg.content.userId);
+			console.log("KM :: register", MESSAGE_TYPE.OST_KM_INIT, msg);
+			oThis.init(msg.payload.userId);
 		});
 
 		this.messengerObj.register(MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS, (msg) => {
-			console.log("KM :: register", MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS, msg.content)
+			console.log("KM :: register", MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS, msg)
 		});
 
 		this.messengerObj.register(MESSAGE_TYPE.OST_KM_GET_API_ADDRESS, (msg) => {
-			console.log("KM :: register", MESSAGE_TYPE.OST_KM_GET_API_ADDRESS, msg.content)
+			console.log("KM :: register", MESSAGE_TYPE.OST_KM_GET_API_ADDRESS, msg)
 		});
 	}
 
@@ -31,8 +31,7 @@ export default class OstKeyManager {
 		const messagePayload = {
 			userId: userId,
 			msg: "Ost KM init completed"
-		};
-
+		}
 
 		const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_KM_INIT);
 		this.messengerObj.sendMessage(message, SOURCE.UPSTREAM);
