@@ -27,13 +27,7 @@ export default class OstKeyManager {
 
 	init(userId) {
 		this.ikm = new IKM(userId);
-		this.ikm.init()
-			.then(()=> {
-
-			})
-			.catch((err)=>{
-
-			});
+		this.ikm.init();
 		const messagePayload = {
 			userId: userId,
 			msg: "Ost KM init completed"

@@ -6,7 +6,7 @@ class OstHelpers {
     const msg = OstHelpers.getMessageToSign(ostMessage, signer);
     return {
       signature: signature,
-      message: msg
+      ostMessage: msg
     }
   }
 

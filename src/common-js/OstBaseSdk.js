@@ -63,9 +63,9 @@ class OstBaseSdk {
     let parentPublicKeyHex = this.urlParams.publicKeyHex;
 
     if (!parentPublicKeyHex) {
-      throw new OstError('os_i_sppk_1', 'INVALID_PARENT_PUBLIC_KEY');
+      throw new OstError('os_i_sppk_1', 'INVALID_UPSTREAM_PUBLIC_KEY');
     }
-    return this.browserMessenger.setParentPublicKeyHex(parentPublicKeyHex)
+    return this.browserMessenger.setUpstreamPublicKeyHex(parentPublicKeyHex)
   }
 
   verifyPassedData() {
@@ -73,14 +73,14 @@ class OstBaseSdk {
     this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
 
     let url = OstURLHelpers.getStringToSign(this.origin+ this.pathname, this.urlParams);
-    return this.browserMessenger.verify(url, signature, this.browserMessenger.parentPublicKey);
+    return this.browserMessenger.verify(url, signature, this.browserMessenger.upstreamPublicKey);
   }
 
   setChildPublicKey(eventData) {
-    let childPublicKeyHex = eventData.message.content.publicKeyHex;
-    return this.browserMessenger.setChildPublicKeyHex(childPublicKeyHex)
+    let childPublicKeyHex = eventData.ostMessage.content.publicKeyHex;
+    return this.browserMessenger.setDownstreamPublicKeyHex(childPublicKeyHex)
       .then(() => {
-        return this.browserMessenger.verifyChildMessage(eventData)
+        return this.browserMessenger.verifyDownstreamReceivedMessage(eventData)
       })
       .then((isVerified) => {
         if (!isVerified) {
@@ -89,7 +89,7 @@ class OstBaseSdk {
         return Promise.resolve();
       })
       .catch((err) => {
-        this.browserMessenger.removeChildPublicKey();
+        this.browserMessenger.removeDownstreamPublicKey();
 
         if (err instanceof OstError) {
           throw err;

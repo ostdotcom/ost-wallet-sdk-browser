@@ -53,7 +53,7 @@ import uuidv4 from "uuid/v4";
           this.sendPublicKey();
         })
         .catch((err) => {
-          this.browserMessenger.removeParentPublicKey();
+          this.browserMessenger.removeUpstreamPublicKey();
 
           if (err instanceof OstError) {
             throw err;
@@ -139,7 +139,7 @@ import uuidv4 from "uuid/v4";
 		let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
 		ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
 
-		const ostKeyManager = new OstKeyManager(ostSdkObj, uuidv4());
+		const ostKeyManager = new OstKeyManager(ostSdkObj.browserMessenger, uuidv4());
 		ostKeyManager.init()
 			.then((msg) => {
 				console.log('OstSdk :: init', msg);

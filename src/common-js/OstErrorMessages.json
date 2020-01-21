@@ -7,8 +7,8 @@
   "INVALID_VERIFIER": "Verifier is not set or invalid.",
   "INVALID_SIGNATURE": "Signature is not valid.",
   "INVALID_PARAM_SIGNATURE": "Signature parameter is not present.",
-  "INVALID_PARENT_PUBLIC_KEY": "Invalid parent public key.",
-  "INVALID_CHILD_PUBLIC_KEY": "Invalid child public key.",
+  "INVALID_UPSTREAM_PUBLIC_KEY": "Invalid upstream public key.",
+  "INVALID_DOWNSTREAM_PUBLIC_KEY": "Invalid downstream public key.",
   "INVALID_UPSTREAM_ORIGIN": "Invalid upstream origin",
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
 

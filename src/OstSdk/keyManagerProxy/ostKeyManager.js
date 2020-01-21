@@ -3,8 +3,8 @@ import {MESSAGE_TYPE, OstMessage} from "../../common-js/OstMessage";
 
 
 export default class OstKeyManager {
-	constructor(ostSdkObj, userId){
-		this.ostSdkObj = ostSdkObj;
+	constructor(messengerObj, userId){
+		this.messengerObj = messengerObj;
 		this.userId = userId;
 	}
 
@@ -26,8 +26,8 @@ export default class OstKeyManager {
 
 		return new Promise(function (resolve, reject) {
 			const initKeyManger = new OstMessage({userId: oThis.userId}, msgType);
-			oThis.ostSdkObj.sendMessage(initKeyManger, SOURCE.DOWNSTREAM);
-			oThis.ostSdkObj.registerOnce(msgType,
+			oThis.messengerObj.sendMessage(initKeyManger, SOURCE.DOWNSTREAM);
+			oThis.messengerObj.registerOnce(msgType,
 				(msg) => {
 					console.log("Entity response", msgType, msg);
 					if (!msg) {

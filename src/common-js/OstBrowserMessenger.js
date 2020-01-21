@@ -27,19 +27,19 @@ class OstBrowserMessenger {
 
     this.publicKeyHex = null;
 
-    this.parentPublicKeyHex = null;
-    this.parentPublicKey = null;
+    this.upstreamPublicKeyHex = null;
+    this.upstreamPublicKey = null;
 
-    this.childPublicKeyHex = null;
-    this.childPublicKey = null;
+    this.downstreamPublicKeyHex = null;
+    this.downstreamPublicKey = null;
 
     this.eventEmitter = new EventEmitter();
   }
 
   perform() {
-		this.registerListener();
+    this.registerListener();
 
-		return this.createSignerKey()
+    return this.createSignerKey()
       .then((res) => {
         this.signer = res;
         return this.exportPublicKey();
@@ -47,92 +47,92 @@ class OstBrowserMessenger {
   }
 
   registerListener() {
-		window.addEventListener("message", (event) => {
-			this.receiveMessage(event);
-		}, false);
+    window.addEventListener("message", (event) => {
+      this.messageReceived(event);
+    }, false);
   }
 
 
-	receiveMessage(event) {
-		const eventData = event.data;
-		const message = eventData.message;
+  messageReceived(event) {
+    const eventData = event.data;
+    const message = eventData.ostMessage;
 
-		if (!message) {
-		  return;
-    }
-
-		if (!this.isValidTimeStamp(message.timestamp)) {
-			console.warn("OstBrowserMessenger :: receiveMessage :: invalid time stamp");
-		  return;
-    }
-
-    if (!this.isValidOrigin(event.origin)) {
-			console.warn("OstBrowserMessenger :: receiveMessage :: invalid origin");
+    if (!message) {
       return;
     }
 
-			if ([MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE,
-					MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE].includes(eventData.message.type)) {
+    if (!this.isValidTimeStamp(message.timestamp)) {
+      console.warn("OstBrowserMessenger :: receiveMessage :: invalid time stamp");
+      return;
+    }
 
-				//this.onSetupComplete(eventData);
-        this.eventEmitter.emit(eventData.message.type, eventData);
+    if (!this.isValidOrigin(event.origin)) {
+      console.warn("OstBrowserMessenger :: receiveMessage :: invalid origin");
+      return;
+    }
 
-			}else {
+    if ([MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE,
+        MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE].includes(eventData.ostMessage.type)) {
 
-				this.validateReceivedMessage(eventData)
-					.then((isVerified) => {
-					  this.onValidateReceivedMessageCallback(isVerified, message);
-					})
-					.catch((err) => {
-						throw OstError.sdkError(err, "cs_obm_rm_1");
-					});
-			}
-	}
+      //this.onSetupComplete(eventData);
+      this.eventEmitter.emit(eventData.ostMessage.type, eventData);
 
-	isValidTimeStamp( timestamp ) {
-		const currentDate = Date.now();
-		if ((currentDate - MESSAGE_TIMESTAMP_THRESHOLD) < timestamp || (currentDate + MESSAGE_TIMESTAMP_THRESHOLD) > timestamp ) {
-			return true;
-		}
-		return false;
-	}
+    }else {
 
-	isValidOrigin(origin) {
-  	console.log("isValidOrigin : origin => ", origin);
-		console.log("isValidOrigin : downStreamOrigin => ", this.downStreamOrigin);
-		console.log("isValidOrigin : upStreamOrigin => ", this.upStreamOrigin);
+      this.validateReceivedMessage(eventData)
+        .then((isVerified) => {
+          this.onValidateReceivedMessageCallback(isVerified, message);
+        })
+        .catch((err) => {
+          throw OstError.sdkError(err, "cs_obm_rm_1");
+        });
+    }
+  }
+
+  isValidTimeStamp( timestamp ) {
+    const currentDate = Date.now();
+    if ((currentDate - MESSAGE_TIMESTAMP_THRESHOLD) < timestamp || (currentDate + MESSAGE_TIMESTAMP_THRESHOLD) > timestamp ) {
+      return true;
+    }
+    return false;
+  }
+
+  isValidOrigin(origin) {
+    console.log("isValidOrigin : origin => ", origin);
+    console.log("isValidOrigin : downStreamOrigin => ", this.downStreamOrigin);
+    console.log("isValidOrigin : upStreamOrigin => ", this.upStreamOrigin);
     return this.downStreamOrigin == origin || this.upStreamOrigin == origin ;
   }
 
 
-	validateReceivedMessage(eventData) {
-		let signer = eventData.message.signer;
+  validateReceivedMessage(eventData) {
+    let signer = eventData.ostMessage.signer;
     if (!signer) {
       throw new OstError('cs_obm_vrm_1', OstErrorCodes.INVALID_SIGNER);
     }
-		if (this.isParentPublicKey(signer)) {
-			return this.verifyParentMessage(eventData)
+    if (this.isUpstreamPublicKey(signer)) {
+      return this.verifyUpstreamReceivedMessage(eventData)
 
     }
 
-    if (this.isChildPublicKey(signer)){
-			return this.verifyChildMessage(eventData)
-		}
+    if (this.isDownstreamPublicKey(signer)){
+      return this.verifyDownstreamReceivedMessage(eventData)
+    }
 
-		return Promise.resolve(false);
-	}
+    return Promise.resolve(false);
+  }
 
 
-	onValidateReceivedMessageCallback(isVerified, message)
+  onValidateReceivedMessageCallback(isVerified, ostMessage)
   {
     if (isVerified) {
-     //Event emitter
-      console.log("onValidateReceivedMessageCallback : message => ", message.type, message);
-      this.eventEmitter.emit(message.type, message);
+      //Event emitter
+      console.log("onValidateReceivedMessageCallback : message => ", ostMessage.type, ostMessage);
+      this.eventEmitter.emit(ostMessage.type, ostMessage);
     }
   }
 
-	/**
+  /**
    * Method to create message signer.
    * @return {Promise} a Promise that fulfills with a CryptoKeyPair.
    */
@@ -179,11 +179,11 @@ class OstBrowserMessenger {
     console.log('setDownStreamOrigin', downStreamOrigin);
   }
 
-  setParentPublicKeyHex(hex) {
-    this.parentPublicKeyHex = hex;
-    return this.importPublicKey(this.parentPublicKeyHex)
+  setUpstreamPublicKeyHex(hex) {
+    this.upstreamPublicKeyHex = hex;
+    return this.importPublicKey(this.upstreamPublicKeyHex)
       .then((cryptoKey) => {
-        this.parentPublicKey = cryptoKey;
+        this.upstreamPublicKey = cryptoKey;
       })
       .catch((err) => {
         if (err instanceof OstError) {
@@ -193,11 +193,12 @@ class OstBrowserMessenger {
       });
   }
 
-  setChildPublicKeyHex(hex) {
-    this.childPublicKeyHex = hex;
-    return this.importPublicKey(this.childPublicKeyHex)
+  setDownstreamPublicKeyHex(hex) {
+    this.downstreamPublicKeyHex = hex;
+
+    return this.importPublicKey(this.downstreamPublicKeyHex)
       .then((cryptoKey) => {
-        this.childPublicKey = cryptoKey;
+        this.downstreamPublicKey = cryptoKey;
       })
       .catch((err) => {
         if (err instanceof OstError) {
@@ -207,14 +208,14 @@ class OstBrowserMessenger {
       });
   }
 
-  removeParentPublicKey() {
-    this.childPublicKey = null;
-    this.childPublicKeyHex = null;
+  removeUpstreamPublicKey() {
+    this.upstreamPublicKey = null;
+    this.upstreamPublicKeyHex = null;
   }
 
-  removeChildPublicKey() {
-    this.parentPublicKey = null;
-    this.parentPublicKeyHex = null;
+  removeDownstreamPublicKey() {
+    this.downstreamPublicKey = null;
+    this.downstreamPublicKeyHex = null;
   }
 
   //getter
@@ -253,31 +254,29 @@ class OstBrowserMessenger {
     return this.downStreamOrigin
   }
 
-
   getPublicKeyHex() {
     return this.publicKeyHex;
   }
 
-
-  isParentPublicKey(hex) {
-    return this.parentPublicKeyHex === hex;
+  isUpstreamPublicKey(hex) {
+    return this.upstreamPublicKeyHex === hex;
   }
 
-  isChildPublicKey(hex) {
-    return this.childPublicKeyHex === hex;
+  isDownstreamPublicKey(hex) {
+    return this.downstreamPublicKeyHex === hex;
   }
 
-	registerOnce(type, callback) {
-		this.eventEmitter.once(type, callback);
-	}
+  registerOnce(type, callback) {
+    this.eventEmitter.once(type, callback);
+  }
 
-	register(type, callback) {
-		this.eventEmitter.on(type, callback);
-	}
+  register(type, callback) {
+    this.eventEmitter.on(type, callback);
+  }
 
-	unRegister(type, callback) {
-		this.eventEmitter.removeListener(type, callback);
-	}
+  unRegister(type, callback) {
+    this.eventEmitter.removeListener(type, callback);
+  }
   //Verify
 
   isValidSigner() {
@@ -292,20 +291,20 @@ class OstBrowserMessenger {
     return (this.signer.publicKey instanceof CryptoKey) && (this.signer.privateKey instanceof CryptoKey);
   }
 
-  isValidParentPublicKey() {
-    if (!this.parentPublicKey) {
+  isValidUpstreamPublicKey() {
+    if (!this.upstreamPublicKey) {
       return false
     }
 
-    return (this.parentPublicKey instanceof CryptoKey)
+    return (this.upstreamPublicKey instanceof CryptoKey)
   }
 
-  isValidChildPublicKey() {
-    if (!this.childPublicKey) {
+  isValidDownstreamPublicKey() {
+    if (!this.downstreamPublicKey) {
       return false
     }
 
-    return (this.childPublicKey instanceof CryptoKey)
+    return (this.downstreamPublicKey instanceof CryptoKey)
   }
 
   //Performable
@@ -325,10 +324,10 @@ class OstBrowserMessenger {
 
     let targetWindow;
     let targetOrigin;
-    if (SOURCE.DOWNSTREAM == receiverSourceEnum) {
+    if (SOURCE.DOWNSTREAM === receiverSourceEnum) {
       targetWindow = this.getDownStreamWindow();
       targetOrigin = this.getDownStreamOrigin();
-    } else if (SOURCE.UPSTREAM == receiverSourceEnum) {
+    } else if (SOURCE.UPSTREAM === receiverSourceEnum) {
       targetWindow = this.getUpStreamWindow();
       targetOrigin = this.getUpStreamOrigin();
     }
@@ -344,20 +343,17 @@ class OstBrowserMessenger {
 
         targetWindow.postMessage(dataToPost, targetOrigin);
       }).catch((err)=>{
-      if (err instanceof OstError) {
-        throw err;
-      }
-      throw new OstError('cj_obm_sm_5', 'SKD_INTERNAL_ERROR', err);
-    });
+        throw OstError.sdkError(err,'cj_obm_sm_5');
+      });
   }
 
   getSignature(payload) {
     return crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.signer.privateKey, OstHelpers.getDataToSign(payload));
   }
 
-  verifyParentMessage(data) {
-    if (!this.isValidParentPublicKey()) {
-      throw new OstError('cj_obm_vpm_1', 'INVALID_PARENT_PUBLIC_KEY')
+  verifyUpstreamReceivedMessage(data) {
+    if (!this.isValidUpstreamPublicKey()) {
+      throw new OstError('cj_obm_vpm_1', 'INVALID_UPSTREAM_PUBLIC_KEY')
     }
 
     const signature = data.signature;
@@ -365,13 +361,13 @@ class OstBrowserMessenger {
       throw new OstError('cj_obm_vpm_2', 'INVALID_PARAM_SIGNATURE')
     }
 
-    const message = data.message;
-    return this.verify(message, signature, this.parentPublicKey);
+    const message = data.ostMessage;
+    return this.verify(message, signature, this.upstreamPublicKey);
   }
 
-  verifyChildMessage(data) {
-    if (!this.isValidChildPublicKey()) {
-      throw new OstError('cj_obm_vcm_1', 'INVALID_CHILD_PUBLIC_KEY')
+  verifyDownstreamReceivedMessage(data) {
+    if (!this.isValidDownstreamPublicKey()) {
+      throw new OstError('cj_obm_vcm_1', 'INVALID_DOWNSTREAM_PUBLIC_KEY')
     }
 
     const signature = data.signature;
@@ -379,8 +375,8 @@ class OstBrowserMessenger {
       throw new OstError('cj_obm_vcm_2', 'INVALID_PARAM_SIGNATURE')
     }
 
-    const message = data.message;
-    return this.verify(message, signature, this.childPublicKey);
+    const message = data.ostMessage;
+    return this.verify(message, signature, this.downstreamPublicKey);
   }
 
   verify(message, signature, publicKey) {

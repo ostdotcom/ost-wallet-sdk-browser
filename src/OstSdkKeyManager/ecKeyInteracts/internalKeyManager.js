@@ -14,8 +14,7 @@ class IKM {
 	}
 
 	init() {
-		const keyMetaStruct = this.getKeyMetaStruct(userId);
-
+		const keyMetaStruct = this.getKeyMetaStruct(this.userId);
 	}
 
 	getKeyMetaStruct(userId) {

@@ -47,7 +47,7 @@ import OstKeyManager from './keyManagerAssist/ostKeyManager'
           this.sendPublicKey();
         })
         .catch((err) => {
-          this.browserMessenger.removeParentPublicKey();
+          this.browserMessenger.removeUpstreamPublicKey();
 
           if (err instanceof OstError) {
             throw err;
