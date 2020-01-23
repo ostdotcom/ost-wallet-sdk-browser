@@ -12,11 +12,11 @@ import OstHelpers from "../common-js/OstHelpers";
 //   }
 //   let request = window.indexedDB.open("EntitiesDB"+tokenId,1), db, tx, store;
 // }
-//
+
 // function createTable(name){
 //   let db = window.request.result;
 //   store = db.createObjectStore(name,{keypath: "userId"})
-//
+
 // }
 
 (function () {

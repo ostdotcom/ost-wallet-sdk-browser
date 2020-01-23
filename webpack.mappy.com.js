@@ -3,10 +3,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
-    entry: './src/OstWalletSdk/index.js',
+    entry: './src/Mappy/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'OstWalletSdk.js',
+        filename: 'Mappy.js',
     },
     module: {
         rules: [
@@ -38,14 +38,16 @@ const devConfig = {
         contentBase: "./dist",
         port: 9000,
         liveReload: true,
-        clientLogLevel: 'silent'
+        clientLogLevel: 'silent',
+        disableHostCheck: true
     },
+    
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "Mappy.com",
             template: "./devserver/mappy.com.html",
-            inject: true
+            inject: false
         })
     ]
 };
