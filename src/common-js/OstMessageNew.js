@@ -189,10 +189,10 @@ class OstMessageNew {
 
         console.log("OstMessage :: ostVerifier receiver name : ", oThis.ostVerifier.receiverName);
         if ( !oThis.ostVerifier.isValidReceiver( receiverName ) ) {
-          console.log("OstMessage :: isVerifiedMessage :: invalid receiverName name", receiverName);
+          console.log("OstMessage :: isVerifiedMessage :: invalid receiverName name :: ", receiverName);
           return reject();
         }
-        console.log("OstMessage :: isVerifiedMessage :: valid receiverName name", receiverName);
+        console.log("OstMessage :: isVerifiedMessage :: valid receiverName name :: ", receiverName);
       }
 
       if ( oThis.isReceivedFromDownstream() )  {

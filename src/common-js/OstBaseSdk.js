@@ -25,7 +25,7 @@ class OstBaseSdk {
   }
 
   onSetupComplete (args) {
-    console.log("OstBaseSdk :: onSetupComplete :: ", args);
+    console.log("OstBaseSdk :: onSetupComplete :: ", this.getReceiverName(), " :: ",  args);
 
     this.browserMessenger.setDownstreamPublicKeyHex( args.publicKeyHex)
   };

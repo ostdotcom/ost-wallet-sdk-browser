@@ -11,6 +11,7 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 // const gensig = ikm.signMessage(wallet, "message");
 // const persig = ikm.personalSign(wallet, "message");
 import OstKeyManager from './keyManagerAssist/ostKeyManager'
+import OstMessageNew from "../common-js/OstMessageNew";
 
 (function(window) {
 
@@ -56,19 +57,21 @@ import OstKeyManager from './keyManagerAssist/ostKeyManager'
         });
     }
 
-    registerOther() {
-      this.register("OTHER", (msg) => {
-        console.log("KM :: registerOther :: msg => ", msg)
-      });
+    getReceiverName() {
+      return 'OstSdkKeyManager';
     }
 
     sendPublicKey() {
-      const messagePayload = {
-        msg: "key manager up complete",
-        publicKeyHex: this.browserMessenger.publicKeyHex
-      };
-      const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE);
-      this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
+      console.log("sending OstSdkKeyManager public key");
+
+      let ostMessage = new OstMessageNew();
+      ostMessage.setName( "onSetupComplete" );
+      ostMessage.setReceiverName( "OstSdk" );
+      ostMessage.setArgs({
+        publicKeyHex: this.browserMessenger.getPublicKeyHex()
+      });
+
+      this.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
     }
   }
 

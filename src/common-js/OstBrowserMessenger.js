@@ -82,6 +82,10 @@ class OstBrowserMessenger {
 
     const eventData = event.data;
 
+    if (!eventData) {
+      return;
+    }
+
     const ostMessage = OstMessageNew.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj() );
 
     if ( !ostMessage ) {
@@ -118,7 +122,7 @@ class OstBrowserMessenger {
     return ostVerifierObj
   }
 
-  onMessageReceived(ostMessage) {
+  onValidMessageReceived(ostMessage) {
     console.log("OstBrowserMessenger :: onValidMessageReceived : ", ostMessage);
 
     let functionId = ostMessage.getSubscriberId();
@@ -142,9 +146,9 @@ class OstBrowserMessenger {
   }
 
   onOtherMessageReceived( ostMessage, err) {
-
-    this.onMessageReceived(ostMessage);
-
+    if (['onSetupComplete'].includes(ostMessage.getMethodName())) {
+      this.onValidMessageReceived(ostMessage);
+    }
   }
 
   exportPublicKey() {

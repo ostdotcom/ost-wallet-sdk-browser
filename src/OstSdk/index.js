@@ -69,67 +69,47 @@ import OstMessageNew from "../common-js/OstMessageNew";
   const ostSdkObj = new OstSdk(origin, pathname, ancestorOrigins, searchParams);
   ostSdkObj.perform()
     .then(() => {
-      // createSdkKeyManagerIframe();
+      createSdkKeyManagerIframe();
     })
     .catch((err) => {
       throw OstError.sdkError(err, 'os_i_os_1');
     });
 
 
-  // function createSdkKeyManagerIframe() {
-  //
-  //   var ifrm = document.createElement('iframe');
-  //   ifrm.setAttribute('id', 'kmMappyIFrame');
-  //
-  //   const url = 'http://localhost:9002';
-  //
-  //   let params = {
-  //     publicKeyHex: ostSdkObj.getPublicKeyHex()
-  //   };
-  //
-  //   let stringToSign = OstURLHelpers.getStringToSign(url, params );
-  //
-  //   ostSdkObj.signDataWithPrivateKey(stringToSign)
-  //     .then((signedMessage) => {
-  //       const signature = OstHelpers.byteArrayToHex(signedMessage);
-  //       let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
-  //
-  //       ifrm.setAttribute('src', iframeURL);
-  //       ifrm.setAttribute('width', '100%');
-  //       ifrm.setAttribute('height', '200');
-  //
-  //       document.body.appendChild(ifrm);
-  //       ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
-  //       ostSdkObj.setDownStreamOrigin(url);
-  //
-	// 			ostSdkObj.browserMessenger.iframeObj = ifrm
-  //
-  //     })
-  //     .catch((err) => {
-  //       if (err instanceof OstError) {
-  //         throw err;
-  //       }
-  //       throw new OstError('os_i_sdwpk_1', 'SKD_INTERNAL_ERROR', err);
-  //     })
-  // }
+  function createSdkKeyManagerIframe() {
 
+    var ifrm = document.createElement('iframe');
+    ifrm.setAttribute('id', 'kmMappyIFrame');
 
-	// setTimeout(() => {
-	// 	let message = new OstMessage({msg: "sending message to down"}, "OTHER");
-	// 	ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
-    //
-	// 	let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
-	// 	ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
-    //
-	// 	const ostKeyManager = new OstKeyManager(ostSdkObj.browserMessenger, uuidv4());
-	// 	ostKeyManager.init()
-	// 		.then((msg) => {
-	// 			console.log('OstSdk :: init', msg);
-	// 			return ostKeyManager.getDeviceAddress();
-	// 		}).then((msg) => {
-	// 		console.log('OstSdk :: getDeviceAddress', msg);
-	// 	}).catch((err) => {
-	// 		console.log('OstSdk :: err', err);
-	// 	});
-	// }, 3000);
+    const url = 'http://localhost:9002';
+
+    let params = {
+      publicKeyHex: ostSdkObj.getPublicKeyHex()
+    };
+
+    let stringToSign = OstURLHelpers.getStringToSign(url, params );
+
+    ostSdkObj.signDataWithPrivateKey(stringToSign)
+      .then((signedMessage) => {
+        const signature = OstHelpers.byteArrayToHex(signedMessage);
+        let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
+
+        ifrm.setAttribute('src', iframeURL);
+        ifrm.setAttribute('width', '100%');
+        ifrm.setAttribute('height', '200');
+
+        document.body.appendChild(ifrm);
+
+        ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
+        ostSdkObj.setDownStreamOrigin(url);
+
+      })
+      .catch((err) => {
+        if (err instanceof OstError) {
+          throw err;
+        }
+        throw new OstError('os_i_sdwpk_1', 'SKD_INTERNAL_ERROR', err);
+      })
+  }
+
 })(window);
