@@ -6,8 +6,9 @@ OST Wallet SDK Browser is a web application development SDK that enables develop
 ## OST Wallet SDK Browser...
 Safely generates and stores keys on the user's mobile device
 
-## Support(Dependencies)- 
-npm 
+## Support(Dependencies)
+- npm 
+- nginx
 
 ## Setup-
 - To install all the dependencies, run following command-
@@ -21,4 +22,33 @@ npm install
 ```
 npm run develop-all
 ```
+## Nginx 
+- As browser doesn't allow cross domain cookie storage, nginx is used as the medium between the client application and server application.
+### Installation
+- on Mac
+	```
+	brew install nginx
+	```
+- To start and stop nginx -
+```
+brew services start nginx
+brew services stop nginx
+```
 	
+#### Nginx Configuration 
+- Do the following changes to nginx.conf file 
+```
+   server {
+        listen       8080;
+        server_name  devmappy.com;
+        location /demo/api/ {
+           proxy_cookie_domain demo-mappy.stagingost.com devmappy.com;
+           proxy_pass https://demo-mappy.stagingost.com/demo/api/;
+        }
+        location / {
+            proxy_pass http://localhost:9000/;
+        }
+    }
+```
+
+
