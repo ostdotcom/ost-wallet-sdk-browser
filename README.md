@@ -26,9 +26,9 @@ npm run develop-all
 
 ### Installation
 - on Mac
-	```
-	brew install nginx
-	```
+```
+brew install nginx
+```
 - To start and stop nginx -
 ```
 brew services start nginx
