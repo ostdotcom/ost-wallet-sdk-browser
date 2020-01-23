@@ -23,10 +23,6 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
         });
     }
 
-    onSetupCompete() {
-
-    }
-
     getReceiverName() {
       return 'OstWalletSdk';
     }

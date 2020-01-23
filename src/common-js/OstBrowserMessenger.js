@@ -118,12 +118,8 @@ class OstBrowserMessenger {
     return ostVerifierObj
   }
 
-  onValidMessageReceived(ostMessage) {
+  onMessageReceived(ostMessage) {
     console.log("OstBrowserMessenger :: onValidMessageReceived : ", ostMessage);
-    //todo: do something
-  }
-
-  onOtherMessageReceived( ostMessage, err) {
 
     let functionId = ostMessage.getSubscriberId();
 
@@ -143,6 +139,12 @@ class OstBrowserMessenger {
     }else  {
       console.log("OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
     }
+  }
+
+  onOtherMessageReceived( ostMessage, err) {
+
+    this.onMessageReceived(ostMessage);
+
   }
 
   exportPublicKey() {
@@ -190,6 +192,11 @@ class OstBrowserMessenger {
   }
 
   setDownstreamPublicKeyHex(hex) {
+
+    if (!hex || typeof hex !== 'string') {
+      return;
+    }
+
     this.downstreamPublicKeyHex = hex;
 
     return this.importPublicKey(this.downstreamPublicKeyHex)
