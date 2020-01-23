@@ -12,6 +12,8 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 // const persig = ikm.personalSign(wallet, "message");
 import OstKeyManager from './keyManagerAssist/ostKeyManager'
 import OstMessage from "../common-js/OstMessage";
+const LOG_TAG = 'KM';
+import OstSecureEnclave from "./ecKeyInteracts/OstSecureEnclave";
 
 (function(window) {
 
@@ -42,8 +44,8 @@ import OstMessage from "../common-js/OstMessage";
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
 
-          oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
-          oThis.ostKeyManager.registerRequestListeners();
+					// oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
+					// oThis.ostKeyManager.registerRequestListeners();
 
           this.sendPublicKey();
         })
