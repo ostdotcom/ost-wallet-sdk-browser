@@ -23,7 +23,7 @@ npm install
 npm run develop-all
 ```
 ## Nginx 
-- As browser doesn't allow cross domain cookie storage, nginx is used as the medium between the client application and server application.
+
 ### Installation
 - on Mac
 	```
