@@ -55,7 +55,7 @@ class OstMessage {
     this.signer = hex;
   }
 
-  setSignature(signature) {
+  setSignature1(signature) {
     this.signature = signature;
   }
 
@@ -76,7 +76,7 @@ class OstMessage {
     return this.timestamp;
   }
 
-  getPayloadToSign() {
+  getPayloadToSign1() {
 
     const payloadToSign = {
       content: this.payload,

@@ -31,7 +31,7 @@ import OstKeyManager from './keyManagerAssist/ostKeyManager'
       const oThis = this;
       return super.perform()
         .then(() => {
-          return this.setParentPublicKey();
+          return this.setUpstreamPublicKey();
         })
         .then(() => {
           return this.verifyIframeInitData();

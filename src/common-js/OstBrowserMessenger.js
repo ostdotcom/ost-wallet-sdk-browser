@@ -11,6 +11,8 @@ import {MESSAGE_TYPE, OstMessage} from "./OstMessage";
 import OstHelpers from "./OstHelpers";
 import OstErrorCodes from "./OstErrorCodes";
 import EventEmitter from 'eventemitter3';
+import OstVerifier from "./OstVerifier";
+import OstMessageNew from "./OstMessageNew";
 
 const SOURCE = {
   UPSTREAM: "UPSTREAM",
@@ -19,7 +21,10 @@ const SOURCE = {
 
 class OstBrowserMessenger {
 
-  constructor() {
+  constructor( receiverName ) {
+
+    this.receiverName = receiverName;
+
     this.signer = null;
     this.downStreamOrigin = null;
 
@@ -45,62 +50,10 @@ class OstBrowserMessenger {
   }
 
   registerListener() {
+    let oThis = this;
     window.addEventListener("message", (event) => {
-      this.onMessageReceived(event);
+      oThis.onMessageReceived(event);
     }, false);
-  }
-
-
-  onMessageReceived(event) {
-    const eventData = event.data;
-    const message = eventData.ostMessage;
-
-    if (!message) {
-      return;
-    }
-
-    const ostMessage = OstMessage.getOstMessageFromReceivedData(eventData);
-
-    if (!ostMessage.isValidTimeStamp()) {
-      console.warn("OstBrowserMessenger :: receiveMessage :: invalid time stamp");
-      return;
-    }
-
-    if ( ostMessage.isReceivedFromDownstream() && this.downstreamPublicKey) {
-      this.verifyDownstreamReceivedMessage(ostMessage)
-        .then((isVerified) => {
-          this.onValidateReceivedMessageCallback(isVerified, ostMessage);
-        })
-        .catch((err) => {
-          throw OstError.sdkError(err, "cs_obm_rm_1");
-        });
-
-    }else if ( ostMessage.isReceivedFromUpstream() && this.upstreamPublicKey) {
-      this.verifyUpstreamReceivedMessage(ostMessage)
-        .then((isVerified) => {
-          this.onValidateReceivedMessageCallback(isVerified, ostMessage);
-        })
-        .catch((err) => {
-          throw OstError.sdkError(err, "cs_obm_rm_2");
-        });
-    }
-
-    if ([MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE,
-        MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE].includes(eventData.ostMessage.type)) {
-
-      console.log("here: data", ostMessage);
-
-      //this.onSetupComplete(eventData);
-      this.eventEmitter.emit(eventData.ostMessage.type, eventData);
-    }
-  }
-
-  onValidateReceivedMessageCallback(isVerified, ostMessage) {
-    if (isVerified) {
-      //Event emitter
-      console.log("onValidateReceivedMessageCallback : message => ", ostMessage.type, ostMessage);
-      this.eventEmitter.emit(ostMessage.type, ostMessage);
-    }
   }
 
   /**
@@ -120,16 +73,70 @@ class OstBrowserMessenger {
     );
   }
 
+  onMessageReceived(event) {
+
+    let oThis = this;
+
+    const eventData = event.data;
+
+    const ostMessage = OstMessageNew.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj() );
+
+    if ( !ostMessage ) {
+      return;
+    }
+
+    console.log("OstBrowserMessenger :: onMessageReceived :: message object formed => ", ostMessage);
+
+    ostMessage.isVerifiedMessage( )
+      .then ((isVerified) => {
+        console.log("then of isVerifiedMessage");
+        if (isVerified) {
+          oThis.onValidMessageReceived(ostMessage);
+          return;
+        }
+        oThis.onOtherMessageReceived(ostMessage, null);
+      })
+      .catch ((err) => {
+        console.error("catch of isVerifiedMessage : ", err);
+        oThis.onOtherMessageReceived(ostMessage, err);
+      });
+
+  }
+
+  getOstVerifierObj ( ) {
+    let ostVerifierObj = new OstVerifier();
+
+    ostVerifierObj.setUpstreamPublicKey( this.upstreamPublicKey );
+    ostVerifierObj.setUpStreamOrigin( this.upStreamOrigin );
+    ostVerifierObj.setDownstreamPublicKey( this.downstreamPublicKey );
+    ostVerifierObj.setDownStreamOrigin( this.downStreamOrigin );
+    ostVerifierObj.setReceiverName ( this.receiverName );
+
+    return ostVerifierObj
+  }
+
+  onValidMessageReceived(ostMessage) {
+    console.log("OstBrowserMessenger :: onValidMessageReceived : ", ostMessage);
+    //todo: do something
+  }
+
+  onOtherMessageReceived( ostMessage, err) {
+
+    if ("onSetupComplete" === ostMessage.getName()) {
+      console.log("received setup complete message : ", ostMessage);
+      this.setDownstreamPublicKeyHex( ostMessage.getSigner() );
+    }
+
+
+    console.log("else received setup complete message : ", ostMessage);
+
+  }
+
   exportPublicKey() {
     return crypto.subtle.exportKey('spki', this.signer.publicKey)
       .then((res) => {
         this.publicKeyHex = OstHelpers.byteArrayToHex(res);
       })
-  }
-
-  importPublicKey(hex) {
-    const arrayBuffer = OstHelpers.hexToByteArray(hex);
-    return crypto.subtle.importKey('spki', arrayBuffer, {name: 'RSASSA-PKCS1-v1_5', hash: 'sha-256'}, true, ['verify']);
   }
 
   //Setter
@@ -162,6 +169,11 @@ class OstBrowserMessenger {
         }
         throw new OstError('cj_obm_sppkh_1', 'SKD_INTERNAL_ERROR', err);
       });
+  }
+
+  importPublicKey(hex) {
+    const arrayBuffer = OstHelpers.hexToByteArray(hex);
+    return crypto.subtle.importKey('spki', arrayBuffer, {name: 'RSASSA-PKCS1-v1_5', hash: 'sha-256'}, true, ['verify']);
   }
 
   setDownstreamPublicKeyHex(hex) {
@@ -229,14 +241,6 @@ class OstBrowserMessenger {
     return this.publicKeyHex;
   }
 
-  isUpstreamPublicKey(hex) {
-    return this.upstreamPublicKeyHex === hex;
-  }
-
-  isDownstreamPublicKey(hex) {
-    return this.downstreamPublicKeyHex === hex;
-  }
-
   registerOnce(type, callback) {
     this.eventEmitter.once(type, callback);
   }
@@ -248,7 +252,6 @@ class OstBrowserMessenger {
   unRegister(type, callback) {
     this.eventEmitter.removeListener(type, callback);
   }
-  //Verify
 
   isValidSigner() {
     if (!this.signer) {
@@ -262,30 +265,15 @@ class OstBrowserMessenger {
     return (this.signer.publicKey instanceof CryptoKey) && (this.signer.privateKey instanceof CryptoKey);
   }
 
-  isValidUpstreamPublicKey() {
-    if (!this.upstreamPublicKey) {
-      return false
-    }
-
-    return (this.upstreamPublicKey instanceof CryptoKey)
-  }
-
-  isValidDownstreamPublicKey() {
-    if (!this.downstreamPublicKey) {
-      return false
-    }
-
-    return (this.downstreamPublicKey instanceof CryptoKey)
-  }
-
   //Performable
-  sendMessage(ostMessage, receiverSourceEnum) {
+  sendMessage(ostMessage, receiverStream) {
 
-    if (!(ostMessage instanceof OstMessage)) {
+    console.log("sending message : ", ostMessage, "\n receiverStream : ", receiverStream);
+    if ( !(ostMessage instanceof OstMessageNew) ) {
       throw new OstError('cj_obm_sm_1', 'INVALID_OST_MESSAGE')
     }
 
-    if (!SOURCE.hasOwnProperty(receiverSourceEnum)) {
+    if (!SOURCE.hasOwnProperty( receiverStream )) {
       throw new OstError('cj_obm_sm_2', 'INVALID_ENUM')
     }
 
@@ -295,27 +283,34 @@ class OstBrowserMessenger {
 
     let targetWindow;
     let targetOrigin;
-    if (SOURCE.DOWNSTREAM === receiverSourceEnum) {
+    if (SOURCE.DOWNSTREAM === receiverStream) {
       targetWindow = this.getDownStreamWindow();
       targetOrigin = this.getDownStreamOrigin();
-    } else if (SOURCE.UPSTREAM === receiverSourceEnum) {
+
+    } else if (SOURCE.UPSTREAM === receiverStream) {
       targetWindow = this.getUpStreamWindow();
       targetOrigin = this.getUpStreamOrigin();
     }
 
-    ostMessage.setSigner(this.publicKeyHex);
-    ostMessage.setStreamDirection(receiverSourceEnum);
+    ostMessage.setMessageSendToDirection( receiverStream );
+    ostMessage.setSigner( this.getPublicKeyHex() );
 
-    const dataToSign = ostMessage.getPayloadToSign();
+    const dataToSign = ostMessage.buildPayloadToSign();
 
     return this.getSignature(dataToSign)
       .then((signedMessage)=>{
+        console.log("signature generated.");
+        const signature = OstHelpers.byteArrayToHex( signedMessage );
 
-        const signature = OstHelpers.byteArrayToHex(signedMessage);
-        ostMessage.setSignature(signature);
+        ostMessage.setSignature( signature );
 
-        targetWindow.postMessage(ostMessage.getPayloadToPost(), targetOrigin);
+        console.log("OstBrowserMessenger :: sendMessage ::  => ", ostMessage.buildPayloadToSend());
+
+
+        targetWindow.postMessage(ostMessage.buildPayloadToSend(), targetOrigin);
       }).catch((err)=>{
+        console.log("signature generation failed.");
+
         throw OstError.sdkError(err,'cj_obm_sm_5');
       });
   }
@@ -324,33 +319,12 @@ class OstBrowserMessenger {
     return crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.signer.privateKey, OstHelpers.getDataToSign(payload));
   }
 
-  verifyUpstreamReceivedMessage(ostMessage) {
-
-    const signature = ostMessage.signature;
-    if (!signature || typeof signature !== 'string') {
-      throw new OstError('cj_obm_vpm_1', 'INVALID_PARAM_SIGNATURE')
-    }
-
-    return this.verify(ostMessage, this.upstreamPublicKey);
-  }
-
-  verifyDownstreamReceivedMessage(ostMessage) {
-
-    const signature = ostMessage.signature;
-    if (!signature || typeof signature !== 'string') {
-      throw new OstError('cj_obm_vcm_1', 'INVALID_PARAM_SIGNATURE')
-    }
-
-    return this.verify(ostMessage, this.downstreamPublicKey);
-  }
-
-  verify(ostMessage, publicKey) {
-    const payloadToSign = ostMessage.getPayloadToSign();
-    return crypto.subtle.verify('RSASSA-PKCS1-v1_5', publicKey, OstHelpers.hexToByteArray(ostMessage.getSignature()), OstHelpers.getDataToSign(payloadToSign));
-  }
-
   verifyIframeInit(url, signature) {
     return crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.upstreamPublicKey, OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
+  }
+
+  subscribe(obj, name) {
+    
   }
 }
 

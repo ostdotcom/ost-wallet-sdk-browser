@@ -24,17 +24,26 @@ class OstBaseSdk {
     this.setURLParams();
     return this.createBrowserMessengerObject()
       .then(() => {
-        this.setParentOrigin();
+        this.setUpstreamOrigin();
       })
   }
 
   //Setter
 
-  setParentOrigin() {
+  createBrowserMessengerObject () {
+    this.browserMessenger = new OstBrowserMessenger( this.getReceiverName() );
+    return this.browserMessenger.perform()
+  }
+
+  getReceiverName() {
+    return '';
+  }
+
+  setUpstreamOrigin() {
     if (this.ancestorOrigins) {
       let ancestorOrigins = this.ancestorOrigins;
-      let parentOrigin = ancestorOrigins[0];
-      this.browserMessenger.setUpStreamOrigin(parentOrigin);
+      let upstreamOrigin = ancestorOrigins[0];
+      this.browserMessenger.setUpStreamOrigin(upstreamOrigin);
     }
   }
 
@@ -46,10 +55,6 @@ class OstBaseSdk {
     this.browserMessenger.setDownStreamOrigin( origin );
   }
 
-  createBrowserMessengerObject () {
-    this.browserMessenger = new OstBrowserMessenger();
-    return this.browserMessenger.perform()
-  }
 
   getPublicKeyHex () {
     return this.browserMessenger.getPublicKeyHex();
@@ -59,13 +64,13 @@ class OstBaseSdk {
     return this.browserMessenger.getSignature(stringToSign);
   }
 
-  setParentPublicKey() {
-    let parentPublicKeyHex = this.urlParams.publicKeyHex;
+  setUpstreamPublicKey() {
+    let upstreamPublicKeyHex = this.urlParams.publicKeyHex;
 
-    if (!parentPublicKeyHex) {
+    if (!upstreamPublicKeyHex) {
       throw new OstError('os_i_sppk_1', 'INVALID_UPSTREAM_PUBLIC_KEY');
     }
-    return this.browserMessenger.setUpstreamPublicKeyHex(parentPublicKeyHex)
+    return this.browserMessenger.setUpstreamPublicKeyHex( upstreamPublicKeyHex )
   }
 
   verifyIframeInitData() {
@@ -77,14 +82,8 @@ class OstBaseSdk {
     return this.browserMessenger.verifyIframeInit(url, signature);
   }
 
-  setDownstreamPublicKey(eventData) {
-    let downstreamPublicKeyHex = eventData.ostMessage.content.publicKeyHex;
-    return this.browserMessenger.setDownstreamPublicKeyHex(downstreamPublicKeyHex)
-      .then(() => {
-      })
-      .catch(() => {
-
-      })
+  setDownstreamPublicKeyHex( signer ) {
+    return this.browserMessenger.setDownstreamPublicKeyHex(signer)
   }
 
   sendMessage(ostMessage, receiverSource) {

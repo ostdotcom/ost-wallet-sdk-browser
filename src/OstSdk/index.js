@@ -6,21 +6,7 @@ import OstHelpers from "../common-js/OstHelpers";
 import OstBaseSdk from "../common-js/OstBaseSdk";
 import OstKeyManager from "./keyManagerProxy/ostKeyManager";
 import uuidv4 from "uuid/v4";
-
-// window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-// function createDatabase(tokenId){
-//   if(!window.indexedDB){
-//     alert("indexed Db not supported");
-//   }
-//   let request = window.indexedDB.open("EntitiesDB"+tokenId,1), db, tx, store;
-// }
-//
-// function createTable(name){
-//   let db = window.request.result;
-//   store = db.createObjectStore(name,{keypath: "userId"})
-//
-// }
+import OstMessageNew from "../common-js/OstMessageNew";
 
 (function (window) {
 
@@ -39,7 +25,7 @@ import uuidv4 from "uuid/v4";
     perform() {
       return  super.perform()
         .then(() => {
-          return this.setParentPublicKey();
+          return this.setUpstreamPublicKey();
         })
         .then(() => {
           return this.verifyIframeInitData();
@@ -49,7 +35,6 @@ import uuidv4 from "uuid/v4";
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
 
-          this.registerKMSetupComplete();
           this.sendPublicKey();
         })
         .catch((err) => {
@@ -62,21 +47,21 @@ import uuidv4 from "uuid/v4";
         });
     }
 
-    registerKMSetupComplete() {
-      this.registerOnce(MESSAGE_TYPE.OST_SKD_KM_SETUP_COMPLETE, (eventData) => {
-        console.log("registerSetupCompleterMessage : OST_SKD_KM_SETUP_COMPLETE", eventData);
-        this.setDownstreamPublicKey(eventData);
-      });
+    getReceiverName() {
+      return 'OstSdk';
     }
 
     sendPublicKey() {
+      console.log("sending OstSdk public key");
 
-      const messagePayload = {
-        msg: "sdk up complete",
-        publicKeyHex: this.browserMessenger.publicKeyHex
-      };
-      const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE);
-      this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
+      let ostMessage = new OstMessageNew();
+      ostMessage.setName( "onSetupComplete" );
+      ostMessage.setReceiverName( "OstWalletSdk" );
+      ostMessage.setArgs({
+        publicKeyHex: this.browserMessenger.getPublicKeyHex()
+      });
+
+      this.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
     }
 
   }
@@ -84,70 +69,67 @@ import uuidv4 from "uuid/v4";
   const ostSdkObj = new OstSdk(origin, pathname, ancestorOrigins, searchParams);
   ostSdkObj.perform()
     .then(() => {
-      createSdkKeyManagerIframe();
+      // createSdkKeyManagerIframe();
     })
     .catch((err) => {
-      if (err instanceof OstError) {
-        throw err;
-      }
-      throw new OstError('os_i_os_1', 'SKD_INTERNAL_ERROR', err);
+      throw OstError.sdkError(err, 'os_i_os_1');
     });
 
 
-  function createSdkKeyManagerIframe() {
+  // function createSdkKeyManagerIframe() {
+  //
+  //   var ifrm = document.createElement('iframe');
+  //   ifrm.setAttribute('id', 'kmMappyIFrame');
+  //
+  //   const url = 'http://localhost:9002';
+  //
+  //   let params = {
+  //     publicKeyHex: ostSdkObj.getPublicKeyHex()
+  //   };
+  //
+  //   let stringToSign = OstURLHelpers.getStringToSign(url, params );
+  //
+  //   ostSdkObj.signDataWithPrivateKey(stringToSign)
+  //     .then((signedMessage) => {
+  //       const signature = OstHelpers.byteArrayToHex(signedMessage);
+  //       let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
+  //
+  //       ifrm.setAttribute('src', iframeURL);
+  //       ifrm.setAttribute('width', '100%');
+  //       ifrm.setAttribute('height', '200');
+  //
+  //       document.body.appendChild(ifrm);
+  //       ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
+  //       ostSdkObj.setDownStreamOrigin(url);
+  //
+	// 			ostSdkObj.browserMessenger.iframeObj = ifrm
+  //
+  //     })
+  //     .catch((err) => {
+  //       if (err instanceof OstError) {
+  //         throw err;
+  //       }
+  //       throw new OstError('os_i_sdwpk_1', 'SKD_INTERNAL_ERROR', err);
+  //     })
+  // }
 
-    var ifrm = document.createElement('iframe');
-    ifrm.setAttribute('id', 'kmMappyIFrame');
 
-    const url = 'http://localhost:9002';
-
-    let params = {
-      publicKeyHex: ostSdkObj.getPublicKeyHex()
-    };
-
-    let stringToSign = OstURLHelpers.getStringToSign(url, params );
-
-    ostSdkObj.signDataWithPrivateKey(stringToSign)
-      .then((signedMessage) => {
-        const signature = OstHelpers.byteArrayToHex(signedMessage);
-        let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
-
-        ifrm.setAttribute('src', iframeURL);
-        ifrm.setAttribute('width', '100%');
-        ifrm.setAttribute('height', '200');
-
-        document.body.appendChild(ifrm);
-        ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
-        ostSdkObj.setDownStreamOrigin(url);
-
-				ostSdkObj.browserMessenger.iframeObj = ifrm
-
-      })
-      .catch((err) => {
-        if (err instanceof OstError) {
-          throw err;
-        }
-        throw new OstError('os_i_sdwpk_1', 'SKD_INTERNAL_ERROR', err);
-      })
-  }
-
-
-	setTimeout(() => {
-		let message = new OstMessage({msg: "sending message to down"}, "OTHER");
-		ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
-
-		let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
-		ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
-
-		const ostKeyManager = new OstKeyManager(ostSdkObj.browserMessenger, uuidv4());
-		ostKeyManager.init()
-			.then((msg) => {
-				console.log('OstSdk :: init', msg);
-				return ostKeyManager.getDeviceAddress();
-			}).then((msg) => {
-			console.log('OstSdk :: getDeviceAddress', msg);
-		}).catch((err) => {
-			console.log('OstSdk :: err', err);
-		});
-	}, 3000);
+	// setTimeout(() => {
+	// 	let message = new OstMessage({msg: "sending message to down"}, "OTHER");
+	// 	ostSdkObj.sendMessage(message, SOURCE.DOWNSTREAM);
+    //
+	// 	let message1 = new OstMessage({msg: "sending message to up"}, "OTHER");
+	// 	ostSdkObj.sendMessage(message1, SOURCE.UPSTREAM);
+    //
+	// 	const ostKeyManager = new OstKeyManager(ostSdkObj.browserMessenger, uuidv4());
+	// 	ostKeyManager.init()
+	// 		.then((msg) => {
+	// 			console.log('OstSdk :: init', msg);
+	// 			return ostKeyManager.getDeviceAddress();
+	// 		}).then((msg) => {
+	// 		console.log('OstSdk :: getDeviceAddress', msg);
+	// 	}).catch((err) => {
+	// 		console.log('OstSdk :: err', err);
+	// 	});
+	// }, 3000);
 })(window);

@@ -16,27 +16,15 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
     perform() {
       return super.perform()
         .then(() => {
-          this.registerSetupCompleterMessage();
-          this.registerOther();
+
         })
         .catch((err) => {
           throw OstError.sdkError(err, 'ows_i_p_1');
         });
     }
 
-    registerSetupCompleterMessage() {
-      console.log("registerSetupCompleterMessage done");
-
-      this.registerOnce(MESSAGE_TYPE.OST_SKD_SETUP_COMPLETE, (eventData) => {
-        console.log("registerSetupCompleterMessage : OST_SKD_SETUP_COMPLETE", eventData);
-        this.setDownstreamPublicKey(eventData);
-      });
-    }
-
-    registerOther() {
-      this.register("OTHER", (e) => {
-        console.log("WalletSdk : registerOther", e);
-      });
+    getReceiverName() {
+      return 'OstWalletSdk';
     }
   }
 

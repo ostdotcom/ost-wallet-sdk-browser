@@ -31,7 +31,7 @@ export default class OstKeyManager {
 		const messagePayload = {
 			userId: userId,
 			msg: "Ost KM init completed"
-		}
+		};
 
 		const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_KM_INIT);
 		this.messengerObj.sendMessage(message, SOURCE.UPSTREAM);
