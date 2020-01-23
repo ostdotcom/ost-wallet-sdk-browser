@@ -1,8 +1,9 @@
-import {SOURCE, OstBrowserMessenger} from '../common-js/OstBrowserMessenger'
+import {SOURCE} from '../common-js/OstBrowserMessenger'
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
-import OstMessage from '../common-js/OstMessage'
+import {MESSAGE_TYPE, OstMessage} from '../common-js/OstMessage'
 import OstHelpers from "../common-js/OstHelpers";
+<<<<<<< HEAD
 
 // window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
@@ -34,28 +35,45 @@ import OstHelpers from "../common-js/OstHelpers";
 
     getURLParams() {
       this.urlParams = OstURLHelpers.getParamsFromURL(this.locationObj);
+=======
+import OstBaseSdk from "../common-js/OstBaseSdk";
+import OstKeyManager from "./keyManagerProxy/ostKeyManager";
+import uuidv4 from "uuid/v4";
+import OstMessageNew from "../common-js/OstMessageNew";
+
+(function (window) {
+
+  const location = window.location
+    , origin = location.origin
+    , pathname = location.pathname
+    , ancestorOrigins = location.ancestorOrigins
+    , searchParams = location.search
+  ;
+
+  class OstSdk extends OstBaseSdk {
+    constructor(origin, pathname, ancestorOrigins, searchParams){
+      super(origin, pathname, ancestorOrigins, searchParams);
+>>>>>>> c0fbf43e98bf9e0d702098535069c710edd1a634
     }
 
     perform() {
-      console.log("ostsdk perform");
-      window.addEventListener("message", (event) => {
-        this.receiveMessage(event);
-      }, false);
-
-      this.getURLParams();
-
-      return this.createBrowserMessengerObject()
+      return  super.perform()
         .then(() => {
-          return this.setParentPublicKey();
+          return this.setUpstreamPublicKey();
         })
         .then(() => {
-          return this.verifyPassedData();
+          return this.verifyIframeInitData();
         })
         .then((isVerified) => {
-          console.log("isVerified: ", isVerified);
+          if (!isVerified) {
+            throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
+          }
+
           this.sendPublicKey();
         })
         .catch((err) => {
+          this.browserMessenger.removeUpstreamPublicKey();
+
           if (err instanceof OstError) {
             throw err;
           }
@@ -63,96 +81,36 @@ import OstHelpers from "../common-js/OstHelpers";
         });
     }
 
-    receiveMessage(event) {
-      const eventData = event.data;
-      const message = eventData.message;
-      console.log("OstSdk => receiveMessage", eventData);
-      if (message) {
-        if ("WALLET_SETUP_COMPLETE" === eventData.message.type) {
-          this.setChildPublicKey(eventData);
-        }else if (this.onMessageReceived){
-          this.onMessageReceived(eventData.message.content, eventData.message.type);
-        }
-      }
-    }
-
-    getPublicKeyHex () {
-      return this.browserMessenger.getPublicKeyHex();
-    }
-
-    signDataWithPrivateKey(stringToSign) {
-      return this.browserMessenger.getSignature(stringToSign);
-    }
-
-    createBrowserMessengerObject () {
-      this.browserMessenger = new OstBrowserMessenger();
-      return this.browserMessenger.perform()
-    }
-
-    setParentPublicKey() {
-      let parentPublicKeyHex = this.urlParams.publicKeyHex;
-
-      if (!parentPublicKeyHex) {
-        throw new OstError('os_i_sppk_1', 'INVALID_PARENT_PUBLIC_KEY');
-      }
-      return this.browserMessenger.setParentPublicKeyHex(parentPublicKeyHex)
-    }
-
-    verifyPassedData() {
-      const signature = this.urlParams.signature;
-      this.urlParams = OstURLHelpers.deleteSignature(this.urlParams);
-
-      let url = OstURLHelpers.getStringToSign(this.locationObj.origin+ this.locationObj.pathname, this.urlParams);
-      return this.browserMessenger.verify(url, signature, this.browserMessenger.parentPublicKey);
-    }
-
-    setChildPublicKey(eventData) {
-      let childPublicKeyHex = eventData.message.content.publicKeyHex;
-      return this.browserMessenger.setChildPublicKeyHex(childPublicKeyHex)
-        .then(() => {
-          return this.browserMessenger.verifyChildMessage(eventData)
-        })
-        .then((isVerified) => {
-          console.log("child public key verified: ", isVerified);
-          return Promise.resolve();
-        })
-        .catch((err) => {
-          if (err instanceof OstError) {
-            throw err;
-          }
-          throw new OstError('os_i_scpk_1', 'SKD_INTERNAL_ERROR', err);
-        })
+    getReceiverName() {
+      return 'OstSdk';
     }
 
     sendPublicKey() {
-      console.log("ostsdk sendPublicKey");
+      console.log("sending OstSdk public key");
 
-      const messagePayload = {
-        msg: "sdk up complete",
-        publicKeyHex: this.browserMessenger.publicKeyHex
-      };
-      const message = new OstMessage(messagePayload, "WALLET_SETUP_COMPLETE");
-      this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM)
+      let ostMessage = new OstMessageNew();
+      ostMessage.setName( "onSetupComplete" );
+      ostMessage.setReceiverName( "OstWalletSdk" );
+      ostMessage.setArgs({
+        publicKeyHex: this.browserMessenger.getPublicKeyHex()
+      });
+
+      this.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
     }
 
   }
 
-  const ostSdkObj = new OstSdk(location);
+  const ostSdkObj = new OstSdk(origin, pathname, ancestorOrigins, searchParams);
   ostSdkObj.perform()
     .then(() => {
-      console.log("OstSdk init success");
       createSdkKeyManagerIframe();
     })
     .catch((err) => {
-      if (err instanceof OstError) {
-        throw err;
-      }
-      throw new OstError('os_i_os_1', 'SKD_INTERNAL_ERROR', err);
+      throw OstError.sdkError(err, 'os_i_os_1');
     });
 
 
   function createSdkKeyManagerIframe() {
-    console.log("OstSdk createSdkKeyManagerIframe");
 
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'kmMappyIFrame');
@@ -167,7 +125,6 @@ import OstHelpers from "../common-js/OstHelpers";
 
     ostSdkObj.signDataWithPrivateKey(stringToSign)
       .then((signedMessage) => {
-        console.log("OstSdk signDataWithPrivateKey");
         const signature = OstHelpers.byteArrayToHex(signedMessage);
         let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
 
@@ -176,7 +133,10 @@ import OstHelpers from "../common-js/OstHelpers";
         ifrm.setAttribute('height', '200');
 
         document.body.appendChild(ifrm);
-        console.log("OstSdk signDataWithPrivateKey done");
+
+        ostSdkObj.setDownStreamWindow(ifrm.contentWindow);
+        ostSdkObj.setDownStreamOrigin(url);
+
       })
       .catch((err) => {
         if (err instanceof OstError) {
@@ -185,4 +145,5 @@ import OstHelpers from "../common-js/OstHelpers";
         throw new OstError('os_i_sdwpk_1', 'SKD_INTERNAL_ERROR', err);
       })
   }
-})();
+
+})(window);

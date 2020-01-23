@@ -13,6 +13,14 @@ class IKM {
 		this.userId = userId;
 	}
 
+	init() {
+		const keyMetaStruct = this.getKeyMetaStruct(this.userId);
+	}
+
+	getKeyMetaStruct(userId) {
+
+	}
+
 	signMessage(ethWallet, messageToSign) {
 		const messageHash = ethUtil.keccak256(messageToSign);
 		return this.signHash(ethWallet, messageHash);

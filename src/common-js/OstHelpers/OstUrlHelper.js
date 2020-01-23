@@ -19,8 +19,8 @@ class OstUrlHelper {
     return url+connector+"?"+stringifiedParams;
   }
 
-  static getParamsFromURL(location) {
-    let params = queryString.parse(location.search, {arrayFormat: 'bracket', ignoreQueryPrefix: true});
+  static getParamsFromURL(searchParams) {
+    let params = queryString.parse(searchParams, {arrayFormat: 'bracket', ignoreQueryPrefix: true});
     return params;
   }
 

@@ -1,20 +1,6 @@
 
 class OstHelpers {
 
-  static getPostMessageData(signature, ostMessage, signer) {
-
-    const msg = OstHelpers.getMessageToSign(ostMessage, signer);
-    return {
-      signature: signature,
-      message: msg
-    }
-  }
-
-  static getMessageToSign(ostMessage, signer) {
-    let msgObj = Object.assign({signer: signer}, ostMessage.getPayloadToSign());
-    return msgObj
-  }
-
   static getDataToSign(payload) {
     const serializeDataToSign = JSON.stringify(payload);
 
@@ -37,7 +23,6 @@ class OstHelpers {
     }));
     return typedArray.buffer;
   }
-
 
   // compare ArrayBuffers
   static arrayBuffersAreEqual(a, b) {
