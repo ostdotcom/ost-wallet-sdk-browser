@@ -13,6 +13,7 @@ import OstErrorCodes from "./OstErrorCodes";
 import EventEmitter from 'eventemitter3';
 import OstVerifier from "./OstVerifier";
 import OstMessageNew from "./OstMessageNew";
+import uuidv4 from 'uuid/v4';
 
 const SOURCE = {
   UPSTREAM: "UPSTREAM",
@@ -37,6 +38,8 @@ class OstBrowserMessenger {
     this.downstreamPublicKey = null;
 
     this.eventEmitter = new EventEmitter();
+
+    this.idMap = {};
   }
 
   perform() {
@@ -122,14 +125,24 @@ class OstBrowserMessenger {
 
   onOtherMessageReceived( ostMessage, err) {
 
-    if ("onSetupComplete" === ostMessage.getName()) {
-      console.log("received setup complete message : ", ostMessage);
-      this.setDownstreamPublicKeyHex( ostMessage.getSigner() );
+    let functionId = ostMessage.getSubscriberId();
+
+    if ( !functionId ) {
+      functionId = ostMessage.getMethodName()
     }
 
+    let subscribedObject = this.getSubscribedObject( functionId );
 
-    console.log("else received setup complete message : ", ostMessage);
+    if ( subscribedObject ) {
+      console.log("OstBrowserMessenger :: onOtherMessageReceived :: got subscribed object");
+      const method = subscribedObject[ostMessage.getMethodName()];
 
+      if (method && typeof method === 'function') {
+        method.call(subscribedObject, ostMessage.getArgs());
+      }
+    }else  {
+      console.log("OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
+    }
   }
 
   exportPublicKey() {
@@ -241,18 +254,6 @@ class OstBrowserMessenger {
     return this.publicKeyHex;
   }
 
-  registerOnce(type, callback) {
-    this.eventEmitter.once(type, callback);
-  }
-
-  register(type, callback) {
-    this.eventEmitter.on(type, callback);
-  }
-
-  unRegister(type, callback) {
-    this.eventEmitter.removeListener(type, callback);
-  }
-
   isValidSigner() {
     if (!this.signer) {
       return false
@@ -306,7 +307,6 @@ class OstBrowserMessenger {
 
         console.log("OstBrowserMessenger :: sendMessage ::  => ", ostMessage.buildPayloadToSend());
 
-
         targetWindow.postMessage(ostMessage.buildPayloadToSend(), targetOrigin);
       }).catch((err)=>{
         console.log("signature generation failed.");
@@ -323,8 +323,43 @@ class OstBrowserMessenger {
     return crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.upstreamPublicKey, OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
   }
 
+  //
+  registerOnce(type, callback) {
+    this.eventEmitter.once(type, callback);
+  }
+
+  register(type, callback) {
+    this.eventEmitter.on(type, callback);
+  }
+
+  unRegister(type, callback) {
+    this.eventEmitter.removeListener(type, callback);
+  }
+
   subscribe(obj, name) {
-    
+    if (!name || typeof name !== 'string') {
+      name = uuidv4();
+    }
+
+    this.idMap[name] = obj;
+
+    return name;
+  }
+
+  unsubscribe(name) {
+    if (!name || typeof name !== 'string') {
+      return;
+    }
+
+    delete this.idMap[name];
+  }
+
+  getSubscribedObject(name) {
+    if (!name || typeof name !== 'string') {
+      return null;
+    }
+
+    return this.idMap[name];
   }
 }
 

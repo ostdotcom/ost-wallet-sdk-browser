@@ -125,7 +125,7 @@ class OstMessageNew {
     return this.getTo().subscriber_id || this.subscriberId;
   }
 
-  getName ( ) {
+  getMethodName ( ) {
     return this.getMethodDetails().name || this.name;
   }
 
@@ -151,7 +151,7 @@ class OstMessageNew {
       },
 
       method_details: {
-        name: this.getName(),
+        name: this.getMethodName(),
         args: this.getArgs()
       }
     }

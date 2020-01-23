@@ -20,11 +20,22 @@ class OstBaseSdk {
     }
   }
 
+  subscribeOnSetupCompete ( ) {
+    this.browserMessenger.subscribe(this, 'onSetupComplete');
+  }
+
+  onSetupComplete (args) {
+    console.log("OstBaseSdk :: onSetupComplete :: ", args);
+    console.log("this :: ", this);
+  };
+
   perform() {
-    this.setURLParams();
-    return this.createBrowserMessengerObject()
+    let oThis = this;
+    oThis.setURLParams();
+    return oThis.createBrowserMessengerObject()
       .then(() => {
-        this.setUpstreamOrigin();
+        oThis.setUpstreamOrigin();
+        oThis.subscribeOnSetupCompete();
       })
   }
 
