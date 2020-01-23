@@ -4,37 +4,50 @@ class OstVerifier {
 
   constructor ( ) {
     this.upstreamPublicKey = null;
+    this.upstreamPublicKeyHex = null;
     this.upstreamOrigin = null;
+
     this.downstreamPublicKey = null;
+    this.downstreamPublicKeyHex = null;
     this.downstreamOrigin = null;
+
     this.receiverName = null;
   }
 
   //Setter
-  setUpstreamPublicKey (upstreamPublicKey) {
-    this.upstreamPublicKey = upstreamPublicKey;
+  setUpstreamPublicKey ( key ) {
+    this.upstreamPublicKey = key;
   }
 
-  setUpStreamOrigin ( upstreamOrigin ) {
-    this.upstreamOrigin = upstreamOrigin;
+  setUpstreamPublicKeyHex ( hex ) {
+    this.upstreamPublicKeyHex = hex;
   }
 
-  setDownstreamPublicKey ( downstreamPublicKey ) {
-    this.downstreamPublicKey = downstreamPublicKey;
+  setUpStreamOrigin ( origin ) {
+    this.upstreamOrigin = origin;
   }
 
-  setDownStreamOrigin ( downstreamOrigin ) {
-    this.downstreamOrigin = downstreamOrigin;
+  setDownstreamPublicKey ( key ) {
+    this.downstreamPublicKey = key;
   }
 
-  setReceiverName ( receiverName ) {
-    this.receiverName = receiverName;
+  setDownstreamPublicKeyHex ( hex ) {
+    this.downstreamPublicKeyHex = hex;
+  }
+
+
+  setDownStreamOrigin ( origin ) {
+    this.downstreamOrigin = origin;
+  }
+
+  setReceiverName ( name ) {
+    this.receiverName = name;
   }
 
 
   //Validate
   isDownstreamSigner ( signer ) {
-    return this.downstreamPublicKey === signer;
+    return this.downstreamPublicKeyHex === signer;
   }
 
   isDownstreamOrigin ( origin ) {
@@ -42,15 +55,15 @@ class OstVerifier {
   }
 
   isUpstreamSigner ( signer ) {
-    return this.upstreamPublicKey === signer;
+    return this.upstreamPublicKeyHex === signer;
   }
 
   isUpstreamOrigin ( origin ) {
     return this.upstreamOrigin === origin;
   }
 
-  isValidReceiver ( receiverName ) {
-    return this.receiverName === receiverName;
+  isValidReceiver ( name ) {
+    return this.receiverName === name;
   }
 
   isValidSignature(signature, payloadToSign, publicKey) {

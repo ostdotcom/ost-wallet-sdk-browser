@@ -1,8 +1,8 @@
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import {MESSAGE_TYPE, OstMessage} from "../../common-js/OstMessage";
+import {MESSAGE_TYPE, OstMessage} from "../../common-js/OstMessage1";
 
 
-export default class OstKeyManager {
+export default class OstKeyManagerProxy {
 	constructor(messengerObj, userId){
 		this.messengerObj = messengerObj;
 		this.userId = userId;
@@ -25,17 +25,7 @@ export default class OstKeyManager {
 		const oThis = this;
 
 		return new Promise(function (resolve, reject) {
-			const initKeyManger = new OstMessage({userId: oThis.userId}, msgType);
-			oThis.messengerObj.sendMessage(initKeyManger, SOURCE.DOWNSTREAM);
-			oThis.messengerObj.registerOnce(msgType,
-				(msg) => {
-					console.log("Entity response", msgType, msg);
-					if (!msg) {
-						return reject(msgType ,"Entity not found");
-					}
-					return resolve(msg);
-				}
-			);
+
 		});
 	}
 }

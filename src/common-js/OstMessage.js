@@ -1,118 +1,285 @@
+import {SOURCE} from "./OstBrowserMessenger";
 import OstError from "./OstError";
 import OstErrorCodes from './OstErrorCodes'
-import {SOURCE} from './OstBrowserMessenger'
-
-const MESSAGE_TYPE = {
-	OST_KM_INIT: 'OST_KM_INIT',
-  OST_SKD_SETUP_COMPLETE: 'OST_SKD_SETUP_COMPLETE',
-  OST_SKD_KM_SETUP_COMPLETE: 'OST_SKD_KM_SETUP_COMPLETE',
-	OST_KM_GET_DEVICE_ADDRESS: 'OST_KM_GET_DEVICE_ADDRESS',
-	OST_KM_GET_API_ADDRESS: 'OST_KM_GET_API_ADDRESS'
-};
-
-const MESSAGE_TIMESTAMP_THRESHOLD = '1000';
 
 class OstMessage {
-
-  static getOstMessage(payload, type) {
-    return new OstMessage(payload, type)
-  }
-
-  static getOstMessageFromReceivedData(data) {
-    const signature = data.signature;
-    const message = data.ostMessage;
-
-    if (!message) {
-      throw new OstError('cj_om_gomfrd_1', OstErrorCodes.INVALID_OST_MESSAGE)
+  static ostMessageFromReceivedMessage( message, ostVerifier ) {
+    if (!message.signature || !message.ost_message) {
+      return null;
     }
 
-    const ostMessage = new OstMessage(message.content, message.type);
-    ostMessage.setTimestamp(message.timestamp);
-    ostMessage.setSignature(signature);
-    ostMessage.setSigner(message.signer);
-    ostMessage.setStreamDirection(message.streamDirection);
+    let ostMessage = new OstMessage(message, ostVerifier);
 
-    return ostMessage;
+    return ostMessage
   }
 
-  constructor(payload, type) {
-    this.payload = payload;
-    this.type  = type;
+  constructor( messagePayload = null, ostVerifier = null ) {
 
+    this.messagePayload = messagePayload || {}; //first preference
+    this.ostVerifier = ostVerifier;
+
+    this.signature = null;
     this.timestamp = null;
     this.signer = null;
-    this.signature = null;
-    this.streamDirection = null;
+    this.messageSendTo = null;
+    this.receiverName = null;
+    this.subscriberId = null;
+    this.name = null;
+    this.args = null;
   }
 
   //Setter
-
-  setTimestamp (timestamp) {
-    this.timestamp = timestamp
-  }
-
-  setSigner(hex) {
-    this.signer = hex;
-  }
-
-  setSignature1(signature) {
+  setSignature( signature ) {
     this.signature = signature;
   }
 
-  setStreamDirection(direction) {
-    this.streamDirection = direction;
+  setTimestamp ( timestamp ) {
+    this.timestamp = timestamp;
+  }
+
+  setSigner ( signer ) {
+    this.signer = signer;
+  }
+
+  setMessageSendToDirection ( direction ) {
+    this.messageSendTo = direction
+  }
+
+  setReceiverName ( receiverName ) {
+    this.receiverName = receiverName;
+  }
+
+  setSubscriberId ( subscriberId ) {
+    this.subscriberId = subscriberId;
+  }
+
+  setFunctionName (name) {
+    this.name = name;
+  }
+
+  setArgs ( args, subscriberId ) {
+    this.args = Object.assign( {subscriber_id : subscriberId}, args );
   }
 
   //Getter
 
-  getSignature() {
-    return this.signature;
+  getSignature ( ) {
+    return this.messagePayload.signature || this.signature;
   }
 
-  getTimeStamp() {
-    if (!this.timestamp) {
+  getOstMessage ( )  {
+    if ( !this.messagePayload ) {
+      return {}
+    }
+    return this.messagePayload.ost_message || {};
+  }
+
+  getFrom ( ) {
+    const message = this.getOstMessage();
+
+    return message.from || {};
+  }
+
+  getTo ( ) {
+    const message = this.getOstMessage();
+
+    return message.to || {};
+  }
+
+  getMethodDetails ( ) {
+    const message = this.getOstMessage();
+
+    return message.method_details || {};
+  }
+
+  getTimestamp ( ) {
+    let timestamp = this.getOstMessage().timestamp || this.timestamp;
+    if ( !timestamp ) {
       this.timestamp = Date.now();
+      timestamp  = this.timestamp;
     }
-    return this.timestamp;
+    return timestamp
   }
 
-  getPayloadToSign1() {
-
-    const payloadToSign = {
-      content: this.payload,
-      type: this.type,
-      timestamp: this.getTimeStamp(),
-      streamDirection: this.streamDirection,
-      signer: this.signer
-    };
-
-    return payloadToSign
+  getSigner ( ) {
+    return this.getFrom().signer || this.signer;
   }
 
-  getPayloadToPost() {
+  getOrigin ( ) {
+    return this.getFrom().origin || window.origin
+  }
+
+  getMessageSendToDirection ( ) {
+    return this.getOstMessage().message_sent_to || this.messageSendTo;
+  }
+
+  getReceiverName ( ) {
+    return this.getTo().receiver_name || this.receiverName;
+  }
+
+  getSubscriberId ( ) {
+    return this.getTo().subscriber_id || this.subscriberId;
+  }
+
+  getMethodName ( ) {
+    return this.getMethodDetails().name || this.name;
+  }
+
+  getArgs ( ) {
+    return this.getMethodDetails().args || this.args;
+  }
+
+  //Build
+  buildPayloadToSign ( ) {
     return {
-      signature: this.signature,
-      ostMessage: this.getPayloadToSign()
+      timestamp: this.getTimestamp(),
+
+      from: {
+        signer: this.getSigner(),
+        origin: this.getOrigin(),
+      },
+
+      message_sent_to: this.getMessageSendToDirection(),
+
+      to: {
+        receiver_name: this.getReceiverName(),
+        subscriber_id: this.getSubscriberId()
+      },
+
+      method_details: {
+        name: this.getMethodName(),
+        args: this.getArgs()
+      }
     }
   }
 
-  //Verifier
-
-  isValidTimeStamp( ) {
-    const currentDate = Date.now();
-    if ((currentDate - MESSAGE_TIMESTAMP_THRESHOLD) < this.timestamp && (currentDate + MESSAGE_TIMESTAMP_THRESHOLD) > this.timestamp ) {
-      return true;
+  buildPayloadToSend ( ) {
+    return {
+      signature: this.getSignature(),
+      ost_message: this.buildPayloadToSign()
     }
-    return false;
   }
 
+  //
   isReceivedFromUpstream() {
-    return SOURCE.DOWNSTREAM === this.streamDirection
+    return SOURCE.DOWNSTREAM === this.getMessageSendToDirection()
   }
 
   isReceivedFromDownstream() {
-    return SOURCE.UPSTREAM === this.streamDirection
+    return SOURCE.UPSTREAM === this.getMessageSendToDirection()
+  }
+
+  //Verify
+  isVerifiedMessage ( ) {
+    let oThis = this;
+
+    return new Promise((resolve, reject) => {
+
+      if ( !oThis.getSubscriberId() ) {
+        console.log("OstMessage :: isVerifiedMessage :: SubscriberId not persent");
+        let receiverName = oThis.getReceiverName();
+
+        console.log("OstMessage :: ostVerifier receiver name : ", oThis.ostVerifier.receiverName);
+        if ( !oThis.ostVerifier.isValidReceiver( receiverName ) ) {
+          console.log("OstMessage :: isVerifiedMessage :: invalid receiverName name :: ", receiverName);
+          return reject();
+        }
+        console.log("OstMessage :: isVerifiedMessage :: valid receiverName name :: ", receiverName);
+      }
+
+      if ( oThis.isReceivedFromDownstream() )  {
+        console.log("Message received from down stream");
+
+        if ( !oThis.ostVerifier.isDownstreamSigner( oThis.getSigner() ) ) {
+          return reject( new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_DOWNSTREAM_PUBLIC_KEY) );
+        }
+
+        if ( !oThis.ostVerifier.isDownstreamOrigin( oThis.getOrigin() ) ) {
+          return reject( new OstError('cj_om_ivm_2', OstErrorCodes.INVALID_DOWNSTREAM_ORIGIN) );
+        }
+
+        return oThis.ostVerifier.isValidSignature(
+          oThis.getSignature(),
+          oThis.buildPayloadToSign(),
+          oThis.ostVerifier.downstreamPublicKey
+        )
+          .then ((isVerified) => {
+            console.log("then :: isVerifiedMessage :: ", isVerified);
+            if (isVerified) {
+              return resolve(isVerified)
+            }
+
+            return reject()
+          })
+          .catch((err) => {
+            console.log("catch :: isVerifiedMessage :: ", err);
+
+            throw OstError.sdkError(err, 'cj_om_ivm_3');
+          })
+      }
+
+      if ( oThis.isReceivedFromUpstream() ) {
+        console.log("Message received from up stream");
+
+        if ( !oThis.ostVerifier.isUpstreamSigner( oThis.getSigner() ) ) {
+          return reject( new OstError('cj_om_ivm_4', OstErrorCodes.INVALID_UPSTREAM_PUBLIC_KEY) );
+        }
+
+        if ( !oThis.ostVerifier.isUpstreamOrigin( oThis.getOrigin() ) ) {
+          return reject( new OstError('cj_om_ivm_5', OstErrorCodes.INVALID_UPSTREAM_ORIGIN) );
+        }
+
+        return oThis.ostVerifier.isValidSignature(
+          oThis.getSignature(),
+          oThis.buildPayloadToSign(),
+          oThis.ostVerifier.upstreamPublicKey
+        )
+          .then ((isVerified) => {
+            console.log("then :: isVerifiedMessage :: ", isVerified);
+            if (isVerified) {
+              return resolve(isVerified)
+            }
+
+            return reject()
+          })
+          .catch((err) => {
+            console.log("catch :: isVerifiedMessage :: ", err);
+
+            throw OstError.sdkError(err, 'cj_om_ivm_6');
+          })
+      }
+
+      return reject(OstError.sdkError(null, 'cj_om_ivm_7'));
+
+    });
   }
 }
 
-export {MESSAGE_TYPE, OstMessage};
+export default OstMessage
+
+/*
+- Sample OstMessage Structure
+{
+	"signature": "0x",
+	"ost_message": {
+		timestamp: 123123123,
+		from: {
+			signer: "",
+			origin: "",
+		},
+		"messgae_sent_to": "UP/DOWN",
+
+		to: {
+			"receiver_name": "OstSdk"
+		},
+
+		method_details: {
+			"name": "getCurrentUser",
+			"args": {
+				"user_id": "4321-2121-4321-12123-user",
+				"subscriber_id": "1234-1212-12121234-success",
+			}
+		}
+	}
+}
+ */

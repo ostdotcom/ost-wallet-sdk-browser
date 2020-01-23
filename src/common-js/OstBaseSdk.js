@@ -1,7 +1,7 @@
 import OstURLHelpers from "./OstHelpers/OstUrlHelper";
 import OstError from "./OstError";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
-import {MESSAGE_TYPE} from "./OstMessage";
+import {MESSAGE_TYPE} from "./OstMessage1";
 
 class OstBaseSdk {
   constructor(origin, pathname, ancestorOrigins, searchParams){
@@ -21,7 +21,7 @@ class OstBaseSdk {
   }
 
   subscribeOnSetupCompete ( ) {
-    this.browserMessenger.subscribe(this, 'onSetupComplete');
+    this.browserMessenger.subscribe(this, this.getReceiverName());
   }
 
   onSetupComplete (args) {

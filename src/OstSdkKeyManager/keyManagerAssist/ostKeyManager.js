@@ -1,4 +1,4 @@
-import {MESSAGE_TYPE, OstMessage} from "../../common-js/OstMessage";
+import {MESSAGE_TYPE, OstMessage} from "../../common-js/OstMessage1";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import IKM from "../ecKeyInteracts/internalKeyManager";
 
