@@ -1,7 +1,7 @@
 
 import './css/login.css';
-import '../Api/appServerApi';
-import AppServerApi from '../Api/appServerApi';
+
+
 
 
 
@@ -13,8 +13,8 @@ $(function() {
 
   $("#signupBtn").click(function () {
     console.log("Hey there !!!!");
-    var appi = new AppServerApi();
-    appi.logIn(document.getElementById("usernameTb").value , document.getElementById("password").value);
+    //var appi = new AppServerApi();
+    //appi.logIn(document.getElementById("usernameTb").value , document.getElementById("password").value);
    /* $.post("/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/login",
       {
         username: document.getElementById("usernameTb").value,

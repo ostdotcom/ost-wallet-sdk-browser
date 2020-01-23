@@ -1,6 +1,7 @@
 
 import qs from 'qs';
 import FormData from 'form-data';
+import { response } from 'express';
 
 let on401Callback = null;
 
@@ -62,8 +63,9 @@ export default class BaseApi {
       _perform() {
         console.log("performing request");
         return new Promise(
+          console.log(this.parsedParams.method)
 
-          $.ajax({
+         /* $.ajax({
             type: 'POST',
             url: '/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/users',
             data: {
@@ -74,13 +76,13 @@ export default class BaseApi {
             dataType: 'json',
             success: function (jsonData) {
   
-             
+             return jsonData;
               
             },
             error: function (error) {
               console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
             }
-          })
+          })*/
           
         /*  $.post("/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/login",
           {

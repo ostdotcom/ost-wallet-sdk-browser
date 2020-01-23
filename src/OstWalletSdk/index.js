@@ -1,12 +1,9 @@
 import '../styles/login.css';
 
-<<<<<<< HEAD
 
 var $  = require( 'jquery' );
 var dt = require( 'datatables.net' )();
 import {OstBrowserMessenger} from "../common-js/OstBrowserMessenger";
-=======
->>>>>>> c0fbf43e98bf9e0d702098535069c710edd1a634
 import OstHelpers from "../common-js/OstHelpers";
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
