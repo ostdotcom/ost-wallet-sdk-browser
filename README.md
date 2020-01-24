@@ -12,7 +12,26 @@ Safely generates and stores keys on the user's mobile device
 
 ## Setup
 
-### Nginx 
+### Add hosts
+
+The `hosts` file is genererally located at:
+```
+/etc/hosts
+```
+
+Edit the `hosts` file:
+```
+sudo vi /etc/hosts
+```
+
+For development environment, 3 domains are needed. Add following hosts:
+```
+127.0.0.1 devmappy.com
+127.0.0.1 sdk-devmappy.devost.com
+127.0.0.1 km-devmappy.devost.com
+```
+
+### Setup Nginx 
 
 #### Installation
 - on Mac
@@ -48,7 +67,7 @@ http {
         listen       8080;
         server_name  devmappy.com;
 
-        #API calls to remote demo mappy server.
+        #API calls to remote Demo Mappy Server.
         location /demo/api/ {
             proxy_cookie_domain demo-mappy.stagingost.com devmappy.com;
             proxy_pass https://demo-mappy.stagingost.com/demo/api/;
@@ -82,8 +101,12 @@ If you don't have npm installed on your machine then go to https://www.npmjs.com
 ## Fire Up the servers
 - To run servers on browser, run command-
 ```
-npm run develop-all
+npm run dev-servers
 ```
+
+Open the browser and access [http://devmappy.com:8080/](http://devmappy.com:8080/).
+
+
 
 
 
