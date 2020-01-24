@@ -1,5 +1,4 @@
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import {MESSAGE_TYPE, OstMessage} from "../../common-js/OstMessage1";
 
 
 export default class OstKeyManagerProxy {
@@ -9,15 +8,15 @@ export default class OstKeyManagerProxy {
 	}
 
 	init() {
-		return this.get(MESSAGE_TYPE.OST_KM_INIT);
+		// return this.get(MESSAGE_TYPE.OST_KM_INIT);
 	}
 
 	getDeviceAddress() {
-		return this.get(MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS);
+		// return this.get(MESSAGE_TYPE.OST_KM_GET_DEVICE_ADDRESS);
 	}
 
 	getApiKeyAddress() {
-		return this.get(MESSAGE_TYPE.OST_KM_GET_API_ADDRESS);
+		// return this.get(MESSAGE_TYPE.OST_KM_GET_API_ADDRESS);
 	}
 
 

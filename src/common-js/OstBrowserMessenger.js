@@ -7,7 +7,7 @@
  */
 
 import OstError from "./OstError";
-import {MESSAGE_TYPE} from "./OstMessage1";
+
 import OstHelpers from "./OstHelpers";
 import OstErrorCodes from "./OstErrorCodes";
 import EventEmitter from 'eventemitter3';

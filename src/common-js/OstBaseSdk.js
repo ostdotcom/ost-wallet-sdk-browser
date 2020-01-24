@@ -1,7 +1,6 @@
 import OstURLHelpers from "./OstHelpers/OstUrlHelper";
 import OstError from "./OstError";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
-import {MESSAGE_TYPE} from "./OstMessage1";
 
 class OstBaseSdk {
   constructor(origin, pathname, ancestorOrigins, searchParams){

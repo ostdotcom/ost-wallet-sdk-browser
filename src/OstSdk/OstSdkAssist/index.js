@@ -10,8 +10,6 @@ class OstSdkAssist {
 
     this.browserMessenger.subscribe(this, this.receiverName);
 
-    this.ostKeyManagerProxy = new OstKeyManagerProxy(this.browserMessenger);
-
     this.uuid = null;
   }
 

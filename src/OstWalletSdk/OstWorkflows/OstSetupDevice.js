@@ -27,14 +27,24 @@ class OstSetupDevice extends OstBaseWorkflow {
   }
 
   registerDevice ( args ) {
+    let oThis = this;
     console.log("OstSetupDevice :: registerDevice :: ", args);
 
-    let message = new OstMessage();
-    message.setFunctionName("deviceRegistered");
-    message.setArgs(args);
-    message.setSubscriberId(args.subscriber_id);
+    this.ostWorkflowCallbacks.registerDevice(args.device_address, args.api_key_address)
+      .then((res) => {
 
-    this.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
+        console.log("OstSetupDevice :: registerDevice :: then :: ", res);
+
+        let message = new OstMessage();
+        message.setFunctionName("deviceRegistered");
+        message.setArgs(args);
+        message.setSubscriberId(args.subscriber_id);
+
+        oThis.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
+      })
+      .catch((err) => {
+
+      });
   }
 }
 

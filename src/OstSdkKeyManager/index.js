@@ -10,10 +10,13 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 // const wallet = ikm.generateHDWallet();
 // const gensig = ikm.signMessage(wallet, "message");
 // const persig = ikm.personalSign(wallet, "message");
-import OstKeyManager from './keyManagerAssist/ostKeyManager'
+
+import OstKeyManager from './OstKeyManagerAssist'
 import OstMessage from "../common-js/OstMessage";
 const LOG_TAG = 'KM';
+
 import OstSecureEnclave from "./ecKeyInteracts/OstSecureEnclave";
+import OstKeyManagerAssist from './OstKeyManagerAssist'
 
 (function(window) {
 
@@ -27,27 +30,28 @@ import OstSecureEnclave from "./ecKeyInteracts/OstSecureEnclave";
   class OstSdkKeyManager extends OstBaseSdk {
     constructor(origin, pathname, ancestorOrigins, searchParams){
       super(origin, pathname, ancestorOrigins, searchParams);
-      this.ostKeyManager = null;
+      this.ostKeyManagerAssist = null;
+    }
+
+    createOstSdkKeyManagerAssist () {
+      this.ostKeyManagerAssist = new OstKeyManagerAssist(this.browserMessenger, this.getReceiverName());
     }
 
     perform() {
       const oThis = this;
       return super.perform()
         .then(() => {
-          return this.setUpstreamPublicKey();
+          return oThis.setUpstreamPublicKey();
         })
         .then(() => {
-          return this.verifyIframeInitData();
+          return oThis.verifyIframeInitData();
         })
         .then((isVerified) => {
           if (!isVerified) {
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
-
-					// oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
-					// oThis.ostKeyManager.registerRequestListeners();
-
-          this.sendPublicKey();
+          oThis.createOstSdkKeyManagerAssist();
+          oThis.sendPublicKey();
         })
         .catch((err) => {
           this.browserMessenger.removeUpstreamPublicKey();

@@ -32,7 +32,9 @@ class OstWalletWorkFlowCallback {
    * @param {OstDeviceRegistered} ostDeviceRegistered - With callback to pass response
    * @override
    */
-  registerDevice( apiParams , ostDeviceRegistered ) { }
+  registerDevice( deviceAddress, apiKeyAddress ) {
+    return Promise.reject();
+  }
 
   /**
    * Request acknowledged
