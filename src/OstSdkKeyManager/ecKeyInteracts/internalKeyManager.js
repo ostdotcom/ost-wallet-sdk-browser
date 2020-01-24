@@ -19,7 +19,7 @@ const STORES = {
 
 const HD_DERIVATION_PATH_FIRST_CHILD = "m/44'/60'/0'/0";
 
-KEY_TYPE = {
+const KEY_TYPE = {
 	API: 'API',
 	DEVICE: 'DEVICE',
 	SESSION: 'SESSION',
