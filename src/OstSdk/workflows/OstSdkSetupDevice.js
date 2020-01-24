@@ -23,48 +23,70 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   	ACTIVATED: "activated"
   };
 
-  perform() {
 
-    let deviceId = "0xdeviceId";
-    let apiId = "0xapiId";
-
+  sendRegisterDeviceMessage () {
     let message = new OstMessage();
     message.setFunctionName("registerDevice");
     message.setSubscriberId(this.subscriberId);
 
     this.uuid = this.browserMessenger.subscribe(this);
-    message.setArgs({device_address: deviceId, api_key_address: apiId}, this.uuid);
+
+    message.setArgs({device_address: this.deviceAddress, api_key_address: this.apiKeyAddress}, this.uuid);
 
     console.log("sending message : OstSdkSetupDevice");
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+  }
+
+  perform() {
+console.log(LOG_TAG, "perform");
+    return this.keyManagerProxy.getDeviceAddress()
+      .then((deviceAddress) => {
+        console.log(LOG_TAG, " Got device address :: ", deviceAddress);
+        this.deviceAddress = deviceAddress;
+
+        return this.keyManagerProxy.getApiKeyAddress()
+      })
+      .then((apiKeyAddress) => {
+        console.log(LOG_TAG, " Got api key address :: ", apiKeyAddress);
+
+        this.apiKeyAddress = apiKeyAddress;
+        this.sendRegisterDeviceMessage();
+      })
+      .catch((err) => {
+
+      });
 
 
-return;
-    console.log(LOG_TAG, "Initializing User and Token");
 
-    const ostUser = OstUser.init(this.userId, this.tokenId);
-    const ostToken = OstToken.init(this.tokenId);
 
-    console.log(LOG_TAG, "Creating current device if does not exist");
-    const ostDevice = this.createOrGetCurrentDevice(ostUser);
-    if (!ostDevice) {
-      //post error;
-      return;
-    }
 
-    console.log(LOG_TAG, "Check we are able to access device keys");
-    if (!this.hasDeviceApiKey(ostDevice)) {
-      // return postErrorInterrupt("wf_rd_pr_3", ErrorCode.SDK_ERROR);
-      return;
-    }
-
-    console.log(LOG_TAG, "Check if device has been registered.");
-    if (status.CREATED  ===  ostDevice.getStatus() ) {
-      console.log(LOG_TAG, "Registering device");
-      this.registerDevice(ostDevice);
-      return true;
-    }
-    console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
+//
+// return;
+//     console.log(LOG_TAG, "Initializing User and Token");
+//
+//     const ostUser = OstUser.init(this.userId, this.tokenId);
+//     const ostToken = OstToken.init(this.tokenId);
+//
+//     console.log(LOG_TAG, "Creating current device if does not exist");
+//     const ostDevice = this.createOrGetCurrentDevice(ostUser);
+//     if (!ostDevice) {
+//       //post error;
+//       return;
+//     }
+//
+//     console.log(LOG_TAG, "Check we are able to access device keys");
+//     if (!this.hasDeviceApiKey(ostDevice)) {
+//       // return postErrorInterrupt("wf_rd_pr_3", ErrorCode.SDK_ERROR);
+//       return;
+//     }
+//
+//     console.log(LOG_TAG, "Check if device has been registered.");
+//     if (status.CREATED  ===  ostDevice.getStatus() ) {
+//       console.log(LOG_TAG, "Registering device");
+//       this.registerDevice(ostDevice);
+//       return true;
+//     }
+//     console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
   }
 
 

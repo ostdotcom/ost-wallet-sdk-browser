@@ -1,3 +1,4 @@
+import OstKeyManagerProxy from "../OstKeyManagerProxy";
 
 export default class OstSdkBaseWorkflow {
 
@@ -5,6 +6,8 @@ export default class OstSdkBaseWorkflow {
 		this.userId = userId;
 		this.browserMessenger = browserMessenger;
 		this.stateManager = new StateManager();
+
+		this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
 	}
 
 	setStateManager() {
