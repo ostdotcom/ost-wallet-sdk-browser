@@ -14,17 +14,25 @@
 </head>
 <body>
     <div class="container">
+        <div class="wrapper fadeIn first ">
     <h1 class="display-3"><%= htmlWebpackPlugin.options.title %></h1>
+    <div id="usersData" class="table-responsive panel panel-default" style="overflow-x:auto;">
+                
+        <table id="usersTable"  class ="table" style="width: 100%; height: 100%;">
+        </table>
+    
+    </div>
+</div>
+</div>
+    <div class="container">
+   
 
-    <div class="wrapper fadeInDown">
+    <div class="wrapper fadeInDown ">
         <div id="formContent">
             <div class="fadeIn first">
                 <img src="https://cdn.dribbble.com/users/12/screenshots/4188789/ost.jpg" id="icon" alt="User Icon" />
             </div>
-            <div id="usersData" class="table-responsive">
-                <table id="usersTable" class ="table">
-                </table>
-            </div>
+            
             <div id="buttonDiv">    
 
             </div>

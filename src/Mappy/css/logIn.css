@@ -2,7 +2,7 @@
 
 
 html {
-    background-color: #56baed;
+    background-color: #ffffff;
 }
 
 body {
@@ -257,3 +257,65 @@ input[type=text]:placeholder, input[type=password]::placeholder {
 #icon {
     width:60%;
 }
+
+
+.container .nextBtn {
+    position: absolute;
+    
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: #56baed;
+    color: black;
+    font-size: 16px;
+    padding: 16px 30px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .container .nextBtn:hover {
+    background-color: black;
+    color: white;
+  }
+
+
+  .button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #f4511e;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+  }
+  
+  .nextButton span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  
+  .nextButton span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+  
+  .nextButton:hover span {
+    padding-right: 25px;
+  }
+  
+  .nextButton:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
