@@ -2,34 +2,7 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const commonConfig = {
-    entry: './src/OstSdkKeyManager/index.js',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'OstSdkKeyManager.js',
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(js)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: [
-                            "@babel/preset-env"
-                        ]
-                    }
-                }
-            },
-            {
-                test: /\.css$/, 
-                use: ['style-loader','css-loader' ]
-            }
-        ]
-    },
-};
-
+const commonConfig = {};
 
 const devConfig = {
     mode: "development",
@@ -43,9 +16,9 @@ const devConfig = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: "Km-mappy.ostwalletsdk.com",
+            title: "Ost Wallet Key Manager",
             template: "./devserver/km-mappy.ostwalletsdk.com.html",
-            inject: true
+            inject: false
         })
     ]
 };

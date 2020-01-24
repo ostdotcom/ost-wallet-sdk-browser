@@ -2,33 +2,7 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const commonConfig = {
-    entry: './src/OstSdk/index.js',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'OstSdk.js',
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(js)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: [
-                            "@babel/preset-env"
-                        ]
-                    }
-                }
-            },
-            {
-                test: /\.css$/, 
-                use: ['style-loader','css-loader' ]
-            }
-        ]
-    },
-};
+const commonConfig = {};
 
 
 const devConfig = {
@@ -45,7 +19,7 @@ const devConfig = {
         new HtmlWebpackPlugin({
             title: "Sdk-mappy.ostwalletsdk.com",
             template: "./devserver/sdk-mappy.ostwalletsdk.com.html",
-            inject: true
+            inject: false
         })
     ]
 };

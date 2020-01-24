@@ -26,7 +26,6 @@ sudo vi /etc/hosts
 
 For development environment, 3 domains are needed. Add following hosts:
 ```
-127.0.0.1 devmappy.com
 127.0.0.1 sdk-devmappy.devost.com
 127.0.0.1 km-devmappy.devost.com
 ```
@@ -64,16 +63,16 @@ http {
 
     #Server to route mappy server api calls.
     server {
-        listen       8080;
-        server_name  devmappy.com;
+        listen       8888;
+        server_name  localhost;
 
-        #API calls to remote Demo Mappy Server.
+        #API calls to remote demo mappy server.
         location /demo/api/ {
-            proxy_cookie_domain demo-mappy.stagingost.com devmappy.com;
-            proxy_pass https://demo-mappy.stagingost.com/demo/api/;
+           proxy_cookie_domain demo-mappy.stagingost.com devmappy.com;
+           proxy_pass https://demo-mappy.stagingost.com/demo/api/;
         }
 
-        #Loading HTML and other static resources from webpack server
+        #Loading HTML and other static resources from webpack server.
         location / {
             proxy_pass http://localhost:9000/;
         }
