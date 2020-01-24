@@ -1,45 +1,8 @@
 import {SOURCE} from '../common-js/OstBrowserMessenger'
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
-import {MESSAGE_TYPE, OstMessage} from '../common-js/OstMessage'
 import OstHelpers from "../common-js/OstHelpers";
-<<<<<<< HEAD
 
-// window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-// function createDatabase(tokenId){
-//   if(!window.indexedDB){
-//     alert("indexed Db not supported");
-//   }
-//   let request = window.indexedDB.open("EntitiesDB"+tokenId,1), db, tx, store;
-// }
-
-// function createTable(name){
-//   let db = window.request.result;
-//   store = db.createObjectStore(name,{keypath: "userId"})
-
-// }
-
-(function () {
-
-  const location = window.location;
-
-  class OstSdk {
-    constructor(location){
-      console.log("ostsdk init");
-      this.locationObj = location;
-      this.urlParams = null;
-      this.browserMessenger = null;
-      this.onMessageReceived = null;
-    }
-
-    getURLParams() {
-      this.urlParams = OstURLHelpers.getParamsFromURL(this.locationObj);
-=======
-import OstBaseSdk from "../common-js/OstBaseSdk";
-import OstKeyManager from "./keyManagerProxy/ostKeyManager";
-import uuidv4 from "uuid/v4";
-import OstMessageNew from "../common-js/OstMessageNew";
 
 (function (window) {
 
@@ -53,7 +16,12 @@ import OstMessageNew from "../common-js/OstMessageNew";
   class OstSdk extends OstBaseSdk {
     constructor(origin, pathname, ancestorOrigins, searchParams){
       super(origin, pathname, ancestorOrigins, searchParams);
->>>>>>> c0fbf43e98bf9e0d702098535069c710edd1a634
+
+      this.ostSdkAssist = null
+    }
+
+    createOstSdkAssist () {
+      this.ostSdkAssist = new OstSdkAssist(this.browserMessenger, this.getReceiverName());
     }
 
     perform() {
@@ -68,7 +36,7 @@ import OstMessageNew from "../common-js/OstMessageNew";
           if (!isVerified) {
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
-
+          this.createOstSdkAssist();
           this.sendPublicKey();
         })
         .catch((err) => {
@@ -88,8 +56,8 @@ import OstMessageNew from "../common-js/OstMessageNew";
     sendPublicKey() {
       console.log("sending OstSdk public key");
 
-      let ostMessage = new OstMessageNew();
-      ostMessage.setName( "onSetupComplete" );
+      let ostMessage = new OstMessage();
+      ostMessage.setFunctionName( "onSetupComplete" );
       ostMessage.setReceiverName( "OstWalletSdk" );
       ostMessage.setArgs({
         publicKeyHex: this.browserMessenger.getPublicKeyHex()

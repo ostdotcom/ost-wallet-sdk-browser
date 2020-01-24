@@ -7,12 +7,12 @@
  */
 
 import OstError from "./OstError";
-import {MESSAGE_TYPE, OstMessage} from "./OstMessage";
+import {MESSAGE_TYPE} from "./OstMessage1";
 import OstHelpers from "./OstHelpers";
 import OstErrorCodes from "./OstErrorCodes";
 import EventEmitter from 'eventemitter3';
 import OstVerifier from "./OstVerifier";
-import OstMessageNew from "./OstMessageNew";
+import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
 
 const SOURCE = {
@@ -86,7 +86,7 @@ class OstBrowserMessenger {
       return;
     }
 
-    const ostMessage = OstMessageNew.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj() );
+    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj() );
 
     if ( !ostMessage ) {
       return;
@@ -96,12 +96,12 @@ class OstBrowserMessenger {
 
     ostMessage.isVerifiedMessage( )
       .then ((isVerified) => {
-        console.log("then of isVerifiedMessage");
+        console.log("then of isVerifiedMessage  :: ", isVerified);
         if (isVerified) {
           oThis.onValidMessageReceived(ostMessage);
-          return;
+        }else {
+          oThis.onOtherMessageReceived(ostMessage, null);
         }
-        oThis.onOtherMessageReceived(ostMessage, null);
       })
       .catch ((err) => {
         console.error("catch of isVerifiedMessage : ", err);
@@ -114,9 +114,14 @@ class OstBrowserMessenger {
     let ostVerifierObj = new OstVerifier();
 
     ostVerifierObj.setUpstreamPublicKey( this.upstreamPublicKey );
-    ostVerifierObj.setUpStreamOrigin( this.upStreamOrigin );
     ostVerifierObj.setDownstreamPublicKey( this.downstreamPublicKey );
+
+    ostVerifierObj.setUpstreamPublicKeyHex( this.upstreamPublicKeyHex );
+    ostVerifierObj.setDownstreamPublicKeyHex( this.downstreamPublicKeyHex );
+
+    ostVerifierObj.setUpStreamOrigin( this.upStreamOrigin );
     ostVerifierObj.setDownStreamOrigin( this.downStreamOrigin );
+
     ostVerifierObj.setReceiverName ( this.receiverName );
 
     return ostVerifierObj
@@ -128,7 +133,7 @@ class OstBrowserMessenger {
     let functionId = ostMessage.getSubscriberId();
 
     if ( !functionId ) {
-      functionId = ostMessage.getMethodName()
+      functionId = ostMessage.getReceiverName()
     }
 
     let subscribedObject = this.getSubscribedObject( functionId );
@@ -142,10 +147,12 @@ class OstBrowserMessenger {
       }
     }else  {
       console.log("OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
+      console.log(this.idMap);
     }
   }
 
   onOtherMessageReceived( ostMessage, err) {
+
     if (['onSetupComplete'].includes(ostMessage.getMethodName())) {
       this.onValidMessageReceived(ostMessage);
     }
@@ -280,8 +287,7 @@ class OstBrowserMessenger {
   //Performable
   sendMessage(ostMessage, receiverStream) {
 
-    console.log("sending message : ", ostMessage, "\n receiverStream : ", receiverStream);
-    if ( !(ostMessage instanceof OstMessageNew) ) {
+    if ( !(ostMessage instanceof OstMessage) ) {
       throw new OstError('cj_obm_sm_1', 'INVALID_OST_MESSAGE')
     }
 
@@ -354,6 +360,7 @@ class OstBrowserMessenger {
 
     this.idMap[name] = obj;
 
+    console.log("subscribing for :: ", name, " on :: ", this.receiverName);
     return name;
   }
 

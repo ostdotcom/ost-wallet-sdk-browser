@@ -1,9 +1,9 @@
 
-export default class BaseWorkflow {
+export default class OstSdkBaseWorkflow {
 
-	constructor(userId, delegate) {
+	constructor(userId, browserMessenger) {
 		this.userId = userId;
-		this.delegate = delegate;
+		this.browserMessenger = browserMessenger;
 		this.stateManager = new StateManager();
 	}
 
@@ -32,21 +32,21 @@ export default class BaseWorkflow {
 
 class StateManager {
 	constructor() {
-
+      const state = {
+        INITIAL: "INITIAL",
+        PARAMS_VALIDATED: "PARAMS_VALIDATED",
+        INITIALIZED: "INITIALIZED",
+        REGISTERED: "REGISTERED",
+        DEVICE_VALIDATED: "DEVICE_VALIDATED",
+        PIN_AUTHENTICATION_REQUIRED: "PIN_AUTHENTICATION_REQUIRED",
+        PIN_INFO_RECEIVED: "PIN_INFO_RECEIVED",
+        AUTHENTICATED: "AUTHENTICATED",
+        CANCELLED: "CANCELLED",
+        COMPLETED: "COMPLETED"
+      };
 	}
 
-	static state = {
-		INITIAL: "INITIAL",
-		PARAMS_VALIDATED: "PARAMS_VALIDATED",
-		INITIALIZED: "INITIALIZED",
-		REGISTERED: "REGISTERED",
-		DEVICE_VALIDATED: "DEVICE_VALIDATED",
-		PIN_AUTHENTICATION_REQUIRED: "PIN_AUTHENTICATION_REQUIRED",
-		PIN_INFO_RECEIVED: "PIN_INFO_RECEIVED",
-		AUTHENTICATED: "AUTHENTICATED",
-		CANCELLED: "CANCELLED",
-		COMPLETED: "COMPLETED"
-	};
+
 
 	getCurrentState() {
 

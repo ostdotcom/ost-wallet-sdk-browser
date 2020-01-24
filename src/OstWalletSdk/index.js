@@ -8,7 +8,8 @@ import OstHelpers from "../common-js/OstHelpers";
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
-import {MESSAGE_TYPE} from "../common-js/OstMessage";
+import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
+import OstMappyCallbacks from "./OstMappyCallbacks";
 
 (function(window) {
 
@@ -29,6 +30,13 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
 
     getReceiverName() {
       return 'OstWalletSdk';
+    }
+
+    setupDevice ( userId, tokenId, baseURL, ostWorkflowDelegate) {
+      let setupDevice = new OstSetupDevice(userId, tokenId, ostWorkflowDelegate, this.browserMessenger);
+      let workflowId = setupDevice.perform();
+
+      return workflowId;
     }
   }
 
@@ -69,10 +77,24 @@ import {MESSAGE_TYPE} from "../common-js/OstMessage";
         walletSdk.setDownStreamOrigin(url);
 
         console.log("createSdkMappyIframe Completed");
+
+        window.OstSdkWallet = walletSdk;
       })
       .catch((err) => {
         throw OstError.sdkError(err, 'ows_i_csmif_1');
       })
   }
+
+
+  setTimeout(() => {
+    console.log("===================================================================================\n\nsetup device called");
+    let mappyCallback =  new OstMappyCallbacks();
+    console.log(window.OstSdkWallet.setupDevice("1", "1129", "http://stagingpepo.com", mappyCallback));
+    let workflowId = window.OstSdkWallet.setupDevice("1", "1129", "http://stagingpepo.com", mappyCallback);
+    console.log("setup device :: workflowId :: ", workflowId);
+
+  }, 5000);
+
+
 
 })(window);

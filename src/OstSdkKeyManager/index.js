@@ -1,9 +1,9 @@
-import uuidv4 from 'uuid/v4';
-import OstURLHelpers from "../common-js/OstHelpers/OstUrlHelper";
-import {MESSAGE_TYPE, OstMessage} from "../common-js/OstMessage";
-import {OstBrowserMessenger, SOURCE} from "../common-js/OstBrowserMessenger";
+
+
+import {SOURCE} from "../common-js/OstBrowserMessenger";
 import OstError from "../common-js/OstError";
 import OstBaseSdk from "../common-js/OstBaseSdk";
+
 // import IKM from './ecKeyInteracts/internalKeyManager'
 //
 // const ikm = new IKM(uuidv4());
@@ -11,7 +11,9 @@ import OstBaseSdk from "../common-js/OstBaseSdk";
 // const gensig = ikm.signMessage(wallet, "message");
 // const persig = ikm.personalSign(wallet, "message");
 import OstKeyManager from './keyManagerAssist/ostKeyManager'
-import OstMessageNew from "../common-js/OstMessageNew";
+import OstMessage from "../common-js/OstMessage";
+const LOG_TAG = 'KM';
+import OstSecureEnclave from "./ecKeyInteracts/OstSecureEnclave";
 
 (function(window) {
 
@@ -42,8 +44,8 @@ import OstMessageNew from "../common-js/OstMessageNew";
             throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
           }
 
-          oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
-          oThis.ostKeyManager.registerRequestListeners();
+					// oThis.ostKeyManager = new OstKeyManager(this.browserMessenger);
+					// oThis.ostKeyManager.registerRequestListeners();
 
           this.sendPublicKey();
         })
@@ -64,8 +66,8 @@ import OstMessageNew from "../common-js/OstMessageNew";
     sendPublicKey() {
       console.log("sending OstSdkKeyManager public key");
 
-      let ostMessage = new OstMessageNew();
-      ostMessage.setName( "onSetupComplete" );
+      let ostMessage = new OstMessage();
+      ostMessage.setFunctionName( "onSetupComplete" );
       ostMessage.setReceiverName( "OstSdk" );
       ostMessage.setArgs({
         publicKeyHex: this.browserMessenger.getPublicKeyHex()

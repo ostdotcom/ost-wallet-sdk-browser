@@ -4,6 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "dev-mappy-server": "webpack-dev-server --config webpack.mappy.com.js --env.NODE_ENV=dev",
+    "dev-ostsdk-server": "webpack-dev-server --config webpack.sdk-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
+    "dev-ostkm-server": "webpack-dev-server --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
+    "dev-servers": "concurrently \"npm run dev-mappy-server\" \"npm run dev-ostsdk-server\" \"npm run dev-ostkm-server\"",
+    
     "d-sdk-w": "webpack-dev-server --open --config webpack.mappy.com.js --env.NODE_ENV=dev",
     "b-sdk-w": "webpack --config webpack.mappy.com.js --env.NODE_ENV=prod",
     "d-sdk": "webpack-dev-server --open --config webpack.sdk-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
