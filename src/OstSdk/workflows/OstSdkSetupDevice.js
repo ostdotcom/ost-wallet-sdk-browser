@@ -1,6 +1,6 @@
 import OstUser from "../entities/OstUser";
 import OstToken from "../entities/OstToken";
-import OstKeyManager from "../keyManagerProxy/ostKeyManager";
+import OstKeyManager from "../OstKeyManagerProxy";
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
@@ -17,11 +17,11 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.uuid = null;
   }
 
-  // status = {
-  // 	CREATED: "created",
-  // 	ACTIVATING: "activating",
-  // 	ACTIVATED: "activated"
-  // };
+  status = {
+  	CREATED: "created",
+  	ACTIVATING: "activating",
+  	ACTIVATED: "activated"
+  };
 
   perform() {
 

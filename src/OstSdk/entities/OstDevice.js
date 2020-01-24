@@ -1,5 +1,5 @@
 import OstBaseEntity from "./OstBaseEntity";
-import OstKeyManager from "../keyManagerProxy/ostKeyManager";
+import OstKeyManager from "../OstKeyManagerProxy";
 
 const LOG_TAG = "OstDevice";
 class OstDevice extends OstBaseEntity {

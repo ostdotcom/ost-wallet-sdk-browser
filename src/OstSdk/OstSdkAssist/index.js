@@ -1,6 +1,3 @@
-import OstKeyManagerProxy from "../keyManagerProxy/ostKeyManager";
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSdkSetupDevice from "../workflows/OstSdkSetupDevice";
 
 class OstSdkAssist {
