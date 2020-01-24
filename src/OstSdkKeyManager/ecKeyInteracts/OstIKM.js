@@ -3,6 +3,7 @@ import OstSecureEnclave from "./OstSecureEnclave";
 import OstError from "../../common-js/OstError";
 import * as Wallet from "ethereumjs-wallet";
 import * as EthUtil from "ethereumjs-util";
+import OstKeyManager from "./OstKeyManager"
 
 const bip39 = require('bip39');
 const randomBytes = require('randombytes');
@@ -311,4 +312,41 @@ class KeyMetaStruct {
  }
 }
 
-export default IKM;
+
+let ostKeyManager = null;
+let ostKeyManagerUserId = null;
+
+const getInstance = (userId) => {
+	if (ostKeyManager && ostKeyManagerUserId === userId) {
+		return Promise.resolve(ostKeyManager);
+	}
+
+	console.debug(LOG_TAG,'Creating IKM instance for userId ', userId);
+	ostKeyManagerUserId = userId;
+	ostKeyManager = new IKM(userId);
+
+	return ostKeyManager.init()
+		.then(()=> {
+			return ostKeyManager;
+		})
+		.catch(()=> {
+			return ostKeyManager;
+		})
+};
+
+
+export default {
+	getKeyManager (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstKeyManager(instance);
+			});
+	},
+
+	getApiSigner (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstApiSigner(instance);
+			});
+	}
+}
