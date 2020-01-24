@@ -68,7 +68,7 @@ http {
 
         #API calls to remote demo mappy server.
         location /demo/api/ {
-           proxy_cookie_domain demo-mappy.stagingost.com devmappy.com;
+           proxy_cookie_domain demo-mappy.stagingost.com localhost;
            proxy_pass https://demo-mappy.stagingost.com/demo/api/;
         }
 
