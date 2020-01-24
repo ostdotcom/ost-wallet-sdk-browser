@@ -1,6 +1,8 @@
 
 import './css/login.css';
 
+import '../OstWalletSdk/index'
+
 var i=1;
 
 $(function() {
