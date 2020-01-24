@@ -124,7 +124,7 @@ function requestNextData(pageNo){
     dataType: 'json',
     success: function (jsonData) {
 
-      alert(jsonData.data.users[0].username);
+     // alert(jsonData.data.users[0].username);
       console.log(jsonData.data.users[0].token_id);
       //window.location.replace("/html/users.html");
       //document.getElementById("usersData").innerHTML='<object type="text/html" data="http://localhost:9000/src/html/Users.html" ></object>';
