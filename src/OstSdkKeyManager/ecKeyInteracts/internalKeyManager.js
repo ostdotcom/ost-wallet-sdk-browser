@@ -1,6 +1,8 @@
 import OstIndexDB from "../../common-js/OstIndexedDB";
 import OstSecureEnclave from "./OstSecureEnclave";
 import OstError from "../../common-js/OstError";
+import * as Wallet from "ethereumjs-wallet";
+import * as EthUtil from "ethereumjs-util";
 
 const bip39 = require('bip39');
 const randomBytes = require('randombytes');
@@ -33,19 +35,21 @@ class IKM {
 	}
 
 	init() {
+		console.log(LOG_TAG, "init IKM");
+
 		const oThis = this;
-		this.kmDB.createDatabase()
+		return this.kmDB.createDatabase()
 			.then(() => {
 				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.userId);
-				return oThis.kmDB.getData(OstIndexDB.STORES.KEY_STORE_TABLE, "id")
+				return oThis.kmDB.getData(OstIndexDB.STORES.KEY_STORE_TABLE, oThis.userId)
 			})
 			.then((kmData) => {
 				if (kmData) {
-					console.debug(LOG_TAG, "Key meta struct found");
-					oThis.kmStruct = kmData;
+					console.log(LOG_TAG, "Key meta struct found", kmData);
+					oThis.kmStruct = kmData.data;
 					return kmData;
 				} else {
-					console.debug(LOG_TAG, "Key meta struct not found", "Building it...");
+					console.log(LOG_TAG, "Key meta struct not found", "Building it...");
 					return oThis.buildKeyMetaStruct()
 						.then((kmData) => {
 							console.debug(LOG_TAG, "Storing KM keys");
@@ -55,39 +59,58 @@ class IKM {
 			}).catch((err) => {
 				console.error(LOG_TAG, "IKM initialization failed", err);
 			});
-			// .then(()=> {
-			// 	return oThis.kmDB.insertData(OstIndexDB.STORES.KEY_STORE_TABLE, {id: "id", data: "data", extraData: "extraData"});
-			// })
-			// .catch(()=> {
-			// 	return;
-			// })
-			// .then(() => {
-			// 	return oThis.kmDB.getData(OstIndexDB.STORES.KEY_STORE_TABLE, "id")
-			// }).catch((err) => {
-			// console.error(LOG_TAG, "constructor error ", err);
-		// });
+	}
 
+	storeKmData(kmData) {
+		const oThis = this;
+		const dataToStore = {
+			id: oThis.userId,
+			data: kmData
+		};
+
+		console.log(LOG_TAG, "Storing KM data", kmData);
+		return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
+			.then(() => {
+				return kmData;
+			});
 	}
 
 	buildKeyMetaStruct() {
 		const oThis = this;
 		this.kmStruct = new KeyMetaStruct();
+		this.kmStruct.isTrustable = false;
 
-		return Promise.all([oThis.createApiKey(), oThis.createDeviceKey()])
-			.then((res) => {
-				if (res[0] && res[1]) {
-					return this.kmStruct;
-				} else {
-					throw "Meta Struct building failed";
-				}
-			});
+		return oThis.createApiKey()
+			.then(() => {
+				return oThis.createDeviceKey();
+			})
+			.then(() => {
+				return this.kmStruct;
+			})
+			.catch((err) =>{
+				throw "Meta Struct building failed";
+			})
+	}
+
+	setIsTrustable( isTrustable ) {
+		const oThis = this;
+		oThis.kmStruct.isTrustable = isTrustable;
+		return oThis.storeKmData(oThis.kmStruct);
+	}
+
+	getDeviceAddress() {
+		return this.kmStruct.deviceAddress;
+	}
+
+	getApiAddress() {
+		return this.kmStruct.apiAddress;
 	}
 
 	createApiKey() {
 		const oThis = this;
 		const ecKeyPair = oThis.generateECKeyPair(KEY_TYPE.API);
 
-		const privateKey = ecKeyPair.getPrivateKey();
+		const privateKey = ecKeyPair.getPrivateKeyString();
 
 		console.log(LOG_TAG, "CreateApiKey :: Encrypting the generated keys");
 
@@ -109,6 +132,7 @@ class IKM {
 			})
 			.then((apiKeyAddress)=> {
 				oThis.kmStruct.apiAddress = apiKeyAddress;
+				return true;
 			})
 			.catch((err) => {
 				throw OstError.sdkError(err, "okm_e_ikm_1");
@@ -121,14 +145,32 @@ class IKM {
 		const mnemonics = oThis.generateMnemonics();
 
 		const ecKeyPair = oThis.generateECWalletWithMnemonics(mnemonics, KEY_TYPE.DEVICE);
-		const privateKey = ecKeyPair.getPrivateKey();
+		const privateKey = ecKeyPair.getPrivateKeyString();
 		console.log(LOG_TAG, "createDeviceKey :: Encrypting the generated keys");
 
-		OstSecureEnclave.encrypt(oThis.userId, privateKey);
+		return OstSecureEnclave.encrypt(oThis.userId, privateKey)
+			.then((encryptedData) => {
+				const deviceAddress = ecKeyPair.getChecksumAddressString();
+				const deviceAddressId = oThis.createEthKeyMetaId(deviceAddress);
 
-		const deviceApiKey = ecKeyPair.getChecksumAddressString();
-		this.kmStruct.apiAddress = deviceApiKey;
+				const dataToStore = {
+					id: deviceAddressId,
+					data: encryptedData
+				};
 
+				console.log(LOG_TAG, "CreateDeviceKey :: Inserting keys");
+				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
+					.then(() => {
+						return deviceAddress;
+					})
+			})
+			.then((deviceAddress)=> {
+				oThis.kmStruct.deviceAddress = deviceAddress;
+				return true;
+			})
+			.catch((err) => {
+				throw OstError.sdkError(err, "okm_e_ikm_1");
+			});
 	}
 
 	createEthKeyMetaId( address) {
@@ -148,9 +190,37 @@ class IKM {
 		return this.signHash(ethWallet, messageHash);
 	}
 
-	personalSign(ethWallet, messageToSign) {
+	personalSign(messageToSign, ethWallet) {
+		const oThis = this;
+		if (ethWallet) {
+			oThis.getApiWallet()
+				.then(()=>{
+
+				})
+		}
 		const messageHash = ethUtil.hashPersonalMessage(messageToSign);
 		return this.signHash(ethWallet, messageHash);
+	}
+
+	getApiWallet() {
+		const oThis = this,
+			apiKeyId = "ApikeyId"
+		;
+		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, apiKeyId)
+			.then((data) => {
+				const privateKey = data.data;
+				return OstSecureEnclave.decrypt(oThis.userId, privateKey, true);
+			})
+			.then((privateKey) => {
+				console.log(LOG_TAG, "Result", privateKey);
+				const priv = EthUtil.toBuffer(privateKey);
+
+				const wallet = Wallet.fromPrivateKey(priv);
+				console.log(LOG_TAG, "Wallet address", wallet.getChecksumAddressString());
+			})
+			.catch((err) => {
+				throw OstError.sdkError(err, "okm_e_ikm_1");
+			});
 	}
 
 	signHash(ethWallet, msgHash) {
@@ -215,6 +285,7 @@ class KeyMetaStruct {
 	constructor() {
 		this.apiAddress = "";
 		this.deviceAddress = "";
+		this.isTrustable = false;
 		this.ethKeyMetaMapping = {};
 		this.ethKeyMnemonicsMetaMapping = {};
 	}

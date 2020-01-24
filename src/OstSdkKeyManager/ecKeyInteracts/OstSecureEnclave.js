@@ -72,7 +72,7 @@ class SecureEnclave {
 
 	strToArrayBuffer(str) {
 		var buf = new ArrayBuffer(str.length * 2);
-		var bufView = new Uint16Array(buf);
+		var bufView = new Uint8Array(buf);
 		for (var i = 0, strLen = str.length; i < strLen; i++) {
 			bufView[i] = str.charCodeAt(i);
 		}
@@ -80,17 +80,13 @@ class SecureEnclave {
 	}
 
 	arrayBufferToString(buf) {
-		return String.fromCharCode.apply(null, new Uint16Array(buf));
+		return String.fromCharCode.apply(null, new Uint8Array(buf));
 	}
 
 	encrypt(dataToEncrypt) {
 		const oThis = this;
 
-		let isArrayBuffer = true;
-		if (!(dataToEncrypt instanceof ArrayBuffer)) {
-			dataToEncrypt = oThis.strToArrayBuffer(dataToEncrypt);
-			isArrayBuffer = false;
-		}
+		dataToEncrypt = oThis.strToArrayBuffer(dataToEncrypt);
 
 		return this.getKeyObject()
 			.then((keyObject) => {
@@ -104,9 +100,6 @@ class SecureEnclave {
 			.then(function (cipherText) {
 				console.log(LOG_TAG, 'Data encrypted');
 
-				if (!isArrayBuffer) {
-					return oThis.arrayBufferToString(cipherText);
-				}
 				return cipherText;
 			}).catch(function (err) {
 				console.error(LOG_TAG, "Encryption fail");
@@ -117,12 +110,6 @@ class SecureEnclave {
 
 	decrypt(dataToDecrypt) {
 		const oThis = this;
-
-		let isArrayBuffer = true;
-		if (!(dataToDecrypt instanceof ArrayBuffer)) {
-			dataToDecrypt = oThis.strToArrayBuffer(dataToDecrypt);
-			isArrayBuffer = false;
-		}
 
 		return this.getKeyObject()
 			.then((keyObject) => {
@@ -136,10 +123,8 @@ class SecureEnclave {
 			.then(function (decryptedData) {
 				console.log(LOG_TAG, 'Data decrypted');
 
-				if (!isArrayBuffer) {
-					return oThis.arrayBufferToString(decryptedData);
-				}
-				return decryptedData;
+				return oThis.arrayBufferToString(decryptedData);
+
 			}).catch(function (err) {
 				console.error(LOG_TAG, "Decryption fail");
 

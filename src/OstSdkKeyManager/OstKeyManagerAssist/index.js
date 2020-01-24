@@ -12,14 +12,18 @@ export default class OstKeyManagerAssist {
       this.receiverName = receiverName;
 
       this.browserMessenger.subscribe(this, this.receiverName);
-
+			this.init("userId");
     }
 
 
 
 	init(userId) {
 		this.ikm = new IKM(userId);
-		this.ikm.init();
+		this.ikm.init()
+			.then(() => {
+				console.log(LOG_TAG, this.ikm.getDeviceAddress());
+				console.log(LOG_TAG, this.ikm.getApiAddress());
+			});
 		const messagePayload = {
 			userId: userId,
 			msg: "Ost KM init completed"
