@@ -1,5 +1,6 @@
 import OstSdkSetupDevice from "../workflows/OstSdkSetupDevice";
 
+const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
   constructor( messenger, receiverName ) {
     this.browserMessenger = messenger;
@@ -11,10 +12,14 @@ class OstSdkAssist {
   }
 
   setupDevice ( args ) {
-    console.log("OstSdkAssist :: setupDevice :: ", args);
+    console.log(LOG_TAG, "setupDevice :: ", args);
 
     let setupDevice = new OstSdkSetupDevice( args, this.browserMessenger );
     setupDevice.perform();
+  }
+
+  onSetupComplete( args ) {
+    console.log(LOG_TAG, "onSetupComplete :: ", args);
   }
 }
 

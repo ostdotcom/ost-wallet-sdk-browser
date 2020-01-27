@@ -34,7 +34,13 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
     }
 
     createOstSdkKeyManagerAssist () {
+      let oThis = this;
+      
       this.ostKeyManagerAssist = new OstKeyManagerAssist(this.browserMessenger, this.getReceiverName());
+      this.ostKeyManagerAssist.onSetupComplete = function (args) {
+        console.log(LOG_TAG,"createOstSdkKeyManagerAssist :: onSetupComplete", args);
+        oThis.onSetupComplete(args)
+      }
     }
 
     perform() {
@@ -68,7 +74,7 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
     }
 
     sendPublicKey() {
-      console.log("sending OstSdkKeyManager public key");
+      console.log(LOG_TAG, "sending OstSdkKeyManager public key");
 
       let ostMessage = new OstMessage();
       ostMessage.setFunctionName( "onSetupComplete" );

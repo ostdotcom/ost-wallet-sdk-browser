@@ -152,7 +152,7 @@ class OstBrowserMessenger {
   }
 
   onOtherMessageReceived( ostMessage, err) {
-
+    console.log("ostMessage.getMethodName() :: ", ostMessage.getMethodName());
     if (['onSetupComplete'].includes(ostMessage.getMethodName())) {
       this.onValidMessageReceived(ostMessage);
     }

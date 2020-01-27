@@ -6,7 +6,7 @@ import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'
 
-
+const LOG_TAG = "OstSdk :: index :: ";
 (function (window) {
 
   const location = window.location
@@ -24,7 +24,12 @@ import OstMessage from '../common-js/OstMessage'
     }
 
     createOstSdkAssist () {
+      let oThis = this;
       this.ostSdkAssist = new OstSdkAssist(this.browserMessenger, this.getReceiverName());
+      this.ostSdkAssist.onSetupComplete = function (args) {
+        console.log(LOG_TAG,"createOstSdkAssist :: onSetupComplete", args);
+        oThis.onSetupComplete(args)
+      }
     }
 
     perform() {
