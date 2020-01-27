@@ -35,7 +35,7 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
 
     createOstSdkKeyManagerAssist () {
       let oThis = this;
-      
+
       this.ostKeyManagerAssist = new OstKeyManagerAssist(this.browserMessenger, this.getReceiverName());
       this.ostKeyManagerAssist.onSetupComplete = function (args) {
         console.log(LOG_TAG,"createOstSdkKeyManagerAssist :: onSetupComplete", args);

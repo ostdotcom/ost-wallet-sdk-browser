@@ -1,66 +1,118 @@
 import OstKeyManagerProxy from "../OstKeyManagerProxy";
+import OstError from "../../common-js/OstError";
+import OstStateManager from "./OstStateManager";
 
 export default class OstSdkBaseWorkflow {
 
-	constructor(userId, browserMessenger) {
-		this.userId = userId;
-		this.browserMessenger = browserMessenger;
-		this.stateManager = new StateManager();
+  constructor(args, browserMessenger) {
+    this.userId = args.user_id.toString();
+    this.browserMessenger = browserMessenger;
+    let orderedStates = this.getOrderedStates();
+    this.stateManager = new OstStateManager(orderedStates);
 
-		this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
-	}
 
-	setStateManager() {
-		this.stateManager = new StateManager();
+    this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
+  }
 
-		const customStates = [];
-	}
+  getOrderedStates() {
+    let states = OstStateManager.state;
+    let orderedStates = [];
 
-	perform() {
-		setTimeout(()=>{
-			this.processNextState();
-		}, 0);
-	}
+    orderedStates.push(states.INITIAL);
+    orderedStates.push(states.PARAMS_VALIDATED);
+    orderedStates.push(states.DEVICE_VALIDATED);
 
-	processNextState() {
-		const currentState = this.stateManager.getCurrentState();
-		const stateObject = this.stateManager.getStateObject();
-		this.onStateChange(currentState, stateObject);
-	}
+    orderedStates.push(states.COMPLETED);
+    orderedStates.push(states.CANCELLED);
 
-	onStateChange(currentState, stateObject) {
+    return orderedStates;
+  }
 
-	}
-}
+  perform() {
+    try {
+      this.process();
+    }catch (err) {
+      let error = OstError.sdkError(err, 'sk_w_osbw_p_1');
 
-class StateManager {
-  state = {
-    INITIAL: "INITIAL",
-    PARAMS_VALIDATED: "PARAMS_VALIDATED",
-    INITIALIZED: "INITIALIZED",
-    REGISTERED: "REGISTERED",
-    DEVICE_VALIDATED: "DEVICE_VALIDATED",
-    PIN_AUTHENTICATION_REQUIRED: "PIN_AUTHENTICATION_REQUIRED",
-    PIN_INFO_RECEIVED: "PIN_INFO_RECEIVED",
-    AUTHENTICATED: "AUTHENTICATED",
-    CANCELLED: "CANCELLED",
-    COMPLETED: "COMPLETED"
-  };
+      this.postError(error);
+    }
+  }
 
-	constructor( states ) {
-		let currentIndex = 0;
-		this.states = states;
-	}
+  process() {
+    let states = OstStateManager.state;
+    switch (this.stateManager.getCurrentState()) {
+      case states.INITIAL:
+        this.validateParams();
+        this.onParamsValidated();
+        break;
+      case states.PARAMS_VALIDATED:
+        this.performUserDeviceValidation();
+        this.onUserDeviceValidated();
+        break;
+      case states.DEVICE_VALIDATED:
+        this.onDeviceValidated();
+        break;
+      case states.COMPLETED:
+        break;
+      case states.CANCELLED:
+        break;
+      case states.COMPLETED_WITH_ERROR:
+        break;
+      default:
+        break;
+    }
+  }
 
-	getNext () {
-		
-	}
+  validateParams() {
 
-	getCurrentState() {
+  }
 
-	}
+  onParamsValidated() {
+    this.processNext();
+  }
 
-	getStateObject() {
+  performUserDeviceValidation() {
+    //ensureApiCommunication
 
-	}
+    //ensureUser
+
+    //ensureToken
+
+    //shouldCheckCurrentDeviceAuthorization
+    if (this.shouldCheckCurrentDeviceAuthorization()) {
+      //ensureDeviceAuthorized
+    }
+  }
+
+  shouldCheckCurrentDeviceAuthorization() {
+    return true;
+  }
+
+  onUserDeviceValidated() {
+    this.processNext();
+  }
+
+  onDeviceValidated() {
+    this.processNext();
+  }
+
+  onWorkflowComplete() {
+    const workflowContext = this.getWorkflowContext();
+
+  }
+
+  getWorkflowContext() {
+
+  }
+
+  processNext(obj = null) {
+    this.stateManager.setNextState(obj);
+    this.process();
+  }
+
+  postError(error) {
+
+  }
+
+
 }

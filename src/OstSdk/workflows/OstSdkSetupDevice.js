@@ -4,13 +4,14 @@ import OstKeyManager from "../OstKeyManagerProxy";
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstStateManager from "./OstStateManager";
 
 const LOG_TAG = "SetupDevice";
 
 export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   constructor( args, browserMessenger ) {
-    super(args.userId, browserMessenger);
+    super(args, browserMessenger);
     console.log("OstSdkSetupDevice :: constructor :: ", args);
     this.tokenId = args.token_id;
     this.subscriberId = args.subscriber_id;
@@ -23,6 +24,43 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   	ACTIVATED: "activated"
   };
 
+  getOrderedStates() {
+    let states = OstStateManager.state;
+    let orderedStates = [];
+
+    orderedStates.push(states.INITIAL);
+    orderedStates.push(states.REGISTERED);
+
+    return orderedStates;
+  }
+
+  process() {
+    let states = OstStateManager.state;
+
+    switch (this.stateManager.getCurrentState()) {
+      case states.REGISTERED:
+        //Todo:: Sync with Ost Platform
+        break;
+      default:
+        super.process();
+        break;
+    }
+  }
+
+  validateParams() {
+    //Todo:: Validate params
+    if (this.userId.isEmpty()) {
+    }
+  }
+
+  onParamsValidated() {
+    //Todo:: Initialize OstUser(UserId, TokenId), OstToken(Token Id), OstDevice(ApiAddress, DeviceAddress)
+
+    // Todo: Check whether device is registered or not
+    // Todo: If registered ensure entities Otherwise move forward
+
+    //Todo:: registerDevice call with OstDevice
+  }
 
   sendRegisterDeviceMessage () {
     let message = new OstMessage();
@@ -37,33 +75,31 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
-  perform() {
-    console.log(LOG_TAG, "perform");
-    return this.keyManagerProxy.getDeviceAddress()
-      .then((deviceAddress) => {
-        console.log(LOG_TAG, " Got device address :: ", deviceAddress);
-        this.deviceAddress = deviceAddress;
+  createOrGetCurrentDevice(ostUser) {
+    let ostDevice = ostUser.getCurrentDevice();
+    if (ostDevice) {
+      console.debug(TAG, "currentDevice is null");
+      ostDevice = ostUser.createDevice();
+    }
+    return ostDevice;
+  }
 
-        return this.keyManagerProxy.getApiKeyAddress()
-      })
-      .then((apiKeyAddress) => {
-        console.log(LOG_TAG, " Got api key address :: ", apiKeyAddress);
-
-        this.apiKeyAddress = apiKeyAddress;
-        this.sendRegisterDeviceMessage();
-      })
-      .catch((err) => {
-
-      });
+  hasDeviceApiKey(ostDevice) {
+    const ostKeyManager = new OstKeyManager(this.userId);
+    return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
   }
 
 
+  deviceRegistered ( args ) {
+    console.log("OstSdkSetupDevice :: deviceRegistered",  args);
+    //Todo:: Call perform with args
+  }
 
+  syncEntities() {
+    //Todo: ensureAll Entities (user, device, token)
+  }
 
-
-
-
-//
+  //
 // return;
 //     console.log(LOG_TAG, "Initializing User and Token");
 //
@@ -91,30 +127,4 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 //     }
 //     console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
 //  }
-
-
-  setStateManager() {
-    super.setStateManager();
-    customStates.push(StateManager.state.INITIAL);
-    customStates.push(StateManager.state.INITIALIZED);
-    customStates.push(StateManager.state.REGISTERED);
-  }
-  createOrGetCurrentDevice(ostUser) {
-    let ostDevice = ostUser.getCurrentDevice();
-    if (ostDevice) {
-      console.debug(TAG, "currentDevice is null");
-      ostDevice = ostUser.createDevice();
-    }
-    return ostDevice;
-  }
-
-  hasDeviceApiKey(ostDevice) {
-    const ostKeyManager = new OstKeyManager(this.userId);
-    return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
-  }
-
-
-  deviceRegistered ( args ) {
-    console.log("OstSdkSetupDevice :: deviceRegistered",  args);
-  }
 }
