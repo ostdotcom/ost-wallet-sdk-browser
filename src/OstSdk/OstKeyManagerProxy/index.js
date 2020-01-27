@@ -1,4 +1,5 @@
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstMessage from "../../common-js/OstMessage";
 
 const LOG_TAG = "OstSdk :: OstKeyManagerProxy";
 
@@ -11,12 +12,10 @@ export default class OstKeyManagerProxy {
   getDeviceAddress ( ) {
     let oThis = this;
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        oThis.onDeviceAddressGet({device_address: "0xNewDeviceAddress"});
-      }, 1000);
+      oThis.sendMessageToGetDevice();
 
-      oThis.onDeviceAddressGet = function (args) {
-        console.log(LOG_TAG, "onDeviceAddressGet");
+      oThis.onSuccess = function (args) {
+        console.log(LOG_TAG, "onDeviceAddressGet", args);
         resolve(args.device_address);
       };
 
@@ -27,14 +26,28 @@ export default class OstKeyManagerProxy {
     });
   }
 
+  sendMessageToGetDevice() {
+    let functionParams = {
+      user_id: this.userId,
+    };
+		let subId = this.messengerObj.subscribe(this);
+
+		let message  = new OstMessage();
+		message.setReceiverName("OstSdkKeyManager");
+    message.setFunctionName("getDeviceAddress");
+    message.setArgs(functionParams, subId);
+    console.log(LOG_TAG, "sendMessageToGetDevice");
+		this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
+  }
+
   getApiKeyAddress ( ) {
     let oThis = this;
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        oThis.onApiKeyAddressGet({api_key_address: "0xApiKeyAddress"});
+        oThis.onSuccess({api_key_address: "0xApiKeyAddress"});
       }, 1000);
 
-      oThis.onApiKeyAddressGet = function (args) {
+      oThis.onSuccess = function (args) {
         console.log(LOG_TAG, "onDeviceAddressGet");
         resolve(args.api_key_address);
       };

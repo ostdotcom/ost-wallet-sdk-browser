@@ -13,11 +13,11 @@ export default class OstKeyManagerAssist {
       this.receiverName = receiverName;
 
       this.browserMessenger.subscribe(this, this.receiverName);
-			IKM.getKeyManager("userId")
-			.then((ikm) => {
-				let deviceAddress = ikm.getDeviceAddress();
-				console.log(LOG_TAG, "DEVICE_ADDRESS", deviceAddress);
-			})
+			// IKM.getKeyManager("userId")
+			// .then((ikm) => {
+			// 	let deviceAddress = ikm.getDeviceAddress();
+			// 	console.log(LOG_TAG, "DEVICE_ADDRESS", deviceAddress);
+			// })
     }
 
 
