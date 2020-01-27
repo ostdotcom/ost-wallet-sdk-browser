@@ -107,7 +107,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     let oThis = this;
     return new Promise((resolve, reject) => {
 
-      if (!oThis.currentDevice || )
+      if (!oThis.currentDevice )
 
       console.log(LOG_TAG, "registerDeviceIfRequired");
 
