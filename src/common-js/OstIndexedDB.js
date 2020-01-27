@@ -97,6 +97,30 @@ class OstIndexedDB {
 		});
 	}
 
+	putData(name, data) {
+		const oThis = this;
+
+		return new Promise(function (resolve, reject) {
+
+			const objectStore = oThis.dbObject
+				.transaction(name, "readwrite")
+				.objectStore(name);
+
+			const request = objectStore.put(data, data.id);
+
+			request.onsuccess = (event) => {
+				console.log(LOG_TAG, "Date inserted successfully", event);
+				resolve(event);
+			};
+
+			request.onerror = (err) => {
+				console.error(LOG_TAG, "Date insertion fail", err);
+				reject(err);
+			};
+
+		});
+	}
+
 	getData(name, key) {
 		const oThis = this;
 
@@ -121,8 +145,7 @@ class OstIndexedDB {
 }
 
 export default {
-	newInstance: (name, version) => {
-		return new OstIndexedDB(name, version);
-	},
-	STORES
+	newInstance: (name, version, stores) => {
+		return new OstIndexedDB(name, version, stores);
+	}
 };

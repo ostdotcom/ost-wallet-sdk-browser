@@ -1,4 +1,4 @@
-import OstBaseEntity from "./OstBaseEntity";
+import {OstBaseEntity, STORES} from "./OstBaseEntity";
 import OstDevice from "./OstDevice";
 import OstKeyManager from "../OstKeyManagerProxy";
 
@@ -10,9 +10,10 @@ class OstUser extends OstBaseEntity {
 	}
 
 	static init(userId, tokenId) {
-		return new OstUser(
+		const user = new OstUser(
 			{id: userId, token_id: tokenId}
 			);
+		return user.commit();
 	}
 
 	getCurrentDevice() {
@@ -28,6 +29,10 @@ class OstUser extends OstBaseEntity {
 		console.debug(LOG_TAG, String.format("currentDeviceAddress: %s", this.currentDeviceAddress));
 		currentDevice = OstDevice.getById(this.currentDeviceAddress);
 		return currentDevice;
+	}
+
+	getStoreName() {
+		return STORES.OST_USER;
 	}
 
 	createDevice() {

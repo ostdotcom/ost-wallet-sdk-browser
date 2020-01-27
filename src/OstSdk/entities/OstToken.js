@@ -1,4 +1,4 @@
-import OstBaseEntity from "./OstBaseEntity";
+import {OstBaseEntity, STORES} from "./OstBaseEntity";
 
 class OstToken extends OstBaseEntity {
 	constructor(jsonObject) {
@@ -6,9 +6,14 @@ class OstToken extends OstBaseEntity {
 	}
 
 	static init(tokenId) {
-		return new OstToken(
-			{token_id: tokenId}
-			);
+		const token = new OstToken(
+			{id: tokenId}
+		);
+		return token.commit();
+	}
+
+	getStoreName() {
+		return STORES.OST_TOKEN;
 	}
 }
 export default OstToken;

@@ -77,19 +77,27 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     //Todo:: Initialize OstUser(UserId, TokenId), OstToken(Token Id), OstDevice(ApiAddress, DeviceAddress)
     let oThis = this;
 
-    console.log(LOG_TAG, "onParamsValidated :: 1");
+    console.log(LOG_TAG, "onParamsValidated");
     return oThis.initToken()
-      .then(()=> {
+      .then((token)=> {
+        oThis.token = token;
         console.log(LOG_TAG, "initToken :: then");
         return oThis.initUser()
       })
-      .then(() => {
+      .then((user) => {
+				oThis.user = user;
         console.log(LOG_TAG, "initToken :: then");
         return oThis.getCurrentDevice();
       })
-      .then(() => {
-        console.log(LOG_TAG, "getCurrentDevice :: then");
-        return oThis.registerDeviceIfRequired()
+      .then((currentDevice) => {
+        if (!currentDevice) {
+          return oThis.createDevice()
+            .then((deviceEntity) => {
+							return oThis.registerDevice();
+						});
+        } else {
+          //Todo :: Sync entities
+        }
       })
       .catch((err) => {
         oThis.postError(OstError.sdkError(err, 'os_w_ossd_opv_1'));
@@ -97,13 +105,11 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   initToken() {
-    //todo: create token entity
-    return Promise.resolve()
+    return OstToken.init(this.tokenId);
   }
 
   initUser() {
-    //todo: crate user entity
-    return Promise.resolve()
+		return OstUser.init(this.userId, this.tokenId);
   }
 
   getCurrentDevice() {
@@ -117,7 +123,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     return new Promise((resolve, reject) => {
       console.log(LOG_TAG, "registerDeviceIfRequired");
 
-      // if (!oThis.currentDevice || oThis.currentDevice.isStatusRevoked()) {
+      if (!oThis.currentDevice || oThis.currentDevice.isStatusRevoked()) {
         oThis.createAndRegisterDevice()
           .then(() => {
             return resolve();
@@ -126,12 +132,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
           .catch((err) => {
             return reject(OstError.sdkError(err, 'os_w_ossd_rdif_1'));
           })
-      // }
+      }
 
-      // if (oThis.currentDevice.isStatusCreated()) {
-      //   oThis.registerDevice();
-      //   return resolve()
-      // }
+      if (oThis.currentDevice.isStatusCreated()) {
+        oThis.registerDevice();
+        return resolve()
+      }
     })
 
   }
