@@ -15,9 +15,19 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   constructor( args, browserMessenger ) {
     super(args, browserMessenger);
     console.log(LOG_TAG, "constructor :: ", args);
+
     this.tokenId = args.token_id;
     this.subscriberId = args.subscriber_id;
+
+    this.initParams()
+  }
+
+  initParams() {
     this.uuid = null;
+
+    this.currentDevice = null;
+    this.user = null;
+    this.token = null;
   }
 
   status = {
@@ -94,7 +104,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   registerDeviceIfRequired() {
+    let oThis = this;
     return new Promise((resolve, reject) => {
+
+      if (!oThis.currentDevice || )
 
       console.log(LOG_TAG, "registerDeviceIfRequired");
 
