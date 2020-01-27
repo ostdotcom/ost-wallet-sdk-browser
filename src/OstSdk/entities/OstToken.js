@@ -1,13 +1,18 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
 
 class OstToken extends OstBaseEntity {
+
+	static STATUS = {
+		CREATED: 'CREATED'
+	}
+
 	constructor(jsonObject) {
 		super(jsonObject)
 	}
 
 	static init(tokenId) {
 		const token = new OstToken(
-			{id: tokenId}
+			{id: tokenId, status: OstToken.STATUS.CREATED}
 		);
 		return token.commit();
 	}

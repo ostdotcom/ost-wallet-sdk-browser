@@ -3,7 +3,15 @@ import {OstBaseEntity, STORES} from "./OstBaseEntity";
 const LOG_TAG = "OstDevice";
 
 class OstDevice extends OstBaseEntity {
-  constructor(jsonObject) {
+
+	static STATUS = {
+		CREATED: 'CREATED',
+		REGISTERED: 'REGISTERED',
+		AUTHORIZED: 'AUTHORIZED',
+		REVOKED: 'REVOKED'
+	};
+
+	constructor(jsonObject) {
     super(jsonObject);
   }
 
@@ -16,7 +24,7 @@ class OstDevice extends OstBaseEntity {
 
 	static init(id, apiAddress, userId) {
 		const device = new OstDevice(
-			{id: id, api_key_address: apiAddress, user_id: userId}
+			{id: id, api_key_address: apiAddress, user_id: userId, status: OstDevice.STATUS.CREATED}
 		);
 		return device.commit();
 	}
@@ -35,13 +43,11 @@ class OstDevice extends OstBaseEntity {
 
   //Status Checks
   isStatusRevoked() {
-    //todo: check whether device status 'REVOKED'
-    return true
+		return OstDevice.STATUS.REVOKED == this.getStatus();
   }
 
   isStatusCreated() {
-	//todo: check whether device status 'CREATED'
-	return true;
+		return OstDevice.STATUS.CREATED == this.getStatus();
   }
 }
 

@@ -34,6 +34,7 @@ export default class OstSdkBaseWorkflow {
     try {
       this.process();
     }catch (err) {
+
       let error = OstError.sdkError(err, 'sk_w_osbw_p_1');
 
       this.postError(error);
@@ -118,7 +119,7 @@ export default class OstSdkBaseWorkflow {
   }
 
   postError(error) {
-    console.log(LOG_TAG, "os_w_osbw_pe_1")
+    console.error(LOG_TAG, "os_w_osbw_pe_1", error)
   }
 
 
