@@ -120,30 +120,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.user.getCurrentDevice();
   }
 
-  registerDeviceIfRequired() {
-    let oThis = this;
-
-    return new Promise((resolve, reject) => {
-      console.log(LOG_TAG, "registerDeviceIfRequired");
-
-      if (!oThis.currentDevice || oThis.currentDevice.isStatusRevoked()) {
-        oThis.createAndRegisterDevice()
-          .then(() => {
-            return resolve();
-
-          })
-          .catch((err) => {
-            return reject(OstError.sdkError(err, 'os_w_ossd_rdif_1'));
-          })
-      }
-
-      if (oThis.currentDevice.isStatusCreated()) {
-        oThis.registerDevice();
-        return resolve()
-      }
-    })
-
-  }
 
   createAndRegisterDevice() {
     let oThis = this;
