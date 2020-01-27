@@ -91,7 +91,7 @@ const LOG_TAG = "OstSdk :: index :: ";
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'kmMappyIFrame');
 
-    const url = 'http://localhost:9002';
+    const url = 'https://km-devmappy.ostsdkproxy.com';
 
     let params = {
       publicKeyHex: ostSdkObj.getPublicKeyHex()

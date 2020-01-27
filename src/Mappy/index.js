@@ -4,7 +4,7 @@ import OstMappyCallbacks from "../OstWalletSdk/OstMappyCallbacks";
 import './css/login.css';
 
 var i=1;
-var baseUrl="/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
 const LOG_TAG = "Mappy :: index :: ";
 
@@ -12,8 +12,25 @@ const LOG_TAG = "Mappy :: index :: ";
 
 $(function() {
 
+  $.ajaxSetup({
+    type: "POST",
+    xhrFields: {
+       withCredentials: true
+    },
+    crossDomain: true
+  });
+
+  $.ajaxSetup({
+      type: "GET",
+      xhrFields: {
+         withCredentials: true
+      },
+      crossDomain: true
+  });
+
   $("#signupBtn").click(function () {
-    
+  
+
     
    $.post(baseUrl+"/login",
       {

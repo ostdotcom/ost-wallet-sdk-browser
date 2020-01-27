@@ -81,7 +81,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     console.log(LOG_TAG, "onParamsValidated");
     return oThis.initToken()
-      .then((token)=> {
+      .then((token) => {
         oThis.token = token;
         console.log(LOG_TAG, "initToken :: then");
         return oThis.initUser()
@@ -154,7 +154,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     //Todo: ensureAll Entities (user, device, token)
     console.log(LOG_TAG, "syncEntities");
 
-		const baseUrl = 'https://api.stagingost.com/testnet/v2/';
+		const baseUrl = 'https://api.stagingostproxy.com/testnet/v2/';
 
 		const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
 		apiClient.getToken()

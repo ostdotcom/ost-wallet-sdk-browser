@@ -49,7 +49,7 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'sdkMappyIFrame');
 
-    const url = 'http://localhost:9001';
+    const url = 'https://sdk-devmappy.ostsdkproxy.com';
 
     let params = {
       publicKeyHex: walletSdk.getPublicKeyHex()
