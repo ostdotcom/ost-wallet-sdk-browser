@@ -105,6 +105,11 @@ export default class OstSdkBaseWorkflow {
 
   }
 
+  performState(state, obj) {
+    this.stateManager.setState(state, obj);
+    this.perform();
+  }
+
   processNext(obj = null) {
     this.stateManager.setNextState(obj);
     this.process();

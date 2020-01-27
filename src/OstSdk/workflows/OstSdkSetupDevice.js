@@ -23,11 +23,14 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   initParams() {
-    this.uuid = null;
+    this.deviceRegisteredUUID = null;
 
     this.currentDevice = null;
     this.user = null;
     this.token = null;
+
+    this.deivceAddress = null;
+    this.apiKeyAddress = null;
   }
 
   status = {
@@ -103,14 +106,26 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     return Promise.resolve()
   }
 
+  getCurrentDevice() {
+    //todo: get current device entity
+    return Promise.resolve()
+  }
+
   registerDeviceIfRequired() {
     let oThis = this;
+
     return new Promise((resolve, reject) => {
 
-      if (!oThis.currentDevice )
+      if (!oThis.currentDevice || oThis.currentDevice.isStatusRevoked()) {
+        oThis.createAndRegisterDevice();
+        return resolve;
+      }
+
+      if (oThis.currentDevice.isStatusCreated()) {
+        oThis.registerDevice();
+      }
 
       console.log(LOG_TAG, "registerDeviceIfRequired");
-
     })
 
 
@@ -120,43 +135,68 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     //Todo:: registerDevice call with OstDevice
   }
 
-  getCurrentDevice() {
-    //todo: get current device entity
+  createAndRegisterDevice() {
+    let oThis = this;
+
+    oThis.createDevice()
+      .then(() => {
+        oThis.registerDevice();
+      })
+      .catch((err) => {
+        throw OstError.sdkError(err, 'os_w_ossd_rdif_1');
+      })
+  }
+
+  createDevice() {
+    let oThis = this;
+
+    return oThis.keyManagerProxy.getDeviceAddress()
+      .then((deviceAddress) => {
+        oThis.deivceAddress = deviceAddress;
+        return oThis.keyManagerProxy.getApiKeyAddress()
+      })
+      .then((apiKeyAddress)=> {
+        oThis.apiKeyAddress = apiKeyAddress;
+        return oThis.storeDeviceEntity()
+      })
+      .catch((err) => {
+        throw OstError.sdkError(err, 'os_w_ossd_cd_1')
+      })
+  }
+
+  storeDeviceEntity() {
+    let deviceEntity = {
+      device_address: this.deivceAddress,
+      api_key_address: this.apiKeyAddress
+    };
+
+    //todo: store device entity
+
+    this.currentDevice = deviceEntity;
     return Promise.resolve()
   }
 
-
-  sendRegisterDeviceMessage () {
+  registerDevice() {
     let message = new OstMessage();
     message.setFunctionName("registerDevice");
     message.setSubscriberId(this.subscriberId);
 
-    this.uuid = this.browserMessenger.subscribe(this);
+    //todo: add getter
+    let params = {
+      api_key_address: this.currentDevice.api_key_address,
+      device_address: this.currentDevice.device_address,
+      user_id: this.userId
+    };
+    this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
-    message.setArgs({device_address: this.deviceAddress, api_key_address: this.apiKeyAddress}, this.uuid);
+    message.setArgs(params, this.deviceRegisteredUUID);
 
-    console.log("sending message : OstSdkSetupDevice");
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
-  createOrGetCurrentDevice(ostUser) {
-    let ostDevice = ostUser.getCurrentDevice();
-    if (ostDevice) {
-      console.debug(TAG, "currentDevice is null");
-      ostDevice = ostUser.createDevice();
-    }
-    return ostDevice;
-  }
-
-  hasDeviceApiKey(ostDevice) {
-    const ostKeyManager = new OstKeyManager(this.userId);
-    return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
-  }
-
-
   deviceRegistered ( args ) {
-    console.log("OstSdkSetupDevice :: deviceRegistered",  args);
-    //Todo:: Call perform with args
+    this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
+    this.performState( OstStateManager.state.REGISTERED, args);
   }
 
   syncEntities() {
@@ -191,4 +231,19 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 //     }
 //     console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
 //  }
+
+
+//   createOrGetCurrentDevice(ostUser) {
+//     let ostDevice = ostUser.getCurrentDevice();
+//     if (ostDevice) {
+//       console.debug(TAG, "currentDevice is null");
+//       ostDevice = ostUser.createDevice();
+//     }
+//     return ostDevice;
+//   }
+//
+//   hasDeviceApiKey(ostDevice) {
+//     const ostKeyManager = new OstKeyManager(this.userId);
+//     return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
+//   }
 }
