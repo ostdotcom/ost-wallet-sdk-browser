@@ -13,14 +13,7 @@ export default class OstKeyManagerAssist {
       this.receiverName = receiverName;
 
       this.browserMessenger.subscribe(this, this.receiverName);
-			// IKM.getKeyManager("userId")
-			// .then((ikm) => {
-			// 	let deviceAddress = ikm.getDeviceAddress();
-			// 	console.log(LOG_TAG, "DEVICE_ADDRESS", deviceAddress);
-			// })
     }
-
-
 
 
 	getDeviceAddress(args) {
@@ -32,7 +25,7 @@ export default class OstKeyManagerAssist {
 		}
 		return IKM.getKeyManager(userId)
 			.then((ikm) => {
-				let deviceAddress = ikm.getDeviceAddress(userId);
+				let deviceAddress = ikm.getDeviceAddress();
 				return oThis.onSuccess({user_id: userId, device_address: deviceAddress}, subscriberId)
 			})
 			.catch((err) => {
@@ -50,8 +43,8 @@ export default class OstKeyManagerAssist {
 		}
 		return IKM.getKeyManager(userId)
 			.then((ikm) => {
-				let deviceAddress = ikm.getApiAddress(userId);
-				return oThis.onSuccess({user_id: userId, api_address: apiAddress}, subscriberId)
+				let apiAddress = ikm.getApiAddress();
+				return oThis.onSuccess({user_id: userId, api_key_address: apiAddress}, subscriberId)
 			})
 			.catch((err) => {
 				return oThis.onError({err: err, msg: "Api address fetch failed"}, subscriberId);
@@ -59,22 +52,24 @@ export default class OstKeyManagerAssist {
 
 	}
 
-	init(userId) {
-		this.ikm = new IKM(userId);
-		this.ikm.init()
-			.then(() => {
-				console.log(LOG_TAG,"Device address", this.ikm.getDeviceAddress());
-				console.log(LOG_TAG, "Api Address", this.ikm.getApiAddress());
+	signApi(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const url = args.url;
+		const params = args.params;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getApiSigner(userId)
+			.then((apiSigner) => {
+				let signature = apiSigner.sign(url, params);
+				return oThis.onSuccess({user_id: userId, signature: apiAddress}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Api address fetch failed"}, subscriberId);
 			});
-		const messagePayload = {
-			userId: userId,
-			msg: "Ost KM init completed"
-		};
-
-		// const message = new OstMessage(messagePayload, MESSAGE_TYPE.OST_KM_INIT);
-		// this.messengerObj.sendMessage(message, SOURCE.UPSTREAM);
 	}
-
 
 	onError(errMsgObj, subscriberId) {
 		const ostMsg = new OstMessage();

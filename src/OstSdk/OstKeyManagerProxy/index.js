@@ -12,52 +12,70 @@ export default class OstKeyManagerProxy {
   getDeviceAddress ( ) {
     let oThis = this;
     return new Promise((resolve, reject) => {
-      oThis.sendMessageToGetDevice();
 
-      oThis.onSuccess = function (args) {
-        console.log(LOG_TAG, "onDeviceAddressGet", args);
-        resolve(args.device_address);
-      };
+      let subId = this.messengerObj.subscribe(new ResponseHandler(
+				function (args) {
+					console.log(LOG_TAG, "onDeviceAddressGet", args);
+					resolve(args.device_address);
+				},
+				function ( args ) {
+					reject(args.error);
+				}
+			));
 
-      oThis.onError = function ( args ) {
-        reject(args.error);
-      };
+			let functionParams = {
+				user_id: this.userId,
+			};
 
+			let message  = new OstMessage();
+			message.setReceiverName("OstSdkKeyManager");
+			message.setFunctionName("getDeviceAddress");
+			message.setArgs(functionParams, subId);
+			console.log(LOG_TAG, "sendMessageToGetDevice");
+			this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
     });
   }
 
-  sendMessageToGetDevice() {
-    let functionParams = {
-      user_id: this.userId,
-    };
-		let subId = this.messengerObj.subscribe(this);
-
-		let message  = new OstMessage();
-		message.setReceiverName("OstSdkKeyManager");
-    message.setFunctionName("getDeviceAddress");
-    message.setArgs(functionParams, subId);
-    console.log(LOG_TAG, "sendMessageToGetDevice");
-		this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
-  }
 
   getApiKeyAddress ( ) {
     let oThis = this;
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        oThis.onSuccess({api_key_address: "0xApiKeyAddress"});
-      }, 1000);
 
-      oThis.onSuccess = function (args) {
-        console.log(LOG_TAG, "onDeviceAddressGet");
-        resolve(args.api_key_address);
-      };
 
-      oThis.onError = function ( args ) {
-        reject(args.error);
-      };
+			let subId = this.messengerObj.subscribe(new ResponseHandler(
+				function (args) {
+					console.log(LOG_TAG, "onApiAddressGet", args);
+					resolve(args.api_key_address);
+				},
+				function ( args ) {
+					reject(args.error);
+				}
+			));
 
+			let functionParams = {
+				user_id: this.userId,
+			};
+
+			let message  = new OstMessage();
+			message.setReceiverName("OstSdkKeyManager");
+			message.setFunctionName("getApiAddress");
+			message.setArgs(functionParams, subId);
+			console.log(LOG_TAG, "sendMessageToApiAddress");
+			this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
     });
   }
 
-
 }
+
+const ResponseHandler = function (success, error){
+	const oThis = this;
+
+	oThis.onSuccess = function(args) {
+			return success(args);
+	};
+
+	oThis.onError = function(args) {
+		return error(args);
+	};
+
+};

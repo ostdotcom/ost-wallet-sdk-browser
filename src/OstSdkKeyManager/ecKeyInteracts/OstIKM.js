@@ -4,6 +4,7 @@ import OstError from "../../common-js/OstError";
 import * as Wallet from "ethereumjs-wallet";
 import * as EthUtil from "ethereumjs-util";
 import OstKeyManager from "./OstKeyManager"
+import OstApiSigner from "./OstApiSigner";
 
 const bip39 = require('bip39');
 const randomBytes = require('randombytes');
@@ -193,14 +194,15 @@ class IKM {
 
 	personalSign(messageToSign, ethWallet) {
 		const oThis = this;
-		if (ethWallet) {
-			oThis.getApiWallet()
-				.then(()=>{
-
-				})
-		}
 		const messageHash = ethUtil.hashPersonalMessage(messageToSign);
-		return this.signHash(ethWallet, messageHash);
+		if (ethWallet) {
+			return oThis.getApiWallet()
+				.then((ethWallet) => {
+					return oThis.signHash(ethWallet, messageHash);
+				})
+		} else {
+			return Promise.resolve(oThis.signHash(ethWallet, messageHash));
+		}
 	}
 
 	getApiWallet() {
@@ -218,6 +220,7 @@ class IKM {
 
 				const wallet = Wallet.fromPrivateKey(priv);
 				console.log(LOG_TAG, "Wallet address", wallet.getChecksumAddressString());
+				return wallet;
 			})
 			.catch((err) => {
 				throw OstError.sdkError(err, "okm_e_ikm_1");

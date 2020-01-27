@@ -1,7 +1,13 @@
+import OstUrlHelper from "../../common-js/OstHelpers/OstUrlHelper";
 
 let ikmInstance = null;
-class OstApiSigner {
+export default class OstApiSigner {
 	constructor(ikm) {
 		ikmInstance = ikm;
+	}
+
+	sign( url, params ) {
+		const stringToSign = OstUrlHelper.getStringToSign(url, params);
+		return ikmInstance.personalSign(stringToSign);
 	}
 }
