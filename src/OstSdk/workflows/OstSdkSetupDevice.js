@@ -54,7 +54,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     switch (this.stateManager.getCurrentState()) {
       case states.REGISTERED:
-        //Todo:: Sync with Ost Platform
+        this.syncEntities();
         break;
       default:
         super.process();
@@ -92,7 +92,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return oThis.registerDeviceIfRequired()
       })
       .catch((err) => {
-        throw OstError.sdkError(err, 'os_w_ossd_opv_1')
+        oThis.postError(OstError.sdkError(err, 'os_w_ossd_opv_1'));
       });
   }
 
@@ -115,35 +115,36 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     let oThis = this;
 
     return new Promise((resolve, reject) => {
-
-      if (!oThis.currentDevice || oThis.currentDevice.isStatusRevoked()) {
-        oThis.createAndRegisterDevice();
-        return resolve;
-      }
-
-      if (oThis.currentDevice.isStatusCreated()) {
-        oThis.registerDevice();
-      }
-
       console.log(LOG_TAG, "registerDeviceIfRequired");
+
+      // if (!oThis.currentDevice || oThis.currentDevice.isStatusRevoked()) {
+        oThis.createAndRegisterDevice()
+          .then(() => {
+            return resolve();
+
+          })
+          .catch((err) => {
+            return reject(OstError.sdkError(err, 'os_w_ossd_rdif_1'));
+          })
+      // }
+
+      // if (oThis.currentDevice.isStatusCreated()) {
+      //   oThis.registerDevice();
+      //   return resolve()
+      // }
     })
 
-
-    // Todo: Check whether device is registered or not
-    // Todo: If registered ensure entities Otherwise move forward
-
-    //Todo:: registerDevice call with OstDevice
   }
 
   createAndRegisterDevice() {
     let oThis = this;
 
-    oThis.createDevice()
+    return oThis.createDevice()
       .then(() => {
         oThis.registerDevice();
       })
       .catch((err) => {
-        throw OstError.sdkError(err, 'os_w_ossd_rdif_1');
+        throw OstError.sdkError(err, 'os_w_ossd_card_1');
       })
   }
 
@@ -201,6 +202,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   syncEntities() {
     //Todo: ensureAll Entities (user, device, token)
+    console.log(LOG_TAG, "syncEntities");
   }
 
   //

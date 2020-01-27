@@ -2,6 +2,8 @@ import OstKeyManagerProxy from "../OstKeyManagerProxy";
 import OstError from "../../common-js/OstError";
 import OstStateManager from "./OstStateManager";
 
+const LOG_TAG = 'OstSdkBaseWorkflow :: ';
+
 export default class OstSdkBaseWorkflow {
 
   constructor(args, browserMessenger) {
@@ -116,7 +118,7 @@ export default class OstSdkBaseWorkflow {
   }
 
   postError(error) {
-
+    console.log(LOG_TAG, "os_w_osbw_pe_1")
   }
 
 
