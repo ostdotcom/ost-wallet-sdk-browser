@@ -9,6 +9,7 @@ import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
 import OstDevice from "../entities/OstDevice";
 import OstApiClient from "../../Api/OstApiClient";
+import OstWorkflowContext from "./OstWorkflowContext";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
 
@@ -19,27 +20,15 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     console.log(LOG_TAG, "constructor :: ", args);
 
     this.tokenId = args.token_id;
-    this.subscriberId = args.subscriber_id;
-
-    this.initParams()
   }
 
   initParams() {
+    super.initParams();
+
     this.deviceRegisteredUUID = null;
-
-    this.currentDevice = null;
-    this.user = null;
     this.token = null;
-
-    this.deivceAddress = null;
-    this.apiKeyAddress = null;
   }
 
-  status = {
-  	CREATED: "created",
-  	ACTIVATING: "activating",
-  	ACTIVATED: "activated"
-  };
 
   getOrderedStates() {
     let states = OstStateManager.state;
@@ -49,6 +38,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     orderedStates.push(states.REGISTERED);
 
     return orderedStates;
+  }
+
+  getWorkflowName() {
+    return OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE
   }
 
   process() {
@@ -87,18 +80,20 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return oThis.initUser()
       })
       .then((user) => {
-				oThis.user = user;
+        oThis.user = user;
         console.log(LOG_TAG, "initToken :: then");
         return oThis.user.createOrGetDevice(this.keyManagerProxy)
       })
       .then((deviceEntity) => {
-				oThis.currentDevice = deviceEntity;
+        oThis.currentDevice = deviceEntity;
+
         if (deviceEntity.isStatusCreated()) {
-							console.log(LOG_TAG, "Created Device entity", deviceEntity);
-							return oThis.registerDevice(deviceEntity);
+          console.log(LOG_TAG, "Created Device entity", deviceEntity);
+          return oThis.registerDevice(deviceEntity);
+
         } else {
-					console.log(LOG_TAG, "Current Device entity", deviceEntity);
-          oThis.syncEntities();
+          console.log(LOG_TAG, "Current Device entity", deviceEntity);
+          return oThis.syncEntities();
         }
       })
       .catch((err) => {
@@ -111,7 +106,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   initUser() {
-		return OstUser.init(this.userId, this.tokenId);
+    return OstUser.init(this.userId, this.tokenId);
   }
 
   getCurrentDevice() {
@@ -149,71 +144,39 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   syncEntities() {
-
     const oThis = this;
-    //Todo: ensureAll Entities (user, device, token)
-    console.log(LOG_TAG, "syncEntities");
 
-		const baseUrl = 'https://api.stagingostproxy.com/testnet/v2/';
+    console.log(LOG_TAG, "syncEntities", this.currentDevice);
 
-		const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
-		apiClient.getToken()
-			.then((resp) => {
-				console.log(LOG_TAG, 'resolve', resp);
-			})
-			.catch((err) => {
-				console.log(LOG_TAG, 'reject', err);
-			});
+    this.postFlowComplete(this.currentDevice);
+    return;
 
-    // let message = new OstMessage();
-    // message.setFunctionName("flowComplete");
-    // message.setSubscriberId(this.subscriberId);
-    // message.setArgs({ostWorkflowContext: "ostWorkflowContext", ostContextEntity: "ostContextEntity"});
+    return oThis.verifyDeviceRegistered()
+      .then(() => {
 
-    // this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+        console.log(LOG_TAG, "verifyDeviceRegistered :: then");
+        return oThis.syncUser()
+      })
+      .then(() => {
+
+        console.log(LOG_TAG, "syncUser :: then");
+        return oThis.syncToken()
+      })
+      .then(() => {
+        this.postFlowComplete(this.currentDevice);
+      })
+      .catch((err) => {
+        this.postError(err)
+      })
   }
 
-  //
-// return;
-//     console.log(LOG_TAG, "Initializing User and Token");
-//
-//     const ostUser = OstUser.init(this.userId, this.tokenId);
-//     const ostToken = OstToken.init(this.tokenId);
-//
-//     console.log(LOG_TAG, "Creating current device if does not exist");
-//     const ostDevice = this.createOrGetCurrentDevice(ostUser);
-//     if (!ostDevice) {
-//       //post error;
-//       return;
-//     }
-//
-//     console.log(LOG_TAG, "Check we are able to access device keys");
-//     if (!this.hasDeviceApiKey(ostDevice)) {
-//       // return postErrorInterrupt("wf_rd_pr_3", ErrorCode.SDK_ERROR);
-//       return;
-//     }
-//
-//     console.log(LOG_TAG, "Check if device has been registered.");
-//     if (status.CREATED  ===  ostDevice.getStatus() ) {
-//       console.log(LOG_TAG, "Registering device");
-//       this.registerDevice(ostDevice);
-//       return true;
-//     }
-//     console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
-//  }
+  verifyDeviceRegistered() {
+    return this.syncCurrentDevice()
+      .then((deviceEntity) => {
+        if (deviceEntity.canMakeApiCall()) {
+          throw OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP)
+        }
+      });
+  }
 
-
-//   createOrGetCurrentDevice(ostUser) {
-//     let ostDevice = ostUser.getCurrentDevice();
-//     if (ostDevice) {
-//       console.debug(TAG, "currentDevice is null");
-//       ostDevice = ostUser.createDevice();
-//     }
-//     return ostDevice;
-//   }
-//
-//   hasDeviceApiKey(ostDevice) {
-//     const ostKeyManager = new OstKeyManager(this.userId);
-//     return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
-//   }
 }

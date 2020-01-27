@@ -26,26 +26,35 @@ class OstError {
     return this.extraInfo;
   }
 
-	static sdkError(error, internalErrorCode, errorCode) {
-		if ( error instanceof OstError ) {
-			//The error is already an OST error.
-			return error;
-		}
-		const errorInfo = {};
-		errorInfo['error_obj'] = error;
+  static sdkError(error, internalErrorCode, errorCode) {
+    if ( error instanceof OstError ) {
+      //The error is already an OST error.
+      return error;
+    }
+    const errorInfo = {};
+    errorInfo['error_obj'] = error;
 
-		if (!internalErrorCode) {
-			internalErrorCode = 'c-e-sdkerror';
-		}
+    if (!internalErrorCode) {
+      internalErrorCode = 'c-e-sdkerror';
+    }
 
-		if (!errorCode) {
-			errorCode = OstErrorCodes.SKD_INTERNAL_ERROR;
-		}
+    if (!errorCode) {
+      errorCode = OstErrorCodes.SKD_INTERNAL_ERROR;
+    }
 
-		error = new OstError(internalErrorCode, errorCode, errorInfo);
+    error = new OstError(internalErrorCode, errorCode, errorInfo);
 
-		return error;
-	}
+    return error;
+  }
+
+  getJSONObject() {
+    return {
+      internal_code: this.getInternalErrorCode(),
+      error_code: this.getErrorCode(),
+      error_message: this.getErrorMessage(),
+      extra_info: this.getExtraInfo()
+    }
+  }
 }
 
 export default OstError;
