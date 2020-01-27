@@ -5,7 +5,6 @@ const LOG_TAG = "OstDevice";
 class OstDevice extends OstBaseEntity {
   constructor(jsonObject) {
     super(jsonObject);
-    this.currentDeviceAddress = null;
   }
 
 	static getById(deviceId) {
@@ -15,9 +14,9 @@ class OstDevice extends OstBaseEntity {
 		return device.sync();
 	}
 
-	static init(id, userId) {
+	static init(id, apiAddress, userId) {
 		const device = new OstDevice(
-			{id: id, user_id: userId}
+			{id: id, api_key_address: apiAddress, user_id: userId}
 		);
 		return device.commit();
 	}
@@ -26,12 +25,12 @@ class OstDevice extends OstBaseEntity {
 		return STORES.OST_DEVICE;
 	}
 
-  getApiSignerAddress() {
-
+  getApiKeyAddress() {
+		return this.getData().api_key_address;
   }
 
   getDeviceAddress() {
-
+		return this.getData().device_address;
   }
 
   //Status Checks

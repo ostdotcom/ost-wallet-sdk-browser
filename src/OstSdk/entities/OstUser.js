@@ -18,17 +18,11 @@ class OstUser extends OstBaseEntity {
 
 	getCurrentDevice() {
 		let currentDevice = null;
-		if (null == this.currentDeviceAddress) {
-			const ostKeyManager = new OstKeyManager(this.getId());
-			this.currentDeviceAddress = ostKeyManager.getDeviceAddress();
-			if (null == this.currentDeviceAddress) {
-				console.error(LOG_TAG, "Current Device address is null, seems like device has been revoked");
-				return null;
-			}
+		if (!this.currentDeviceAddress) {
+			return Promise.resolve(null);
 		}
 		console.debug(LOG_TAG, String.format("currentDeviceAddress: %s", this.currentDeviceAddress));
-		currentDevice = OstDevice.getById(this.currentDeviceAddress);
-		return currentDevice;
+		return OstDevice.getById(this.currentDeviceAddress);
 	}
 
 	getStoreName() {

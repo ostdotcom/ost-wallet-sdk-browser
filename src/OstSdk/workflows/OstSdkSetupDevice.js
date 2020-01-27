@@ -7,6 +7,7 @@ import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstStateManager from "./OstStateManager";
 import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
+import OstDevice from "../entities/OstDevice";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
 
@@ -93,9 +94,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         if (!currentDevice) {
           return oThis.createDevice()
             .then((deviceEntity) => {
-							return oThis.registerDevice();
+							oThis.currentDevice = deviceEntity;
+							console.log(LOG_TAG, "Created Device entity", deviceEntity);
+							return oThis.registerDevice(deviceEntity);
 						});
         } else {
+					console.log(LOG_TAG, "Current Device entity", currentDevice);
           //Todo :: Sync entities
         }
       })
@@ -113,8 +117,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   getCurrentDevice() {
-    //todo: get current device entity
-    return Promise.resolve()
+    this.user.getCurrentDevice();
   }
 
   registerDeviceIfRequired() {
@@ -177,21 +180,18 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       api_key_address: this.apiKeyAddress
     };
 
-    //todo: store device entity
-
-    this.currentDevice = deviceEntity;
-    return Promise.resolve()
+    return OstDevice.init(this.deivceAddress, this.apiKeyAddress, this.userId);
   }
 
-  registerDevice() {
+  registerDevice(deviceEntity) {
     let message = new OstMessage();
     message.setFunctionName("registerDevice");
     message.setSubscriberId(this.subscriberId);
 
-    //todo: add getter
+
     let params = {
-      api_key_address: this.currentDevice.api_key_address,
-      device_address: this.currentDevice.device_address,
+      api_key_address: deviceEntity.getApiKeyAddress(),
+      device_address: deviceEntity.getDeviceAddress(),
       user_id: this.userId
     };
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
