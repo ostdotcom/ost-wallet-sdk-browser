@@ -5,14 +5,16 @@ import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstStateManager from "./OstStateManager";
+import OstErrorCodes from '../../common-js/OstErrorCodes'
+import OstError from "../../common-js/OstError";
 
-const LOG_TAG = "SetupDevice";
+const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
 
 export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   constructor( args, browserMessenger ) {
     super(args, browserMessenger);
-    console.log("OstSdkSetupDevice :: constructor :: ", args);
+    console.log(LOG_TAG, "constructor :: ", args);
     this.tokenId = args.token_id;
     this.subscriberId = args.subscriber_id;
     this.uuid = null;
@@ -49,18 +51,67 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   validateParams() {
     //Todo:: Validate params
-    if (this.userId.isEmpty()) {
+    if (!this.userId) {
+      throw new OstError('os_w_ossd_vp_1', OstErrorCodes.INVALID_USER_ID);
+    }
+
+    if (!this.tokenId) {
+      throw new OstError('os_w_ossd_vp_2', OstErrorCodes.INVALID_TOKEN_ID);
     }
   }
 
   onParamsValidated() {
     //Todo:: Initialize OstUser(UserId, TokenId), OstToken(Token Id), OstDevice(ApiAddress, DeviceAddress)
+    let oThis = this;
+
+    console.log(LOG_TAG, "onParamsValidated :: 1");
+    return oThis.initToken()
+      .then(()=> {
+        console.log(LOG_TAG, "initToken :: then");
+        return oThis.initUser()
+      })
+      .then(() => {
+        console.log(LOG_TAG, "initToken :: then");
+        return oThis.getCurrentDevice();
+      })
+      .then(() => {
+        console.log(LOG_TAG, "getCurrentDevice :: then");
+        return oThis.registerDeviceIfRequired()
+      })
+      .catch((err) => {
+        throw OstError.sdkError(err, 'os_w_ossd_opv_1')
+      });
+  }
+
+  initToken() {
+    //todo: create token entity
+    return Promise.resolve()
+  }
+
+  initUser() {
+    //todo: crate user entity
+    return Promise.resolve()
+  }
+
+  registerDeviceIfRequired() {
+    return new Promise((resolve, reject) => {
+
+      console.log(LOG_TAG, "registerDeviceIfRequired");
+
+    })
+
 
     // Todo: Check whether device is registered or not
     // Todo: If registered ensure entities Otherwise move forward
 
     //Todo:: registerDevice call with OstDevice
   }
+
+  getCurrentDevice() {
+    //todo: get current device entity
+    return Promise.resolve()
+  }
+
 
   sendRegisterDeviceMessage () {
     let message = new OstMessage();

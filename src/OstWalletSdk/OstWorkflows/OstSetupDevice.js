@@ -17,7 +17,7 @@ class OstSetupDevice extends OstBaseWorkflow {
     let message = new OstMessage();
     message.setReceiverName('OstSdk');
     message.setFunctionName('setupDevice');
-    message.setArgs({userId: this.userId, tokenId: this.tokenId}, this.ostWorkflowCallbacks.uuid);
+    message.setArgs({user_id: this.userId, token_id: this.tokenId}, this.ostWorkflowCallbacks.uuid);
 
     this.ostWorkflowCallbacks.workflowId = this.workflowId;
 
