@@ -212,12 +212,14 @@ input[type=text]:placeholder, input[type=password]::placeholder {
     -webkit-animation-delay: 0.6s;
     -moz-animation-delay: 0.6s;
     animation-delay: 0.6s;
+    text-align: left;
 }
 
 .fadeIn.third {
     -webkit-animation-delay: 0.8s;
     -moz-animation-delay: 0.8s;
     animation-delay: 0.8s;
+    text-align: left;
 }
 
 .fadeIn.fourth {
@@ -280,42 +282,85 @@ input[type=text]:placeholder, input[type=password]::placeholder {
   }
 
 
-  .button {
+  .nextButton {
     display: inline-block;
-    border-radius: 4px;
-    background-color: #f4511e;
-    border: none;
-    color: #FFFFFF;
-    text-align: center;
-    font-size: 28px;
-    padding: 20px;
-    width: 200px;
-    transition: all 0.5s;
-    cursor: pointer;
-    margin: 5px;
-  }
-  
-  .nextButton span {
-    cursor: pointer;
-    display: inline-block;
+    font-family: "Montserrat", "Trebuchet MS", Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
     position: relative;
-    transition: 0.5s;
+    padding: 0.8em 1.4em;
+    padding-right: 4.7em;
+    background: #009ED8;
+    border: none;
+    color: white;
+    transition: 0.2s;
   }
-  
-  .nextButton span:after {
-    content: '\00bb';
+  .nextButton:before,
+  .nextButton:after {
     position: absolute;
-    opacity: 0;
     top: 0;
-    right: -20px;
-    transition: 0.5s;
-  }
-  
-  .nextButton:hover span {
-    padding-right: 25px;
-  }
-  
-  .nextButton:hover span:after {
-    opacity: 1;
+    bottom: 0;
     right: 0;
+    padding-top: inherit;
+    padding-bottom: inherit;
+    width: 2.8em;
+    content: "\00a0";
+    font-family: 'FontAwesome', sans-serif;
+    font-size: 1.2em;
+    text-align: center;
+    transition: 0.2s;
+    transform-origin: 50% 60%;
   }
+  .nextButton:before {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .nextButton:hover {
+    background: #0079a5;
+  }
+  .nextButton:active,
+  .nextButton:focus {
+    background: #002e3f;
+    outline: none;
+  }
+  .nextButton {
+    min-width: 15em;
+  }
+  .arrow {
+    background: rgb(126, 181, 202);
+  }
+  .arrow:hover {
+    background: #6996c0;
+  }
+  .arrow:active,
+  .arrow:focus {
+    background: #0079a5;
+  }
+  .arrow:after {
+    content: "\F054";
+  }
+  .arrow:hover:after {
+    -webkit-animation: bounceright 0.3s alternate ease infinite;
+    animation: bounceright 0.3s alternate ease infinite;
+  }
+  @-webkit-keyframes bounceright {
+    from {
+      -webkit-transform: translateX(0);
+    }
+    to {
+      -webkit-transform: translateX(3px);
+    }
+  }
+  @keyframes bounceright {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(3px);
+    }
+  }
+
+  .logoutLblPos{
+
+    position:fixed;
+    right:10px;
+    top:5px;
+ }

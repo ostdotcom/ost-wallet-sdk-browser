@@ -50,7 +50,6 @@ const devConfig = {
         clientLogLevel: 'silent',
         disableHostCheck: true
     },
-    
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
