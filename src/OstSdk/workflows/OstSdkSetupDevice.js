@@ -38,7 +38,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   perform() {
-console.log(LOG_TAG, "perform");
+    console.log(LOG_TAG, "perform");
     return this.keyManagerProxy.getDeviceAddress()
       .then((deviceAddress) => {
         console.log(LOG_TAG, " Got device address :: ", deviceAddress);
@@ -55,6 +55,9 @@ console.log(LOG_TAG, "perform");
       .catch((err) => {
 
       });
+  }
+
+
 
 
 
@@ -87,7 +90,7 @@ console.log(LOG_TAG, "perform");
 //       return true;
 //     }
 //     console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
-  }
+//  }
 
 
   setStateManager() {
@@ -110,17 +113,6 @@ console.log(LOG_TAG, "perform");
     return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
   }
 
-  registerDevice(ostDevice) {
-    const apiResponse = buildApiResponse(ostDevice);
-
-    setTimeout(() => {
-      if (this.delegate) {
-        this.delegate.registerDevice(apiResponse, OstRegisterDevice.this);
-      } else {
-        //Do Nothing, let the workflow die.
-      }
-    }, 0);
-  }
 
   deviceRegistered ( args ) {
     console.log("OstSdkSetupDevice :: deviceRegistered",  args);

@@ -12,7 +12,7 @@ export default class OstSdkBaseWorkflow {
 
 	setStateManager() {
 		this.stateManager = new StateManager();
-		//Add custom states.
+
 		const customStates = [];
 	}
 
@@ -34,22 +34,27 @@ export default class OstSdkBaseWorkflow {
 }
 
 class StateManager {
-	constructor() {
-      const state = {
-        INITIAL: "INITIAL",
-        PARAMS_VALIDATED: "PARAMS_VALIDATED",
-        INITIALIZED: "INITIALIZED",
-        REGISTERED: "REGISTERED",
-        DEVICE_VALIDATED: "DEVICE_VALIDATED",
-        PIN_AUTHENTICATION_REQUIRED: "PIN_AUTHENTICATION_REQUIRED",
-        PIN_INFO_RECEIVED: "PIN_INFO_RECEIVED",
-        AUTHENTICATED: "AUTHENTICATED",
-        CANCELLED: "CANCELLED",
-        COMPLETED: "COMPLETED"
-      };
+  state = {
+    INITIAL: "INITIAL",
+    PARAMS_VALIDATED: "PARAMS_VALIDATED",
+    INITIALIZED: "INITIALIZED",
+    REGISTERED: "REGISTERED",
+    DEVICE_VALIDATED: "DEVICE_VALIDATED",
+    PIN_AUTHENTICATION_REQUIRED: "PIN_AUTHENTICATION_REQUIRED",
+    PIN_INFO_RECEIVED: "PIN_INFO_RECEIVED",
+    AUTHENTICATED: "AUTHENTICATED",
+    CANCELLED: "CANCELLED",
+    COMPLETED: "COMPLETED"
+  };
+
+	constructor( states ) {
+		let currentIndex = 0;
+		this.states = states;
 	}
 
-
+	getNext () {
+		
+	}
 
 	getCurrentState() {
 

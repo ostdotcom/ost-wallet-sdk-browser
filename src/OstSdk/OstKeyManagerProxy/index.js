@@ -21,7 +21,7 @@ export default class OstKeyManagerProxy {
       };
 
       oThis.onError = function ( args ) {
-
+        reject(args.error);
       };
 
     });
@@ -40,7 +40,7 @@ export default class OstKeyManagerProxy {
       };
 
       oThis.onError = function ( args ) {
-
+        reject(args.error);
       };
 
     });
