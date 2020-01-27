@@ -43,7 +43,7 @@ class IKM {
 		return this.kmDB.createDatabase()
 			.then(() => {
 				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.userId);
-				return oThis.kmDB.getData(OstIndexDB.STORES.KEY_STORE_TABLE, oThis.userId)
+				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, oThis.userId)
 			})
 			.then((kmData) => {
 				if (kmData) {
@@ -325,15 +325,17 @@ const getInstance = (userId) => {
 	}
 
 	console.debug(LOG_TAG,'Creating IKM instance for userId ', userId);
-	ostKeyManagerUserId = userId;
-	ostKeyManager = new IKM(userId);
+	let uid = userId;
+	let okm = new IKM(userId);
 
-	return ostKeyManager.init()
+	return okm.init()
 		.then(()=> {
-			return ostKeyManager;
+          ostKeyManager = okm;
+          ostKeyManagerUserId = uid;
+		  return ostKeyManager;
 		})
-		.catch(()=> {
-			return ostKeyManager;
+		.catch((err)=> {
+			console.err(LOG_TAG, "getInstance failed", err);
 		})
 };
 
