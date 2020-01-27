@@ -202,6 +202,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   deviceRegistered ( args ) {
+
+    let subscriberId = args.subscriber_id;
+    if (subscriberId) {
+      this.subscriberId = subscriberId;
+    }
+
     this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
     this.performState( OstStateManager.state.REGISTERED, args);
   }
@@ -209,6 +215,13 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   syncEntities() {
     //Todo: ensureAll Entities (user, device, token)
     console.log(LOG_TAG, "syncEntities");
+
+    let message = new OstMessage();
+    message.setFunctionName("flowComplete");
+    message.setSubscriberId(this.subscriberId);
+    message.setArgs({ostWorkflowContext: "ostWorkflowContext", ostContextEntity: "ostContextEntity"});
+
+    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
   //

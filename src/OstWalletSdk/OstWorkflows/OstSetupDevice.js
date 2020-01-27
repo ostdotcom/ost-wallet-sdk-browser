@@ -37,7 +37,7 @@ class OstSetupDevice extends OstBaseWorkflow {
 
         let message = new OstMessage();
         message.setFunctionName("deviceRegistered");
-        message.setArgs(args);
+        message.setArgs(res, this.ostWorkflowCallbacks.uuid);
         message.setSubscriberId(args.subscriber_id);
 
         oThis.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);

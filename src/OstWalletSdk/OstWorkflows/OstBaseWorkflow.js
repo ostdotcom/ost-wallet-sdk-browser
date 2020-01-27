@@ -1,5 +1,8 @@
 import uuidv4 from "uuid/v4";
 
+
+const LOG_TAG = "OstBaseWorkflow :: ";
+
 class OstBaseWorkflow {
   constructor(browserMessenger, ostWorkflowCallbacks) {
     this.workflowId = null;
@@ -9,7 +12,22 @@ class OstBaseWorkflow {
 
   perform ( ) {
     this.workflowId = uuidv4();
-    console.log("OstBaseWorkflow :: workflowId : ", this.workflowId);
+    console.log(LOG_TAG, "perform :: workflowId ::", this.workflowId);
+  }
+
+  requestAcknowledged( args ) {
+    console.log(LOG_TAG, "requestAcknowledged", args);
+    this.ostWorkflowCallbacks.requestAcknowledged(args.ostWorkflowContext, args.ostContextEntity);
+  }
+
+  flowComplete( args ) {
+    console.log(LOG_TAG, "flowComplete", args);
+    this.ostWorkflowCallbacks.flowComplete(args.ostWorkflowContext, args.ostContextEntity);
+  }
+
+  flowInterrupt( args )  {
+    console.log(LOG_TAG, "flowInterrupt", args);
+    this.ostWorkflowCallbacks.flowInterrupt(args.ostWorkflowContext, args.ostError);
   }
 }
 
