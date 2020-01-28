@@ -5,6 +5,7 @@ import * as Wallet from "ethereumjs-wallet";
 import * as EthUtil from "ethereumjs-util";
 import OstKeyManager from "./OstKeyManager"
 import OstApiSigner from "./OstApiSigner";
+import OstQRSigner from "./OstQRSigner";
 
 const bip39 = require('bip39');
 const randomBytes = require('randombytes');
@@ -383,6 +384,13 @@ export default {
 		return getInstance(userId)
 			.then( (instance) => {
 				return new OstApiSigner(instance);
+			});
+	},
+
+	getQRSigner (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstQRSigner(instance);
 			});
 	}
 }

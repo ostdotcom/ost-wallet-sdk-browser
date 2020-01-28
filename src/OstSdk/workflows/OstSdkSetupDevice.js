@@ -158,9 +158,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         console.log(LOG_TAG, "syncUser :: then");
         return oThis.syncToken()
       })
-      .then(() => {
-				return this.keyManagerProxy.createSessionKey();
-      })
       .then((obj) => {
         console.log(LOG_TAG, "Session Address", obj);
         this.postFlowComplete(this.currentDevice);

@@ -54,6 +54,18 @@ export default class OstKeyManagerProxy {
 		return oThis.getFromKM('createSessionKey', functionParams)
 	}
 
+	signQRSessionData(sessionAddress, spendingLimit, expiryTime) {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+			session_address: sessionAddress,
+			spending_limit: spendingLimit,
+			expiry_time: expiryTime
+		};
+
+		return oThis.getFromKM('signQRSessionData', functionParams);
+	}
+
 	getFromKM(functionName, functionParams) {
 		let oThis = this;
 		return new Promise((resolve, reject) => {

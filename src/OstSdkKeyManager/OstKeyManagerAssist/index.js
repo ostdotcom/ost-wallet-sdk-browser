@@ -71,9 +71,31 @@ export default class OstKeyManagerAssist {
 				return oThis.onSuccess(response, subscriberId)
 			})
 			.catch((err) => {
-				return oThis.onError({err: err, msg: "Sign api params"}, subscriberId);
+				return oThis.onError({err: err, msg: "Sign api params failed"}, subscriberId);
 			});
 	}
+
+	signQRSessionData(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getQRSigner(userId)
+			.then((qrSigner) => {
+				return qrSigner.sign(args);
+			})
+			.then((qrObject) => {
+				console.log(LOG_TAG, "Qr data ", qrObject);
+				const response = Object.assign({}, args, {qr_data: qrObject});
+				return oThis.onSuccess(response, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Sign QR data failed"}, subscriberId);
+			});
+	}
+
 
 	createSessionKey(args) {
 		const oThis = this;
