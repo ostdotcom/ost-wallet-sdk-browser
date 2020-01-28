@@ -58,7 +58,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   validateParams() {
-    //Todo:: Validate params
     if (!this.userId) {
       throw new OstError('os_w_ossd_vp_1', OstErrorCodes.INVALID_USER_ID);
     }
@@ -69,7 +68,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   onParamsValidated() {
-    //Todo:: Initialize OstUser(UserId, TokenId), OstToken(Token Id), OstDevice(ApiAddress, DeviceAddress)
     let oThis = this;
 
     console.log(LOG_TAG, "onParamsValidated");

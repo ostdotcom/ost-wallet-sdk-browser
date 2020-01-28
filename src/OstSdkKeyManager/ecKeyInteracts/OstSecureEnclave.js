@@ -71,7 +71,7 @@ class SecureEnclave {
 	}
 
 	strToArrayBuffer(str) {
-		var buf = new ArrayBuffer(str.length * 2);
+		var buf = new ArrayBuffer(str.length);
 		var bufView = new Uint8Array(buf);
 		for (var i = 0, strLen = str.length; i < strLen; i++) {
 			bufView[i] = str.charCodeAt(i);

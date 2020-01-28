@@ -3,7 +3,7 @@ import IKM from "../ecKeyInteracts/OstIKM";
 import OstIndexDB from "../../common-js/OstIndexedDB";
 import OstMessage from "../../common-js/OstMessage";
 
-const LOG_TAG = 'IKM';
+const LOG_TAG = 'IKM: OstKeyManagerAssist';
 const KEY_STORE = 'KEY_STORE';
 
 export default class OstKeyManagerAssist {
@@ -52,10 +52,10 @@ export default class OstKeyManagerAssist {
 
 	}
 
-	signApi(args) {
+	signApiParams(args) {
 		const oThis = this;
 		const userId = args.user_id;
-		const url = args.url;
+		const res = args.resource;
 		const params = args.params;
 		const subscriberId = args.subscriber_id;
 		if (!userId) {
@@ -63,11 +63,15 @@ export default class OstKeyManagerAssist {
 		}
 		return IKM.getApiSigner(userId)
 			.then((apiSigner) => {
-				let signature = apiSigner.sign(url, params);
-				return oThis.onSuccess({user_id: userId, signature: apiAddress}, subscriberId)
+				return apiSigner.sign(res, params);
+			})
+			.then((signature) => {
+				console.log(LOG_TAG, "Signature ", signature);
+				const response = Object.assign({}, args, {signature: signature});
+				return oThis.onSuccess(response, subscriberId)
 			})
 			.catch((err) => {
-				return oThis.onError({err: err, msg: "Api address fetch failed"}, subscriberId);
+				return oThis.onError({err: err, msg: "Sign api params"}, subscriberId);
 			});
 	}
 

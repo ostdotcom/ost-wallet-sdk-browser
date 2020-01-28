@@ -137,7 +137,7 @@ class IKM {
 				return true;
 			})
 			.catch((err) => {
-				throw OstError.sdkError(err, "okm_e_ikm_1");
+				throw OstError.sdkError(err, "okm_e_ikm_cak_1");
 			});
 	}
 
@@ -171,7 +171,7 @@ class IKM {
 				return true;
 			})
 			.catch((err) => {
-				throw OstError.sdkError(err, "okm_e_ikm_1");
+				throw OstError.sdkError(err, "okm_e_ikm_cdk_1");
 			});
 	}
 
@@ -194,8 +194,9 @@ class IKM {
 
 	personalSign(messageToSign, ethWallet) {
 		const oThis = this;
-		const messageHash = ethUtil.hashPersonalMessage(messageToSign);
-		if (ethWallet) {
+		const bufferMessage = Buffer.from(messageToSign, 'utf-8');
+		const messageHash = ethUtil.hashPersonalMessage(bufferMessage);
+		if (!ethWallet) {
 			return oThis.getApiWallet()
 				.then((ethWallet) => {
 					return oThis.signHash(ethWallet, messageHash);
@@ -207,7 +208,7 @@ class IKM {
 
 	getApiWallet() {
 		const oThis = this,
-			apiKeyId = "ApikeyId"
+			apiKeyId = oThis.createEthKeyMetaId(oThis.kmStruct.apiAddress)
 		;
 		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, apiKeyId)
 			.then((data) => {
@@ -223,14 +224,15 @@ class IKM {
 				return wallet;
 			})
 			.catch((err) => {
-				throw OstError.sdkError(err, "okm_e_ikm_1");
+				throw OstError.sdkError(err, "okm_e_ikm_gaw_1");
 			});
 	}
 
 	signHash(ethWallet, msgHash) {
 		const msgSignature = ethUtil.ecsign(msgHash, ethWallet.getPrivateKey());
-		console.debug(LOG_TAG, "signature", msgSignature);
-		return msgSignature;
+		const rpcSig = ethUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
+		console.debug(LOG_TAG, "signature", rpcSig);
+		return rpcSig;
 	}
 
 	generateMnemonics() {
