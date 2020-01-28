@@ -55,7 +55,7 @@ class OstUser extends OstBaseEntity {
         oThis.currentDeviceAddress = deviceAddress;
         return keyManagerProxy.getApiKeyAddress()
       })
-      .then((apiKeyAddress)=> {
+      .then((apiKeyAddress) => {
         oThis.apiKeyAddress = apiKeyAddress;
         return oThis.storeDeviceEntity()
       })

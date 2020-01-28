@@ -240,7 +240,7 @@ function logout(){
 
 function registerDevice(address, api_signer_address, device_name = 'a', device_uuid = 'b'){
 
-  return new Promise((resolve, reject)=> {
+  return new Promise((resolve, reject) => {
 
     const response = function (data, status) {
       console.log("regData: " + data + "\nStatus: " + status);

@@ -33,7 +33,7 @@ class SecureEnclave {
 				}
 				keyObject = null;
 			})
-			.catch((err)=> {
+			.catch((err) => {
 				throw OstError.sdkError(err, 'okm_e_se_1');
 			});
 	}
@@ -157,10 +157,10 @@ const getInstance = (userId) => {
 	secureEnclave = new SecureEnclave(userId);
 
 	return secureEnclave.init()
-		.then(()=> {
+		.then(() => {
 			return secureEnclave;
 		})
-		.catch(()=> {
+		.catch(() => {
 			return secureEnclave;
 		})
 };

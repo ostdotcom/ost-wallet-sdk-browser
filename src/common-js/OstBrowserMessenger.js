@@ -316,7 +316,7 @@ class OstBrowserMessenger {
     const dataToSign = ostMessage.buildPayloadToSign();
 
     return this.getSignature(dataToSign)
-      .then((signedMessage)=>{
+      .then((signedMessage) => {
         console.log("signature generated.");
         const signature = OstHelpers.byteArrayToHex( signedMessage );
 
@@ -325,7 +325,7 @@ class OstBrowserMessenger {
         console.log("OstBrowserMessenger :: sendMessage ::  => ", ostMessage.buildPayloadToSend());
 
         targetWindow.postMessage(ostMessage.buildPayloadToSend(), targetOrigin);
-      }).catch((err)=>{
+      }).catch((err) => {
         console.log("signature generation failed.");
 
         throw OstError.sdkError(err,'cj_obm_sm_5');

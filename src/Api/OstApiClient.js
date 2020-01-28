@@ -61,7 +61,7 @@ export default class OstApiClient {
 	getDevice(deviceAddress) {
 		const oThis = this;
 		return oThis.init()
-			.then(()=> {
+			.then(() => {
 				const  map = oThis.getPrerequisiteMap();
 				return oThis.apiClient.get(`/users/${oThis.userId}/devices/${deviceAddress}`, {
 					params: map
@@ -72,7 +72,7 @@ export default class OstApiClient {
 	getCurrentDevice() {
 		const oThis = this;
 		return oThis.init()
-			.then(()=> {
+			.then(() => {
 				const  map = oThis.getPrerequisiteMap();
 				return oThis.apiClient.get(`/users/${oThis.userId}/devices/${this.device.getDeviceAddress()}`, {
 					params: map
@@ -83,7 +83,7 @@ export default class OstApiClient {
 	getCurrentUser() {
 		const oThis = this;
 		return oThis.init()
-			.then(()=> {
+			.then(() => {
 				const  map = oThis.getPrerequisiteMap();
 				return oThis.apiClient.get(`/users/${oThis.userId}`, {
 					params: map
