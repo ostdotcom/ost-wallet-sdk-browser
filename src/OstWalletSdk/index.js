@@ -32,6 +32,14 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
 
       return workflowId;
     }
+
+    createSessionAddress ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
+      let createSession = new OstCreateSession(userId, expirationTime, expirationTime, ostWorkflowDelegate, this.browserMessenger);
+      let workflowId = createSession.perform();
+
+      return workflowId;
+    }
+
   }
 
   const walletSdk = new OstWalletSdk();

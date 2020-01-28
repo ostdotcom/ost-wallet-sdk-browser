@@ -58,7 +58,7 @@ class OstMessage {
   }
 
   setArgs ( args, subscriberId ) {
-    this.args = Object.assign( {subscriber_id : subscriberId}, args );
+    this.args = Object.assign( args, {subscriber_id : subscriberId} );
   }
 
   //Getter

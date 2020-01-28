@@ -126,6 +126,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       device_address: deviceEntity.getId(),
       user_id: this.userId
     };
+
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
     message.setArgs(params, this.deviceRegisteredUUID);
@@ -135,10 +136,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   deviceRegistered ( args ) {
 
-    let subscriberId = args.subscriber_id;
-    if (subscriberId) {
-      this.subscriberId = subscriberId;
-    }
+    // let subscriberId = args.subscriber_id;
+    // if (subscriberId) {
+    //   this.subscriberId = subscriberId;
+    // }
 
     this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
     this.performState( OstStateManager.state.REGISTERED, args);
