@@ -117,7 +117,7 @@ function getQRCode() {
 
   let workflowId = window.OstSdkWallet.createSession(
     currentUser.user_id,
-    Date.now()/1000,
+    10000,
     '100000000000000000000000',
     mappyCallback);
 }
