@@ -1,6 +1,7 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
 import OstDevice from "./OstDevice";
 import OstError from "../../common-js/OstError";
+import OstToken from "./OstToken";
 
 const LOG_TAG = "OstUser";
 class OstUser extends OstBaseEntity {
@@ -20,7 +21,7 @@ class OstUser extends OstBaseEntity {
     const user = new OstUser(
       {id: userId, token_id: tokenId, status: OstUser.STATUS.CREATED}
     );
-    return user.commit();
+    return user.forceCommit();
   }
 
   static getById(userId) {
@@ -29,6 +30,15 @@ class OstUser extends OstBaseEntity {
     );
     return user.sync();
   }
+
+	static parse(data) {
+		const ostUser = new OstUser(data);
+		return ostUser.forceCommit();
+	}
+
+	getIdKey() {
+		return 'id';
+	}
 
   getTokenId() {
     return this.getData().token_id;

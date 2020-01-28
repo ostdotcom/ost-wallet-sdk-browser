@@ -1,5 +1,6 @@
 import OstUser from "../OstSdk/entities/OstUser";
 import * as axios from "axios";
+import OstEntityParser from "./OstEntityParser";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -79,6 +80,10 @@ export default class OstApiClient {
 				return oThis.apiClient.get(resource, {
 					params: paramsMap
 				});
+			})
+			.then((response) => {
+				OstEntityParser.parse(response.data);
+				return response;
 			});
 	}
 }

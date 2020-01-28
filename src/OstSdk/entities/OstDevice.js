@@ -19,20 +19,28 @@ class OstDevice extends OstBaseEntity {
     super(jsonObject);
   }
 
+	getIdKey() {
+		return 'address';
+	}
+
   static getById(deviceId) {
     const device = new OstDevice(
-      {id: deviceId}
+      {address: deviceId}
     );
     return device.sync();
   }
 
   static init(id, apiAddress, userId) {
     const device = new OstDevice(
-      {id: id, api_key_address: apiAddress, user_id: userId, status: OstDevice.STATUS.CREATED}
+      {address: id, api_key_address: apiAddress, user_id: userId, status: OstDevice.STATUS.CREATED}
     );
-    return device.commit();
+    return device.forceCommit()
   }
 
+  static parse(data) {
+    const ostDevice = new OstDevice(data);
+    return ostDevice.forceCommit();
+  }
   getStoreName() {
     return STORES.OST_DEVICE;
   }
