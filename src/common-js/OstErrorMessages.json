@@ -4,6 +4,10 @@
 
   "DEVICE_NOT_SETUP": "Unable to recognize the device. Please setup this device for the user using workflows provided at; https://dev.ost.com/platform/docs/sdk",
 
+  "INVALID_SESSION_EXPIRY_TIME": "Invalid expiration timestamp. Please ensure timestamp is passed in required format. For parameter details please vist https://dev.ost.com/platform/docs/api",
+
+
+
   "INVALID_ENUM": "Unexpected enum provided. Please check valid 'SOURCE' enum.",
   "INVALID_OST_MESSAGE": "OstMessage you have passed is improperly built. Please rectify and try again.",
   "INVALID_SIGNER": "Signer object is invalid. init method of `OstBrowserMessenger` is not called or Promise is not resolved. Please rectify and try again.",

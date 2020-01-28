@@ -17,4 +17,13 @@ class OstCreateSession extends OstBaseWorkflow{
       {user_id: this.userId, spending_limit: this.spendingLimit, expiration_time: this.expirationTime}
       );
   }
+
+  showSessionQRCode( args ) {
+    console.log(LOG_TAG, "showSessionQRCode ::", args);
+    this.ostWorkflowCallbacks.showSessionQRCode(args.qr_data);
+  }
 }
+
+
+
+export default OstCreateSession;

@@ -30,7 +30,7 @@ class OstBaseWorkflow {
   }
 
   flowInterrupt( args )  {
-    console.error(LOG_TAG, "flowInterrupt", args);
+    console.error(LOG_TAG, "flowInterrupt", args.ost_error);
 
     this.ostWorkflowCallbacks.flowInterrupt(args.ost_workflow_context, args.ost_error);
   }
@@ -40,7 +40,7 @@ class OstBaseWorkflow {
 
     let message = new OstMessage();
     message.setReceiverName('OstSdk');
-    message.setFunctionName('setupDevice');
+    message.setFunctionName(functionName);
     message.setArgs(params, this.ostWorkflowCallbacks.uuid);
 
     this.ostWorkflowCallbacks.workflowId = this.workflowId;

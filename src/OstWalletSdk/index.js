@@ -3,7 +3,7 @@ import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
 import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
-import OstMappyCallbacks from "./OstMappyCallbacks";
+import OstCreateSession from "./OstWorkflows/OstCreateSession";
 
 (function(window) {
 
@@ -33,7 +33,7 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
       return workflowId;
     }
 
-    createSessionAddress ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
+    createSession ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
       let createSession = new OstCreateSession(userId, expirationTime, expirationTime, ostWorkflowDelegate, this.browserMessenger);
       let workflowId = createSession.perform();
 

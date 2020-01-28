@@ -104,6 +104,10 @@ function setupDevice(args) {
 function getQRCode() {
 
   let mappyCallback =  new OstMappyCallbacks();
+  mappyCallback.showSessionQRCode = function (qrData) {
+    makeCode(qrData);
+  };
+
   mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
 
     console.log(LOG_TAG, "getQRCode");
@@ -111,16 +115,11 @@ function getQRCode() {
     console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
   };
 
-  let workflowId = window.OstSdkWallet.setupDevice(
+  let workflowId = window.OstSdkWallet.createSession(
     currentUser.user_id,
-
-
+    Date.now()/1000,
+    '100000000000000000000000',
     mappyCallback);
-
-  return
-  let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
-  let obj = JSON.parse(text);
-  makeCode(text);
 }
 
 

@@ -5,6 +5,7 @@ import OstApiClient from "../../Api/OstApiClient";
 import OstWorkflowContext from "./OstWorkflowContext";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstErrorCodes from "../../common-js/OstErrorCodes";
 
 const LOG_TAG = 'OstSdkBaseWorkflow :: ';
 
@@ -83,7 +84,9 @@ export default class OstSdkBaseWorkflow {
   }
 
   validateParams() {
-
+    if (!this.userId) {
+      throw new OstError('os_w_osbw_vp__1', OstErrorCodes.INVALID_USER_ID);
+    }
   }
 
   onParamsValidated() {

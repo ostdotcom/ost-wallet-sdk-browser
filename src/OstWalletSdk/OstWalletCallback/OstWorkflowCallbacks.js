@@ -59,6 +59,8 @@ class OstWalletWorkFlowCallback {
    * @override
    */
   flowInterrupt(ostWorkflowContext , ostError)  {   }
+
+  showSessionQRCode(qrData) { }
 }
 
 export default OstWalletWorkFlowCallback;

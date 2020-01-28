@@ -55,9 +55,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   validateParams() {
-    if (!this.userId) {
-      throw new OstError('os_w_ossd_vp_1', OstErrorCodes.INVALID_USER_ID);
-    }
+    super.validateParams();
 
     if (!this.tokenId) {
       throw new OstError('os_w_ossd_vp_2', OstErrorCodes.INVALID_TOKEN_ID);
