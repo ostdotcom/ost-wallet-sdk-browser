@@ -76,11 +76,11 @@ class OstDevice extends OstBaseEntity {
 
 
   canMakeApiCall() {
-    return this.isStatusAuthorized
-      || this.isStatusRegistered
-      || this.isStatusAuthorizing
-      || this.isStatusRecovering
-      || this.isStatusRevoking
+    return this.isStatusAuthorized()
+      || this.isStatusRegistered()
+      || this.isStatusAuthorizing()
+      || this.isStatusRecovering()
+      || this.isStatusRevoking()
   }
 }
 
