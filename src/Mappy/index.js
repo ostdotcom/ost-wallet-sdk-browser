@@ -1,10 +1,10 @@
 ;
 import './css/login.css';
+import '../common-js/qrcode';
+
 
 var i=1;
 var baseUrl="/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
-
-
 
 
 
@@ -28,7 +28,8 @@ $(function() {
         }
         if(data.success==true){
           
-          registerDevice("0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a","0x1ffc91Bce15fAd500f1Bb3f265cE33d4D385ff51","Postman client 2","0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a");
+          //var data =registerDevice("0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a","0x1ffc91Bce15fAd500f1Bb3f265cE33d4D385ff51","Postman client 2","0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a");
+          //alert(data);
           document.getElementById("signupBtn").disabled = true;
         $.ajax({
           type: 'GET',
@@ -119,7 +120,7 @@ function uploadUserData(jsonData, pageNo) {
             
               var cell3 = row1.insertCell(2).innerHTML = "Balance=0";
               var cell4 = row1.insertCell(3).innerHTML = '<button id="btn" class="btn btn-info" name="btn">Send</button>';
-              var cell5 = row1.insertCell(4).innerHTML = '<button id="Qrcodebtn" class="btn btn-info  " data-toggle="modal" data-target="#myModal">Get QR</button> ';
+              var cell5 = row1.insertCell(4).innerHTML = '<button id="Qrcodebtn" class="btn btn-info QrCodeBtnClass"  " data-toggle="modal" data-target="#myModal">Get QR</button> ';
               table.appendChild(row1);
             }
             count = i;
@@ -133,10 +134,17 @@ function uploadUserData(jsonData, pageNo) {
             requestNextData(pageNo);
           });
 
-          document.getElementById("Qrcodebtn").addEventListener("click", function(e) {
-            generateQRCode();
+          $(".QrCodeBtnClass").on('click', function(event){
+            let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
+            let obj =JSON.parse(text);
+            makeCode(text);
+        });
+          // document.getElementsByClassName("QrCode").addEventListener("click", function(e) {
+          //   let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
+          //   let obj =JSON.parse(text);
+          //   makeCode(text);
             
-          });
+          // });
 }
 
 
@@ -207,6 +215,7 @@ function registerDevice(address, api_signer_address, device_name , device_uuid){
     console.log("reg",data.code)
     if(data.success==false){
       alert("Already exists or invalid entry");
+      return data;
     }
     else{
       return data;
@@ -216,15 +225,19 @@ function registerDevice(address, api_signer_address, device_name , device_uuid){
 }
 
 
+function makeCode(object){
+  
+  let text  =  JSON.stringify(object);
+  $("#QrMainDiv div").html('');  
+  var qrcode = new QRCode(document.getElementById("qrcode"), {
+    text: text,
+    width: 470,
+    height: 470,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+});
 
-function generateQRCode(){
-
-    
+ 
 }
-
-
-
-
-
-
 

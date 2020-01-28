@@ -80,14 +80,14 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
   }
 
 
-  setTimeout(() => {
-    console.log("===================================================================================\n\nsetup device called");
-    let mappyCallback =  new OstMappyCallbacks();
-    console.log(window.OstSdkWallet.setupDevice("1", "1129", "http://stagingpepo.com", mappyCallback));
-    let workflowId = window.OstSdkWallet.setupDevice("1", "1129", "http://stagingpepo.com", mappyCallback);
-    console.log("setup device :: workflowId :: ", workflowId);
+  // setTimeout(() => {
+  //   console.log("===================================================================================\n\nsetup device called");
+  //   let mappyCallback =  new OstMappyCallbacks();
+  //   console.log(window.OstSdkWallet.setupDevice("1", "1129", "http://stagingpepo.com", mappyCallback));
+  //   let workflowId = window.OstSdkWallet.setupDevice("1", "1129", "http://stagingpepo.com", mappyCallback);
+  //   console.log("setup device :: workflowId :: ", workflowId);
 
-  }, 5000);
+  // }, 5000);
 
 
 
