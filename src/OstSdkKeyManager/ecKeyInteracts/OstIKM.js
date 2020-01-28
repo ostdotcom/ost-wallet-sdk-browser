@@ -132,7 +132,7 @@ class IKM {
 						return apiKeyAddress;
 					})
 			})
-			.then((apiKeyAddress)=> {
+			.then((apiKeyAddress) => {
 				oThis.kmStruct.apiAddress = apiKeyAddress;
 				return true;
 			})
@@ -166,7 +166,7 @@ class IKM {
 						return deviceAddress;
 					})
 			})
-			.then((deviceAddress)=> {
+			.then((deviceAddress) => {
 				oThis.kmStruct.deviceAddress = deviceAddress;
 				return true;
 			})
@@ -331,12 +331,12 @@ const getInstance = (userId) => {
 	let okm = new IKM(userId);
 
 	return okm.init()
-		.then(()=> {
+		.then(() => {
           ostKeyManager = okm;
           ostKeyManagerUserId = uid;
 		  return ostKeyManager;
 		})
-		.catch((err)=> {
+		.catch((err) => {
 			console.err(LOG_TAG, "getInstance failed", err);
 		})
 };
