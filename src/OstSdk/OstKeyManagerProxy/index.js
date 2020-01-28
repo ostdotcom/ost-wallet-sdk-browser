@@ -16,9 +16,12 @@ export default class OstKeyManagerProxy {
       let subId = this.messengerObj.subscribe(new ResponseHandler(
 				function (args) {
 					console.log(LOG_TAG, "onDeviceAddressGet", args);
+					oThis.messengerObj.unsubscribe(subId);
 					resolve(args.device_address);
 				},
 				function ( args ) {
+                  console.log(LOG_TAG, "getDeviceAddress :: error", args);
+                  oThis.messengerObj.unsubscribe(subId);
 					reject(args.error);
 				}
 			));

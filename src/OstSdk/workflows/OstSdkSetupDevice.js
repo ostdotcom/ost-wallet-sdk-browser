@@ -5,24 +5,30 @@ import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstStateManager from "./OstStateManager";
+import OstErrorCodes from '../../common-js/OstErrorCodes'
+import OstError from "../../common-js/OstError";
+import OstDevice from "../entities/OstDevice";
+import OstApiClient from "../../Api/OstApiClient";
+import OstWorkflowContext from "./OstWorkflowContext";
 
-const LOG_TAG = "SetupDevice";
+const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
 
 export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   constructor( args, browserMessenger ) {
     super(args, browserMessenger);
-    console.log("OstSdkSetupDevice :: constructor :: ", args);
+    console.log(LOG_TAG, "constructor :: ", args);
+
     this.tokenId = args.token_id;
-    this.subscriberId = args.subscriber_id;
-    this.uuid = null;
   }
 
-  status = {
-  	CREATED: "created",
-  	ACTIVATING: "activating",
-  	ACTIVATED: "activated"
-  };
+  initParams() {
+    super.initParams();
+
+    this.deviceRegisteredUUID = null;
+    this.token = null;
+  }
+
 
   getOrderedStates() {
     let states = OstStateManager.state;
@@ -34,12 +40,16 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     return orderedStates;
   }
 
+  getWorkflowName() {
+    return OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE
+  }
+
   process() {
     let states = OstStateManager.state;
 
     switch (this.stateManager.getCurrentState()) {
       case states.REGISTERED:
-        //Todo:: Sync with Ost Platform
+        this.syncEntities();
         break;
       default:
         super.process();
@@ -49,82 +59,124 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   validateParams() {
     //Todo:: Validate params
-    if (this.userId.isEmpty()) {
+    if (!this.userId) {
+      throw new OstError('os_w_ossd_vp_1', OstErrorCodes.INVALID_USER_ID);
+    }
+
+    if (!this.tokenId) {
+      throw new OstError('os_w_ossd_vp_2', OstErrorCodes.INVALID_TOKEN_ID);
     }
   }
 
   onParamsValidated() {
     //Todo:: Initialize OstUser(UserId, TokenId), OstToken(Token Id), OstDevice(ApiAddress, DeviceAddress)
+    let oThis = this;
 
-    // Todo: Check whether device is registered or not
-    // Todo: If registered ensure entities Otherwise move forward
+    console.log(LOG_TAG, "onParamsValidated");
+    return oThis.initToken()
+      .then((token) => {
+        oThis.token = token;
+        console.log(LOG_TAG, "initToken :: then");
+        return oThis.initUser()
+      })
+      .then((user) => {
+        oThis.user = user;
+        console.log(LOG_TAG, "initToken :: then");
+        return oThis.user.createOrGetDevice(this.keyManagerProxy)
+      })
+      .then((deviceEntity) => {
+        oThis.currentDevice = deviceEntity;
 
-    //Todo:: registerDevice call with OstDevice
+        if (deviceEntity.isStatusCreated()) {
+          console.log(LOG_TAG, "Created Device entity", deviceEntity);
+          return oThis.registerDevice(deviceEntity);
+
+        } else {
+          console.log(LOG_TAG, "Current Device entity", deviceEntity);
+          return oThis.syncEntities();
+        }
+      })
+      .catch((err) => {
+        oThis.postError(OstError.sdkError(err, 'os_w_ossd_opv_1'));
+      });
   }
 
-  sendRegisterDeviceMessage () {
+  initToken() {
+    return OstToken.init(this.tokenId);
+  }
+
+  initUser() {
+    return OstUser.init(this.userId, this.tokenId);
+  }
+
+  getCurrentDevice() {
+    this.user.getCurrentDevice();
+  }
+
+
+  registerDevice(deviceEntity) {
     let message = new OstMessage();
     message.setFunctionName("registerDevice");
     message.setSubscriberId(this.subscriberId);
 
-    this.uuid = this.browserMessenger.subscribe(this);
 
-    message.setArgs({device_address: this.deviceAddress, api_key_address: this.apiKeyAddress}, this.uuid);
+    let params = {
+      api_key_address: deviceEntity.getId(),
+      device_address: deviceEntity.getDeviceAddress(),
+      user_id: this.userId
+    };
+    this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
-    console.log("sending message : OstSdkSetupDevice");
+    message.setArgs(params, this.deviceRegisteredUUID);
+
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
-  createOrGetCurrentDevice(ostUser) {
-    let ostDevice = ostUser.getCurrentDevice();
-    if (ostDevice) {
-      console.debug(TAG, "currentDevice is null");
-      ostDevice = ostUser.createDevice();
-    }
-    return ostDevice;
-  }
-
-  hasDeviceApiKey(ostDevice) {
-    const ostKeyManager = new OstKeyManager(this.userId);
-    return ostKeyManager.getApiKeyAddress() === ostDevice.getApiSignerAddress();
-  }
-
-
   deviceRegistered ( args ) {
-    console.log("OstSdkSetupDevice :: deviceRegistered",  args);
-    //Todo:: Call perform with args
+
+    let subscriberId = args.subscriber_id;
+    if (subscriberId) {
+      this.subscriberId = subscriberId;
+    }
+
+    this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
+    this.performState( OstStateManager.state.REGISTERED, args);
   }
 
   syncEntities() {
-    //Todo: ensureAll Entities (user, device, token)
+    const oThis = this;
+
+    console.log(LOG_TAG, "syncEntities", this.currentDevice);
+
+    this.postFlowComplete(this.currentDevice);
+    return;
+
+    return oThis.verifyDeviceRegistered()
+      .then(() => {
+
+        console.log(LOG_TAG, "verifyDeviceRegistered :: then");
+        return oThis.syncUser()
+      })
+      .then(() => {
+
+        console.log(LOG_TAG, "syncUser :: then");
+        return oThis.syncToken()
+      })
+      .then(() => {
+        this.postFlowComplete(this.currentDevice);
+      })
+      .catch((err) => {
+        this.postError(err)
+      })
   }
 
-  //
-// return;
-//     console.log(LOG_TAG, "Initializing User and Token");
-//
-//     const ostUser = OstUser.init(this.userId, this.tokenId);
-//     const ostToken = OstToken.init(this.tokenId);
-//
-//     console.log(LOG_TAG, "Creating current device if does not exist");
-//     const ostDevice = this.createOrGetCurrentDevice(ostUser);
-//     if (!ostDevice) {
-//       //post error;
-//       return;
-//     }
-//
-//     console.log(LOG_TAG, "Check we are able to access device keys");
-//     if (!this.hasDeviceApiKey(ostDevice)) {
-//       // return postErrorInterrupt("wf_rd_pr_3", ErrorCode.SDK_ERROR);
-//       return;
-//     }
-//
-//     console.log(LOG_TAG, "Check if device has been registered.");
-//     if (status.CREATED  ===  ostDevice.getStatus() ) {
-//       console.log(LOG_TAG, "Registering device");
-//       this.registerDevice(ostDevice);
-//       return true;
-//     }
-//     console.log(LOG_TAG, "Device is already registered. ostDevice.status:" + ostDevice.getStatus() );
-//  }
+  verifyDeviceRegistered() {
+    return this.syncCurrentDevice()
+      .then((deviceEntity) => {
+        if (deviceEntity.canMakeApiCall()) {
+          throw OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP)
+        }
+      });
+  }
+
 }

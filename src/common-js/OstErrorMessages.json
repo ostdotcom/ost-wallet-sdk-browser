@@ -1,4 +1,9 @@
 {
+  "INVALID_USER_ID": "Unable to recognize the user id. Please inspect for what is being sent, rectify and re-submit.",
+  "INVALID_TOKEN_ID": "Unable to recognize the token id. Please inspect for what is being sent, rectify and re-submit.",
+
+  "DEVICE_NOT_SETUP": "Unable to recognize the device. Please setup this device for the user using workflows provided at; https://dev.ost.com/platform/docs/sdk",
+
   "INVALID_ENUM": "Unexpected enum provided. Please check valid 'SOURCE' enum.",
   "INVALID_OST_MESSAGE": "OstMessage you have passed is improperly built. Please rectify and try again.",
   "INVALID_SIGNER": "Signer object is invalid. init method of `OstBrowserMessenger` is not called or Promise is not resolved. Please rectify and try again.",

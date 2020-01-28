@@ -1,17 +1,35 @@
 import OstKeyManagerProxy from "../OstKeyManagerProxy";
 import OstError from "../../common-js/OstError";
 import OstStateManager from "./OstStateManager";
+import OstApiClient from "../../Api/OstApiClient";
+import OstWorkflowContext from "./OstWorkflowContext";
+import OstMessage from "../../common-js/OstMessage";
+import {SOURCE} from "../../common-js/OstBrowserMessenger";
+
+const LOG_TAG = 'OstSdkBaseWorkflow :: ';
+
+const baseUrl = 'https://api.stagingost.com/testnet/v2/';
 
 export default class OstSdkBaseWorkflow {
 
   constructor(args, browserMessenger) {
     this.userId = args.user_id.toString();
+    this.subscriberId = args.subscriber_id.toString();
+
     this.browserMessenger = browserMessenger;
+
     let orderedStates = this.getOrderedStates();
     this.stateManager = new OstStateManager(orderedStates);
 
 
     this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
+
+    this.initParams()
+  }
+
+  initParams() {
+    this.user = null;
+    this.currentDevice = null;
   }
 
   getOrderedStates() {
@@ -32,6 +50,7 @@ export default class OstSdkBaseWorkflow {
     try {
       this.process();
     }catch (err) {
+
       let error = OstError.sdkError(err, 'sk_w_osbw_p_1');
 
       this.postError(error);
@@ -102,7 +121,17 @@ export default class OstSdkBaseWorkflow {
   }
 
   getWorkflowContext() {
+    let workflowContext = new OstWorkflowContext(this.getWorkflowName());
+    return workflowContext
+  }
 
+  getWorkflowName() {
+
+  }
+
+  performState(state, obj) {
+    this.stateManager.setState(state, obj);
+    this.perform();
   }
 
   processNext(obj = null) {
@@ -110,9 +139,71 @@ export default class OstSdkBaseWorkflow {
     this.process();
   }
 
-  postError(error) {
+  postFlowComplete(entity) {
+    let message = new OstMessage();
+    message.setSubscriberId(this.subscriberId);
+    message.setFunctionName('flowComplete');
+    message.setArgs({
+      ost_context_entity: entity.getData(),
+      ost_workflow_context: this.getWorkflowContext().getJSONObject()
+    });
 
+    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
+  postError(error) {
+    error = OstError.sdkError(error, 'os_w_osbw_pe_1');
+
+    let message = new OstMessage();
+    message.setSubscriberId(this.subscriberId);
+    message.setFunctionName('flowInterrupted');
+    message.setArgs({
+      ost_error: error.getJSONObject(),
+      ost_workflow_context: this.getWorkflowContext().getJSONObject()
+    });
+
+    this.browserMessenger.send(message, SOURCE.UPSTREAM);
+  }
+
+  //Sync
+
+  syncCurrentDevice() {
+    let oThis = this;
+
+    const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
+    return apiClient.getCurrentDevice()
+    	.then((res) => {
+          console.log(LOG_TAG, 'syncCurrentDevice :: then', res);
+    	})
+    	.catch((err) => {
+    		console.log(LOG_TAG, 'syncCurrentDevice :: catch', err);
+    	});
+  }
+
+  syncUser() {
+    let oThis = this;
+
+    const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
+    return apiClient.getCurrentUser()
+      .then((res) => {
+        console.log(LOG_TAG, 'syncUser :: then', res);
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, 'syncUser :: catch', err);
+      });
+  }
+
+  syncToken() {
+    let oThis = this;
+
+    const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
+    return apiClient.getToken()
+      .then((res) => {
+        console.log(LOG_TAG, 'syncUser :: then', res);
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, 'syncUser :: catch', err);
+      });
+  }
 
 }

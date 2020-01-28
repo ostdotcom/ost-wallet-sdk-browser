@@ -1,37 +1,87 @@
-import OstBaseEntity from "./OstBaseEntity";
+import {OstBaseEntity, STORES} from "./OstBaseEntity";
 import OstDevice from "./OstDevice";
-import OstKeyManager from "../OstKeyManagerProxy";
+import OstError from "../../common-js/OstError";
 
 const LOG_TAG = "OstUser";
 class OstUser extends OstBaseEntity {
-	constructor(jsonObject) {
-		super(jsonObject);
-		this.currentDeviceAddress = null;
-	}
 
-	static init(userId, tokenId) {
-		return new OstUser(
-			{id: userId, token_id: tokenId}
-			);
-	}
+  static STATUS = {
+    CREATED: 'CREATED',
+    ACTIVATING: 'ACTIVATING',
+    ACTIVATED: 'ACTIVATED',
+  };
 
-	getCurrentDevice() {
-		let currentDevice = null;
-		if (null == this.currentDeviceAddress) {
-			const ostKeyManager = new OstKeyManager(this.getId());
-			this.currentDeviceAddress = ostKeyManager.getDeviceAddress();
-			if (null == this.currentDeviceAddress) {
-				console.error(LOG_TAG, "Current Device address is null, seems like device has been revoked");
-				return null;
-			}
-		}
-		console.debug(LOG_TAG, String.format("currentDeviceAddress: %s", this.currentDeviceAddress));
-		currentDevice = OstDevice.getById(this.currentDeviceAddress);
-		return currentDevice;
-	}
+  constructor(jsonObject) {
+    super(jsonObject);
+    this.currentDeviceAddress = null;
+  }
 
-	createDevice() {
+  static init(userId, tokenId) {
+    const user = new OstUser(
+      {id: userId, token_id: tokenId, status: OstUser.STATUS.CREATED}
+    );
+    return user.commit();
+  }
 
-	}
+  static getById(userId) {
+    const user = new OstUser(
+      {id: userId}
+    );
+    return user.sync();
+  }
+
+  getTokenId() {
+    return this.getData().token_id;
+  }
+
+  getCurrentDevice() {
+    let currentDevice = null;
+    if (!this.currentDeviceAddress) {
+      return Promise.resolve(null);
+    }
+    console.debug(LOG_TAG, String.format("currentDeviceAddress: %s", this.currentDeviceAddress));
+    return OstDevice.getById(this.currentDeviceAddress);
+  }
+
+  getStoreName() {
+    return STORES.OST_USER;
+  }
+
+  createOrGetDevice(keyManagerProxy) {
+    let oThis = this;
+
+    return keyManagerProxy.getDeviceAddress()
+      .then((deviceAddress) => {
+        oThis.currentDeviceAddress = deviceAddress;
+        return keyManagerProxy.getApiKeyAddress()
+      })
+      .then((apiKeyAddress)=> {
+        oThis.apiKeyAddress = apiKeyAddress;
+        return oThis.storeDeviceEntity()
+      })
+      .catch((err) => {
+        throw OstError.sdkError(err, 'os_w_ossd_cd_1')
+      })
+  }
+
+  storeDeviceEntity() {
+    return OstDevice.getById(this.currentDeviceAddress)
+      .then((deviceEntity) => {
+        if (!deviceEntity) {
+          return OstDevice.init(this.currentDeviceAddress, this.apiKeyAddress, this.userId);
+        }
+        return deviceEntity;
+      });
+  }
+
+  //status
+  isStatusActivated() {
+    return OstUser.status.ACTIVATED === this.getStatus();
+  }
+
+  isStatusActivating() {
+  	return OstUser.status.ACTIVATING === this.getStatus();
+  }
+
 }
 export default OstUser;
