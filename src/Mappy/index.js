@@ -46,14 +46,9 @@ $(function() {
           alert("INVALID USERNAME OR PASSWORD");
         }
         if(data.success==true){
-<<<<<<< HEAD
-          
-          //var data =registerDevice("0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a","0x1ffc91Bce15fAd500f1Bb3f265cE33d4D385ff51","Postman client 2","0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a");
-          //alert(data);
-=======
+
           setupDevice(data.data);
-          //registerDevice("0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a","0x1ffc91Bce15fAd500f1Bb3f265cE33d4D385ff51","Postman client 2","0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a");
->>>>>>> fc5ad2e62204ea522971d9dfeaa5067f4c92332a
+
           document.getElementById("signupBtn").disabled = true;
         $.ajax({
           type: 'GET',
@@ -247,23 +242,6 @@ function registerDevice(address, api_signer_address, device_name = 'a', device_u
 
   return new Promise((resolve, reject)=> {
 
-<<<<<<< HEAD
-  },
-  function (data, status) {
-    
-    console.log("regData: " + data + "\nStatus: " + status);
-    // Make another api call to fetch current user info.
-    console.log("reg",data.success);
-    console.log("reg",data.code)
-    if(data.success==false){
-      alert("Already exists or invalid entry");
-      return data;
-    }
-    else{
-      return data;
-    }
-  });
-=======
     const response = function (data, status) {
       console.log("regData: " + data + "\nStatus: " + status);
       // Make another api call to fetch current user info.
@@ -283,7 +261,6 @@ function registerDevice(address, api_signer_address, device_name = 'a', device_u
         api_signer_address: api_signer_address,
         device_name: device_name,
         device_uuid: device_uuid
->>>>>>> fc5ad2e62204ea522971d9dfeaa5067f4c92332a
 
       }, response)
   })
