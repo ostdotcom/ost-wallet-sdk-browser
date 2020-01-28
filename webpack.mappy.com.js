@@ -46,7 +46,9 @@ const devConfig = {
     devServer: {
         contentBase: "./dist",
         port: 9000,
-        liveReload: true,
+        liveReload: false,
+        hot: false,
+        inline: false,
         clientLogLevel: 'silent',
         disableHostCheck: true
     },

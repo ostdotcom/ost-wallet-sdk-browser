@@ -11,7 +11,9 @@ const devConfig = {
     devServer: {
         contentBase: "./dist",
         port: 9001,
-        liveReload: true,
+        liveReload: false,
+        hot: false,
+        inline: false,
         clientLogLevel: 'silent'
     },
     plugins: [

@@ -50,7 +50,9 @@ const devConfig = {
     devServer: {
         contentBase: "./dist",
         port: 9090,
-        liveReload: true,
+        liveReload: false,
+        hot: false,
+        inline: false,
         clientLogLevel: 'silent'
     },
     plugins: [
