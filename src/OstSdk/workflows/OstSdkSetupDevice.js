@@ -119,8 +119,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
 
     let params = {
-      api_key_address: deviceEntity.getId(),
-      device_address: deviceEntity.getDeviceAddress(),
+      api_key_address: deviceEntity.getApiKeyAddress(),
+      device_address: deviceEntity.getId(),
       user_id: this.userId
     };
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
