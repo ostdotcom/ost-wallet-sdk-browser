@@ -279,7 +279,7 @@ Open the follwoing links in browser and grant permission
 >
 > Click on `Accept Risk and Continue` on Firefox
 * [https://api.stagingostproxy.com/testnet/v2/tokens](https://api.stagingostproxy.com/testnet/v2/token)
-* [km-devmappy.ostsdkproxy.com/](km-devmappy.ostsdkproxy.com/)
+* [https://km-devmappy.ostsdkproxy.com/](https://km-devmappy.ostsdkproxy.com/)
 * [https://sdk-devmappy.ostsdkproxy.com/](https://sdk-devmappy.ostsdkproxy.com/)
 * [https://demo-devmappy.stagingostproxy.com](https://demo-devmappy.stagingostproxy.com)
 * [https://devmappy.com](https://devmappy.com)
