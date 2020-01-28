@@ -1,14 +1,11 @@
 import OstUser from "../entities/OstUser";
 import OstToken from "../entities/OstToken";
-import OstKeyManager from "../OstKeyManagerProxy";
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstStateManager from "./OstStateManager";
 import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
-import OstDevice from "../entities/OstDevice";
-import OstApiClient from "../../Api/OstApiClient";
 import OstWorkflowContext from "./OstWorkflowContext";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
@@ -162,6 +159,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return oThis.syncToken()
       })
       .then(() => {
+				return this.keyManagerProxy.createSessionKey();
+      })
+      .then((obj) => {
+        console.log(LOG_TAG, "Session Address", obj);
         this.postFlowComplete(this.currentDevice);
       })
       .catch((err) => {

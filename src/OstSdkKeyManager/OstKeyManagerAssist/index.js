@@ -84,7 +84,9 @@ export default class OstKeyManagerAssist {
 		}
 		return IKM.getKeyManager(userId)
 			.then((ikm) => {
-				let sessionAddress = ikm.createSessionKey();
+				return ikm.createSessionKey();
+			})
+			.then((sessionAddress) => {
 				return oThis.onSuccess({user_id: userId, session_address: sessionAddress}, subscriberId)
 			})
 			.catch((err) => {
