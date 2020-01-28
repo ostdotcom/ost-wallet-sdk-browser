@@ -156,7 +156,7 @@ export default class OstSdkBaseWorkflow {
 
     let message = new OstMessage();
     message.setSubscriberId(this.subscriberId);
-    message.setFunctionName('flowInterrupted');
+    message.setFunctionName('flowInterrupt');
     message.setArgs({
       ost_error: error.getJSONObject(),
       ost_workflow_context: this.getWorkflowContext().getJSONObject()

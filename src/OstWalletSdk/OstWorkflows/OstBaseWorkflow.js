@@ -30,8 +30,9 @@ class OstBaseWorkflow {
   }
 
   flowInterrupt( args )  {
-    console.log(LOG_TAG, "flowInterrupt", args);
-    this.ostWorkflowCallbacks.flowInterrupt(args.ostWorkflowContext, args.ostError);
+    console.error(LOG_TAG, "flowInterrupt", args);
+
+    this.ostWorkflowCallbacks.flowInterrupt(args.ost_workflow_context, args.ost_error);
   }
 
   startWorkflow(functionName, params) {
