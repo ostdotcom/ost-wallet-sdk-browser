@@ -71,14 +71,17 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     let oThis = this;
 
     console.log(LOG_TAG, "onParamsValidated");
+
     return oThis.initToken()
       .then((token) => {
         oThis.token = token;
+
         console.log(LOG_TAG, "initToken :: then");
         return oThis.initUser()
       })
       .then((user) => {
         oThis.user = user;
+
         console.log(LOG_TAG, "initToken :: then");
         return oThis.user.createOrGetDevice(this.keyManagerProxy)
       })
@@ -146,9 +149,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     console.log(LOG_TAG, "syncEntities", this.currentDevice);
 
-    this.postFlowComplete(this.currentDevice);
-    return;
-
     return oThis.verifyDeviceRegistered()
       .then(() => {
 
@@ -169,10 +169,14 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   verifyDeviceRegistered() {
-    return this.syncCurrentDevice()
+    const oThis = this;
+
+    return oThis.syncCurrentDevice()
       .then((deviceEntity) => {
-        if (deviceEntity.canMakeApiCall()) {
-          throw OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP)
+        if (deviceEntity && deviceEntity.hasOwnProperty(canMakeApiCall)) {
+          if (!deviceEntity.canMakeApiCall()) {
+            throw OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP)
+          }
         }
       });
   }

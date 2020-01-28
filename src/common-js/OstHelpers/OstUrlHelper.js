@@ -19,6 +19,23 @@ class OstUrlHelper {
     return url+connector+"?"+stringifiedParams;
   }
 
+  static getStringForOstApiSign(url, params) {
+
+    let stringifiedParams = queryString.stringify(params, {
+      arrayFormat: 'brackets', sort: function (a, b) {
+        return a.localeCompare(b);
+      }
+    }).replace(/%20/g, '+');
+
+    let connector = '';
+    if (!url.endsWith('/')) {
+      connector = '/';
+    }
+
+    return url+connector+"?"+stringifiedParams;
+  }
+
+
   static getParamsFromURL(searchParams) {
     let params = queryString.parse(searchParams, {arrayFormat: 'bracket', ignoreQueryPrefix: true});
     return params;

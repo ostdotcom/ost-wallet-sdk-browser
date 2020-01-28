@@ -7,7 +7,7 @@ export default class OstApiSigner {
 	}
 
 	sign( url, params ) {
-		const stringToSign = OstUrlHelper.getStringToSign(url, params);
+		const stringToSign = OstUrlHelper.getStringForOstApiSign(url, params);
 		return ikmInstance.personalSign(stringToSign);
 	}
 }

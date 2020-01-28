@@ -16,7 +16,7 @@ export default class OstApiClient {
 		this.keyManagerProxy = keyManagerProxy;
 		this.apiClient = axios.create({
 			baseURL: baseUrl,
-			timeout: 1000,
+			timeout: 10000,
 			headers: {
 				'Content-Type': "application/x-www-form-urlencoded",
 			}
@@ -46,53 +46,26 @@ export default class OstApiClient {
 
 		// api token_id.user_id.device_address.personal_sign_address
 		map[this.API_KEY] = `${this.user.getTokenId()}.${this.userId}.${this.device.getId()}.${this.device.getApiKeyAddress()}`;
-		map[this.API_REQUEST_TIMESTAMP] = String(Date.now() / 1000);
+		map[this.API_REQUEST_TIMESTAMP] = String(parseInt(Date.now() / 1000));
 		map[this.API_SIGNATURE_KIND] =  this.SIG_TYPE;
 		return map;
 	}
 
 	getToken() {
-		return this.get("/tokens/", {});
+		return this.get("/tokens/");
 	}
 
 	getUser() {
-		return this.get(`/users/${this.userId}`, {});
+		return this.get(`/users/${this.userId}/`);
 	}
+
 	getDevice(deviceAddress) {
-		const oThis = this;
-		return oThis.init()
-			.then(() => {
-				const  map = oThis.getPrerequisiteMap();
-				return oThis.apiClient.get(`/users/${oThis.userId}/devices/${deviceAddress}`, {
-					params: map
-				});
-			})
-	}
-
-	getCurrentDevice() {
-		const oThis = this;
-		return oThis.init()
-			.then(() => {
-				const  map = oThis.getPrerequisiteMap();
-				return oThis.apiClient.get(`/users/${oThis.userId}/devices/${this.device.getDeviceAddress()}`, {
-					params: map
-				});
-			})
-	}
-
-	getCurrentUser() {
-		const oThis = this;
-		return oThis.init()
-			.then(() => {
-				const  map = oThis.getPrerequisiteMap();
-				return oThis.apiClient.get(`/users/${oThis.userId}`, {
-					params: map
-				});
-			})
+      return this.get(`/users/${this.userId}/devices/${deviceAddress}/`);
 	}
 
 	get(resource, params) {
 		const oThis = this;
+		params = params || {};
 		return oThis.init()
 			.then(() => {
 				let map = oThis.getPrerequisiteMap();

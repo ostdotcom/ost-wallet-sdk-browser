@@ -8,7 +8,7 @@ import {SOURCE} from "../../common-js/OstBrowserMessenger";
 
 const LOG_TAG = 'OstSdkBaseWorkflow :: ';
 
-const baseUrl = 'https://api.stagingost.com/testnet/v2/';
+const baseUrl = 'https://api.stagingostproxy.com/testnet/v2/';
 
 export default class OstSdkBaseWorkflow {
 
@@ -162,7 +162,7 @@ export default class OstSdkBaseWorkflow {
       ost_workflow_context: this.getWorkflowContext().getJSONObject()
     });
 
-    this.browserMessenger.send(message, SOURCE.UPSTREAM);
+    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
   //Sync
@@ -171,7 +171,7 @@ export default class OstSdkBaseWorkflow {
     let oThis = this;
 
     const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
-    return apiClient.getCurrentDevice()
+    return apiClient.getDevice(this.currentDevice.getId())
     	.then((res) => {
           console.log(LOG_TAG, 'syncCurrentDevice :: then', res);
     	})
@@ -184,7 +184,7 @@ export default class OstSdkBaseWorkflow {
     let oThis = this;
 
     const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
-    return apiClient.getCurrentUser()
+    return apiClient.getUser()
       .then((res) => {
         console.log(LOG_TAG, 'syncUser :: then', res);
       })
