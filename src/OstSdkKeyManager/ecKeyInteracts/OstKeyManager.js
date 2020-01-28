@@ -13,4 +13,8 @@ export default class OstKeyManager {
 	getApiAddress() {
 		return ikmInstance.getApiAddress();
 	}
+
+	createSessionKey() {
+		return ikmInstance.createSessionKey();
+	}
 }

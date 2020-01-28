@@ -42,7 +42,7 @@ class IKM {
 		const oThis = this;
 		return this.kmDB.createDatabase()
 			.then(() => {
-				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.userId);
+				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.createUserMataId(oThis.userId));
 				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, oThis.userId)
 			})
 			.then((kmData) => {
@@ -66,7 +66,7 @@ class IKM {
 	storeKmData(kmData) {
 		const oThis = this;
 		const dataToStore = {
-			id: oThis.userId,
+			id: oThis.createUserMataId(oThis.userId),
 			data: kmData
 		};
 
@@ -106,6 +106,35 @@ class IKM {
 
 	getApiAddress() {
 		return this.kmStruct.apiAddress;
+	}
+
+	createSessionKey() {
+		const oThis = this;
+		const ecKeyPair = oThis.generateECKeyPair(KEY_TYPE.SESSION);
+
+		const privateKey = ecKeyPair.getPrivateKeyString();
+
+		console.log(LOG_TAG, "Create Session Key :: Encrypting the generated keys");
+
+		return OstSecureEnclave.encrypt(oThis.userId, privateKey)
+			.then((encryptedData) => {
+				const sessionAddress = ecKeyPair.getChecksumAddressString();
+				const sessionKeyId = oThis.createEthKeyMetaId(sessionAddress);
+
+				const dataToStore = {
+					id: sessionKeyId,
+					data: encryptedData
+				};
+
+				console.log(LOG_TAG, "Creating Session :: Inserting keys");
+				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
+					.then(() => {
+						return sessionAddress;
+					})
+			})
+			.catch((err) => {
+				throw OstError.sdkError(err, "okm_e_ikm_cak_1");
+			});
 	}
 
 	createApiKey() {

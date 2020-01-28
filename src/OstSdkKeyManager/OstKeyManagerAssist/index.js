@@ -75,6 +75,23 @@ export default class OstKeyManagerAssist {
 			});
 	}
 
+	createSessionKey(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				let sessionAddress = ikm.createSessionKey();
+				return oThis.onSuccess({user_id: userId, session_address: sessionAddress}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Create session failed"}, subscriberId);
+			});
+	}
+
 	onError(errMsgObj, subscriberId) {
 		const ostMsg = new OstMessage();
 		ostMsg.setSubscriberId(subscriberId);

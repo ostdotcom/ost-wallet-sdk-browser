@@ -45,6 +45,15 @@ export default class OstKeyManagerProxy {
 			});
 	}
 
+	createSessionKey() {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+		};
+
+		return oThis.getFromKM('createSessionKey', functionParams)
+	}
+
 	getFromKM(functionName, functionParams) {
 		let oThis = this;
 		return new Promise((resolve, reject) => {
