@@ -33,15 +33,9 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
     console.log(LOG_TAG, " onDeviceValidated");
 
-
-    let obj = {dd: "AS", ddv: "1.0.0"};
-    this.postShowQRData(obj);
-
-    return;
-
     this.keyManagerProxy.createSessionKey()
       .then((sessionAddress) => {
-        return this.createSessionEntity( sessionAddress )
+        return this.createSessionEntity( sessionAddress.session_address )
       })
       .then((sessionEntity) => {
         return this.keyManagerProxy.signQRSessionData(
@@ -57,14 +51,6 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       .catch((err) => {
         this.postError(err);
       })
-
-    //build QR data
-
-    //personal sign
-
-    //send qr string to show
-
-    //polling for QR code
   }
 
   createSessionEntity( sessionAddress ) {
