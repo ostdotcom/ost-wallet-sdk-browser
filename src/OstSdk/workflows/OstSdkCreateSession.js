@@ -82,7 +82,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     message.setSubscriberId(this.subscriberId);
 
     let params = {
-        qr_data : JSON.stringify(qrData)
+        qr_data : qrData
     };
 
     message.setArgs(params);
