@@ -6,13 +6,11 @@ import OstWorkflowContext from "./OstWorkflowContext";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstErrorCodes from "../../common-js/OstErrorCodes";
-import OstDevice from "../entities/OstDevice";
 import OstUser from "../entities/OstUser";
 import OstToken from "../entities/OstToken";
+import OstConstants from '../OstConstants';
 
 const LOG_TAG = 'OstSdkBaseWorkflow :: ';
-
-const baseUrl = 'https://api.stagingostproxy.com/testnet/v2/';
 
 export default class OstSdkBaseWorkflow {
 
@@ -259,7 +257,7 @@ export default class OstSdkBaseWorkflow {
   syncCurrentDevice() {
     let oThis = this;
 
-    const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
+    const apiClient = new OstApiClient(oThis.userId, OstConstants.getBaseURL(), oThis.keyManagerProxy);
     return apiClient.getDevice(this.currentDevice.getId())
       .then((res) => {
         return oThis.getCurrentDeviceFromDB()
@@ -272,7 +270,7 @@ export default class OstSdkBaseWorkflow {
   syncUser() {
     let oThis = this;
 
-    const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
+    const apiClient = new OstApiClient(oThis.userId, OstConstants.getBaseURL(), oThis.keyManagerProxy);
     return apiClient.getUser()
       .then((res) => {
         return oThis.getUserFromDB()
@@ -306,7 +304,7 @@ export default class OstSdkBaseWorkflow {
   syncToken() {
     let oThis = this;
 
-    const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
+    const apiClient = new OstApiClient(oThis.userId, OstConstants.getBaseURL(), oThis.keyManagerProxy);
     return apiClient.getToken()
       .then((res) => {
         return oThis.getTokenFromDB()

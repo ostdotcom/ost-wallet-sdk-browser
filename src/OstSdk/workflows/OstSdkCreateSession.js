@@ -49,7 +49,6 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       })
       .then((sessionEntity) => {
         return this.keyManagerProxy.signQRSessionData(
-          this.userId,
           sessionEntity.getId(),
           sessionEntity.getSpendingLimit().toString(),
           sessionEntity.getExpiryTime().toString()
