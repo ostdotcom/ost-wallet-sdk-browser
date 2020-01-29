@@ -10,6 +10,8 @@
   "INVALID_SESSION_EXPIRY_TIME": "Invalid expiration timestamp. Please ensure timestamp is passed in required format. For parameter details please vist https://dev.ost.com/platform/docs/api",
   "INVALID_API_END_POINT": "API address not found.",
 
+  "POLLING_TIMEOUT": "Request timed out. This can be intermittent event with a request failing followed by successful one.",
+
 
   "INVALID_ENUM": "Unexpected enum provided. Please check valid 'SOURCE' enum.",
   "INVALID_OST_MESSAGE": "OstMessage you have passed is improperly built. Please rectify and try again.",

@@ -4,6 +4,7 @@ import OstErrorCodes from  '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstSessionPolling from "../OstPolling/OstSessionPolling";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
 
@@ -18,6 +19,10 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
   initParams() {
     super.initParams();
+
+    this.session = null;
+
+    this.sessionPollingClass = null;
   }
 
   validateParams() {
@@ -25,7 +30,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
     const currentTimeStamp = parseInt(Date.now()/1000);
 
-    if (currentTimeStamp < this.expirationTime) {
+    if (currentTimeStamp > this.expirationTime) {
       throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
     }
   }
@@ -48,6 +53,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
         return this.createSessionEntity( sessionAddress.session_address )
       })
       .then((sessionEntity) => {
+        this.session = sessionEntity;
         return this.keyManagerProxy.signQRSessionData(
           sessionEntity.getId(),
           sessionEntity.getSpendingLimit().toString(),
@@ -56,6 +62,10 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       })
       .then((data) => {
         this.postShowQRData(data.qr_data);
+        return this.pollingForSessionAddress()
+      })
+      .then((entity) => {
+        this.postFlowComplete(entity);
       })
       .catch((err) => {
         this.postError(err);
@@ -78,6 +88,17 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     message.setArgs(params);
 
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+  }
+
+  pollingForSessionAddress() {
+    this.sessionPollingClass = new OstSessionPolling(this.userId, this.session.getId(), this.keyManagerProxy);
+    return this.sessionPollingClass.perform()
+      .then((sessionEntity) => {
+        console.log(sessionEntity);
+      })
+      .catch((err) => {
+        throw err
+      })
   }
 
 }

@@ -77,7 +77,7 @@ export default class OstSdkBaseWorkflow {
           });
         break;
       case states.DEVICE_VALIDATED:
-        this.onDeviceValidated();
+        this.onDeviceValidated()
         break;
       case states.COMPLETED:
         break;

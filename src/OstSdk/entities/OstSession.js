@@ -1,4 +1,5 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
+import OstDevice from "./OstDevice";
 
 class OstSession extends OstBaseEntity {
 
@@ -17,15 +18,22 @@ class OstSession extends OstBaseEntity {
   }
 
   static init(address, spendingLimit, expiryTime) {
-    const token = new OstSession(
+    const session = new OstSession(
       {address: address, spending_limit: spendingLimit || 0, expiry_time: expiryTime || 0, status: OstSession.STATUS.CREATED}
     );
-    return token.forceCommit();
+    return session.forceCommit();
+  }
+
+  static getById(address) {
+    const session = new OstSession(
+      {address: address}
+    );
+    return session.sync();
   }
 
   static parse(data) {
-    const ostToken = new OstSession(data);
-    return ostToken.forceCommit();
+    const session = new OstSession(data);
+    return session.forceCommit();
   }
 
   getStoreName() {
@@ -38,6 +46,11 @@ class OstSession extends OstBaseEntity {
 
   getExpiryTime() {
   	return this.getData().expiry_time;
+  }
+
+  //Status
+  isStatusAuthorized() {
+    return OstSession.STATUS.AUTHORIZED === this.getStatus()
   }
 }
 export default OstSession;
