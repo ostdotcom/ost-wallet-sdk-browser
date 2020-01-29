@@ -24,9 +24,9 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     super.validateParams();
 
     const currentTimeStamp = parseInt(Date.now()/1000);
-    if (currentTimeStamp > this.expirationTime) {
-      throw  OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
-    }
+    // if (currentTimeStamp > this.expirationTime) {
+    //   throw  OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
+    // }
   }
 
   onDeviceValidated() {
