@@ -19,7 +19,7 @@ class OstSession extends OstBaseEntity {
 
   static init(address, spendingLimit, expiryTime) {
     const session = new OstSession(
-      {address: address, spending_limit: spendingLimit || 0, expiry_time: expiryTime || 0, status: OstSession.STATUS.CREATED}
+      {address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.CREATED}
     );
     return session.forceCommit();
   }
@@ -45,7 +45,7 @@ class OstSession extends OstBaseEntity {
   }
 
   getExpiryTime() {
-  	return this.getData().expiry_time;
+  	return this.getData().expiration_height;
   }
 
   //Status

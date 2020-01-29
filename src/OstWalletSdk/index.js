@@ -34,7 +34,7 @@ import OstCreateSession from "./OstWorkflows/OstCreateSession";
     }
 
     createSession ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
-      let createSession = new OstCreateSession(userId, expirationTime, expirationTime, ostWorkflowDelegate, this.browserMessenger);
+      let createSession = new OstCreateSession(userId, expirationTime, spendingLimit, ostWorkflowDelegate, this.browserMessenger);
       let workflowId = createSession.perform();
 
       return workflowId;

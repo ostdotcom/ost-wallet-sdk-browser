@@ -73,7 +73,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   createSessionEntity( sessionAddress ) {
-    return OstSession.init(sessionAddress, this.expirationTime, this.spendingLimit)
+    return OstSession.init(sessionAddress, this.spendingLimit, this.expirationTime)
   }
 
   postShowQRData( qrData ) {
