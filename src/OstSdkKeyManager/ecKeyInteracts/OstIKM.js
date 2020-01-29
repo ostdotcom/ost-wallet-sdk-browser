@@ -72,8 +72,9 @@ class IKM {
 		};
 
 		console.log(LOG_TAG, "Storing KM data", kmData);
-		return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
+		return oThis.kmDB.putData(STORES.KEY_STORE_TABLE, dataToStore)
 			.then(() => {
+				oThis.kmData = kmData;
 				return kmData;
 			});
 	}
@@ -98,7 +99,14 @@ class IKM {
 	setIsTrustable( isTrustable ) {
 		const oThis = this;
 		oThis.kmStruct.isTrustable = isTrustable;
-		return oThis.storeKmData(oThis.kmStruct);
+		return oThis.storeKmData(oThis.kmStruct)
+			.then((kmStruct) => {
+				return kmStruct.isTrustable;
+			})
+	}
+
+	isTrustable( ) {
+		return this.kmStruct.isTrustable;
 	}
 
 	getDeviceAddress() {

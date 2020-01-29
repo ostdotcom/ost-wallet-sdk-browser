@@ -116,6 +116,43 @@ export default class OstKeyManagerAssist {
 			});
 	}
 
+	setTrustable(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const trustable = args.trustable;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				return ikm.setTrustable(trustable);
+			})
+			.then((isTrustable) => {
+				return oThis.onSuccess({user_id: userId, is_trustable: isTrustable}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Trustable set failed"}, subscriberId);
+			});
+	}
+
+	isTrustable(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				const isTrustable = ikm.isTrustable();
+				return oThis.onSuccess({user_id: userId, is_trustable: isTrustable}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Trustable get failed"}, subscriberId);
+			});
+	}
+
 	onError(errMsgObj, subscriberId) {
 		const ostMsg = new OstMessage();
 		ostMsg.setSubscriberId(subscriberId);

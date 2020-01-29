@@ -45,6 +45,31 @@ export default class OstKeyManagerProxy {
 			});
 	}
 
+	isTrustable( ) {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+		};
+
+		return oThis.getFromKM('isTrustable', functionParams)
+			.then((response) => {
+				return response.is_trustable;
+			});
+	}
+
+	setTrustable ( trustable ) {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+			trustable: trustable
+		};
+
+		return oThis.getFromKM('setTrustable', functionParams)
+			.then((response) => {
+				return response.is_trustable;
+			});
+	}
+
 	createSessionKey() {
 		let oThis = this;
 		let functionParams = {

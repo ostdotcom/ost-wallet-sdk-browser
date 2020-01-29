@@ -75,6 +75,10 @@ import OstCreateSession from "./OstWorkflows/OstCreateSession";
 
         document.body.appendChild(ifrm);
 
+				ifrm.onerror = function (event) {
+					console.error(LOG_TAG, "Miracle Miracle!!!!", event);
+				};
+
         walletSdk.setDownStreamWindow(ifrm.contentWindow);
         walletSdk.setDownStreamOrigin(url);
 
