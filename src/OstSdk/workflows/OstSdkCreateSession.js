@@ -38,9 +38,9 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   performUserDeviceValidation() {
     return super.performUserDeviceValidation()
       .then(() => {
-        // if (!this.user.isStatusActivated()) {
-        //   throw new OstError('os_w_oscs_pudv_1', OstErrorCodes.USER_NOT_ACTIVATED);
-        // }
+        if (!this.user.isStatusActivated()) {
+          throw new OstError('os_w_oscs_pudv_1', OstErrorCodes.USER_NOT_ACTIVATED);
+        }
       })
   }
 
@@ -95,6 +95,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     return this.sessionPollingClass.perform()
       .then((sessionEntity) => {
         console.log(sessionEntity);
+        return sessionEntity;
       })
       .catch((err) => {
         throw err
