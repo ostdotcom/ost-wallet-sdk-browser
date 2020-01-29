@@ -70,7 +70,7 @@ export default class OstSdkBaseWorkflow {
         this.onParamsValidated();
         break;
       case states.PARAMS_VALIDATED:
-        this.performUserDeviceValidation()
+        return this.performUserDeviceValidation()
           .then(() => {
             this.onUserDeviceValidated();
           })
@@ -114,7 +114,7 @@ export default class OstSdkBaseWorkflow {
       .then(() => {
         if (this.shouldCheckCurrentDeviceAuthorization()) {
           if (!this.currentDevice.isStatusAuthorized()) {
-            throw OstError('os_w_osbw_pwdv_1', OstErrorCodes.DEVICE_UNAUTHORIZED);
+            throw new OstError('os_w_osbw_pwdv_1', OstErrorCodes.DEVICE_UNAUTHORIZED);
           }
         }
       })
@@ -142,17 +142,17 @@ export default class OstSdkBaseWorkflow {
       .then((userEntity) => {
         this.user = userEntity;
         if (!userEntity) {
-          throw OstError('os_w_osbw_eac_1', OstErrorCodes.DEVICE_NOT_SETUP)
+          throw new OstError('os_w_osbw_eac_1', OstErrorCodes.DEVICE_NOT_SETUP)
         }
       })
   }
 
   getCurrentDeviceFromDB() {
-    return this.user.getCurrentDevice()
+    return this.user.createOrGetDevice(this.keyManagerProxy)
       .then((deviceEntity) => {
         this.currentDevice = deviceEntity;
         if (!deviceEntity) {
-          throw OstError('os_w_osbw_eac_2', OstErrorCodes.DEVICE_NOT_SETUP)
+          throw new OstError('os_w_osbw_eac_2', OstErrorCodes.DEVICE_NOT_SETUP)
         }
       })
   }
@@ -162,10 +162,10 @@ export default class OstSdkBaseWorkflow {
     return oThis.keyManagerProxy.getApiKeyAddress()
       .then((apiKeyAddress) => {
         if (!apiKeyAddress) {
-          throw OstError('os_w_osbw_cdmac_1', OstErrorCodes.INVALID_API_END_POINT)
+          throw new OstError('os_w_osbw_cdmac_1', OstErrorCodes.INVALID_API_END_POINT)
         }
         if (!oThis.currentDevice.canMakeApiCall()) {
-          throw OstError('os_w_osbw_cdmac_2', OstErrorCodes.DEVICE_NOT_SETUP)
+          throw new OstError('os_w_osbw_cdmac_2', OstErrorCodes.DEVICE_NOT_SETUP)
         }
       })
   }
@@ -298,7 +298,7 @@ export default class OstSdkBaseWorkflow {
       .then((tokenEntity) => {
         this.token = tokenEntity;
         if (!tokenEntity) {
-          throw OstError('os_w_osbw_gtfdb_1', OstErrorCodes.DEVICE_NOT_SETUP)
+          throw new OstError('os_w_osbw_gtfdb_1', OstErrorCodes.DEVICE_NOT_SETUP)
         }
       })
   }

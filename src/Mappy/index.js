@@ -91,7 +91,7 @@ function setupDevice(args) {
   mappyCallback.registerDevice = function( apiParams ) {
     console.log(LOG_TAG, "registerDevice");
 
-    return registerDevice(apiParams.device_address, apiParams.api_key_address);
+    return registerDevice(apiParams);
   };
 
   let workflowId = window.OstSdkWallet.setupDevice(
@@ -247,7 +247,7 @@ function logout(){
 }
 
 
-function registerDevice(address, api_signer_address, device_name = 'a', device_uuid = 'b'){
+function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
 
   return new Promise((resolve, reject) => {
 
@@ -266,8 +266,8 @@ function registerDevice(address, api_signer_address, device_name = 'a', device_u
     };
     $.post(baseUrl+"/devices",
       {
-        address: address,
-        api_signer_address: api_signer_address,
+        address: apiParams.device_address,
+        api_signer_address: apiParams.api_signer_address,
         device_name: device_name,
         device_uuid: device_uuid
 

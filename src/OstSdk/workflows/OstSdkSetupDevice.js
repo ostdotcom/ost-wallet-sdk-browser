@@ -117,7 +117,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
 
     let params = {
-      api_key_address: deviceEntity.getApiKeyAddress(),
+      api_signer_address: deviceEntity.getApiKeyAddress(),
       device_address: deviceEntity.getId(),
       user_id: this.userId
     };

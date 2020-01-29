@@ -99,11 +99,11 @@ class OstUser extends OstBaseEntity {
 
   //status
   isStatusActivated() {
-    return OstUser.status.ACTIVATED === this.getStatus();
+    return OstUser.STATUS.ACTIVATED === this.getStatus();
   }
 
   isStatusActivating() {
-  	return OstUser.status.ACTIVATING === this.getStatus();
+  	return OstUser.STATUS.ACTIVATING === this.getStatus();
   }
 
 }

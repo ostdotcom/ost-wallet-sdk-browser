@@ -44,7 +44,7 @@ export default class OstKeyManagerAssist {
 		return IKM.getKeyManager(userId)
 			.then((ikm) => {
 				let apiAddress = ikm.getApiAddress();
-				return oThis.onSuccess({user_id: userId, api_key_address: apiAddress}, subscriberId)
+				return oThis.onSuccess({user_id: userId, api_signer_address: apiAddress}, subscriberId)
 			})
 			.catch((err) => {
 				return oThis.onError({err: err, msg: "Api address fetch failed"}, subscriberId);

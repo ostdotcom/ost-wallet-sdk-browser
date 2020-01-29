@@ -41,7 +41,7 @@ export default class OstKeyManagerProxy {
 
 		return oThis.getFromKM('getApiAddress', functionParams)
 			.then((response) => {
-				return response.api_key_address;
+				return response.api_signer_address;
 			});
 	}
 

@@ -19,9 +19,9 @@ class OstDevice extends OstBaseEntity {
     super(jsonObject);
   }
 
-	getIdKey() {
-		return 'address';
-	}
+  getIdKey() {
+    return 'address';
+  }
 
   static getById(deviceId) {
     const device = new OstDevice(
@@ -32,7 +32,7 @@ class OstDevice extends OstBaseEntity {
 
   static init(id, apiAddress, userId) {
     const device = new OstDevice(
-      {address: id, api_key_address: apiAddress, user_id: userId, status: OstDevice.STATUS.CREATED}
+      {address: id, api_signer_address: apiAddress, user_id: userId, status: OstDevice.STATUS.CREATED}
     );
     return device.forceCommit()
   }
@@ -46,7 +46,7 @@ class OstDevice extends OstBaseEntity {
   }
 
   getApiKeyAddress() {
-    return this.getData().api_key_address;
+    return this.getData().api_signer_address;
   }
 
   getDeviceAddress() {
