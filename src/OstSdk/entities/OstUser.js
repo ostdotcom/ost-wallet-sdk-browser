@@ -49,7 +49,7 @@ class OstUser extends OstBaseEntity {
     if (!this.currentDeviceAddress) {
       return Promise.resolve(null);
     }
-    console.debug(LOG_TAG, String.format("currentDeviceAddress: %s", this.currentDeviceAddress));
+    console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
     return OstDevice.getById(this.currentDeviceAddress);
   }
 
@@ -82,6 +82,19 @@ class OstUser extends OstBaseEntity {
         }
         return deviceEntity;
       });
+  }
+
+  //Getter
+  getTokenId() {
+    return this.getData().token_id
+  }
+
+  getTokenHolderAddress() {
+    return this.getData().token_holder_address
+  }
+
+  getDeviceManagerAddress() {
+    return this.getData().device_manager_address
   }
 
   //status

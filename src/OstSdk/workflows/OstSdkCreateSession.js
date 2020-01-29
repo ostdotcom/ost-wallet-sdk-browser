@@ -29,6 +29,15 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     // }
   }
 
+  performUserDeviceValidation() {
+    super.performUserDeviceValidation()
+      .then(() => {
+        if (!this.user.isStatusActivated()) {
+          throw OstError('os_w_oscs_pudv_1', OstErrorCodes.USER_NOT_ACTIVATED);
+        }
+      })
+  }
+
   onDeviceValidated() {
 
     console.log(LOG_TAG, " onDeviceValidated");

@@ -6,6 +6,9 @@ import OstWorkflowContext from "./OstWorkflowContext";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstErrorCodes from "../../common-js/OstErrorCodes";
+import OstDevice from "../entities/OstDevice";
+import OstUser from "../entities/OstUser";
+import OstToken from "../entities/OstToken";
 
 const LOG_TAG = 'OstSdkBaseWorkflow :: ';
 
@@ -31,6 +34,7 @@ export default class OstSdkBaseWorkflow {
   initParams() {
     this.user = null;
     this.currentDevice = null;
+    this.token = null;
   }
 
   getOrderedStates() {
@@ -66,8 +70,13 @@ export default class OstSdkBaseWorkflow {
         this.onParamsValidated();
         break;
       case states.PARAMS_VALIDATED:
-        this.performUserDeviceValidation();
-        this.onUserDeviceValidated();
+        this.performUserDeviceValidation()
+          .then(() => {
+            this.onUserDeviceValidated();
+          })
+          .catch((err) => {
+            throw OstError.sdkError(err, 'sk_w_osbw_pr_1');
+          });
         break;
       case states.DEVICE_VALIDATED:
         this.onDeviceValidated();
@@ -94,20 +103,97 @@ export default class OstSdkBaseWorkflow {
   }
 
   performUserDeviceValidation() {
-    //ensureApiCommunication
 
-    //ensureUser
-
-    //ensureToken
-
-    //shouldCheckCurrentDeviceAuthorization
-    if (this.shouldCheckCurrentDeviceAuthorization()) {
-      //ensureDeviceAuthorized
-    }
+    return this.ensureApiCommunication()
+      .then(() => {
+        return this.ensureUser()
+      })
+      .then(() => {
+        return this.ensureToken()
+      })
+      .then(() => {
+        if (this.shouldCheckCurrentDeviceAuthorization()) {
+          if (!this.currentDevice.isStatusAuthorized()) {
+            throw OstError('os_w_osbw_pwdv_1', OstErrorCodes.DEVICE_UNAUTHORIZED);
+          }
+        }
+      })
   }
 
+  ensureApiCommunication() {
+    return this.getUserFromDB()
+      .then(() => {
+        return this.getCurrentDeviceFromDB()
+      })
+      .then(() => {
+        return this.canDeviceMakeApiCall()
+      })
+      .then(() => {
+
+        //return this.syncCurrentDevice()
+      })
+      .then(() => {
+
+      })
+  }
+
+  getUserFromDB() {
+    return OstUser.getById(this.userId)
+      .then((userEntity) => {
+        this.user = userEntity;
+        if (!userEntity) {
+          throw OstError('os_w_osbw_eac_1', OstErrorCodes.DEVICE_NOT_SETUP)
+        }
+      })
+  }
+
+  getCurrentDeviceFromDB() {
+    return this.user.getCurrentDevice()
+      .then((deviceEntity) => {
+        this.currentDevice = deviceEntity;
+        if (!deviceEntity) {
+          throw OstError('os_w_osbw_eac_2', OstErrorCodes.DEVICE_NOT_SETUP)
+        }
+      })
+  }
+
+  canDeviceMakeApiCall() {
+    let oThis = this;
+    return oThis.keyManagerProxy.getApiKeyAddress()
+      .then((apiKeyAddress) => {
+        if (!apiKeyAddress) {
+          throw OstError('os_w_osbw_cdmac_1', OstErrorCodes.INVALID_API_END_POINT)
+        }
+        if (!oThis.currentDevice.canMakeApiCall()) {
+          throw OstError('os_w_osbw_cdmac_2', OstErrorCodes.DEVICE_NOT_SETUP)
+        }
+      })
+  }
+
+  ensureUser() {
+    if (!this.user
+      || !this.user.getTokenHolderAddress()
+      || !this.user.getDeviceManagerAddress()
+    ) {
+      return this.syncUser()
+    }
+    return Promise.resolve();
+  }
+
+  ensureToken() {
+    let oThis = this;
+    if (!this.user) {
+      return this.ensureUser()
+        .then(() => {
+          return oThis.validateToken()
+        })
+    }
+    return oThis.validateToken()
+  }
+
+
   shouldCheckCurrentDeviceAuthorization() {
-    return true;
+    return false;
   }
 
   onUserDeviceValidated() {
@@ -175,12 +261,12 @@ export default class OstSdkBaseWorkflow {
 
     const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
     return apiClient.getDevice(this.currentDevice.getId())
-    	.then((res) => {
-          console.log(LOG_TAG, 'syncCurrentDevice :: then', res);
-    	})
-    	.catch((err) => {
-    		console.log(LOG_TAG, 'syncCurrentDevice :: catch', err);
-    	});
+      .then((res) => {
+        return oThis.getCurrentDeviceFromDB()
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, 'syncCurrentDevice :: catch', err);
+      });
   }
 
   syncUser() {
@@ -189,11 +275,32 @@ export default class OstSdkBaseWorkflow {
     const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
     return apiClient.getUser()
       .then((res) => {
-        console.log(LOG_TAG, 'syncUser :: then', res);
+        return oThis.getUserFromDB()
       })
       .catch((err) => {
         console.log(LOG_TAG, 'syncUser :: catch', err);
       });
+  }
+
+  validateToken() {
+
+    return this.getTokenFromDB()
+      .then(() => {
+        if (!this.token || !this.token.getAuxiliaryChainId() || !this.token.getDecimals()) {
+          return this.syncToken();
+        }
+      })
+  }
+
+  getTokenFromDB() {
+    let tokenId = this.user.getTokenId();
+    return OstToken.getById(tokenId)
+      .then((tokenEntity) => {
+        this.token = tokenEntity;
+        if (!tokenEntity) {
+          throw OstError('os_w_osbw_gtfdb_1', OstErrorCodes.DEVICE_NOT_SETUP)
+        }
+      })
   }
 
   syncToken() {
@@ -202,7 +309,7 @@ export default class OstSdkBaseWorkflow {
     const apiClient = new OstApiClient(oThis.userId, baseUrl, oThis.keyManagerProxy);
     return apiClient.getToken()
       .then((res) => {
-        console.log(LOG_TAG, 'syncUser :: then', res);
+        return oThis.getTokenFromDB()
       })
       .catch((err) => {
         console.log(LOG_TAG, 'syncUser :: catch', err);
