@@ -37,6 +37,12 @@ class OstHelpers {
     }
     return true;
   }
+
+  static cleanHexPrefix(hexString) {
+    if (hexString.startsWith("0x") || hexString.startsWith("0X")) {
+      return hexString.slice(2);
+    }
+  }
 }
 
 export default OstHelpers
