@@ -19,7 +19,7 @@ export default class OstQRSigner {
 		const spendingLimit = data.spending_limit;
 		const expiryTime = data.expiry_time;
 
-		const stringToSign = `${
+		let stringToSign = `${
 			OstQRSigner.WORKFLOW
 		}|${
 			OstQRSigner.VERSION
@@ -33,6 +33,7 @@ export default class OstQRSigner {
 			expiryTime
 		}`;
 
+		stringToSign = stringToSign.toLowerCase();
 		console.log(LOG_TAG, "String to sign", stringToSign);
 
 		return ikmInstance.personalSign(stringToSign)
