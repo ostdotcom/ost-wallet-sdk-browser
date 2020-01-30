@@ -40,6 +40,26 @@ import OstCreateSession from "./OstWorkflows/OstCreateSession";
       return workflowId;
     }
 
+    getUser( userId ) {
+      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      return proxy.getUser();
+    }
+
+    getToken( userId ) {
+      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      return proxy.getToken();
+    }
+
+    getDevice( userId ) {
+      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      return proxy.getDevice();
+    }
+
+    getActiveSessions( userId ) {
+      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      return proxy.getActiveSessions();
+    }
+
   }
 
   const walletSdk = new OstWalletSdk();

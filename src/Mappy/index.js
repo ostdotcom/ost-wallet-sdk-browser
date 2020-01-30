@@ -102,10 +102,11 @@ function setupDevice(args) {
 }
 
 function getQRCode() {
-
+  getDevice();
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
+    
   };
 
   mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
@@ -197,7 +198,8 @@ function uploadUserData(jsonData, pageNo) {
 
   $(".QrCodeBtnClass").on('click', function(event){
 
-    getQRCode()
+    //getQRCode()
+    getUser();
   });
 
 }
@@ -292,3 +294,49 @@ function makeCode(object){
 
 }
 
+
+function getUser() {
+
+  window.OstSdkWallet.getUser(currentUser.user_id)
+  .then((user) => {
+      console.log("MAppy :: index :: getUser :: then :: " , user);
+   })
+  .catch((err) => {
+    console.log("MAppy :: index :: getUser :: catch ::" , err);
+  });
+
+}
+
+function getToken() {
+
+  window.OstSdkWallet.getToken(currentUser.user_id)
+  .then((token) => {
+      console.log("MAppy :: index :: getToken :: then :: " ,  token);
+   })
+  .catch((err) => {
+    console.log("MAppy :: index :: getToken :: catch ::" , err);
+  });
+
+}
+
+function getDevice() {
+
+  window.OstSdkWallet.getDevice(currentUser.user_id)
+  .then((device) => {
+      console.log("MAppy :: index :: getDevice :: then :: " ,  device);
+   })
+  .catch((err) => {
+    console.log("MAppy :: index :: getDevice :: catch ::" , err);
+  });
+
+}
+
+function getActiveSessions() {
+  window.OstSdkWallet.getActiveSessions(currentUser.user_id)
+  .then((session) => {
+      console.log("MAppy :: index :: getActiveSessions :: then :: " ,  session);
+   })
+  .catch((err) => {
+    console.log("MAppy :: index :: getActiveSessions :: catch ::" , err);
+  });
+}
