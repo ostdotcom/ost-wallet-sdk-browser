@@ -102,7 +102,7 @@ function setupDevice(args) {
 }
 
 function getQRCode() {
-  getDevice();
+  // getDevice();
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
@@ -198,8 +198,8 @@ function uploadUserData(jsonData, pageNo) {
 
   $(".QrCodeBtnClass").on('click', function(event){
 
-    //getQRCode()
-    getUser();
+    getQRCode()
+    // getUser();
   });
 
 }
@@ -279,10 +279,13 @@ function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
 
 
 function makeCode(object){
+  let text = object;
+  if (typeof object === 'object') {
+    text = JSON.stringify(object)
+  }
 
-  let text  =  JSON.stringify(object);
   $("#QrMainDiv div").html('');
-  var qrcode = new QRCode(document.getElementById("qrcode"), {
+  new QRCode(document.getElementById("qrcode"), {
     text: text,
     width: 470,
     height: 470,
@@ -290,14 +293,12 @@ function makeCode(object){
     colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
   });
-
-
 }
 
 
 function getUser() {
 
-  window.OstSdkWallet.getUser("123456")
+  window.OstSdkWallet.getUser(currentUser.user_id)
   .then((user) => {
       console.log("MAppy :: index :: getUser :: then :: " , user);
    })
