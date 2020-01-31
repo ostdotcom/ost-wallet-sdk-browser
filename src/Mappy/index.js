@@ -102,6 +102,10 @@ function setupDevice(args) {
 }
 
 function getQRCode() {
+<<<<<<< HEAD
+=======
+  // getDevice();
+>>>>>>> 2d9fd53c252b32340bc6a4d67e38581ea44e2fe8
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
@@ -278,10 +282,13 @@ function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
 
 
 function makeCode(object){
+  let text = object;
+  if (typeof object === 'object') {
+    text = JSON.stringify(object)
+  }
 
-  let text  =  JSON.stringify(object);
   $("#QrMainDiv div").html('');
-  var qrcode = new QRCode(document.getElementById("qrcode"), {
+  new QRCode(document.getElementById("qrcode"), {
     text: text,
     width: 470,
     height: 470,
@@ -289,8 +296,6 @@ function makeCode(object){
     colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
   });
-
-
 }
 
 
