@@ -4,6 +4,7 @@ import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
 import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
 import OstCreateSession from "./OstWorkflows/OstCreateSession";
+import OstSdkProxy from './OstSdkProxy'
 
 (function(window) {
 
@@ -41,22 +42,22 @@ import OstCreateSession from "./OstWorkflows/OstCreateSession";
     }
 
     getUser( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      let proxy = new OstSdkProxy(userId, this.browserMessenger);
       return proxy.getUser();
     }
 
     getToken( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      let proxy = new OstSdkProxy(userId, this.browserMessenger);
       return proxy.getToken();
     }
 
     getDevice( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      let proxy = new OstSdkProxy(userId, this.browserMessenger);
       return proxy.getDevice();
     }
 
     getActiveSessions( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger)
+      let proxy = new OstSdkProxy(userId, this.browserMessenger);
       return proxy.getActiveSessions();
     }
 

@@ -297,7 +297,7 @@ function makeCode(object){
 
 function getUser() {
 
-  window.OstSdkWallet.getUser(currentUser.user_id)
+  window.OstSdkWallet.getUser("123456")
   .then((user) => {
       console.log("MAppy :: index :: getUser :: then :: " , user);
    })

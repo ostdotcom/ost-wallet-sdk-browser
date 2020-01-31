@@ -5,11 +5,11 @@ import OstToken from "../entities/OstToken";
 import OstMessage from '../../common-js/OstMessage';
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import KeyManagerProxy from "../OstKeyManagerProxy/index";
-import OstDevice from "../entities/OstDevice";
 import OstSession from "../entities/OstSession";
 import OstApiClient from "../../Api/OstApiClient";
 import OstConstants from "../OstConstants";
 import OstError from "../../common-js/OstError";
+import OstErrorCodes  from '../../common-js/OstErrorCodes'
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -18,9 +18,12 @@ class OstSdkAssist {
     this.receiverName = receiverName;
     this.browserMessenger.subscribe(this, this.receiverName);
 
-    this.keyManagerProxy = new KeyManagerProxy(this.browserMessenger, userId);
-
     this.uuid = null;
+  }
+
+  getKeyManagerProxy(userId) {
+    let keyManagerProxy = new KeyManagerProxy(this.browserMessenger, userId);
+    return keyManagerProxy
   }
 
   onSetupComplete( args ) {
@@ -43,19 +46,25 @@ class OstSdkAssist {
 
   getUser ( args ) {
     console.log(LOG_TAG, "getUser :: ", args);
-    const userId = args.user_id
-    const subscriberId =  args.subscriber_id
+    const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
     let functionParams = {};
     let functionName = 'onError';
     OstUser.getById(userId)
-      .then((userData => {
+      .then((userData) => {
         console.log("user data ", userData);
         if (userData) {
           functionParams = {user: userData};
           functionName = 'onSuccess';
+        }else {
+          let err = new OstError('os_osa_i_gu_1', OstErrorCodes.INVALID_USER_ID);
+          functionParams = err.getJSONObject()
         }
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-      }));
+      })
+      .catch((err) => {
+        throw OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID)
+      });
       
   }
 
@@ -66,7 +75,7 @@ class OstSdkAssist {
     let functionParams = {};
     let functionName = 'onError';
     OstUser.getById(userId)
-      .then((user => {
+      .then((user) => {
         console.log("token id ", user.getTokenId());
 
         OstToken.getById(userData.getTokenId())
@@ -78,7 +87,7 @@ class OstSdkAssist {
             }
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }));
-      }));
+      });
   }
 
   getDevice ( args ) {
@@ -89,9 +98,8 @@ class OstSdkAssist {
     let functionName = 'onError';
     
     OstUser.getById(userId)
-      .then((user => {
-
-        user.createOrGetDevice(this.keyManagerProxy)
+      .then((user) => {
+        user.createOrGetDevice(this.getKeyManagerProxy(userId))
           .then( (deviceData)=> {
             console.log("device ====",deviceData);
             if (deviceData) {
@@ -100,7 +108,7 @@ class OstSdkAssist {
             }
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           });
-      }));
+      });
   }
 
   getActiveSessions( args ) {
@@ -131,7 +139,7 @@ class OstSdkAssist {
   getCurrentDeviceFromServer( args ) {
     const userId = args.user_id;
     
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL, this.keyManagerProxy)
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL, this.getKeyManagerProxy(userId))
     apiClient.getDevice()
       .then((device) => {
           if (device) {
