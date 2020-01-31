@@ -10,6 +10,7 @@ import OstApiClient from "../../Api/OstApiClient";
 import OstConstants from "../OstConstants";
 import OstError from "../../common-js/OstError";
 import OstErrorCodes  from '../../common-js/OstErrorCodes'
+import OstSdkExecuteTransaction from "../workflows/OstSdkExecuteTransaction";
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -44,6 +45,12 @@ class OstSdkAssist {
     createSession.perform();
   }
 
+	executeTransaction (args) {
+		console.log(LOG_TAG, "executeTransaction :: ", args);
+		let executeTransaction = new OstSdkExecuteTransaction( args, this.browserMessenger );
+		executeTransaction.perform();
+	}
+
   getUser ( args ) {
     console.log(LOG_TAG, "getUser :: ", args);
     const userId = args.user_id;
@@ -66,7 +73,7 @@ class OstSdkAssist {
       .catch((err) => {
         throw OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID)
       });
-      
+
   }
 
   getToken ( args ) {
@@ -106,7 +113,7 @@ class OstSdkAssist {
     const subscriberId =  args.subscriber_id;
     let functionParams = {};
     let functionName = 'onError';
-    
+
     OstUser.getById(userId)
       .then((user) => {
 
@@ -147,18 +154,18 @@ class OstSdkAssist {
           let filterSessions;
           if(spendingLimit !== ''){
             filterSessions = sessionsData.filter( function(x){
-              return x.user_id === userId 
+              return x.user_id === userId
                     && x.status === 'AUTHORIZED'
                     && x.spending_limit >= spendingLimit ;
             });
           }
           else {
             filterSessions = sessionsData.filter( function(x){
-              return x.user_id === userId 
+              return x.user_id === userId
                     && x.status === 'AUTHORIZED';
             });
           }
-        
+
           console.log("filtered =====", filterSessions);
           if(filterSessions){
             functionParams = {activeSessions: filterSessions};
@@ -173,7 +180,7 @@ class OstSdkAssist {
           console.log("No session data found ");
           throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.DEVICE_NOT_SETUP);
         }
-        
+
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       }).catch( (err) => {
         console.log(err);
@@ -209,7 +216,8 @@ class OstSdkAssist {
       })
       .then((deviceData) => {
         if (deviceData) {
-          functionParams = {device: deviceData};
+          let deviceEntity = deviceData.data.data;
+          functionParams = {device: deviceEntity};
           functionName = 'onSuccess';
           console.log("device api ====", deviceData);
           this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -251,7 +259,7 @@ class OstSdkAssist {
       .catch((err) => {
         let error = OstError.sdkError(err, 'os_osa_i_gbfs_2');
         console.log(error);
-      });    
+      });
   }
 
   /**
@@ -291,7 +299,7 @@ class OstSdkAssist {
     let functionParams = {};
     let functionName = 'onError';
 
-    
+
   }
 
   /**
@@ -362,3 +370,5 @@ class OstSdkAssist {
 }
 
 export default OstSdkAssist;
+
+

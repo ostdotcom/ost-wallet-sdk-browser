@@ -1,6 +1,7 @@
 import OstUser from "../OstSdk/entities/OstUser";
 import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
+import * as qs from "qs";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -96,6 +97,9 @@ export default class OstApiClient {
     return this.get(`/users/${this.userId}/devices`);
   }
 
+  executeTransaction(params) {
+		return this.post(`/users/${this.userId}/transactions/`, params);
+  }
 
   getRules() {
     return this.get("/rules/");
@@ -123,4 +127,26 @@ export default class OstApiClient {
         return response;
       });
   }
+
+	post(resource, params) {
+		const oThis = this;
+		params = params || {};
+		return oThis.init()
+			.then(() => {
+				let map = oThis.getPrerequisiteMap();
+				const paramMap = Object.assign({}, map, params);
+
+				return oThis.keyManagerProxy.signApiParams(resource, paramMap);
+			})
+			.then((response) => {
+				const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
+				console.log(LOG_TAG, "params to be sent", paramsMap);
+				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
+			})
+			.then((response) => {
+				OstEntityParser.parse(response.data);
+				return response;
+			});
+	}
+
 }

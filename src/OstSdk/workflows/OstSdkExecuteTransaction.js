@@ -6,16 +6,15 @@ import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
 
-const LOG_TAG = "OstSdk :: OstSdkCreateSession :: ";
+const LOG_TAG = "OstSdk :: OstSdkExecuteTransaction :: ";
 
-class OstSdkCreateSession extends OstSdkBaseWorkflow {
+class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   constructor(args, browserMessenger) {
     super(args, browserMessenger);
     console.log(LOG_TAG, "constructor :: ", args);
 
-    this.user_id = args.user_id;
-    this.expirationTime = parseInt(args.expiration_time);
-    this.spendingLimit = String(args.spending_limit);
+    this.token_holder_addresses = parseInt(args.token_holder_addresses);
+    this.amounts = String(args.amounts);
   }
 
   initParams() {
@@ -28,12 +27,6 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
   validateParams() {
     super.validateParams();
-
-    const currentTimeStamp = parseInt(Date.now()/1000);
-
-    if (currentTimeStamp > this.expirationTime) {
-      throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
-    }
   }
 
   performUserDeviceValidation() {
@@ -46,24 +39,46 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   onDeviceValidated() {
-
+    const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
-
-    this.keyManagerProxy.createSessionKey()
+    OstSession.getAllSessions()
       .then((sessionAddress) => {
-        return this.createSessionEntity( sessionAddress.session_address )
+        for (let i=0; i < sessionAddress.length; i++) {
+          const session = sessionAddress[i];
+          if (session.status === OstSession.STATUS.AUTHORIZED) {
+            return session;
+          }
+        }
+        throw "Session not found";
       })
-      .then((sessionEntity) => {
-        this.session = sessionEntity;
-        return this.keyManagerProxy.signQRSessionData(
-          sessionEntity.getId(),
-          sessionEntity.getSpendingLimit().toString(),
-          sessionEntity.getExpiryTime().toString()
-          )
+      .then((session) => {
+				// console.log(LOG_TAG, " onDeviceValidated", session.nonce, oThis.user.getTokenHolderAddress());
+				//Todo:: TO be removed
+        const rule = {
+					name: "Direct Transfer",
+					address: "0x19784e6190436a50195cfd0c5d9334f254e3017d"
+				};
+				return oThis.keyManagerProxy.signTransaction(session, rule ,['0x151111fc5a63f5a7f898395519c4c04071cd8ec5'], oThis.user.getTokenHolderAddress(), ['100']);
       })
-      .then((data) => {
-        this.postShowQRData(data.qr_data);
-        return this.pollingForSessionAddress()
+      .then((response) => {
+				const struct = response.signed_transaction_struct;
+				const txnData = response.transaction_data;
+
+        console.log(struct)
+
+
+        const params = {
+					to: txnData.rule.address,
+					raw_calldata: JSON.stringify(struct.raw_call_data),
+					nonce: txnData.session.nonce,
+					calldata: struct.call_data,
+					signature:struct.signature,
+					signer: txnData.session.address,
+					meta_property: {},
+        };
+
+        console.log(LOG_TAG, "TXN PARAMS", params);
+        return oThis.apiClient.executeTransaction(params);
       })
       .then((entity) => {
         this.postFlowComplete(entity);
@@ -73,8 +88,9 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       })
   }
 
+
   createSessionEntity( sessionAddress ) {
-    return OstSession.init(this.user_id, sessionAddress, this.spendingLimit, this.expirationTime)
+    return OstSession.init(sessionAddress, this.spendingLimit, this.expirationTime)
   }
 
   postShowQRData( qrData ) {
@@ -105,4 +121,4 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
 }
 
-export default OstSdkCreateSession
+export default OstSdkExecuteTransaction

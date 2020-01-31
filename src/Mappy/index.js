@@ -106,7 +106,7 @@ function getQRCode() {
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
-    
+
   };
 
   mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
@@ -121,6 +121,32 @@ function getQRCode() {
     (parseInt(Date.now()/1000) + 60*60*24*30*5),
     '1',
     mappyCallback);
+}
+
+function sendTokens() {
+
+	let mappyCallback =  new OstMappyCallbacks();
+	mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
+		alert("Transaction Acknowledged");
+	};
+
+	mappyCallback.flowInterrupt = function (ostWorkflowContext , ostError ) {
+	  console.log(LOG_TAG, ostError);
+		alert("Transaction Interruped");
+	};
+
+	mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
+
+		console.log(LOG_TAG, "getQRCode");
+		console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
+		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
+	};
+
+	let workflowId = window.OstSdkWallet.executeTransaction(
+		currentUser.user_id,
+		["0x151111fc5a63f5a7f898395519c4c04071cd8ec5"],
+		['100000000000000000'],
+		mappyCallback);
 }
 
 
@@ -181,7 +207,7 @@ function uploadUserData(jsonData, pageNo) {
     var cell2 = row1.insertCell(1).innerHTML = jsonData.data.users[k].username;
 
     var cell3 = row1.insertCell(2).innerHTML = "Balance=0";
-    var cell4 = row1.insertCell(3).innerHTML = '<button id="btn" class="btn btn-info" name="btn">Send</button>';
+    var cell4 = row1.insertCell(3).innerHTML = '<button id="btn" class="btn btn-info sendButtonClass" name="btn">Send</button>';
     var cell5 = row1.insertCell(4).innerHTML = '<button id="Qrcodebtn" class="btn btn-info QrCodeBtnClass"  " data-toggle="modal" data-target="#myModal">Get QR</button> ';
     table.appendChild(row1);
   }
@@ -198,12 +224,18 @@ function uploadUserData(jsonData, pageNo) {
 
   $(".QrCodeBtnClass").on('click', function(event){
     //getActiveSessions()
-    //getQRCode()
+    getQRCode()
     //getUser();
     //getDevice();
     //getToken();
-    getCurrentDeviceFromServer();
+    // getCurrentDeviceFromServer();
   });
+
+	$(".sendButtonClass").on('click', function(event){
+
+		sendTokens()
+	});
+
 
 }
 

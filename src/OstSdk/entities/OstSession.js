@@ -53,6 +53,9 @@ class OstSession extends OstBaseEntity {
   	return this.getData().expiration_height;
   }
 
+  getNonce() {
+    return this.getData().nonce;
+  }
   //Status
   isStatusAuthorized() {
     return OstSession.STATUS.AUTHORIZED === this.getStatus()

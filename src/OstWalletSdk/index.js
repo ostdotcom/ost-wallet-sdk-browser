@@ -6,6 +6,7 @@ import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
 import OstCreateSession from "./OstWorkflows/OstCreateSession";
 import OstSdkProxy from './OstSdkProxy'
 import OstJsonApiProxy from "./OstJsonApiProxy";
+import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 
 (function(window) {
 
@@ -44,7 +45,14 @@ import OstJsonApiProxy from "./OstJsonApiProxy";
       return workflowId;
     }
 
-    //getter methods 
+		executeTransaction( userId, tokenHolderAddresses, amounts, ostWorkflowDelegate) {
+			let transaction = new OstExecuteTransaction(userId, tokenHolderAddresses, amounts ,ostWorkflowDelegate, this.browserMessenger);
+			let workfowId = transaction.perform();
+
+			return workfowId;
+		}
+
+    //getter methods
     getUser( userId ) {
       return this.proxy.getUser( userId );
     }
