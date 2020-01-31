@@ -5,6 +5,7 @@ import OstBaseSdk from '../common-js/OstBaseSdk'
 import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
 import OstCreateSession from "./OstWorkflows/OstCreateSession";
 import OstSdkProxy from './OstSdkProxy'
+import OstJsonApiProxy from "./OstJsonApiProxy";
 
 (function(window) {
 
@@ -14,9 +15,11 @@ import OstSdkProxy from './OstSdkProxy'
     }
 
     perform() {
+      const oThis = this;
       return super.perform()
         .then(() => {
-
+          oThis.proxy = new OstSdkProxy(this.browserMessenger);
+          oThis.jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
         })
         .catch((err) => {
           throw OstError.sdkError(err, 'ows_i_p_1');
@@ -41,27 +44,33 @@ import OstSdkProxy from './OstSdkProxy'
       return workflowId;
     }
 
+    //getter methods 
     getUser( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger);
-      return proxy.getUser();
+      return this.proxy.getUser( userId );
     }
 
     getToken( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger);
-      return proxy.getToken();
+      return this.proxy.getToken( userId );
     }
 
     getDevice( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger);
-      return proxy.getDevice();
+      return this.proxy.getDevice(userId);
     }
 
     getActiveSessions( userId, spendingLimit = '' ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger, spendingLimit);
-      return proxy.getActiveSessions();
+      return this.proxy.getActiveSessions(userId, spendingLimit);
     }
 
+    //JSON Api calls
+    getCurrentDeviceFromServer( userId ) {
+      return this.jsonApiProxy.getCurrentDeviceFromServer(userId);
+    }
+
+    getBalanceFromServer( userId ) {
+      return this.jsonApiProxy.getBalanceFromServer(userId);
+    }
   }
+
 
   const walletSdk = new OstWalletSdk();
   walletSdk.perform()

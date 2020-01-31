@@ -79,7 +79,7 @@ class OstSdkAssist {
       .then((user) => {
         console.log("token id ", user.getTokenId());
 
-        OstToken.getById(userData.getTokenId())
+        OstToken.getById(user.getTokenId())
           .then( (tokenData => {
             if (tokenData) {
               console.log("token data ", tokenData);
@@ -99,6 +99,7 @@ class OstSdkAssist {
       });
   }
 
+  //get current device Getter Method
   getDevice ( args ) {
     console.log(LOG_TAG, "getDevice :: ", args);
     const userId = args.user_id;
@@ -170,11 +171,12 @@ class OstSdkAssist {
           }
         }else {
           console.log("No session data found ");
+          throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.DEVICE_NOT_SETUP);
         }
         
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       }).catch( (err) => {
-        throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.INVALID_USER_ID);
+        console.log(err);
       });
   }
 
@@ -187,19 +189,38 @@ class OstSdkAssist {
 
   getCurrentDeviceFromServer( args ) {
     const userId = args.user_id;
-    
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL, this.getKeyManagerProxy(userId))
-    apiClient.getDevice()
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
+
+    let address = null
+    OstUser.getById(userId)
+      .then((user) => {
+        return user.createOrGetDevice(this.getKeyManagerProxy(userId));
+      })
       .then((device) => {
-          if (device) {
-              this.sendToOstWalletSdk('onSuccess', subId, device);
-          }
-          else {
-            let error = OstError.sdkError(null, 'os_osa_i_gcdfs_1')
-          }
+        console.log("device =====", device['data'].address);
+        let address = device['data'].address;
+        if (!address) {
+          throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.INVALID_USER_ID);
+        }
+        let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+        return apiClient.getDevice(address);
+      })
+      .then((deviceData) => {
+        if (deviceData) {
+          functionParams = {device: deviceData};
+          functionName = 'onSuccess';
+          console.log("device api ====", deviceData);
+          this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
+        }
+        else {
+          let error = OstError.sdkError(null, 'os_osa_i_gcdfs_1');
+          throw error;
+        }
       })
       .catch((err) => {
-        let error = OstError.sdkError(err, 'os_osa_i_gcdfs_2')
+          console.log(err);
       })
   }
   /**
@@ -209,6 +230,28 @@ class OstSdkAssist {
   */
   getBalanceFromServer( args ) {
     const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
+
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    apiClient.getBalance()
+      .then((balance) => {
+          if (balance) {
+            functionParams = {balance: balance};
+            functionName = 'onSuccess';
+            console.log("balance api ====", balance);
+            this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
+          }
+          else {
+            let error = OstError.sdkError(null, 'os_osa_i_gbfs_1');
+            console.log(error);
+          }
+      })
+      .catch((err) => {
+        let error = OstError.sdkError(err, 'os_osa_i_gbfs_2');
+        console.log(error);
+      });    
   }
 
   /**
@@ -218,6 +261,23 @@ class OstSdkAssist {
   */
   getPricePointFromServer( args ) {
     const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
+
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    apiClient.getPricePoints()
+      .then((pricePoint) => {
+          if (pricePoint) {
+              this.sendToOstWalletSdk('onSuccess', subscriberId, pricePoint);
+          }
+          else {
+            let error = OstError.sdkError(null, 'os_osa_i_gppfs_1')
+          }
+      })
+      .catch((err) => {
+        let error = OstError.sdkError(err, 'os_osa_i_gppfs_2')
+      });
   }
 
   /**
@@ -227,6 +287,11 @@ class OstSdkAssist {
   */
   getBalanceWithPricePointFromServer( args ) {
     const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
+
+    
   }
 
   /**
@@ -236,6 +301,23 @@ class OstSdkAssist {
   */
   getPendingRecoveryFromServer( args ) {
     const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
+
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    apiClient.getPendingRecovery()
+      .then((data) => {
+          if (data) {
+              this.sendToOstWalletSdk('onSuccess', subscriberId, data);
+          }
+          else {
+            let error = OstError.sdkError(null, 'os_osa_i_gprfs_1')
+          }
+      })
+      .catch((err) => {
+        let error = OstError.sdkError(err, 'os_osa_i_gprfs_2')
+      });
   }
 
   /**
@@ -247,6 +329,10 @@ class OstSdkAssist {
   getTransactionsFromServer( args)  {
     const userId = args.user_id;
     const nextPagePayload = args.next_page_payload;
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
+
   }
 
   /**
@@ -258,6 +344,9 @@ class OstSdkAssist {
   getDeviceListFromServer( args ) {
     const userId = args.user_id;
     const nextPagePayload = args.next_page_payload;
+    const subscriberId =  args.subscriber_id;
+    let functionParams = {};
+    let functionName = 'onError';
 
   }
 

@@ -102,10 +102,7 @@ function setupDevice(args) {
 }
 
 function getQRCode() {
-<<<<<<< HEAD
-=======
   // getDevice();
->>>>>>> 2d9fd53c252b32340bc6a4d67e38581ea44e2fe8
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
@@ -201,8 +198,11 @@ function uploadUserData(jsonData, pageNo) {
 
   $(".QrCodeBtnClass").on('click', function(event){
     //getActiveSessions()
-    getQRCode()
+    //getQRCode()
     //getUser();
+    //getDevice();
+    //getToken();
+    getCurrentDeviceFromServer();
   });
 
 }
@@ -343,5 +343,26 @@ function getActiveSessions() {
    })
   .catch((err) => {
     console.log("MAppy :: index :: getActiveSessions :: catch ::" , err);
+  });
+}
+
+//json Api Calls
+function getCurrentDeviceFromServer() {
+  window.OstSdkWallet.getCurrentDeviceFromServer(currentUser.user_id)
+  .then((device) => {
+    console.log("MAppy :: index :: getCurrentDeviceFromServer :: then :: " ,  device);
+  })
+  .catch((err) => {
+    console.log("MAppy :: index :: getCurrentDeviceFromServer :: catch ::" , err);
+  });
+}
+
+function getBalanceFromServer() {
+  window.OstSdkWallet.getBalanceFromServer(currentUser.user_id)
+  .then((balance) => {
+    console.log("MAppy :: index :: getBalanceFromServer :: then :: " ,  balance);
+  })
+  .catch((err) => {
+    console.log("MAppy :: index :: getBalanceFromServer :: catch ::" , err);
   });
 }

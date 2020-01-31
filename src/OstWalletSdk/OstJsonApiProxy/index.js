@@ -2,65 +2,36 @@
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 
-const LOG_TAG = 'OstSdkProxy :: '
+const LOG_TAG = 'OstJsonApiProxy :: '
 
-class OstSdkProxy {
+class OstJsonApiProxy {
     constructor(messengerObj){
         this.messengerObj = messengerObj;
     }
 
-    getUser(userId) {
+    getCurrentDeviceFromServer(userId) {
         let oThis = this;
         let functionParams = {
             user_id: userId,
         };
 
-        return oThis.getFromOstSdk('getUser', functionParams)
+        return oThis.getFromOstSdk('getCurrentDeviceFromServer', functionParams)
             .then((response) => {
                 alert(JSON.stringify(response));
             });
     }
 
-    getToken(userId) {
+    getBalanceFromServer(userId) {
         let oThis = this;
-            let functionParams = {
-                user_id: userId,
-            };
-    
-            return oThis.getFromOstSdk('getToken', functionParams)
-                .then((response) => {
-                    alert(JSON.stringify(response));
-                    //return 
-                });
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getBalanceFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
     }
-
-    getDevice(userId) {
-        let oThis = this;
-            let functionParams = {
-                user_id: userId,
-            };
-    
-            return oThis.getFromOstSdk('getDevice', functionParams)
-                .then((response) => {
-                    alert(JSON.stringify(response));
-                    //return 
-                });
-    }
-
-    getActiveSessions(userId, spendingLimit) {
-        let oThis = this;
-            let functionParams = {
-                user_id: userId,
-                spending_limit: spendingLimit,
-            };
-    
-            return oThis.getFromOstSdk('getActiveSessions', functionParams)
-                .then((response) => {
-                    alert(JSON.stringify(response));
-                    //return 
-                });
-            }
-
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;
@@ -103,4 +74,4 @@ const ResponseHandler = function (success, error){
 
 };
 
-export default OstSdkProxy;
+export default OstJsonApiProxy;

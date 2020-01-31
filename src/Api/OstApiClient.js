@@ -68,6 +68,39 @@ export default class OstApiClient {
     return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`);
   }
 
+  getTransaction(transactionId) {
+    return this.get(`/users/${this.userId}/transactions/${transactionId}`);
+  }
+
+  getTransactions() {
+    return this.get(`/users/${this.userId}/transactions`);
+  }
+
+  getAllRules() {
+    return this.get(`/rules`);
+  }
+
+  getPricePoints(chainId) {
+    return this.get(`/chains/${chainId}/price-points`);
+  }
+
+  getPendingRecovery() {
+    return this.get(`/users/${this.userId}/devices/pending-recovery`);
+  }
+
+  getBalance() {
+    return this.get(`/users/${this.userId}/balance/`);
+  }
+
+  getTokenHolder() {
+    return this.get(`/users/${this.userId}/token-holder`);
+  }
+
+  getDeviceList() {
+    return this.get(`/users/${this.userId}/devices`);
+  }
+
+
   get(resource, params) {
     const oThis = this;
     params = params || {};
