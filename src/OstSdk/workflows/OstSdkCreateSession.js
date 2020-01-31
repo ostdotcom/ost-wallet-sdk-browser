@@ -13,6 +13,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     super(args, browserMessenger);
     console.log(LOG_TAG, "constructor :: ", args);
 
+    this.user_id = args.user_id;
     this.expirationTime = parseInt(args.expiration_time);
     this.spendingLimit = String(args.spending_limit);
   }
@@ -73,7 +74,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   createSessionEntity( sessionAddress ) {
-    return OstSession.init(sessionAddress, this.spendingLimit, this.expirationTime)
+    return OstSession.init(this.user_id, sessionAddress, this.spendingLimit, this.expirationTime)
   }
 
   postShowQRData( qrData ) {

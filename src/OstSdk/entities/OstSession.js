@@ -17,11 +17,16 @@ class OstSession extends OstBaseEntity {
     return 'address';
   }
 
-  static init(address, spendingLimit, expiryTime) {
+  static init(userId, address, spendingLimit, expiryTime) {
     const session = new OstSession(
-      {address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.CREATED}
+      {user_id: userId, address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.AUTHORIZED}
     );
     return session.forceCommit();
+  }
+
+  static getAllSessions() {
+    const ostSession = new OstSession({address: 'DummyInstace'});
+    return ostSession.getAll();
   }
 
   static getById(address) {

@@ -1,6 +1,7 @@
 import OstIndexDB from "../../common-js/OstIndexedDB";
 
 let dbInstance = null;
+let LOG_TAG = "OstBaseEntity :: " 
 
 const ENTITIES_DB_VERSION = 1;
 const ENTITIES_DB_NAME = 'EntitiesDB';
@@ -73,6 +74,14 @@ class OstBaseEntity {
 					.then(() => {
 						return oThis;
 					});
+			});
+	}
+
+	getAll() {
+		const oThis = this;
+		return this.getInstance()
+			.then((dbInstance) => {
+				return dbInstance.getAllRows(oThis.getStoreName());
 			});
 	}
 

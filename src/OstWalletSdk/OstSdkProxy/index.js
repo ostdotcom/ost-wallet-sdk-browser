@@ -6,9 +6,10 @@ import OstSdkBaseWorkflow from "../OstWorkflows/OstBaseWorkflow";
 const LOG_TAG = 'OstSdkProxy :: '
 
 class OstSdkProxy {
-    constructor(userId, messengerObj){
+    constructor(userId, messengerObj, spendingLimit){
         this.messengerObj = messengerObj;
         this.userId = userId;
+        this.spending_limit = spendingLimit;
     }
 
     getUser() {
@@ -53,6 +54,7 @@ class OstSdkProxy {
         let oThis = this;
             let functionParams = {
                 user_id: this.userId,
+                spending_limit: this.spending_limit,
             };
     
             return oThis.getFromOstSdk('getActiveSessions', functionParams)

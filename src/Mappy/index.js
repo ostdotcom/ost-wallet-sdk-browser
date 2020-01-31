@@ -102,7 +102,6 @@ function setupDevice(args) {
 }
 
 function getQRCode() {
-  getDevice();
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
@@ -197,9 +196,9 @@ function uploadUserData(jsonData, pageNo) {
   });
 
   $(".QrCodeBtnClass").on('click', function(event){
-
-    //getQRCode()
-    getUser();
+    //getActiveSessions()
+    getQRCode()
+    //getUser();
   });
 
 }
@@ -297,7 +296,7 @@ function makeCode(object){
 
 function getUser() {
 
-  window.OstSdkWallet.getUser("123456")
+  window.OstSdkWallet.getUser(currentUser.user_id)
   .then((user) => {
       console.log("MAppy :: index :: getUser :: then :: " , user);
    })
@@ -330,9 +329,10 @@ function getDevice() {
   });
 
 }
-
+// spending limit as function parameters
+var spendingLimit = '10000000000000';
 function getActiveSessions() {
-  window.OstSdkWallet.getActiveSessions(currentUser.user_id)
+  window.OstSdkWallet.getActiveSessions(currentUser.user_id, spendingLimit)
   .then((session) => {
       console.log("MAppy :: index :: getActiveSessions :: then :: " ,  session);
    })

@@ -56,7 +56,8 @@ class OstSdkAssist {
         if (userData) {
           functionParams = {user: userData};
           functionName = 'onSuccess';
-        }else {
+        }
+        else {
           let err = new OstError('os_osa_i_gu_1', OstErrorCodes.INVALID_USER_ID);
           functionParams = err.getJSONObject()
         }
@@ -85,8 +86,16 @@ class OstSdkAssist {
               functionParams = {token: tokenData};
               functionName = 'onSuccess';
             }
+            else {
+              let err = new OstError('os_osa_i_gt_1', OstErrorCodes.INVALID_TOKEN_ID);
+              functionParams = err.getJSONObject()
+            }
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-          }));
+          })).catch((err) => {
+            throw OstError.sdkError(err, 'os_osa_i_gt_2', OstErrorCodes.INVALID_TOKEN_ID);
+          });
+      }).catch((err) => {
+        throw OstError.sdkError(err, 'os_osa_i_gt_3', OstErrorCodes.INVALID_USER_ID);
       });
   }
 
@@ -99,33 +108,73 @@ class OstSdkAssist {
     
     OstUser.getById(userId)
       .then((user) => {
+
         user.createOrGetDevice(this.getKeyManagerProxy(userId))
           .then( (deviceData)=> {
             console.log("device ====",deviceData);
+
             if (deviceData) {
               functionParams = {device: deviceData};
               functionName = 'onSuccess';
             }
+            else {
+              let err = new OstError('os_osa_i_gd_1', OstErrorCodes.DEVICE_NOT_SETUP);
+              functionParams = err.getJSONObject();
+            }
+
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-          });
+          }).catch((err) => {
+        throw OstError.sdkError(err, 'os_osa_i_gd_2', OstErrorCodes.DEVICE_NOT_SETUP);
+        });
+      }).catch((err) => {
+        throw OstError.sdkError(err, 'os_osa_i_gd_3', OstErrorCodes.INVALID_USER_ID);
       });
-  }
+    }
 
   getActiveSessions( args ) {
     console.log(LOG_TAG, "getActiveSessions :: ", args);
     const userId = args.user_id;
+    const spendingLimit = args.spending_limit;
     const subscriberId =  args.subscriber_id;
     let functionParams = {};
     let functionName = 'onError';
 
-    OstSession.getById(userId)
+    OstSession.getAllSessions()
       .then( (sessionsData) => {
         console.log("sessions ==== ", sessionsData);
-        if(sessionsData){
-          functionParams = {sctiveSessions: sessionsData};
-          functionName = 'onSuccess';
+        if(sessionsData) {
+          let filterSessions;
+          if(spendingLimit !== ''){
+            filterSessions = sessionsData.filter( function(x){
+              return x.user_id === userId 
+                    && x.status === 'AUTHORIZED'
+                    && x.spending_limit >= spendingLimit ;
+            });
+          }
+          else {
+            filterSessions = sessionsData.filter( function(x){
+              return x.user_id === userId 
+                    && x.status === 'AUTHORIZED';
+            });
+          }
+        
+          console.log("filtered =====", filterSessions);
+          if(filterSessions){
+            functionParams = {activeSessions: filterSessions};
+            functionName = 'onSuccess';
+          }
+          else {
+            console.log("No Active Sessions ");
+            //let err = new OstError('os_osa_i_gas_1', OstErrorCodes.DEVICE_NOT_SETUP);
+            //functionParams = err.getJSONObject();
+          }
+        }else {
+          console.log("No session data found ");
         }
+        
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
+      }).catch( (err) => {
+        throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.INVALID_USER_ID);
       });
   }
 

@@ -56,8 +56,8 @@ import OstSdkProxy from './OstSdkProxy'
       return proxy.getDevice();
     }
 
-    getActiveSessions( userId ) {
-      let proxy = new OstSdkProxy(userId, this.browserMessenger);
+    getActiveSessions( userId, spendingLimit = '' ) {
+      let proxy = new OstSdkProxy(userId, this.browserMessenger, spendingLimit);
       return proxy.getActiveSessions();
     }
 
