@@ -76,10 +76,6 @@ export default class OstApiClient {
     return this.get(`/users/${this.userId}/transactions`);
   }
 
-  getAllRules() {
-    return this.get(`/rules`);
-  }
-
   getPricePoints(chainId) {
     return this.get(`/chains/${chainId}/price-points`);
   }
@@ -100,6 +96,10 @@ export default class OstApiClient {
     return this.get(`/users/${this.userId}/devices`);
   }
 
+
+  getRules() {
+    return this.get("/rules/");
+  }
 
   get(resource, params) {
     const oThis = this;

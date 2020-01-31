@@ -6,12 +6,12 @@ import * as EthUtil from "ethereumjs-util";
 import OstKeyManager from "./OstKeyManager"
 import OstApiSigner from "./OstApiSigner";
 import OstQRSigner from "./OstQRSigner";
+import OstTransactionSigner from "./OstTransactionSigner";
 
-const bip39 = require('bip39');
-const randomBytes = require('randombytes');
-const { SHA3 } = require('sha3');
-var hdKey = require('ethereumjs-wallet/hdkey');
-var ethUtil = require('ethereumjs-util');
+import * as bip39 from "bip39";
+import * as randomBytes from "randombytes";
+import {SHA3} from "sha3";
+import * as hdKey from "ethereumjs-wallet/hdkey";
 
 const LOG_TAG = "IKM";
 const SHOULD_USE_SEED_PWD = true;
@@ -226,16 +226,16 @@ class IKM {
 	}
 
 	signMessage(ethWallet, messageToSign) {
-		const messageHash = ethUtil.keccak256(messageToSign);
+		const messageHash = EthUtil.keccak256(messageToSign);
 		return this.signHash(ethWallet, messageHash);
 	}
 
 	personalSign(messageToSign, ethWallet) {
 		const oThis = this;
 		const bufferMessage = Buffer.from(messageToSign, 'utf-8');
-		const messageHash = ethUtil.hashPersonalMessage(bufferMessage);
+		const messageHash = EthUtil.hashPersonalMessage(bufferMessage);
 		if (!ethWallet) {
-			return oThis.getApiWallet()
+			return oThis.getWalletFromAddress(oThis.kmStruct.apiAddress)
 				.then((ethWallet) => {
 					return oThis.signHash(ethWallet, messageHash);
 				})
@@ -244,9 +244,9 @@ class IKM {
 		}
 	}
 
-	getApiWallet() {
+	getWalletFromAddress(walletAddress) {
 		const oThis = this,
-			apiKeyId = oThis.createEthKeyMetaId(oThis.kmStruct.apiAddress)
+			apiKeyId = oThis.createEthKeyMetaId(walletAddress)
 		;
 		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, apiKeyId)
 			.then((data) => {
@@ -266,9 +266,18 @@ class IKM {
 			});
 	}
 
+	signWithSession(sessionAddress, hashToSign) {
+		const oThis = this;
+		const bufferHash = Buffer.from(hashToSign, 'hex');
+		return oThis.getWalletFromAddress(sessionAddress)
+			.then((ethWallet) => {
+				return oThis.signHash(ethWallet, bufferHash);
+			});
+	}
+
 	signHash(ethWallet, msgHash) {
-		const msgSignature = ethUtil.ecsign(msgHash, ethWallet.getPrivateKey());
-		const rpcSig = ethUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
+		const msgSignature = EthUtil.ecsign(msgHash, ethWallet.getPrivateKey());
+		const rpcSig = EthUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
 		console.debug(LOG_TAG, "signature", rpcSig);
 		return rpcSig;
 	}
@@ -399,6 +408,13 @@ export default {
 		return getInstance(userId)
 			.then( (instance) => {
 				return new OstQRSigner(instance);
+			});
+	},
+
+	getTransactionSigner (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstTransactionSigner(instance);
 			});
 	}
 }

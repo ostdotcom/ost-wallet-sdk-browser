@@ -25,6 +25,7 @@ export default class OstSdkBaseWorkflow {
 
 
     this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
+		this.apiClient = new OstApiClient(this.userId, OstConstants.getBaseURL(), this.keyManagerProxy);
 
     this.initParams()
   }
@@ -257,8 +258,7 @@ export default class OstSdkBaseWorkflow {
   syncCurrentDevice() {
     let oThis = this;
 
-    const apiClient = new OstApiClient(oThis.userId, OstConstants.getBaseURL(), oThis.keyManagerProxy);
-    return apiClient.getDevice(this.currentDevice.getId())
+    return oThis.apiClient.getDevice(this.currentDevice.getId())
       .then((res) => {
         return oThis.getCurrentDeviceFromDB()
       })
@@ -270,8 +270,7 @@ export default class OstSdkBaseWorkflow {
   syncUser() {
     let oThis = this;
 
-    const apiClient = new OstApiClient(oThis.userId, OstConstants.getBaseURL(), oThis.keyManagerProxy);
-    return apiClient.getUser()
+    return oThis.apiClient.getUser()
       .then((res) => {
         return oThis.getUserFromDB()
       })
@@ -304,14 +303,25 @@ export default class OstSdkBaseWorkflow {
   syncToken() {
     let oThis = this;
 
-    const apiClient = new OstApiClient(oThis.userId, OstConstants.getBaseURL(), oThis.keyManagerProxy);
-    return apiClient.getToken()
+    return oThis.apiClient.getToken()
       .then((res) => {
         return oThis.getTokenFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'syncUser :: catch', err);
+        console.log(LOG_TAG, 'sync Token :: catch', err);
       });
+  }
+
+	syncRules() {
+		let oThis = this;
+
+		return oThis.apiClient.getRules()
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.log(LOG_TAG, 'sync Rules :: catch', err);
+			});
   }
 
 }
