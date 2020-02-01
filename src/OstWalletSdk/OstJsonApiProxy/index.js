@@ -31,7 +31,106 @@ class OstJsonApiProxy {
             .then((response) => {
                 alert(JSON.stringify(response));
             });
-    }
+	}
+
+	getPricePointFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getPricePointFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+	
+	getBalanceWithPricePointFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getBalanceWithPricePointFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	} 
+
+	getPendingRecoveryFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getPendingRecoveryFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+
+	getUserFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getUserFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+
+	getTokenFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getTokenFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+
+	getTransactionsFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getTransactionsFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+
+	getTokenHolderFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getTokenHolderFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+
+	getRulesFromServer( userId ) {
+		let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
+
+        return oThis.getFromOstSdk('getRulesFromServer', functionParams)
+            .then((response) => {
+                alert(JSON.stringify(response));
+            });
+	}
+
+
+
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;

@@ -77,6 +77,41 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
     getBalanceFromServer( userId ) {
       return this.jsonApiProxy.getBalanceFromServer(userId);
     }
+
+    getPricePointFromServer( userId ) {
+      return this.jsonApiProxy.getPricePointFromServer(userId);
+    }
+
+    getBalanceWithPricePointFromServer( userId ) {
+      return this.jsonApiProxy.getBalanceWithPricePointFromServer(userId);
+    }
+
+    getPendingRecoveryFromServer( userId ) {
+      return this.jsonApiProxy.getPendingRecoveryFromServer(userId);
+    }
+
+    getUserFromServer( userId ) {
+      return this.jsonApiProxy.getUserFromServer(userId);
+    }
+
+    getTokenFromServer( userId ) {
+      return this.jsonApiProxy.getTokenFromServer(userId);
+    }
+
+    getTransactionsFromServer( userId ) {
+      return this.jsonApiProxy.getTransactionsFromServer(userId);
+    }
+
+    getTokenHolderFromServer( userId ) {
+      return this.jsonApiProxy.getTokenHolderFromServer(userId);
+    }
+
+    getRulesFromServer ( userId ) {
+      return this.jsonApiProxy.getRulesFromServer(userId);
+    }
+
+
+
   }
 
 

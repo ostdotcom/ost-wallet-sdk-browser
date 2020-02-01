@@ -106,6 +106,11 @@ export default class OstApiClient {
   }
 
   get(resource, params) {
+    console.log("resource ------",resource);
+    var lastChar = resource.charAt( resource.length - 1 );
+    if(lastChar!=='/'){
+      resource += '/';
+    }
     const oThis = this;
     params = params || {};
     return oThis.init()
@@ -129,6 +134,10 @@ export default class OstApiClient {
   }
 
 	post(resource, params) {
+    var lastChar = resource.charAt( resource.length - 1 );
+    if(lastChar!=='/'){
+      resource += '/';
+    }
 		const oThis = this;
 		params = params || {};
 		return oThis.init()
