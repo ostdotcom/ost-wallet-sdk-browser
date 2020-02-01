@@ -18,10 +18,6 @@ class OstCreateSession extends OstBaseWorkflow{
       );
   }
 
-  showSessionQRCode( args ) {
-    console.log(LOG_TAG, "showSessionQRCode ::", args);
-    this.ostWorkflowCallbacks.showSessionQRCode(args.qr_data);
-  }
 }
 
 

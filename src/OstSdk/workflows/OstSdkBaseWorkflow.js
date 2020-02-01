@@ -78,7 +78,7 @@ export default class OstSdkBaseWorkflow {
           });
         break;
       case states.DEVICE_VALIDATED:
-        this.onDeviceValidated()
+        this.onDeviceValidated();
         break;
       case states.COMPLETED:
         break;
@@ -225,6 +225,18 @@ export default class OstSdkBaseWorkflow {
   processNext(obj = null) {
     this.stateManager.setNextState(obj);
     this.process();
+  }
+
+  postRequestAcknowledged(entityData) {
+    let message = new OstMessage();
+    message.setSubscriberId(this.subscriberId);
+    message.setFunctionName('requestAcknowledged');
+    message.setArgs({
+      ost_context_entity: entityData,
+      ost_workflow_context: this.getWorkflowContext().getJSONObject()
+    });
+
+    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
   postFlowComplete(entity) {

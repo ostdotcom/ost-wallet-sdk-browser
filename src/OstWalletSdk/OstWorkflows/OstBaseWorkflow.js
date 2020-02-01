@@ -21,12 +21,12 @@ class OstBaseWorkflow {
 
   requestAcknowledged( args ) {
     console.log(LOG_TAG, "requestAcknowledged", args);
-    this.ostWorkflowCallbacks.requestAcknowledged(args.ostWorkflowContext, args.ostContextEntity);
+    this.ostWorkflowCallbacks.requestAcknowledged(args.ost_workflow_context, args.ost_context_entity);
   }
 
   flowComplete( args ) {
     console.log(LOG_TAG, "flowComplete", args);
-    this.ostWorkflowCallbacks.flowComplete(args.ostWorkflowContext, args.ostContextEntity);
+    this.ostWorkflowCallbacks.flowComplete(args.ost_workflow_context, args.ost_context_entity);
   }
 
   flowInterrupt( args )  {
