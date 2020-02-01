@@ -102,15 +102,14 @@ function setupDevice(args) {
 }
 
 function getQRCode() {
-  // getDevice();
   let mappyCallback =  new OstMappyCallbacks();
   mappyCallback.showSessionQRCode = function (qrData) {
     makeCode(qrData);
 
   };
 
-  mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
-
+  mappyCallback.requestAcknowledged = function( ostWorkflowContext, ostContextEntity ) {
+    makeCode(ostContextEntity.qr_data);
     console.log(LOG_TAG, "getQRCode");
     console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
     console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
