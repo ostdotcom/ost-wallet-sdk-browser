@@ -122,7 +122,7 @@ function getQRCode() {
     mappyCallback);
 }
 
-function sendTokens() {
+function sendTokens(tokenHolderAddress) {
 
 	let mappyCallback =  new OstMappyCallbacks();
 	mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
@@ -143,7 +143,7 @@ function sendTokens() {
 
 	let workflowId = window.OstSdkWallet.executeTransaction(
 		currentUser.user_id,
-		["0x151111fc5a63f5a7f898395519c4c04071cd8ec5"],
+		[tokenHolderAddress],
 		['1000000'],
 		mappyCallback);
 }
@@ -188,7 +188,7 @@ function uploadUserData(jsonData, pageNo) {
     //cell1.setAttribute("scope","col");
     cell1 = row.insertCell(1).innerHTML = "Username";
     //cell1.setAttribute("scope","col");
-    cell1 = row.insertCell(2).innerHTML = "Balance";
+    cell1 = row.insertCell(2).innerHTML = "Address";
     //cell1.setAttribute("scope","col");
     cell1 = row.insertCell(3).innerHTML = "Send";
     //cell1.setAttribute("scope","col");
@@ -204,9 +204,12 @@ function uploadUserData(jsonData, pageNo) {
     var cell1 = row1.insertCell(0).innerHTML = i;
     console.log(jsonData.data.users[k].username);
     var cell2 = row1.insertCell(1).innerHTML = jsonData.data.users[k].username;
+    var cell3 = row1.insertCell(2).innerHTML = jsonData.data.users[k].token_holder_address;
 
-    var cell3 = row1.insertCell(2).innerHTML = "Balance=0";
-    var cell4 = row1.insertCell(3).innerHTML = '<button id="btn" class="btn btn-info sendButtonClass" name="btn">Send</button>';
+    var row1cell3 = row1.insertCell(3);
+    var cell4 = row1cell3.innerHTML = '<button id="btn" class="btn btn-info sendButtonClass" name="btn">Send</button>';
+		row1cell3.addEventListener('click', getOnSendClickFn( jsonData.data.users[k] ) );
+
     var cell5 = row1.insertCell(4).innerHTML = '<button id="Qrcodebtn" class="btn btn-info QrCodeBtnClass"  " data-toggle="modal" data-target="#myModal">Get QR</button> ';
     table.appendChild(row1);
   }
@@ -240,12 +243,12 @@ function uploadUserData(jsonData, pageNo) {
     getRulesFromServer()
   });
 
-	$(".sendButtonClass").on('click', function(event){
+}
 
-		sendTokens()
-	});
-
-
+function getOnSendClickFn ( rowUserData ) {
+  return function () {
+		sendTokens(rowUserData.token_holder_address);
+  }
 }
 
 function requestNextData(pageNo){
