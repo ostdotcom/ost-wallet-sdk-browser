@@ -144,7 +144,7 @@ function sendTokens() {
 	let workflowId = window.OstSdkWallet.executeTransaction(
 		currentUser.user_id,
 		["0x151111fc5a63f5a7f898395519c4c04071cd8ec5"],
-		['100000000000000000'],
+		['1000000'],
 		mappyCallback);
 }
 

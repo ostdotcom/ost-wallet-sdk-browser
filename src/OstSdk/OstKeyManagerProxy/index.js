@@ -91,7 +91,7 @@ export default class OstKeyManagerProxy {
 		return oThis.getFromKM('signQRSessionData', functionParams);
 	}
 
-	signTransaction(ostSession, ostRule ,tokenHolderAddresses, userTokenHolderAddresses ,amounts, options) {
+	signTransaction(ostSession, ostRule, userTokenHolderAddresses, tokenHolderAddresses, amounts, options) {
 		const oThis = this
 			, transactionData = {
 				session: ostSession,

@@ -5,6 +5,7 @@ import OstSession from "../entities/OstSession";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
+import OstRule from "../entities/OstRule";
 
 const LOG_TAG = "OstSdk :: OstSdkExecuteTransaction :: ";
 
@@ -13,8 +14,8 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
     super(args, browserMessenger);
     console.log(LOG_TAG, "constructor :: ", args);
 
-    this.token_holder_addresses = parseInt(args.token_holder_addresses);
-    this.amounts = String(args.amounts);
+    this.token_holder_addresses = args.token_holder_addresses;
+    this.amounts = args.amounts;
   }
 
   initParams() {
@@ -38,34 +39,58 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       })
   }
 
+  getAuthorizedSession() {
+		return OstSession.getAllSessions()
+			.then((sessionAddress) => {
+				for (let i=0; i < sessionAddress.length; i++) {
+					const session = sessionAddress[i];
+					if (session.status === OstSession.STATUS.AUTHORIZED) {
+						return session;
+					}
+				}
+				return null;
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "Error while fetching authorized session" ,err);
+				return Promise.resolve(null);
+			})
+  }
+
+	getRule(ruleName) {
+  	return new Promise((resolve) => {
+			OstRule.getById(ruleName)
+				.then((res) => {
+					return resolve(res.getData());
+				})
+				.catch((err) => {
+					console.error(LOG_TAG, "Error while fetching rule");
+					return resolve();
+				})
+		});
+	}
+
   onDeviceValidated() {
     const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
-    OstSession.getAllSessions()
-      .then((sessionAddress) => {
-        for (let i=0; i < sessionAddress.length; i++) {
-          const session = sessionAddress[i];
-          if (session.status === OstSession.STATUS.AUTHORIZED) {
-            return session;
-          }
-        }
-        throw "Session not found";
-      })
-      .then((session) => {
-				// console.log(LOG_TAG, " onDeviceValidated", session.nonce, oThis.user.getTokenHolderAddress());
-				//Todo:: TO be removed
-        const rule = {
-					name: "Direct Transfer",
-					address: "0x19784e6190436a50195cfd0c5d9334f254e3017d"
-				};
-				return oThis.keyManagerProxy.signTransaction(session, rule ,['0x151111fc5a63f5a7f898395519c4c04071cd8ec5'], oThis.user.getTokenHolderAddress(), ['100']);
-      })
+    Promise.all([oThis.getAuthorizedSession(), oThis.getRule("Direct Transfer")])
+			.then((resp) => {
+				if (!resp[0]) {
+					console.error(LOG_TAG, "Session fetch failed");
+					return Promise.reject();
+				}
+				const session = resp[0];
+				if (!resp[1]) {
+					console.error(LOG_TAG, "Rule fetch failed");
+					return Promise.reject();
+				}
+				const rule = resp[1];
+					return oThis.keyManagerProxy.signTransaction(session, rule, oThis.user.getTokenHolderAddress() ,oThis.token_holder_addresses, oThis.amounts);
+			})
       .then((response) => {
 				const struct = response.signed_transaction_struct;
 				const txnData = response.transaction_data;
 
-        console.log(struct)
-
+        console.log(struct);
 
         const params = {
 					to: txnData.rule.address,
