@@ -70,7 +70,7 @@ export default class OstApiClient {
   }
 
   getTransaction(transactionId) {
-    return this.get(`/users/${this.userId}/transactions/${transactionId}`);
+    return this.get(`/users/${this.userId}/transactions/${transactionId}/`);
   }
 
   getTransactions() {
@@ -153,8 +153,7 @@ export default class OstApiClient {
 				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
 			})
 			.then((response) => {
-				OstEntityParser.parse(response.data);
-				return response;
+				return OstEntityParser.parse(response.data);
 			});
 	}
 

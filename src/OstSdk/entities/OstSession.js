@@ -25,7 +25,7 @@ class OstSession extends OstBaseEntity {
   }
 
   static getAllSessions() {
-    const ostSession = new OstSession({address: 'DummyInstace'});
+    const ostSession = new OstSession({address: 'DummyInstance'});
     return ostSession.getAll();
   }
 
@@ -52,6 +52,16 @@ class OstSession extends OstBaseEntity {
   getExpiryTime() {
   	return this.getData().expiration_height;
   }
+
+  addNonce() {
+    this.data.nonce = parseInt(this.data.nonce) + 1;
+		return this.forceCommit();
+  }
+
+	subNonce() {
+		this.data.nonce = parseInt(this.data.nonce) - 1;
+		return this.forceCommit();
+	}
 
   getNonce() {
     return this.getData().nonce;

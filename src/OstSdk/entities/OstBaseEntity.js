@@ -1,16 +1,17 @@
 import OstIndexDB from "../../common-js/OstIndexedDB";
 
 let dbInstance = null;
-let LOG_TAG = "OstBaseEntity :: " 
+let LOG_TAG = "OstBaseEntity :: ";
 
-const ENTITIES_DB_VERSION = 1;
+const ENTITIES_DB_VERSION = 2;
 const ENTITIES_DB_NAME = 'EntitiesDB';
 const STORES = {
 	OST_DEVICE : 'OST_DEVICE',
 	OST_USER: 'OST_USER',
 	OST_TOKEN: 'OST_TOKEN',
 	OST_SESSION: 'OST_SESSION',
-	OST_RULE: 'OST_RULE'
+	OST_RULE: 'OST_RULE',
+	OST_TRANSACTION: 'OST_TRANSACTION'
 };
 
 class OstBaseEntity {

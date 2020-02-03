@@ -45,6 +45,9 @@ class OstBasePolling {
           if (entity && oThis.isProcessCompleted(entity) ) {
             return success(entity);
           }
+          if (entity && oThis.isProcessFailed(entity) ) {
+            return failure(entity);
+          }
           oThis.getEntity(success, failure);
         })
         .catch((err) => {
@@ -62,11 +65,15 @@ class OstBasePolling {
   }
 
   isProcessCompleted( entity ) {
-    return false
+    return false;
   }
 
+	isProcessFailed( entity ) {
+		return false;
+	}
+
   shouldRetryAfterError( err ) {
-    return true
+    return true;
   }
 }
 

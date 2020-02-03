@@ -6,6 +6,8 @@ import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
 import OstRule from "../entities/OstRule";
+import OstTransaction from "../entities/OstTransaction";
+import OstTransactionPolling from "../OstPolling/OstTransactionPolling";
 
 const LOG_TAG = "OstSdk :: OstSdkExecuteTransaction :: ";
 
@@ -23,7 +25,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 
     this.session = null;
 
-    this.sessionPollingClass = null;
+    this.transactionPollingClass = null;
   }
 
   validateParams() {
@@ -79,6 +81,8 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					return Promise.reject();
 				}
 				const session = resp[0];
+				this.session = new OstSession(session);
+
 				if (!resp[1]) {
 					console.error(LOG_TAG, "Rule fetch failed");
 					return Promise.reject();
@@ -105,42 +109,31 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
         console.log(LOG_TAG, "TXN PARAMS", params);
         return oThis.apiClient.executeTransaction(params);
       })
+			.then((dataObject) => {
+				return oThis.session.addNonce()
+					.then(() => {
+						return oThis.pollingForTransaction(dataObject['transaction'].id);
+					});
+			})
       .then((entity) => {
         this.postFlowComplete(entity);
       })
       .catch((err) => {
+      	console.error(LOG_TAG, "Workflow failed" ,err);
         this.postError(err);
       })
   }
 
-
-  createSessionEntity( sessionAddress ) {
-    return OstSession.init(sessionAddress, this.spendingLimit, this.expirationTime)
-  }
-
-  postShowQRData( qrData ) {
-    let message = new OstMessage();
-    message.setFunctionName("showSessionQRCode");
-    message.setSubscriberId(this.subscriberId);
-
-    let params = {
-        qr_data : qrData
-    };
-
-    message.setArgs(params);
-
-    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
-  }
-
-  pollingForSessionAddress() {
-    this.sessionPollingClass = new OstSessionPolling(this.userId, this.session.getId(), this.keyManagerProxy);
-    return this.sessionPollingClass.perform()
-      .then((sessionEntity) => {
-        console.log(sessionEntity);
-        return sessionEntity;
+  pollingForTransaction(transactionId) {
+    this.transactionPollingClass = new OstTransactionPolling(this.userId, transactionId, this.keyManagerProxy);
+    return this.transactionPollingClass.perform()
+      .then((txnEntity) => {
+        console.log(txnEntity);
+        return txnEntity;
       })
       .catch((err) => {
-        throw err
+      	console.error(LOG_TAG, "Transaction Failed.. Decrementing nonce", err);
+      	 return this.apiClient.getSession(this.session.getId());
       })
   }
 

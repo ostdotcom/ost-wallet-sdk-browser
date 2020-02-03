@@ -3,6 +3,7 @@ import OstToken from "../OstSdk/entities/OstToken";
 import OstDevice from "../OstSdk/entities/OstDevice";
 import OstSession from "../OstSdk/entities/OstSession";
 import OstRule from "../OstSdk/entities/OstRule";
+import OstTransaction from "../OstSdk/entities/OstTransaction";
 
 const LOG_TAG = "OstEntityParser";
 const RESPONSE_SUCCESS = "success";
@@ -12,6 +13,7 @@ const USER = "user";
 const TOKEN = "token";
 const SESSION = "session";
 const SESSIONS = "sessions";
+const TRANSACTION = "transaction";
 const RULE = "rule";
 const RULES = "rules";
 const DEVICE = "device";
@@ -59,5 +61,11 @@ export default class OstEntityParser {
 				OstSession.parse(sessionArray[i]);
 			}
 		}
+
+		if (dataObj[TRANSACTION]) {
+			OstTransaction.parse(dataObj[TRANSACTION]);
+		}
+
+		return dataObj;
 	}
 }
