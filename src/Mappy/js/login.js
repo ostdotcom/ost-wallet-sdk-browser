@@ -1,6 +1,9 @@
 
 import '../css/login.css';
+import DeviceSetup from "./common";
 
+let currentUser; 
+const LOG_TAG = "Mappy :: index :: ";
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
 $(function() {
@@ -58,10 +61,11 @@ $("#signupBtn").click(function () {
             // Make another api call to fetch current user info.
             console.log(data.success);
             if(data.success==false){
-            alert("INVALID USERNAME OR PASSWORD");
+              alert("INVALID USERNAME OR PASSWORD");
             }
             if(data.success==true) {
-                window.location = "/users";
+              DeviceSetup();
+              window.location = "/users";
             } else {
                 $("#signupBtn").removeAttr("disabled");
                 // TODO: Display error on page.
@@ -69,3 +73,5 @@ $("#signupBtn").click(function () {
             }
        });
    });
+
+   

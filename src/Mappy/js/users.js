@@ -1,11 +1,13 @@
+
 import '../css/login.css';
+import DeviceSetup from "./common";
 
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
 var i=1;
 
 $(function() {
-    function preloadFunc(){
+
     $.ajaxSetup({
         type: "POST",
         xhrFields: {
@@ -22,7 +24,7 @@ $(function() {
           crossDomain: true
       });
 
-
+      DeviceSetup();
 
       $.ajax({
         type: 'GET',
@@ -44,8 +46,6 @@ $(function() {
           console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
         }
       });
-    }
-      window.onpaint = preloadFunc();
 
 
       function uploadUserData(jsonData, pageNo) {
@@ -59,12 +59,12 @@ $(function() {
         //document.getElementById("signUpForm").style.display = "none";
        // document.getElementById("icon").style.display = "none";
         document.createElement("label");
-        let label = document.getElementById("logOutLabel");
-        label.innerHTML = '<button id="logOutBtn" class="btn btn-info" name="btn">Log Out</button>';
-        let logOutBtn = document.getElementById("logOutBtn");
-        logOutBtn.classList.add("btn");
-        logOutBtn.classList.add("btn-default"); 
-        logOutBtn.classList.add("btn-sm");
+          // let label = document.getElementById("logOutLabel");
+          // label.innerHTML = '<button id="logOutBtn" class="btn btn-info" name="btn">Log Out</button>';
+          // let logOutBtn = document.getElementById("logOutBtn");
+          // logOutBtn.classList.add("btn");
+          // logOutBtn.classList.add("btn-default"); 
+          // logOutBtn.classList.add("btn-sm");
         document.getElementById("logOutBtn").addEventListener("click", function(e) {
                 logout();
             });
@@ -166,16 +166,14 @@ function requestNextData(pageNo){
 
 }
 function logout(){
-    $.post(baseUrl+"/logout",
+    $.post(baseUrl+"/users/logout",
     {
 
 
     },
     function (data, status) {
 
-    console.log("regData: " + data + "\nStatus: " + status);
-    // Make another api call to fetch current user info.
-    console.log("reg",data.success);
+    window.location="/login";
 
 
     });
