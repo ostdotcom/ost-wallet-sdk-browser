@@ -18,7 +18,7 @@ class OstTransactionPolling extends OstBasePolling {
   }
 
   isProcessCompleted(entity) {
-    return entity.isStatusMined();
+    return entity.isStatusSuccess();
   }
 
   isProcessFailed(entity) {

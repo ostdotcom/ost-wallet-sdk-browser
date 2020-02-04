@@ -43,6 +43,10 @@ class OstTransaction extends OstBaseEntity {
   	return this.getStatus() == OstTransaction.STATUS.MINED;
 	}
 
+	isStatusSuccess() {
+		return this.getStatus() == OstTransaction.STATUS.SUCCESS;
+	}
+
 	isStatusFailed() {
 		return this.getStatus() == OstTransaction.STATUS.FAILED;
 	}
