@@ -75,25 +75,15 @@ export default class OstTransactionSigner {
 			case PRICER:
 
 				let currencyCode = options.currency_code || 'USD';
-				let pricePoint = options.price_points;
-				let pricePointOSTtoUSD = pricePoint[currencyCode];
 
-				let decimalExponent = pricePoint.decimals;
-
-				let weiPricePoint = oThis.convertPricePointFromEthToWei(pricePointOSTtoUSD, decimalExponent);
-
-				let conversionFactor = ostToken.getConversionFactor();
-
-				let btDecimals = parseInt(ostToken.getBtDecimals());
-
-				let  fiatMultiplier = oThis.calFiatMultiplier(pricePointOSTtoUSD, decimalExponent, conversionFactor, btDecimals);
+				let weiPricePoint = oThis.convertPricePointFromEthToWei('1.0261864534', '18');
 
 				callData = oThis.getTransactionExecutableData(ruleMethod,
 					userTokenHolderAddress,
 					tokenHolderAddresses,
 					amounts,
-					currencyCode,
-					weiPricePoint
+					('0x' + oThis.stringToHex(currencyCode)),
+					weiPricePoint,
 				);
 
 				rawCallData = oThis.getTransactionRawCallData(ruleMethod,
@@ -104,8 +94,6 @@ export default class OstTransactionSigner {
 					weiPricePoint
 				);
 
-				// spendingBtAmountInWei = new PricerRule().calDirectTransferSpendingLimit(amounts, fiatMultiplier);
-				//Todo: Price implementation
 				break;
 
 			default:
@@ -155,12 +143,11 @@ export default class OstTransactionSigner {
 	}
 
 	convertPricePointFromEthToWei(pricePointOSTtoUSD, decimalExponent) {
-		// BigDecimal bigDecimal = new BigDecimal(String.valueOf(pricePointUSDtoOST));
-		// BigDecimal toWeiMultiplier = new BigDecimal(10).pow(decimalExponent);
-		// BigDecimal weiDecimal = bigDecimal.multiply(toWeiMultiplier);
-		// BigInteger weiInteger = weiDecimal.toBigInteger();
-		//
-		// return weiInteger;
+		const bigDecimal = new BigNumber(pricePointOSTtoUSD);
+		const toWeiMultiplier = new BigNumber(10).pow(decimalExponent);
+		const weiDecimal = bigDecimal.multipliedBy(toWeiMultiplier);
+		const weiInteger = weiDecimal.toNumber();
+		return weiInteger.toString();
 	}
 	/**
 	 *
@@ -311,5 +298,18 @@ export default class OstTransactionSigner {
 
 		const hexString = '0x' + ethUtil.keccak256(EXECUTABLE_CALL_STRING).toString('hex');
 		return hexString.substring(0,10);
+	}
+
+	stringToHex(tmp) {
+		let str = '',
+			i = 0,
+			tmp_len = tmp.length,
+			c;
+
+		for (; i < tmp_len; i += 1) {
+			c = tmp.charCodeAt(i);
+			str += c.toString(16);
+		}
+		return str;
 	}
 }
