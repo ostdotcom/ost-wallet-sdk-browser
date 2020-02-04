@@ -10,7 +10,6 @@ var i=1;
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
 const LOG_TAG = "Mappy :: index :: ";
-<<<<<<< HEAD
 function preloadFunc()
 {
     
@@ -31,16 +30,14 @@ function preloadFunc()
       },
       error: function (error) {
         alert("hey+error");
-        console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
+        
       }
     });
     alert("PreLoad");
 
 }
 window.onpaint = preloadFunc();
-=======
 var currentUser = null;
->>>>>>> bootstraping
 
 $(function() {
   
@@ -84,33 +81,9 @@ $(function() {
           //var data =registerDevice("0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a","0x1ffc91Bce15fAd500f1Bb3f265cE33d4D385ff51","Postman client 2","0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a");
           //alert(data);
           document.getElementById("signupBtn").disabled = true;
-<<<<<<< HEAD
           window.location.href = "devserver/users.html";
        
       }
-=======
-          $.ajax({
-            type: 'GET',
-            url: baseUrl+'/users',
-            data: {
-            },
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success: function (jsonData) {
-
-
-              console.log(jsonData.data.users[0].token_id);
-
-              var pageNo=1;
-
-              uploadUserData(jsonData,pageNo);
-            },
-            error: function (error) {
-              console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
-            }
-          });
-        }
->>>>>>> bootstraping
       });
   });
 })
@@ -173,8 +146,7 @@ function sendTokens(tokenHolderAddress) {
 		alert("Transaction Interruped");
 	};
 
-<<<<<<< HEAD
-=======
+
 	mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
 
 		console.log(LOG_TAG, "getQRCode");
@@ -188,7 +160,6 @@ function sendTokens(tokenHolderAddress) {
 		['1000000'],
 		mappyCallback);
 }
->>>>>>> bootstraping
 
 
 
@@ -271,7 +242,7 @@ function uploadUserData(jsonData, pageNo) {
     //getQRCode()
     //getUser();
     //getDevice();
-    //getToken();
+    // getToken();
     //getActiveSessions()
     //getCurrentDeviceFromServer();
     //getBalanceFromServer();
@@ -282,7 +253,7 @@ function uploadUserData(jsonData, pageNo) {
     //getTokenFromServer()
     //getTransactionsFromServer() ----> no api call
     //getTokenHolderFromServer();
-    getRulesFromServer()
+    //getRulesFromServer()
   });
 
 }
@@ -292,56 +263,6 @@ function getOnSendClickFn ( rowUserData ) {
 		sendTokens(rowUserData.token_holder_address);
   }
 }
-
-<<<<<<< HEAD
-
-
-
-=======
-function requestNextData(pageNo){
-  pageNo+=1;
-  console.log(pageNo);
-  $.ajax({
-    type: 'GET',
-    url: baseUrl+'/users?page='+pageNo,
-    data: {
-      username: document.getElementById("usernameTb").value,
-      password: document.getElementById("password").value
-    },
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (jsonData) {
-
-      // alert(jsonData.data.users[0].username);
-      console.log(jsonData.data.users[0].token_id);
-      //window.location.replace("/html/users.html");
-      //document.getElementById("usersData").innerHTML='<object type="text/html" data="http://localhost:9000/src/html/Users.html" ></object>';
-      //userData(jsonData);
-      $("#table_of_items tr").remove();
-      uploadUserData(jsonData,pageNo);
-    },
-    error: function (error) {
-      alert('Error loading username=' + document.getElementById("usernameTb").value + error);
-    }
-  });
-}
-
-function logout(){
-  $.post(baseUrl+"/logout",
-    {
-
-
-    },
-    function (data, status) {
-
-      console.log("regData: " + data + "\nStatus: " + status);
-      // Make another api call to fetch current user info.
-      console.log("reg",data.success);
-
-
-    });
-}
->>>>>>> bootstraping
 
 
 function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){

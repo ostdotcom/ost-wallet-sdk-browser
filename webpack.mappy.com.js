@@ -4,8 +4,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
     entry: {'Mappy':'./src/Mappy/index.js',
-        'users': './src/Mappy/users.js',
-        'login': './src/Mappy/login.js' 
+        'users': './src/Mappy/js/users.js',
+        'login': './src/Mappy/js/login.js',
+        'json-api':'./src/Mappy/js/json-api.js',
+        'sdk-getters':'./src/Mappy/js/sdk-getters.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -64,18 +66,32 @@ const devConfig = {
             chunks: ['Mappy']
         }),
         new HtmlWebpackPlugin({
-            title: "users.com",
-            template: "./devserver/users.html",
+            title: "login.com",
+            template: "./src/Mappy/html/login.html",
             inject: false,
-            filename: "./devserver/users.html",
+            filename: "login",
+            chunks: ['login']
+        }),
+        new HtmlWebpackPlugin({
+            title: "users.com",
+            template: "./src/Mappy/html/users.html",
+            inject: false,
+            filename: "users",
             chunks: ['users']
         }),
         new HtmlWebpackPlugin({
-            title: "login.com",
-            template: "./devserver/login.html",
+            title: "JsonApi.com",
+            template: "./src/Mappy/html/json-api.html",
             inject: false,
-            filename: "./devserver/login.html",
-            chunks: ['login']
+            filename: "json-api",
+            chunks: ['json-api']
+        }),
+        new HtmlWebpackPlugin({
+            title: "Getters.com",
+            template: "./src/Mappy/html/sdk-getters.html",
+            inject: false,
+            filename: "sdk-getters",
+            chunks: ['sdk-getters']
         })
     ]
 };

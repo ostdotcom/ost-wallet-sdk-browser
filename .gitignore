@@ -1,5 +1,6 @@
 # IDE specicif
 .idea/
+.DS_Store
 
 # Logs
 logs
