@@ -6,8 +6,6 @@ const LOG_TAG = "OstTransactionSigner";
 const DIRECT_TRANSFER = "direct transfer";
 const PRICER = "pricer";
 
-const DIRECT_TRANSFERS = "directTransfers";
-
 let ikmInstance = null;
 
 export default class OstTransactionSigner {
@@ -23,7 +21,8 @@ export default class OstTransactionSigner {
 		const oThis = this
 			, rule = txnData.rule
 			, tokenHolderAddresses = txnData.to_token_holder_addresses
-			, userTokenHolderAddress = txnData.from_token_holder_addresses
+			, userTokenHolderAddress = txnData.from_token_holder_address
+			, ruleMethod = txnData.rule_method
 			, amounts = txnData.amounts
 			, session = txnData.session
 			, options = txnData.options
@@ -67,8 +66,8 @@ export default class OstTransactionSigner {
 				console.log(LOG_TAG, "In Direct Transfer");
 				console.log(LOG_TAG, "Building call data");
 
-				callData = oThis.getTransactionExecutableData(tokenHolderAddresses, amounts);
-				rawCallData = oThis.getTransactionRawCallData(tokenHolderAddresses, amounts);
+				callData = oThis.getTransactionExecutableData(ruleMethod, tokenHolderAddresses, amounts);
+				rawCallData = oThis.getTransactionRawCallData(ruleMethod, tokenHolderAddresses, amounts);
 				spendingBtAmountInWei = oThis.calDirectTransferSpendingLimit(amounts);
 				break;
 
@@ -121,17 +120,18 @@ export default class OstTransactionSigner {
 	 * eip1077TxnHash = 0xc6ace6dd7a28ba14961ba2543696573463bada56c0975e2627862fac91b0ab95
 	 *
 	 *
+	 * @param ruleMethod
 	 * @param tokenHolderAddresses
 	 * @param amounts
 	 */
-	getTransactionExecutableData(tokenHolderAddresses, amounts) {
-		const encodedString = ethAbi.simpleEncode("directTransfers(address[],uint256[])", tokenHolderAddresses, amounts);
+	getTransactionExecutableData(ruleMethod, tokenHolderAddresses, amounts) {
+		const encodedString = ethAbi.simpleEncode(`${ruleMethod}(address[],uint256[])`, tokenHolderAddresses, amounts);
 		return '0x' + encodedString.toString('hex');
 	}
 
-	getTransactionRawCallData(tokenHolderAddresses, amounts) {
+	getTransactionRawCallData(ruleMethod, tokenHolderAddresses, amounts) {
 		return {
-			method: DIRECT_TRANSFERS,
+			method: ruleMethod,
 			parameters: [tokenHolderAddresses, amounts]
 		};
 	}

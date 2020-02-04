@@ -141,10 +141,11 @@ function sendTokens(tokenHolderAddress) {
 		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
 	};
 
-	let workflowId = window.OstSdkWallet.executeTransaction(
-		currentUser.user_id,
-		[tokenHolderAddress],
-		['1000000'],
+	let workflowId = window.OstSdkWallet.executeDirectTransferTransaction(currentUser.user_id,
+		{
+			token_holder_addresses: [tokenHolderAddress],
+			amounts: ['100'],
+		},
 		mappyCallback);
 }
 
@@ -225,7 +226,7 @@ function uploadUserData(jsonData, pageNo) {
   });
 
   $(".QrCodeBtnClass").on('click', function(event){
-    
+
     //getQRCode()
     //getUser();
     //getDevice();
