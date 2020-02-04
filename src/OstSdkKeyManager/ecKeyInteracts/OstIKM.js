@@ -43,8 +43,9 @@ class IKM {
 		const oThis = this;
 		return this.kmDB.createDatabase()
 			.then(() => {
-				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.createUserMataId(oThis.userId));
-				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, oThis.userId)
+				let userMetaId = oThis.createUserMataId(oThis.userId);
+				console.debug(LOG_TAG, "Getting KeyMeta struct for", userMetaId);
+				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, userMetaId)
 			})
 			.then((kmData) => {
 				if (kmData) {
