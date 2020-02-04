@@ -74,7 +74,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   onDeviceValidated() {
     const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
-    Promise.all([oThis.getAuthorizedSession(), oThis.getRule("Direct Transfer")])
+    Promise.all([oThis.getAuthorizedSession(), oThis.getRule("Direct Transfer"), oThis.syncRules()])
 			.then((resp) => {
 				if (!resp[0]) {
 					console.error(LOG_TAG, "Session fetch failed");
