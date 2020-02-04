@@ -63,7 +63,7 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 			return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
 		}
 
-		executeDirectTransferTransaction(userId, transactionData, ostWorkflowDelegate) {
+		executeDirectTransforTransaction(userId, transactionData, ostWorkflowDelegate) {
       transactionData.rule_name = 'Direct Transfer';
       transactionData.rule_method = 'directTransfers';
 			transactionData.meta = {};

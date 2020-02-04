@@ -27,6 +27,7 @@ export default class OstTransactionSigner {
 			, session = txnData.session
 			, options = txnData.options
 		;
+		oThis.rule = rule;
 
 		if (!rule) {
 			throw "Rule object not found";
@@ -72,6 +73,38 @@ export default class OstTransactionSigner {
 				break;
 
 			case PRICER:
+
+				let currencyCode = options.currency_code || 'USD';
+				let pricePoint = options.price_points;
+				let pricePointOSTtoUSD = pricePoint[currencyCode];
+
+				let decimalExponent = pricePoint.decimals;
+
+				let weiPricePoint = oThis.convertPricePointFromEthToWei(pricePointOSTtoUSD, decimalExponent);
+
+				let conversionFactor = ostToken.getConversionFactor();
+
+				let btDecimals = parseInt(ostToken.getBtDecimals());
+
+				let  fiatMultiplier = oThis.calFiatMultiplier(pricePointOSTtoUSD, decimalExponent, conversionFactor, btDecimals);
+
+				callData = oThis.getTransactionExecutableData(ruleMethod,
+					userTokenHolderAddress,
+					tokenHolderAddresses,
+					amounts,
+					currencyCode,
+					weiPricePoint
+				);
+
+				rawCallData = oThis.getTransactionRawCallData(ruleMethod,
+					userTokenHolderAddress,
+					tokenHolderAddresses,
+					amounts,
+					currencyCode,
+					weiPricePoint
+				);
+
+				// spendingBtAmountInWei = new PricerRule().calDirectTransferSpendingLimit(amounts, fiatMultiplier);
 				//Todo: Price implementation
 				break;
 
@@ -99,6 +132,36 @@ export default class OstTransactionSigner {
 			});
 	}
 
+	calFiatMultiplier(pricePointOSTtoUSD, decimalExponent, conversionFactor, btDecimals) {
+// weiDecimal = OstToUsd * 10^decimalExponent
+// 		BigDecimal bigDecimal = new BigDecimal(String.valueOf(oneOstToUsd));
+// 		BigDecimal toWeiMultiplier = new BigDecimal(10).pow(usdDecimalExponent);
+// 		BigDecimal usdWeiDecimalDenominator = bigDecimal.multiply(toWeiMultiplier);
+//
+// 		// toBtWeiMultiplier = 10^btDecimal
+// 		BigDecimal toBtWeiMultiplier = new BigDecimal(10).pow(btDecimalExponent);
+//
+// 		// btInWeiNumerator = conversionFactorOstToPin * toBtWeiMultiplier
+// 		BigDecimal conversionFactorOstToPin = new BigDecimal(String.valueOf(oneOstToBT));
+// 		BigDecimal btInWeiNumerator = conversionFactorOstToPin.multiply(toBtWeiMultiplier);
+//
+// 		int precision = usdDecimalExponent - btDecimalExponent;
+// 		if (precision < 1) precision = 2;
+//
+// 		// multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
+// 		BigDecimal multiplierForFiat = btInWeiNumerator.divide(usdWeiDecimalDenominator, precision, RoundingMode.DOWN);
+//
+// 		return multiplierForFiat;
+	}
+
+	convertPricePointFromEthToWei(pricePointOSTtoUSD, decimalExponent) {
+		// BigDecimal bigDecimal = new BigDecimal(String.valueOf(pricePointUSDtoOST));
+		// BigDecimal toWeiMultiplier = new BigDecimal(10).pow(decimalExponent);
+		// BigDecimal weiDecimal = bigDecimal.multiply(toWeiMultiplier);
+		// BigInteger weiInteger = weiDecimal.toBigInteger();
+		//
+		// return weiInteger;
+	}
 	/**
 	 *
 	 * Test Example
@@ -119,20 +182,45 @@ export default class OstTransactionSigner {
 	 * Hex valueTo hash = 19003677e3e20f389332a4855c44260767eca55a559919784e6190436a50195cfd0c5d9334f254e3017d00364df3be02f0571e06f43f9696722025842afbf7dc61b4f27a67376921b729f2000000000000000000000000000000000000000000000000000000000000000100000097ebe030000000000000000000000000000000000000000000000000000000000000000000
 	 * eip1077TxnHash = 0xc6ace6dd7a28ba14961ba2543696573463bada56c0975e2627862fac91b0ab95
 	 *
+	 * pricer: currency code: "USD"
+	 * price point ostToUsd: 1.0261864534
+	 * decimal expo: 18
+	 * weiPricepoint = 1026186453400000000
+	 * conversion factor : 10
+	 * btDecimalsString: 6
+	 * fiatMultiplier: 9E-12
+	 * ruleAddress : 0xEb7A84A777e6E899039eB35eA43c467493f0c93d
+	 * activeSession: 0x8e6a96bC778bbAE86894F86901697c7689d7040c
+	 * nonce: 2
+	 * To token holder address: 0x9b2b6b72829b96d3cb332dd29fbd88616368fe07
+	 * tokenholder = 0x3677e3E20F389332A4855c44260767ECA55a5599 amounts: 1000000000000000000
+	 * call Data : 0x5a8870470000000000000000000000003677e3e20f389332a4855c44260767eca55a559900000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e055534400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e3dbf247439960000000000000000000000000000000000000000000000000000000000000000010000000000000000000000009b2b6b72829b96d3cb332dd29fbd88616368fe0700000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000de0b6b3a7640000
+	 * raw call data: {"method":"pay","parameters":["0x3677e3E20F389332A4855c44260767ECA55a5599",["0x9b2B6B72829B96d3cB332Dd29fbd88616368Fe07"],["1000000000000000000"],"USD","1026186453400000000"]}
+	 * spendingBTAmountInWei : 9000000
 	 *
+	 * sha3hash : 0x43b1acdb4da5c7d566c7e5bc2e295949177924224c2bfe8185a709046e32c712
 	 * @param ruleMethod
-	 * @param tokenHolderAddresses
-	 * @param amounts
+	 * @param args
 	 */
-	getTransactionExecutableData(ruleMethod, tokenHolderAddresses, amounts) {
-		const encodedString = ethAbi.simpleEncode(`${ruleMethod}(address[],uint256[])`, tokenHolderAddresses, amounts);
+	getTransactionExecutableData(ruleMethod) {
+		const args = Array.prototype.slice.call(arguments).slice(1);
+
+		const methodSignature = this.getMethodSignature(ruleMethod);
+		console.log(LOG_TAG, 'Method signature', methodSignature);
+
+		if (!methodSignature) throw "method name is invalid";
+
+		const encoderArgs = [methodSignature].concat(args);
+		const encodedString = ethAbi.simpleEncode.apply(this, encoderArgs);
 		return '0x' + encodedString.toString('hex');
 	}
 
-	getTransactionRawCallData(ruleMethod, tokenHolderAddresses, amounts) {
+	getTransactionRawCallData(ruleMethod) {
+		const args = Array.prototype.slice.call(arguments).slice(1);
+
 		return {
 			method: ruleMethod,
-			parameters: [tokenHolderAddresses, amounts]
+			parameters: args
 		};
 	}
 
@@ -185,6 +273,33 @@ export default class OstTransactionSigner {
 
 		txnHash = ethAbi.soliditySHA3(types, values);
 		return txnHash;
+	}
+
+	getMethodSignature(methodName) {
+		const oThis = this
+			, abi = this.rule.abi;
+
+		for (let i = 0; i<abi.length; i++) {
+			let entity = abi[i];
+			if ('function' === entity.type && methodName === entity.name) {
+				let signature = methodName;
+				if (entity.inputs) {
+					let inputString = entity.inputs.map(function (input) {
+						return input.type
+					}).join(',');
+					signature = `${signature}(${inputString})`
+				}
+
+				if (entity.outputs && 0 < entity.outputs.length) {
+					let outputString = entity.outputs.map(function (output) {
+						return output.type
+					}).join(',');
+					signature = `${signature}:(${outputString})`
+				}
+				return signature;
+			}
+		}
+		return null;
 	}
 
 	sha3(callData) {

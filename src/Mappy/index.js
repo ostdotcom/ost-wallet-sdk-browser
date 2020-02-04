@@ -141,7 +141,7 @@ function sendTokens(tokenHolderAddress) {
 		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
 	};
 
-	let workflowId = window.OstSdkWallet.executeDirectTransferTransaction(currentUser.user_id,
+	let workflowId = window.OstSdkWallet.executeDirectTransforTransaction(currentUser.user_id,
 		{
 			token_holder_addresses: [tokenHolderAddress],
 			amounts: ['100'],
@@ -227,7 +227,7 @@ function uploadUserData(jsonData, pageNo) {
 
   $(".QrCodeBtnClass").on('click', function(event){
 
-    //getQRCode()
+    getQRCode()
     //getUser();
     //getDevice();
     //getToken();
@@ -241,7 +241,7 @@ function uploadUserData(jsonData, pageNo) {
     //getTokenFromServer()
     //getTransactionsFromServer() ----> no api call
     //getTokenHolderFromServer();
-    getRulesFromServer()
+    // getRulesFromServer()
   });
 
 }

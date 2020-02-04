@@ -92,14 +92,14 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 			.then((resp) => {
 				if (!resp[0]) {
 					console.error(LOG_TAG, "Session fetch failed");
-					return Promise.reject();
+					return Promise.reject("Session fetch failed");
 				}
 				const session = resp[0];
 				this.session = new OstSession(session);
 
 				if (!resp[1]) {
 					console.error(LOG_TAG, "Rule fetch failed");
-					return Promise.reject();
+					return Promise.reject("Rule fetch failed");
 				}
 				const rule = resp[1];
 				return oThis.keyManagerProxy.signTransaction(session,
