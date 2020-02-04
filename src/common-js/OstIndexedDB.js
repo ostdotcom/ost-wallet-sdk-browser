@@ -82,7 +82,7 @@ class OstIndexedDB {
 				.transaction(name, "readwrite")
 				.objectStore(name);
 
-			const request = objectStore.add(data, data.id);
+			const request = objectStore.add(data, String(data.id).toLowerCase());
 
 			request.onsuccess = (event) => {
 				console.log(LOG_TAG, "Date inserted successfully", event);
@@ -106,7 +106,7 @@ class OstIndexedDB {
 				.transaction(name, "readwrite")
 				.objectStore(name);
 
-			const request = objectStore.put(data, data.id);
+			const request = objectStore.put(data,  String(data.id).toLowerCase());
 
 			request.onsuccess = (event) => {
 				console.log(LOG_TAG, "Date inserted successfully", event);
@@ -129,7 +129,29 @@ class OstIndexedDB {
 				.transaction(name)
 				.objectStore(name);
 
-			const request = objectStore.get(key);
+			const request = objectStore.get(String(key).toLowerCase());
+
+			request.onsuccess = (event) => {
+				console.log(LOG_TAG, "Data fetched successfully", event.target.result);
+				resolve(event.target.result);
+			};
+
+			request.onerror = (err) => {
+				console.error(LOG_TAG, "Data fetching fail", err);
+				reject(err);
+			};
+		});
+	}
+
+	getAllRows(name) {
+		const oThis = this;
+
+		return new Promise (function (resolve, reject) {
+			const objectStore = oThis.dbObject
+			.transaction(name)
+			.objectStore(name);
+
+			const request = objectStore.getAll();
 
 			request.onsuccess = (event) => {
 				console.log(LOG_TAG, "Data fetched successfully", event.target.result);

@@ -3,7 +3,10 @@ import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk'
 import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
-import OstMappyCallbacks from "./OstMappyCallbacks";
+import OstCreateSession from "./OstWorkflows/OstCreateSession";
+import OstSdkProxy from './OstSdkProxy'
+import OstJsonApiProxy from "./OstJsonApiProxy";
+import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 
 (function(window) {
 
@@ -13,9 +16,11 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
     }
 
     perform() {
+      const oThis = this;
       return super.perform()
         .then(() => {
-
+          oThis.proxy = new OstSdkProxy(this.browserMessenger);
+          oThis.jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
         })
         .catch((err) => {
           throw OstError.sdkError(err, 'ows_i_p_1');
@@ -32,7 +37,83 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
 
       return workflowId;
     }
+
+    createSession ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
+      let createSession = new OstCreateSession(userId, expirationTime, spendingLimit, ostWorkflowDelegate, this.browserMessenger);
+      let workflowId = createSession.perform();
+
+      return workflowId;
+    }
+
+		executeTransaction( userId, tokenHolderAddresses, amounts, ostWorkflowDelegate) {
+			let transaction = new OstExecuteTransaction(userId, tokenHolderAddresses, amounts ,ostWorkflowDelegate, this.browserMessenger);
+			let workfowId = transaction.perform();
+
+			return workfowId;
+		}
+
+    //getter methods
+    getUser( userId ) {
+      return this.proxy.getUser( userId );
+    }
+
+    getToken( userId ) {
+      return this.proxy.getToken( userId );
+    }
+
+    getDevice( userId ) {
+      return this.proxy.getDevice(userId);
+    }
+
+    getActiveSessions( userId, spendingLimit = '' ) {
+      return this.proxy.getActiveSessions(userId, spendingLimit);
+    }
+
+    //JSON Api calls
+    getCurrentDeviceFromServer( userId ) {
+      return this.jsonApiProxy.getCurrentDeviceFromServer(userId);
+    }
+
+    getBalanceFromServer( userId ) {
+      return this.jsonApiProxy.getBalanceFromServer(userId);
+    }
+
+    getPricePointFromServer( userId ) {
+      return this.jsonApiProxy.getPricePointFromServer(userId);
+    }
+
+    getBalanceWithPricePointFromServer( userId ) {
+      return this.jsonApiProxy.getBalanceWithPricePointFromServer(userId);
+    }
+
+    getPendingRecoveryFromServer( userId ) {
+      return this.jsonApiProxy.getPendingRecoveryFromServer(userId);
+    }
+
+    getUserFromServer( userId ) {
+      return this.jsonApiProxy.getUserFromServer(userId);
+    }
+
+    getTokenFromServer( userId ) {
+      return this.jsonApiProxy.getTokenFromServer(userId);
+    }
+
+    getTransactionsFromServer( userId ) {
+      return this.jsonApiProxy.getTransactionsFromServer(userId);
+    }
+
+    getTokenHolderFromServer( userId ) {
+      return this.jsonApiProxy.getTokenHolderFromServer(userId);
+    }
+
+    getRulesFromServer ( userId ) {
+      return this.jsonApiProxy.getRulesFromServer(userId);
+    }
+
+
+
   }
+
 
   const walletSdk = new OstWalletSdk();
   walletSdk.perform()
@@ -66,6 +147,12 @@ import OstMappyCallbacks from "./OstMappyCallbacks";
         ifrm.setAttribute('height', '200');
 
         document.body.appendChild(ifrm);
+
+				// ifrm.addEventListener("load", function() {
+				// 	ifrm.window.onerror = function (event) {
+				// 		console.error(LOG_TAG, "Miracle Miracle!!!!", event);
+				// 	};
+				// });
 
         walletSdk.setDownStreamWindow(ifrm.contentWindow);
         walletSdk.setDownStreamOrigin(url);

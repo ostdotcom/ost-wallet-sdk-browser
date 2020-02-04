@@ -9,7 +9,7 @@ class OstUrlHelper {
       params.timestamp = Date.now();
     }
 
-    let stringifiedParams = queryString.stringify(params, { arrayFormat: 'brackets' });
+    let stringifiedParams = OstUrlHelper.getStringFromParams(params);
 
     let connector = '';
     if (!url.endsWith('/')) {
@@ -17,6 +17,11 @@ class OstUrlHelper {
     }
 
     return url+connector+"?"+stringifiedParams;
+  }
+
+  static getStringFromParams(params) {
+		let stringifiedParams = queryString.stringify(params, { arrayFormat: 'brackets' });
+		return stringifiedParams;
   }
 
   static getStringForOstApiSign(url, params) {

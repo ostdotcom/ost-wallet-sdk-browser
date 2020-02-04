@@ -41,8 +41,73 @@ export default class OstKeyManagerProxy {
 
 		return oThis.getFromKM('getApiAddress', functionParams)
 			.then((response) => {
-				return response.api_key_address;
+				return response.api_signer_address;
 			});
+	}
+
+	isTrustable( ) {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+		};
+
+		return oThis.getFromKM('isTrustable', functionParams)
+			.then((response) => {
+				return response.is_trustable;
+			});
+	}
+
+	setTrustable ( trustable ) {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+			trustable: trustable
+		};
+
+		return oThis.getFromKM('setTrustable', functionParams)
+			.then((response) => {
+				return response.is_trustable;
+			});
+	}
+
+	createSessionKey() {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+		};
+
+		return oThis.getFromKM('createSessionKey', functionParams)
+	}
+
+	signQRSessionData(sessionAddress, spendingLimit, expiryTime) {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+			session_address: sessionAddress,
+			spending_limit: spendingLimit,
+			expiry_time: expiryTime
+		};
+
+		return oThis.getFromKM('signQRSessionData', functionParams);
+	}
+
+	signTransaction(ostSession, ostRule, userTokenHolderAddresses, tokenHolderAddresses, amounts, options) {
+		const oThis = this
+			, transactionData = {
+				session: ostSession,
+				rule: ostRule,
+				to_token_holder_addresses: tokenHolderAddresses,
+			  from_token_holder_addresses: userTokenHolderAddresses,
+				amounts: amounts,
+				options: options
+			}
+			, functionParams = {
+				user_id: this.userId,
+				transaction_data: transactionData
+			}
+		;
+
+		return oThis.getFromKM('signTransaction', functionParams);
 	}
 
 	getFromKM(functionName, functionParams) {

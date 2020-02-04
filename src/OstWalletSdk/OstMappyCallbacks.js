@@ -5,11 +5,11 @@ class OstMappyCallbacks extends OstWalletWorkFlowCallback {
     super()
   }
 
-  registerDevice ( deviceAddress, apiKeyAddress ) {
+  registerDevice ( apiParams ) {
     console.log("OstMappyCallbacks :: registerDevice");
     return new Promise((resolve, reject) => {
 
-      return resolve({deviceAddress: deviceAddress, apiKeyAddress: apiKeyAddress});
+      return resolve(apiParams);
     })
   }
 }

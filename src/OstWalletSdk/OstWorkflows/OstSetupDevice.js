@@ -5,40 +5,31 @@ import {SOURCE} from '../../common-js/OstBrowserMessenger';
 class OstSetupDevice extends OstBaseWorkflow {
   constructor(userId, tokenId, ostWorkflowCallbacks, browserMessenger) {
 
-    super(browserMessenger, ostWorkflowCallbacks);
-    this.userId = userId;
+    super(userId, ostWorkflowCallbacks, browserMessenger);
+
     this.tokenId = tokenId
   }
 
   perform () {
+    super.perform();
     console.log("OstSetupDevice :: perform");
-    this.browserMessenger.subscribe(this, this.ostWorkflowCallbacks.uuid);
 
-    let message = new OstMessage();
-    message.setReceiverName('OstSdk');
-    message.setFunctionName('setupDevice');
-    message.setArgs({user_id: this.userId, token_id: this.tokenId}, this.ostWorkflowCallbacks.uuid);
-
-    this.ostWorkflowCallbacks.workflowId = this.workflowId;
-
-    this.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
-
-    return this.workflowId;
+    return this.startWorkflow("setupDevice", {user_id: this.userId, token_id: this.tokenId});
   }
 
   registerDevice ( args ) {
     let oThis = this;
     console.log("OstSetupDevice :: registerDevice :: ", args);
-
-    this.ostWorkflowCallbacks.registerDevice(args.device_address, args.api_key_address)
+    const subscriberId = args.subscriber_id;
+    this.ostWorkflowCallbacks.registerDevice(args)
       .then((res) => {
 
-        console.log("OstSetupDevice :: registerDevice :: then :: ", res);
+        console.log("OstSetupDevice :: registerDevice :: then :: ", args);
 
         let message = new OstMessage();
+        message.setSubscriberId(subscriberId);
         message.setFunctionName("deviceRegistered");
-        message.setArgs(res, this.ostWorkflowCallbacks.uuid);
-        message.setSubscriberId(args.subscriber_id);
+        message.setArgs(args, this.ostWorkflowCallbacks.uuid);
 
         oThis.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
       })

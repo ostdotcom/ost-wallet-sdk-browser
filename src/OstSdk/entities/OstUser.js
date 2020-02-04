@@ -1,6 +1,7 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
 import OstDevice from "./OstDevice";
 import OstError from "../../common-js/OstError";
+import OstToken from "./OstToken";
 
 const LOG_TAG = "OstUser";
 class OstUser extends OstBaseEntity {
@@ -20,7 +21,7 @@ class OstUser extends OstBaseEntity {
     const user = new OstUser(
       {id: userId, token_id: tokenId, status: OstUser.STATUS.CREATED}
     );
-    return user.commit();
+    return user.forceCommit();
   }
 
   static getById(userId) {
@@ -29,6 +30,15 @@ class OstUser extends OstBaseEntity {
     );
     return user.sync();
   }
+
+	static parse(data) {
+		const ostUser = new OstUser(data);
+		return ostUser.forceCommit();
+	}
+
+	getIdKey() {
+		return 'id';
+	}
 
   getTokenId() {
     return this.getData().token_id;
@@ -39,7 +49,7 @@ class OstUser extends OstBaseEntity {
     if (!this.currentDeviceAddress) {
       return Promise.resolve(null);
     }
-    console.debug(LOG_TAG, String.format("currentDeviceAddress: %s", this.currentDeviceAddress));
+    console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
     return OstDevice.getById(this.currentDeviceAddress);
   }
 
@@ -74,13 +84,26 @@ class OstUser extends OstBaseEntity {
       });
   }
 
+  //Getter
+  getTokenId() {
+    return this.getData().token_id
+  }
+
+  getTokenHolderAddress() {
+    return this.getData().token_holder_address
+  }
+
+  getDeviceManagerAddress() {
+    return this.getData().device_manager_address
+  }
+
   //status
   isStatusActivated() {
-    return OstUser.status.ACTIVATED === this.getStatus();
+    return OstUser.STATUS.ACTIVATED === this.getStatus();
   }
 
   isStatusActivating() {
-  	return OstUser.status.ACTIVATING === this.getStatus();
+  	return OstUser.STATUS.ACTIVATING === this.getStatus();
   }
 
 }

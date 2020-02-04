@@ -44,7 +44,7 @@ export default class OstKeyManagerAssist {
 		return IKM.getKeyManager(userId)
 			.then((ikm) => {
 				let apiAddress = ikm.getApiAddress();
-				return oThis.onSuccess({user_id: userId, api_key_address: apiAddress}, subscriberId)
+				return oThis.onSuccess({user_id: userId, api_signer_address: apiAddress}, subscriberId)
 			})
 			.catch((err) => {
 				return oThis.onError({err: err, msg: "Api address fetch failed"}, subscriberId);
@@ -71,7 +71,109 @@ export default class OstKeyManagerAssist {
 				return oThis.onSuccess(response, subscriberId)
 			})
 			.catch((err) => {
-				return oThis.onError({err: err, msg: "Sign api params"}, subscriberId);
+				return oThis.onError({err: err, msg: "Sign api params failed"}, subscriberId);
+			});
+	}
+
+	signQRSessionData(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getQRSigner(userId)
+			.then((qrSigner) => {
+				return qrSigner.sign(args);
+			})
+			.then((qrObject) => {
+				console.log(LOG_TAG, "Qr data ", qrObject);
+				const response = Object.assign({}, args, {qr_data: qrObject});
+				return oThis.onSuccess(response, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Sign QR data failed"}, subscriberId);
+			});
+	}
+
+
+	createSessionKey(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				return ikm.createSessionKey();
+			})
+			.then((sessionAddress) => {
+				return oThis.onSuccess({user_id: userId, session_address: sessionAddress}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Create session failed"}, subscriberId);
+			});
+	}
+
+	setTrustable(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const trustable = args.trustable;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				return ikm.setTrustable(trustable);
+			})
+			.then((isTrustable) => {
+				return oThis.onSuccess({user_id: userId, is_trustable: isTrustable}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Trustable got failed"}, subscriberId);
+			});
+	}
+
+	isTrustable(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				const isTrustable = ikm.isTrustable();
+				return oThis.onSuccess({user_id: userId, is_trustable: isTrustable}, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Trustable got failed"}, subscriberId);
+			});
+	}
+
+	signTransaction(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const transactionData = args.transaction_data;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		if (!transactionData) {
+			return oThis.onError({msg: "Transaction data not found"}, subscriberId);
+		}
+		return IKM.getTransactionSigner(userId)
+			.then((transactionSigner) => {
+				return transactionSigner.signTransactionData(transactionData);
+			})
+			.then((signedTransactionStruct) => {
+				const response = Object.assign({}, args, {signed_transaction_struct: signedTransactionStruct});
+				return oThis.onSuccess(response, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Sign Transaction got failed"}, subscriberId);
 			});
 	}
 

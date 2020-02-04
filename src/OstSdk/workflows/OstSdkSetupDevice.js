@@ -1,14 +1,11 @@
 import OstUser from "../entities/OstUser";
 import OstToken from "../entities/OstToken";
-import OstKeyManager from "../OstKeyManagerProxy";
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstStateManager from "./OstStateManager";
 import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
-import OstDevice from "../entities/OstDevice";
-import OstApiClient from "../../Api/OstApiClient";
 import OstWorkflowContext from "./OstWorkflowContext";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
@@ -58,9 +55,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   validateParams() {
-    if (!this.userId) {
-      throw new OstError('os_w_ossd_vp_1', OstErrorCodes.INVALID_USER_ID);
-    }
+    super.validateParams();
 
     if (!this.tokenId) {
       throw new OstError('os_w_ossd_vp_2', OstErrorCodes.INVALID_TOKEN_ID);
@@ -122,10 +117,11 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
 
     let params = {
-      api_key_address: deviceEntity.getApiKeyAddress(),
+      api_signer_address: deviceEntity.getApiKeyAddress(),
       device_address: deviceEntity.getId(),
       user_id: this.userId
     };
+
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
     message.setArgs(params, this.deviceRegisteredUUID);
@@ -135,10 +131,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   deviceRegistered ( args ) {
 
-    let subscriberId = args.subscriber_id;
-    if (subscriberId) {
-      this.subscriberId = subscriberId;
-    }
+    // let subscriberId = args.subscriber_id;
+    // if (subscriberId) {
+    //   this.subscriberId = subscriberId;
+    // }
 
     this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
     this.performState( OstStateManager.state.REGISTERED, args);
@@ -160,7 +156,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         console.log(LOG_TAG, "syncUser :: then");
         return oThis.syncToken()
       })
-      .then(() => {
+      .then((obj) => {
+        console.log(LOG_TAG, "Session Address", obj);
         this.postFlowComplete(this.currentDevice);
       })
       .catch((err) => {

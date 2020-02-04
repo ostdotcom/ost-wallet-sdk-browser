@@ -5,12 +5,13 @@ import * as Wallet from "ethereumjs-wallet";
 import * as EthUtil from "ethereumjs-util";
 import OstKeyManager from "./OstKeyManager"
 import OstApiSigner from "./OstApiSigner";
+import OstQRSigner from "./OstQRSigner";
+import OstTransactionSigner from "./OstTransactionSigner";
 
-const bip39 = require('bip39');
-const randomBytes = require('randombytes');
-const { SHA3 } = require('sha3');
-var hdKey = require('ethereumjs-wallet/hdkey');
-var ethUtil = require('ethereumjs-util');
+import * as bip39 from "bip39";
+import * as randomBytes from "randombytes";
+import {SHA3} from "sha3";
+import * as hdKey from "ethereumjs-wallet/hdkey";
 
 const LOG_TAG = "IKM";
 const SHOULD_USE_SEED_PWD = true;
@@ -42,7 +43,7 @@ class IKM {
 		const oThis = this;
 		return this.kmDB.createDatabase()
 			.then(() => {
-				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.userId);
+				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.createUserMataId(oThis.userId));
 				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, oThis.userId)
 			})
 			.then((kmData) => {
@@ -66,13 +67,14 @@ class IKM {
 	storeKmData(kmData) {
 		const oThis = this;
 		const dataToStore = {
-			id: oThis.userId,
+			id: oThis.createUserMataId(oThis.userId),
 			data: kmData
 		};
 
 		console.log(LOG_TAG, "Storing KM data", kmData);
-		return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
+		return oThis.kmDB.putData(STORES.KEY_STORE_TABLE, dataToStore)
 			.then(() => {
+				oThis.kmData = kmData;
 				return kmData;
 			});
 	}
@@ -97,7 +99,14 @@ class IKM {
 	setIsTrustable( isTrustable ) {
 		const oThis = this;
 		oThis.kmStruct.isTrustable = isTrustable;
-		return oThis.storeKmData(oThis.kmStruct);
+		return oThis.storeKmData(oThis.kmStruct)
+			.then((kmStruct) => {
+				return kmStruct.isTrustable;
+			})
+	}
+
+	isTrustable( ) {
+		return this.kmStruct.isTrustable;
 	}
 
 	getDeviceAddress() {
@@ -106,6 +115,35 @@ class IKM {
 
 	getApiAddress() {
 		return this.kmStruct.apiAddress;
+	}
+
+	createSessionKey() {
+		const oThis = this;
+		const ecKeyPair = oThis.generateECKeyPair(KEY_TYPE.SESSION);
+
+		const privateKey = ecKeyPair.getPrivateKeyString();
+
+		console.log(LOG_TAG, "Create Session Key :: Encrypting the generated keys");
+
+		return OstSecureEnclave.encrypt(oThis.userId, privateKey)
+			.then((encryptedData) => {
+				const sessionAddress = ecKeyPair.getChecksumAddressString();
+				const sessionKeyId = oThis.createEthKeyMetaId(sessionAddress);
+
+				const dataToStore = {
+					id: sessionKeyId,
+					data: encryptedData
+				};
+
+				console.log(LOG_TAG, "Creating Session :: Inserting keys");
+				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
+					.then(() => {
+						return sessionAddress;
+					})
+			})
+			.catch((err) => {
+				throw OstError.sdkError(err, "okm_e_ikm_cak_1");
+			});
 	}
 
 	createApiKey() {
@@ -188,16 +226,16 @@ class IKM {
 	}
 
 	signMessage(ethWallet, messageToSign) {
-		const messageHash = ethUtil.keccak256(messageToSign);
+		const messageHash = EthUtil.keccak256(messageToSign);
 		return this.signHash(ethWallet, messageHash);
 	}
 
 	personalSign(messageToSign, ethWallet) {
 		const oThis = this;
 		const bufferMessage = Buffer.from(messageToSign, 'utf-8');
-		const messageHash = ethUtil.hashPersonalMessage(bufferMessage);
+		const messageHash = EthUtil.hashPersonalMessage(bufferMessage);
 		if (!ethWallet) {
-			return oThis.getApiWallet()
+			return oThis.getWalletFromAddress(oThis.kmStruct.apiAddress)
 				.then((ethWallet) => {
 					return oThis.signHash(ethWallet, messageHash);
 				})
@@ -206,9 +244,9 @@ class IKM {
 		}
 	}
 
-	getApiWallet() {
+	getWalletFromAddress(walletAddress) {
 		const oThis = this,
-			apiKeyId = oThis.createEthKeyMetaId(oThis.kmStruct.apiAddress)
+			apiKeyId = oThis.createEthKeyMetaId(walletAddress)
 		;
 		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, apiKeyId)
 			.then((data) => {
@@ -228,9 +266,18 @@ class IKM {
 			});
 	}
 
+	signWithSession(sessionAddress, hashToSign) {
+		const oThis = this;
+		const bufferHash = Buffer.from(hashToSign, 'hex');
+		return oThis.getWalletFromAddress(sessionAddress)
+			.then((ethWallet) => {
+				return oThis.signHash(ethWallet, bufferHash);
+			});
+	}
+
 	signHash(ethWallet, msgHash) {
-		const msgSignature = ethUtil.ecsign(msgHash, ethWallet.getPrivateKey());
-		const rpcSig = ethUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
+		const msgSignature = EthUtil.ecsign(msgHash, ethWallet.getPrivateKey());
+		const rpcSig = EthUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
 		console.debug(LOG_TAG, "signature", rpcSig);
 		return rpcSig;
 	}
@@ -354,6 +401,20 @@ export default {
 		return getInstance(userId)
 			.then( (instance) => {
 				return new OstApiSigner(instance);
+			});
+	},
+
+	getQRSigner (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstQRSigner(instance);
+			});
+	},
+
+	getTransactionSigner (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstTransactionSigner(instance);
 			});
 	}
 }
