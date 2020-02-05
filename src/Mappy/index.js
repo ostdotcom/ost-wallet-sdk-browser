@@ -23,7 +23,7 @@ function preloadFunc()
       dataType: 'json',
       success: function (jsonData) {
 
-        window.location.href = "/devserver/users.html";
+        window.location = "/users";
         
         
         
@@ -81,7 +81,7 @@ $(function() {
           //var data =registerDevice("0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a","0x1ffc91Bce15fAd500f1Bb3f265cE33d4D385ff51","Postman client 2","0x69F3a70eD7Ab01826a1b4F0b262b3886D4D0685a");
           //alert(data);
           document.getElementById("signupBtn").disabled = true;
-          window.location.href = "devserver/users.html";
+          window.location = "/users";
        
       }
       });
@@ -242,7 +242,7 @@ function uploadUserData(jsonData, pageNo) {
     //getQRCode()
     //getUser();
     //getDevice();
-    // getToken();
+    getToken();
     //getActiveSessions()
     //getCurrentDeviceFromServer();
     //getBalanceFromServer();

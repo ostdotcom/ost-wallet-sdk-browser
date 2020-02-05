@@ -17,7 +17,7 @@
         <a class="navbar-brand" href="#">
             <img src="https://cryptologos.cc/logos/ost-ost-logo.png?v=001" alt="Logo" style="width:40px;">
         </a>
-        <ul class="navbar-nav">
+        <ul class="nav navbar-nav navbar-left">
           <li class="nav-item">
             <a class="nav-link" href="json-api">JSON API</a>
           </li>
@@ -25,14 +25,16 @@
             <a class="nav-link" href="sdk-getters">Getters</a>
           </li>
         </ul>
-        <div class="nav navbar-right">
-            <button id="logOutBtn" class="nav navbar-brand">Log Out</button>
+        <div class=" nav navbar-nav navbar-right">
+            <button id="logOutBtn" class="navbar-brand pull-right" name="btn">Log Out</button>
         </div>
       </nav>
       <div class="container-fluid" style="margin-top:80px">
     <div class="container">
-        <form align="right" name="logOutForm" >
+        
+        <form align="right" name="logOutForm" class="navbar-right" >
                 <span class="logoutLblPos glyphicon glyphicon-log-out" id="logOutLabel">
+                    
                     
                 </span>
         <form>
