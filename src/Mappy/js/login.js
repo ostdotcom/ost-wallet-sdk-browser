@@ -1,12 +1,10 @@
 
 import '../css/login.css';
-import DeviceSetup from "./common";
+import OstSetup from "./common";
 
-let currentUser; 
-const LOG_TAG = "Mappy :: index :: ";
-var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
-
+var ostSetup = new OstSetup();
 $(function() {
+    
     $.ajaxSetup({
         type: "POST",
         xhrFields: {
@@ -31,6 +29,8 @@ $(function() {
 });
 
 function getCurrentUser( successCallback, failuerCallback ) {
+  var baseUrl = ostSetup.getBaseUrl();
+  console.log("base url --------->>>>>",baseUrl)
     $.ajax({
         type: 'GET',
         url: baseUrl+'/users',
@@ -49,29 +49,30 @@ function getCurrentUser( successCallback, failuerCallback ) {
 }
 
 $("#signupBtn").click(function () {
-    document.getElementById("signupBtn").disabled = true;
-    $("#signupBtn").attr("disabled", true);
-    $.post(baseUrl+"/login", {
-            username: document.getElementById("usernameTb").value,
-            password: document.getElementById("password").value
-        },
-        function (data, status) {
-         
-            console.log("Data: " + data + "\nStatus: " + status);
-            // Make another api call to fetch current user info.
-            console.log(data.success);
-            if(data.success==false){
-              alert("INVALID USERNAME OR PASSWORD");
-            }
-            if(data.success==true) {
-              DeviceSetup();
-              window.location = "/users";
-            } else {
-                $("#signupBtn").removeAttr("disabled");
-                // TODO: Display error on page.
-                console.log("Issues logging in", error);
-            }
-       });
+  var baseUrl = ostSetup.getBaseUrl();
+  document.getElementById("signupBtn").disabled = true;
+  $("#signupBtn").attr("disabled", true);
+  $.post(baseUrl+"/login", {
+          username: document.getElementById("usernameTb").value,
+          password: document.getElementById("password").value
+      },
+      function (data, status) {
+        
+          console.log("Data: " + data + "\nStatus: " + status);
+          // Make another api call to fetch current user info.
+          console.log(data.success);
+          if(data.success==false){
+            alert("INVALID USERNAME OR PASSWORD");
+          }
+          if(data.success==true) {
+            ostSetup.deviceSetupCall();
+            window.location = "/users";
+          } else {
+              $("#signupBtn").removeAttr("disabled");
+              // TODO: Display error on page.
+              console.log("Issues logging in", error);
+          }
+      });
    });
 
    

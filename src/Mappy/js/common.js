@@ -1,55 +1,146 @@
 import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
-import "../../OstWalletSdk/index";
 
-var currentUser = null;
 const LOG_TAG = "Mappy :: common :: ";
-var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+export 
 
-export default function deviceSetup() {
+class OstSetup {
 
-    $(function() {
+  constructor() {
+    $.ajaxSetup({
+      type: "POST",
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true
+    });
+  
+    $.ajaxSetup({
+      type: "GET",
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true
+    });
+  }
 
-        $.ajaxSetup({
-          type: "POST",
-          xhrFields: {
-            withCredentials: true
-          },
-          crossDomain: true
-        });
-      
-        $.ajaxSetup({
-          type: "GET",
-          xhrFields: {
-            withCredentials: true
-          },
-          crossDomain: true
-        });
-      
-      
-        $.ajax({
-          type: 'GET',
-          url: baseUrl+'/users/current-user',
-          data: {
-          },
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json',
-          success: function (jsonData) {
-      
-            console.log("result =====> ", jsonData.success);
-            
-            setupDevice( jsonData.data );
-          },
-          error: function (error) {
-            alert("hey+error");
-            
-          }
-        });
+  getBaseUrl() {
+    var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+    return baseUrl;
+  }
+
+  ajaxSetupFunction(){
+
+    $.ajaxSetup({
+      type: "POST",
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true
+    });
+  
+    $.ajaxSetup({
+      type: "GET",
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true
+    });
+  }
+
+  getCurrentUser() {
+    return new Promise((resolve, reject) => {
+    var baseUrl = this.getBaseUrl();
+      $.ajax({
+        type: 'GET',
+        url: baseUrl + '/users/current-user',
+        data: {
+        },
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (jsonData) {
+          console.log("result =====> ", jsonData.success);
+          var currentUser = jsonData.data.current_user;
+          resolve(currentUser)
+        },
+        error: function (error) {
+          alert(error);
+          reject(error);
+        }
       });
-   
+    })
+        
+  }
+
+  deviceSetupCall(){
+    var baseUrl = this.getBaseUrl();
+      $.ajax({
+        type: 'GET',
+        url: baseUrl+'/users/current-user',
+        data: {
+        },
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (jsonData) {
+    
+          console.log("result =====> ", jsonData.success);
+          setupDevice( jsonData.data );
+        },
+        error: function (error) {
+          alert(error);
+        }
+      });
+  }
+
 }
+
+export default OstSetup;
+
+// export function deviceSetup() {
+
+//     $(function() {
+
+//         $.ajaxSetup({
+//           type: "POST",
+//           xhrFields: {
+//             withCredentials: true
+//           },
+//           crossDomain: true
+//         });
+      
+//         $.ajaxSetup({
+//           type: "GET",
+//           xhrFields: {
+//             withCredentials: true
+//           },
+//           crossDomain: true
+//         });
+      
+      
+//         $.ajax({
+//           type: 'GET',
+//           url: baseUrl+'/users/current-user',
+//           data: {
+//           },
+//           contentType: 'application/json; charset=utf-8',
+//           dataType: 'json',
+//           success: function (jsonData) {
+      
+//             console.log("result =====> ", jsonData.success);
+            
+//             setupDevice( jsonData.data );
+//           },
+//           error: function (error) {
+//             alert("hey+error");
+            
+//           }
+//         });
+//       });
+   
+// }
 
 function setupDevice(args) {
 
+  var currentUser = null;
     console.log(LOG_TAG, "setupDevice");
   
     let resultType = args.result_type
@@ -64,7 +155,7 @@ function setupDevice(args) {
       return registerDevice(apiParams);
     };
     console.log("user_id =======> ",currentUser.user_id);
-    let workflowId = OstSdkWallet.setupDevice(
+    let workflowId = window.OstSdkWallet.setupDevice(
       currentUser.user_id,
       currentUser.token_id,
       "http://stagingpepo.com",
@@ -89,6 +180,8 @@ function setupDevice(args) {
           return resolve();
         }
       };
+      var ostSetup = new OstSetup();
+      var baseUrl = ostSetup.getBaseUrl();
       $.post(baseUrl+"/devices",
         {
           address: apiParams.device_address,

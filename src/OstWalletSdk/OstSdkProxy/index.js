@@ -17,7 +17,7 @@ class OstSdkProxy {
 
         return oThis.getFromOstSdk('getUser', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
     }
 
@@ -29,8 +29,7 @@ class OstSdkProxy {
     
             return oThis.getFromOstSdk('getToken', functionParams)
                 .then((response) => {
-                    alert(JSON.stringify(response));
-                    //return 
+                    return response;
                 });
     }
 
@@ -42,8 +41,7 @@ class OstSdkProxy {
     
             return oThis.getFromOstSdk('getDevice', functionParams)
                 .then((response) => {
-                    alert(JSON.stringify(response));
-                    //return 
+                    return response;
                 });
     }
 
@@ -56,8 +54,7 @@ class OstSdkProxy {
     
             return oThis.getFromOstSdk('getActiveSessions', functionParams)
                 .then((response) => {
-                    alert(JSON.stringify(response));
-                    //return 
+                    return response;
                 });
             }
 

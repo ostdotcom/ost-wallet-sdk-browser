@@ -1,13 +1,16 @@
 
 import '../css/login.css';
-import DeviceSetup from "./common";
+import OstSetup from "./common";
 
-var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+//var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
 var i=1;
 
-$(function() {
+var ostSetup = new OstSetup();
+var baseUrl = ostSetup.getBaseUrl();
 
+$(function() {
+  
     $.ajaxSetup({
         type: "POST",
         xhrFields: {
@@ -24,8 +27,11 @@ $(function() {
           crossDomain: true
       });
 
-      DeviceSetup();
+    //  deviceSetup();
+    
 
+    $(function() {
+    
       $.ajax({
         type: 'GET',
         url: baseUrl+'/users',
@@ -43,10 +49,10 @@ $(function() {
           uploadUserData(jsonData,pageNo);
         },
         error: function (error) {
-          console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
+          console.log('Error loading username=');
         }
       });
-
+    });
 
       function uploadUserData(jsonData, pageNo) {
         if(!jsonData.data.meta.next_page_payload){

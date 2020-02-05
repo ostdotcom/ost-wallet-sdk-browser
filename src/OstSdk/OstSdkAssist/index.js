@@ -542,33 +542,34 @@ class OstSdkAssist {
   }
 
   /**
-  * Api to get user's transactions
-  * @param {String} userId - Ost User id
-  * @param {Object} nextPagePayload (@nullable). Pass null to get first page.
-  * @public
-  */
-  getTransactionsFromServer( args )  {
-    const userId = args.user_id;
-    const nextPagePayload = args.next_page_payload;
-    const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionName = 'onError';
-
-  }
-
-  /**
   * Api to get user's device list
   * @param {String} userId - Ost User id
-  * @param {Object} nextPagePayload (@nullable). Pass null to get first page.
   * @public
   */
   getDeviceListFromServer( args ) {
     const userId = args.user_id;
-    const nextPagePayload = args.next_page_payload;
+    //const nextPagePayload = args.next_page_payload;
     const subscriberId =  args.subscriber_id;
     let functionParams = {};
     let functionName = 'onError';
 
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    apiClient.getDeviceList()
+      .then((devices) => {
+          if (devices) {
+            functionParams = {devices: devices.data.data};
+            functionName = 'onSuccess';
+            console.log("getDeviceList api ====", devices.data.data);
+            this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
+          }
+          else {
+            throw OstError.sdkError(null, 'os_osa_i_gdlfs_1');
+          }
+      })
+      .catch((err) => {
+        let error = OstError.sdkError(err, 'os_osa_i_gdlfs_2');
+        console.log(error);
+      });
   }
 
   sendToOstWalletSdk(functionName, subscriberId, functionParams) {

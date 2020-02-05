@@ -110,7 +110,9 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
       return this.jsonApiProxy.getRulesFromServer(userId);
     }
 
-
+    getDeviceListFromServer( userId ) {
+      return this.jsonApiProxy.getDeviceListFromServer(userId);
+    }
 
   }
 

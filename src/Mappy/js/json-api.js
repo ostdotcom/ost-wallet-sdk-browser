@@ -1,59 +1,31 @@
-import DeviceSetup from "./common";
+import OstSetup from "./common";
 
-var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
-let currentUser;
-
+//var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+var currentUser = null;
 $(function() {
 
-  $.ajaxSetup({
-    type: "POST",
-    xhrFields: {
-      withCredentials: true
-    },
-    crossDomain: true
-  });
-
-  $.ajaxSetup({
-    type: "GET",
-    xhrFields: {
-      withCredentials: true
-    },
-    crossDomain: true
-  });
-
-  DeviceSetup();
-
-  $.ajax({
-    type: 'GET',
-    url: baseUrl+'/users/current-user',
-    data: {
-    },
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (jsonData) {
-
-      console.log("result =====> ", jsonData.success);
-      currentUser = jsonData.data.current_user;
-
-    },
-    error: function (error) {
-      alert("hey+error");
-      
-    }
-  });
+  var ostSetup = new OstSetup();
+  ostSetup.deviceSetupCall();
+  ostSetup.getCurrentUser()
+    .then((current_user) => {
+      console.log(current_user);
+      currentUser = current_user})
+    .catch(err=> alert(err));
 });
 
 $("#json-api-btn").on('click', function(event){
    //getCurrentDeviceFromServer();
     //getBalanceFromServer();
-    //getPricePointFromServer()
+    getPricePointFromServer()
     //getBalanceWithPricePointFromServer()
     //getPendingRecoveryFromServer() ----> error
     //getUserFromServer()
-    getTokenFromServer()
+    //getTokenFromServer()
     //getTransactionsFromServer() ----> no api call
     //getTokenHolderFromServer();
     //getRulesFromServer()
+    //getDeviceListFromServer();
+    //getTransactionsFromServer()
 });
 
 
@@ -158,4 +130,15 @@ $("#json-api-btn").on('click', function(event){
       console.log("MAppy :: index :: getTokenHolderFromServer :: catch ::" , err);
     });
   }
+
+  function getDeviceListFromServer() {
+    window.OstSdkWallet.getDeviceListFromServer(currentUser.user_id)
+    .then((rules) => {
+      console.log("MAppy :: index :: getDeviceListFromServer :: then :: " ,  rules);
+    })
+    .catch((err) => {
+      console.log("MAppy :: index :: getDeviceListFromServer :: catch ::" , err);
+    });
+  }
+
   
