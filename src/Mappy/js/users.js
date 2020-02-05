@@ -1,16 +1,23 @@
-
 import '../css/login.css';
+<<<<<<< HEAD
 import OstSetup from "./common";
+=======
+>>>>>>> 2ed303feb4e55409fd7f49d1eecb78f8a63b3955
 
 //var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
 var i=1;
 
+<<<<<<< HEAD
 var ostSetup = new OstSetup();
 var baseUrl = ostSetup.getBaseUrl();
 
 $(function() {
   
+=======
+$(function() {
+    function preloadFunc(){
+>>>>>>> 2ed303feb4e55409fd7f49d1eecb78f8a63b3955
     $.ajaxSetup({
         type: "POST",
         xhrFields: {
@@ -27,8 +34,12 @@ $(function() {
           crossDomain: true
       });
 
+<<<<<<< HEAD
     //  deviceSetup();
     
+=======
+
+>>>>>>> 2ed303feb4e55409fd7f49d1eecb78f8a63b3955
 
     $(function() {
     
@@ -52,7 +63,13 @@ $(function() {
           console.log('Error loading username=');
         }
       });
+<<<<<<< HEAD
     });
+=======
+    }
+      window.onpaint = preloadFunc();
+
+>>>>>>> 2ed303feb4e55409fd7f49d1eecb78f8a63b3955
 
       function uploadUserData(jsonData, pageNo) {
         if(!jsonData.data.meta.next_page_payload){
@@ -65,14 +82,14 @@ $(function() {
         //document.getElementById("signUpForm").style.display = "none";
        // document.getElementById("icon").style.display = "none";
         document.createElement("label");
-          // let label = document.getElementById("logOutLabel");
-          // label.innerHTML = '<button id="logOutBtn" class="btn btn-info" name="btn">Log Out</button>';
-          // let logOutBtn = document.getElementById("logOutBtn");
-          // logOutBtn.classList.add("btn");
-          // logOutBtn.classList.add("btn-default"); 
-          // logOutBtn.classList.add("btn-sm");
-        document.getElementById("logOutBtn").addEventListener("click", function(e) {
-                logout();
+        // let label = document.getElementById("logOutLabel");
+        // label.innerHTML = '<button id="logOutBtn" class="btn btn-info navbar-brand pull-right" name="btn">Log Out</button>';
+        // let logOutBtn = document.getElementById("logOutBtn");
+        // logOutBtn.classList.add("btn");
+        // logOutBtn.classList.add("btn-default"); 
+        // logOutBtn.classList.add("btn-sm");
+         document.getElementById("logOutBtn").addEventListener("click", function(e) {
+                 logout();
             });
 
         document.getElementById("usersData").classList.add("table-responsive");  
@@ -179,7 +196,9 @@ function logout(){
     },
     function (data, status) {
 
-    window.location="/login";
+    if(data.success==true){
+      window.location="/login"; 
+    }
 
 
     });
