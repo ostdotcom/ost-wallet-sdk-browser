@@ -128,8 +128,7 @@ export default class OstApiClient {
         });
       })
       .then((response) => {
-        OstEntityParser.parse(response.data);
-        return response;
+        return OstEntityParser.parse(response.data);
       });
   }
 

@@ -79,7 +79,26 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 						});
 				})
 				.catch((err) => {
-					console.error(LOG_TAG, "Error while fetching rule");
+					console.error(LOG_TAG, "Error while fetching rule", err);
+					return resolve();
+				})
+		});
+	}
+
+	getPricePoint() {
+		const oThis = this;
+		return new Promise((resolve) => {
+			const chainId = oThis.token.getAuxiliaryChainId();
+			oThis.apiClient.getPricePoints(chainId)
+				.then((dataObj) => {
+					console.log(LOG_TAG, "Price point response", dataObj);
+
+					const pricePoint = dataObj['price_point'];
+					const pricePointOfBaseToken = pricePoint[oThis.token.getBaseToken()];
+					return resolve(pricePointOfBaseToken);
+				})
+				.catch((err) => {
+					console.error(LOG_TAG, "Error while fetching price point", err);
 					return resolve();
 				})
 		});
@@ -88,7 +107,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   onDeviceValidated() {
     const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
-    Promise.all([oThis.getAuthorizedSession(), oThis.getRule(oThis.ruleName)])
+    Promise.all([oThis.getAuthorizedSession(), oThis.getRule(oThis.ruleName), oThis.getPricePoint()])
 			.then((resp) => {
 				if (!resp[0]) {
 					console.error(LOG_TAG, "Session fetch failed");
@@ -102,12 +121,20 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					return Promise.reject("Rule fetch failed");
 				}
 				const rule = resp[1];
+
+				if (!resp[2]) {
+					console.error(LOG_TAG, "Price point fetch failed");
+					return Promise.reject("Price point fetch failed");
+				}
+				const pricePointOfBaseToken = resp[2];
+
 				return oThis.keyManagerProxy.signTransaction(session,
 					oThis.user.getTokenHolderAddress(),
 					oThis.token_holder_addresses,
 					oThis.amounts,
 					rule,
 					oThis.ruleMethod,
+					pricePointOfBaseToken,
 					oThis.options);
 			})
 			.then((response) => {

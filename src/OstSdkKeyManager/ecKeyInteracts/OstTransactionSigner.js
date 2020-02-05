@@ -23,6 +23,7 @@ export default class OstTransactionSigner {
 			, tokenHolderAddresses = txnData.to_token_holder_addresses
 			, userTokenHolderAddress = txnData.from_token_holder_address
 			, ruleMethod = txnData.rule_method
+			, pricePointBaseToken = txnData.price_point
 			, amounts = txnData.amounts
 			, session = txnData.session
 			, options = txnData.options
@@ -76,7 +77,9 @@ export default class OstTransactionSigner {
 
 				let currencyCode = options.currency_code || 'USD';
 
-				let weiPricePoint = oThis.convertPricePointFromEthToWei('1.0261864534', '18');
+				const pricePointOSTtoUSD = pricePointBaseToken[currencyCode];
+				const decimalExpo = pricePointBaseToken.decimals;
+				let weiPricePoint = oThis.convertPricePointFromEthToWei(pricePointOSTtoUSD, decimalExpo);
 
 				callData = oThis.getTransactionExecutableData(ruleMethod,
 					userTokenHolderAddress,
@@ -118,28 +121,6 @@ export default class OstTransactionSigner {
 				console.error(LOG_TAG, "Transaction Signing failed", err);
 				throw "Transaction signing failed";
 			});
-	}
-
-	calFiatMultiplier(pricePointOSTtoUSD, decimalExponent, conversionFactor, btDecimals) {
-// weiDecimal = OstToUsd * 10^decimalExponent
-// 		BigDecimal bigDecimal = new BigDecimal(String.valueOf(oneOstToUsd));
-// 		BigDecimal toWeiMultiplier = new BigDecimal(10).pow(usdDecimalExponent);
-// 		BigDecimal usdWeiDecimalDenominator = bigDecimal.multiply(toWeiMultiplier);
-//
-// 		// toBtWeiMultiplier = 10^btDecimal
-// 		BigDecimal toBtWeiMultiplier = new BigDecimal(10).pow(btDecimalExponent);
-//
-// 		// btInWeiNumerator = conversionFactorOstToPin * toBtWeiMultiplier
-// 		BigDecimal conversionFactorOstToPin = new BigDecimal(String.valueOf(oneOstToBT));
-// 		BigDecimal btInWeiNumerator = conversionFactorOstToPin.multiply(toBtWeiMultiplier);
-//
-// 		int precision = usdDecimalExponent - btDecimalExponent;
-// 		if (precision < 1) precision = 2;
-//
-// 		// multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
-// 		BigDecimal multiplierForFiat = btInWeiNumerator.divide(usdWeiDecimalDenominator, precision, RoundingMode.DOWN);
-//
-// 		return multiplierForFiat;
 	}
 
 	convertPricePointFromEthToWei(pricePointOSTtoUSD, decimalExponent) {

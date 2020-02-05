@@ -97,6 +97,7 @@ export default class OstKeyManagerProxy {
 									amounts,
 									ostRule,
 									ruleMethod,
+									pricePointBaseToken,
 									options) {
 		const oThis = this
 			, transactionData = {
@@ -106,6 +107,7 @@ export default class OstKeyManagerProxy {
 			  from_token_holder_address: userTokenHolderAddress,
 				amounts: amounts,
 				rule_method: ruleMethod,
+				price_point: pricePointBaseToken,
 				options: options
 			}
 			, functionParams = {

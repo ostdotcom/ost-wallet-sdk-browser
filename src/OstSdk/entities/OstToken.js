@@ -51,5 +51,9 @@ class OstToken extends OstBaseEntity {
   getDecimals() {
     return parseInt(this.getData().decimals);
   }
+
+  getBaseToken() {
+    return String(this.getData().base_token);
+  }
 }
 export default OstToken;
