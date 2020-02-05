@@ -199,7 +199,7 @@ class OstSdkAssist {
     apiClient.getUser()
       .then((user) => {
           if (user) {
-            functionParams = {user: user.data.data};
+            functionParams = {user: user.data.data.user};
             functionName = 'onSuccess';
             console.log("user api ====", user.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -225,7 +225,7 @@ class OstSdkAssist {
     apiClient.getToken()
       .then((token) => {
           if (token) {
-            functionParams = {token: token.data.data};
+            functionParams = {token: token.data.data.token};
             functionName = 'onSuccess';
             console.log("token api ====", token.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);

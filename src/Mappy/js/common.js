@@ -1,9 +1,7 @@
 import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
 
 const LOG_TAG = "Mappy :: common :: ";
-export 
-
-class OstSetup {
+export class OstSetup {
 
   constructor() {
     $.ajaxSetup({
