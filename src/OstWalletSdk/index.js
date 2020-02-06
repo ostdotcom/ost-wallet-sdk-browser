@@ -158,8 +158,7 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
     let stringToSign = OstURLHelpers.getStringToSign(url, params );
 
     walletSdk.signDataWithPrivateKey(stringToSign)
-      .then((signedMessage) => {
-        const signature = OstHelpers.byteArrayToHex(signedMessage);
+      .then((signature) => {
         let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
         ifrm.setAttribute('src', iframeURL);
         ifrm.setAttribute('width', '100%');

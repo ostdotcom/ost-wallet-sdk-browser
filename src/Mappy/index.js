@@ -1,9 +1,14 @@
+/** DO NOT COMMIT **/
+import OstWalletSdkCore from "../OstWalletSdk/OstWalletSdkCore.js";
+
 import OstMappyCallbacks from "../OstWalletSdk/OstMappyCallbacks";
 
 ;
 import './css/login.css';
 import '../common-js/qrcode';
 
+/** DO NOT COMMIT **/
+let OstWalletSdk = new OstWalletSdkCore();
 
 var i=1;
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
@@ -12,6 +17,21 @@ const LOG_TAG = "Mappy :: index :: ";
 var currentUser = null;
 
 $(function() {
+  const ostApiEndpoint = "https://api.stagingostproxy.com/testnet/v2/";
+  const sdkUrl = "https://sdk-devmappy.ostsdkproxy.com/";
+  const keyManagerUrl = "https://km-devmappy.ostsdkproxy.com/";
+
+  console.log("Calling OstWalletSdk.init");
+  OstWalletSdk.init({
+    "api_endpoint": ostApiEndpoint,
+    "sdk_endpoint": sdkUrl    
+  }).then(() => {
+    console.log("init resolved");
+  }).catch(( error ) => {
+    console.log("init caught!");
+    console.error(error);
+  });
+
 
   $.ajaxSetup({
     type: "POST",
