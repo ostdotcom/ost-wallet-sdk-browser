@@ -78,8 +78,8 @@ class OstSdkAssist {
 
   getToken ( args ) {
     console.log(LOG_TAG, "getToken :: ", args);
-    const userId = args.user_id
-    const subscriberId =  args.subscriber_id
+    const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
     let functionParams = {};
     let functionName = 'onError';
     OstUser.getById(userId)

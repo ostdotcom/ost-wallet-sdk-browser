@@ -45,12 +45,31 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
       return workflowId;
     }
 
-		executeTransaction( userId, tokenHolderAddresses, amounts, ostWorkflowDelegate) {
-			let transaction = new OstExecuteTransaction(userId, tokenHolderAddresses, amounts ,ostWorkflowDelegate, this.browserMessenger);
+		executeTransaction(userId, transactionData, ostWorkflowDelegate) {
+			let transaction = new OstExecuteTransaction(userId,
+				transactionData,
+				ostWorkflowDelegate,
+				this.browserMessenger);
 			let workfowId = transaction.perform();
 
 			return workfowId;
 		}
+
+		executePayTransaction(userId, transactionData, ostWorkflowDelegate) {
+			transactionData.rule_name = 'pricer';
+			transactionData.rule_method = 'pay';
+			transactionData.meta = {};
+			transactionData.options = {};
+			return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
+		}
+
+		executeDirectTransferTransaction(userId, transactionData, ostWorkflowDelegate) {
+      transactionData.rule_name = 'Direct Transfer';
+      transactionData.rule_method = 'directTransfers';
+			transactionData.meta = {};
+			transactionData.options = {};
+      return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
+    }
 
     //getter methods
     getUser( userId ) {
