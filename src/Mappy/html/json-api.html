@@ -15,7 +15,28 @@
 </head>
 <body>
    
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <a class="navbar-brand" href="#">
+        <img src="https://cryptologos.cc/logos/ost-ost-logo.png?v=001" alt="Logo" style="width:40px;">
+    </a>
+    <ul class="nav navbar-nav navbar-left">
+        <li class="nav-item">
+                <a class="nav-link" href="users">USERS</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="json-api">JSON API</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="sdk-getters">GETTERS</a>
+        </li>
+        <li class="nav-item">
+            
+            <button id="logOutBtn" class="nav-link btn btn-default" name="btn">LOG OUT</button>
+        </li>
+    </ul>
 
+  </nav>
+  <div class="container" style="margin-top:80px">
     <div id="accordion">
       <div class="card">
         <div class="card-header" id="headingOne">
@@ -23,7 +44,10 @@
             <button class="btn btn-link" id="get-cur-device" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
               getCurrentDeviceForUserId
             </button>
+            <button class="btn btn-link" style="float: right;" id="get-user-retry" data-toggle="collapse" data-target='#collapseOne' aria-expanded="true" aria-controls="collapseOne">Retry</button>
+            
           </h5>
+          
         </div>
     
         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
@@ -118,6 +142,7 @@
       </div>
       
     </div>
+  </div>
 
   </body>
 

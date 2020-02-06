@@ -63,7 +63,7 @@ $(function() {
 
         //document.getElementById("signUpForm").style.display = "none";
        // document.getElementById("icon").style.display = "none";
-        document.createElement("label");
+        //document.createElement("label");
         // let label = document.getElementById("logOutLabel");
         // label.innerHTML = '<button id="logOutBtn" class="btn btn-info navbar-brand pull-right" name="btn">Log Out</button>';
         // let logOutBtn = document.getElementById("logOutBtn");

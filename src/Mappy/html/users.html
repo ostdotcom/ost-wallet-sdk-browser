@@ -18,26 +18,28 @@
             <img src="https://cryptologos.cc/logos/ost-ost-logo.png?v=001" alt="Logo" style="width:40px;">
         </a>
         <ul class="nav navbar-nav navbar-left">
-          <li class="nav-item">
-            <a class="nav-link" href="json-api">JSON API</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="sdk-getters">Getters</a>
-          </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="users">USERS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="json-api">JSON API</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="sdk-getters">GETTERS</a>
+            </li>
+            <li class="nav-item">
+                
+                <button id="logOutBtn" class="nav-link btn btn-default" name="btn">LOG OUT</button>
+            </li>
         </ul>
-        <div class=" nav navbar-nav navbar-right">
-            <button id="logOutBtn" class="navbar-brand pull-right" name="btn">Log Out</button>
-        </div>
+
       </nav>
+
+
       <div class="container-fluid" style="margin-top:80px">
     <div class="container">
         
-        <form align="right" name="logOutForm" class="navbar-right" >
-                <span class="logoutLblPos glyphicon glyphicon-log-out" id="logOutLabel">
-                    
-                    
-                </span>
-        <form>
+        
         <div class="wrapper fadeIn first ">
             <h1 class="display-3"><%= htmlWebpackPlugin.options.title %></h1>
             <div id="usersData" class="table-responsive panel panel-default" style="overflow-x:auto;">
