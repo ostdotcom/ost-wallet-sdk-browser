@@ -6,6 +6,7 @@ import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
 import '../common-css/sdk-stylesheet.css';
 
 let hasBeenInitialized = false;
+let downstreamIframe = null;
 class OstBaseSdk {
   constructor(origin, pathname, ancestorOrigins, searchParams){
     this.defineImmutableProperty("origin", origin);
@@ -143,10 +144,24 @@ class OstBaseSdk {
     return Promise.resolve( true );
   }
 
+  getDocument() {
+    return document;
+  }
+
   //endregion
 
 
   //region - new code
+  
+  //TODO: Ensure all features required by the sdk are supported by the browser.
+  /**
+   * Ensures all features required by the Sdk are supported by the browser.
+   * @return {Promise} The promise resolves if all features required by the Sdk are supported by the browser.
+   */
+  validateBrowser() {
+    return Promise.resolve( true );
+  }
+
   createDownstreamIframe() {
     const oThis = this;
     let iframeCssClassName = null;
@@ -158,64 +173,91 @@ class OstBaseSdk {
 
     return oThis.getDownstreamIframeUrl()
       .then( ( signedUrl ) => {
-        const iframeObject = document.createElement('iframe');
-        iframeObject.setAttribute('src', signedUrl);
-        iframeObject.className = iframeCssClassName;
-        document.body.appendChild( iframeObject );
-
-        iframeObject.onload = () => {
-          console.log("iframeObject.onload called");
-        };
-
-        iframeObject.onerror = () => {
-          console.log("iframeObject.onerror called");
-        };
-
-
-        iframeObject.addEventListener('error', () => {
-          console.log("iframeObject - error event fired");
-        });
-
-        iframeObject.addEventListener('load', () => {
-          console.log("iframeObject - load event fired");
-        });
+        downstreamIframe = document.createElement('iframe');
+        downstreamIframe.setAttribute('src', signedUrl);
+        downstreamIframe.className = iframeCssClassName;
+        oThis.getDocument().body.appendChild( downstreamIframe );
+        // Set down-stream contentWindow.
+        oThis.setDownStreamWindow( downstreamIframe.contentWindow );
+        // Set down-stream url.
+        oThis.setDownStreamOrigin( oThis.getDownstreamEndpoint() );
+        return oThis.waitForIframeLoad();
       })
-  } 
+  }
 
-  getDownstreamIframeUrl() {
+  waitForIframeLoad() {
     const oThis = this;
-    const downstreamEndpoint = this.getDownstreamEndpoint();
-    const params = {
-      publicKeyHex: oThis.getPublicKeyHex(),
-      sdkConfig: this.sdkConfig
+    
+    // Create a promise.
+    let _resolve  = null;
+    let _reject   = null;
+    let iframeLoadPromise = new Promise((resolve, reject) => {
+      _resolve  = resolve;
+      _reject   = reject;
+    });
+
+    let _isIframeLoaded = false;
+    let _isIframeTimedout = false;
+    let ifrmLoadEventListner = (event) => {
+      try {
+        console.log("Downstream Iframe loaded!");
+        if ( _isIframeLoaded ) {
+          // Already received load event. Something is not right.
+          console.warn("Unexpectedly received load event more than once from downstream iframe. Destroying the iframe. The sdk shall not work any more");
+          oThis.destoryDownstreamIframe();
+          return;
+        }
+
+        if ( _isIframeTimedout ) {
+          // We have already declared init as failed.
+          // ignore it.
+          return;
+        }
+
+        // Mark as loaded.
+        _isIframeLoaded = true;
+        _resolve( true );
+      } catch( e ) {
+        // Unexpected Error.
+        let ostError = OstError.sdkError(e, "obsdk_wfifl_ilel_1");
+        _reject( ostError );
+      }
     };
-    const stringToSign = OstURLHelpers.getStringToSign(downstreamEndpoint, params );
-    console.log(params);
-    
-    
-    // Sign the data.
-    return oThis.signDataWithPrivateKey(stringToSign)
-      // Return the url.
-      .then((signature) => {
-        return OstURLHelpers.appendSignature(stringToSign, signature);
-      })
+
+    downstreamIframe.addEventListener('load', ifrmLoadEventListner);
+
+    setTimeout(() => {
+      if ( _isIframeLoaded ) {
+        return;
+      }
+
+      // Mark as timedout.
+      _isIframeTimedout = true;
+
+      // Destory the downstream iframe.
+      oThis.destoryDownstreamIframe();
+
+      // Reject the promise.
+      let errorInfo = {
+        "reason": "Failed to load downstream iframe.",
+        "iframeUrl": signedUrl
+      };
+      let error = new OstError("obsdk_wfifl_st_1", EC.SDK_INITIALIZATION_TIMEDOUT, errorInfo);
+      _reject( error );
+
+    }, oThis.getDownstreamIframeLoadTimeout());
+    return iframeLoadPromise;
   }
 
-  getDownstreamEndpoint() {
-    const error = new Error("getDownstreamEndpoint needs to be overridden by derived class.");
-    const ostError = OstError.sdkError(error, "obsdk_gdsep_1");
-    return Promise.reject( ostError );
-  }
-
-  getDownstreamIframeCssClassName() {
-    return OstBaseSdk.getHiddenIframeCssClassName();
-  }
-
-  static getHiddenIframeCssClassName() {
-    return "ostsdk-iframe-style";
+  waitForIframeHandshake(_resolve, _reject) {
+    _resolve();
   }
   //endregion
 
+
+  /**
+   * ------------------------- REVIEWED CODE ------------------------- *
+   */
 
   /**
    * getDefaultConfig provide the default configuration supported by the sdk
@@ -252,6 +294,11 @@ class OstBaseSdk {
         .then( () => {
           return oThis.createBrowserMessengerObject();
         })
+
+        // Allow sub-clases to do tasks on browserMessenger creation.
+        .then( () => {
+          return oThis.onBrowserMessengerCreated( this.browserMessenger );
+        })
         
         // Subscribe to on setup complete
         .then( () => {          
@@ -261,6 +308,16 @@ class OstBaseSdk {
         // Create Downstream Iframe
         .then( () => {
           return oThis.createDownstreamIframe();
+        })
+
+        // Wait for Downstream Iframe Initialization.
+        .then( () => {
+          return oThis.waitForDownstreamInitialization();
+        })
+
+        //Mark Sdk as init.
+        .then( () => {
+          oThis.markSdkInitialized();
         })
   }
 
@@ -315,6 +372,99 @@ class OstBaseSdk {
   }
 
   /**
+   * onBrowserMessengerCreated - An empty method for derived class to over-ride.
+   * @param  {OstBrowserMessenger} browserMessenger instance.
+   * @return {Promise} Dericed class must return a promise.
+   */
+  onBrowserMessengerCreated( browserMessenger ) {
+    return Promise.resolve();
+  }
+
+  /**
+   * getDownstreamIframeLoadTimeout - time to wait for downstream's iframe's load event.
+   * @return {Number} time to wait for iframe's load event.
+   */
+  getDownstreamIframeLoadTimeout() {
+    return 30 * 1000; //30 seconds.
+  }
+
+  /**
+   * getHandshakeTimeout - time to wait for handshake to be completed once the iframe has been loaded.
+   * @return {Number} time to wait for handshake to be completed once the iframe has been loaded.
+   */
+  getHandshakeTimeout() {
+    return 5 * 1000; //5-seconds.
+  }
+
+  /**
+   * getDownstreamIframeUrl - returns the down-stream iframe's signed url.
+   * @return {String} returns the down-stream iframe's signed url.
+   */
+  getDownstreamIframeUrl() {
+    const oThis = this;
+    const downstreamEndpoint = this.getDownstreamEndpoint();
+    const params = {
+      publicKeyHex: oThis.getPublicKeyHex(),
+      sdkConfig: this.sdkConfig
+    };
+    const stringToSign = OstURLHelpers.getStringToSign(downstreamEndpoint, params );
+
+    // Sign the data.
+    return oThis.signDataWithPrivateKey(stringToSign)
+      // Return the url.
+      .then((signature) => {
+        return OstURLHelpers.appendSignature(stringToSign, signature);
+      })
+  }
+
+  /**
+   * getDownstreamEndpoint - returns the down-stream iframe's endpoint. Derived classes MUST over-ride this method.
+   * @return {String} returns the down-stream iframe's endpoint.
+   */
+  getDownstreamEndpoint() {
+    const error = new Error("getDownstreamEndpoint needs to be overridden by derived class.");
+    const ostError = OstError.sdkError(error, "obsdk_gdsep_1");
+    return Promise.reject( ostError );
+  }
+
+  /**
+   * getDownstreamIframeCssClassName - class name to be applied to the down-stream iframe. Derived classes should over-ride this method.
+   * @return {String} return css class name.
+   */
+  getDownstreamIframeCssClassName() {
+    return OstBaseSdk.getHiddenIframeCssClassName();
+  }
+
+  /**
+   * getHiddenIframeCssClassName - Default class name to be applied to the down-stream iframe.
+   * @return {String} return css class name.
+   */
+  static getHiddenIframeCssClassName() {
+    return "ostsdk-iframe-style";
+  }
+
+  /**
+   * destoryDownstreamIframe - Removes downstream iframe from the document.
+   * @return {null} null.
+   */
+  destoryDownstreamIframe() {
+    if ( downstreamIframe ) {
+      try {
+        getDocument().body.removeChild( downstreamIframe );  
+      } catch( err ) {
+        //ignore.
+      }
+    }
+    downstreamIframe = null;
+  }
+
+  waitForDownstreamInitialization() {
+    const error = new Error("waitForDownstreamInitialization needs to be overridden by derived class.");
+    const ostError = OstError.sdkError(error, "obsdk_wfhsc_1");
+    return Promise.reject( ostError );
+  }
+
+  /**
    * Validates if given url is a valid https url or not.
    * @param  {String}  urlString - Url String.
    * @return {Boolean}     returns false if invalid https url is provided.
@@ -327,15 +477,6 @@ class OstBaseSdk {
       '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
       '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
     return !!pattern.test(urlString);
-  }
-
-  //TODO: Ensure all features required by the sdk are supported by the browser.
-  /**
-   * Ensures all features required by the Sdk are supported by the browser.
-   * @return {Promise} The promise resolves if all features required by the Sdk are supported by the browser.
-   */
-  validateBrowser() {
-    return Promise.resolve( true );
   }
 
   /**

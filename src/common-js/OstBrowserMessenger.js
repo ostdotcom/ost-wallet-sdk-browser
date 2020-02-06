@@ -26,8 +26,6 @@ class OstBrowserMessenger {
 
     this.defineImmutableProperty("receiverName", receiverName);
     if ( upStreamOrigin ) {
-      console.log("Setting upStreamOrigin", upStreamOrigin);
-      console.trace();
       this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
     }
 
@@ -253,6 +251,7 @@ class OstBrowserMessenger {
 
   getUpStreamOrigin() {
     if (!this.upStreamOrigin || typeof this.upStreamOrigin !== 'string' ) {
+      console.log("this.upStreamOrigin", this.upStreamOrigin);
       throw new OstError('cj_obm_guso_1', 'INVALID_UPSTREAM_ORIGIN');
     }
 

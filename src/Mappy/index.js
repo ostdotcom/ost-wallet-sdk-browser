@@ -1,14 +1,5 @@
-/** DO NOT COMMIT **/
-import OstWalletSdkCore from "../OstWalletSdk/OstWalletSdkCore.js";
-
-import OstMappyCallbacks from "../OstWalletSdk/OstMappyCallbacks";
-
-;
 import './css/login.css';
 import '../common-js/qrcode';
-
-/** DO NOT COMMIT **/
-let OstWalletSdk = new OstWalletSdkCore();
 
 var i=1;
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
@@ -21,7 +12,7 @@ $(function() {
   const sdkUrl = "https://sdk-devmappy.ostsdkproxy.com/";
   const keyManagerUrl = "https://km-devmappy.ostsdkproxy.com/";
 
-  console.log("Calling OstWalletSdk.init");
+  console.log("Calling OstWalletSdk.init", OstWalletSdk);
   OstWalletSdk.init({
     "api_endpoint": ostApiEndpoint,
     "sdk_endpoint": sdkUrl    
@@ -71,26 +62,6 @@ $(function() {
           setupDevice(data.data);
 
           document.getElementById("signupBtn").disabled = true;
-          $.ajax({
-            type: 'GET',
-            url: baseUrl+'/users',
-            data: {
-            },
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success: function (jsonData) {
-
-
-              console.log(jsonData.data.users[0].token_id);
-
-              var pageNo=1;
-
-              uploadUserData(jsonData,pageNo);
-            },
-            error: function (error) {
-              console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
-            }
-          });
         }
       });
   });
@@ -113,12 +84,41 @@ function setupDevice(args) {
 
     return registerDevice(apiParams);
   };
-
-  let workflowId = window.OstSdkWallet.setupDevice(
+  mappyCallback.flowInterupt = () => {
+    console.log("setupDevice workflow interupted!");
+    document.getElementById("signupBtn").disabled = false;
+  }
+  mappyCallback.flowComplete = () => {
+    console.log("setupDevice workflow completed!");
+    loadUsersList();
+  }
+  let workflowId = OstWalletSdk.setupDevice(
     currentUser.user_id,
     currentUser.token_id,
-    "http://stagingpepo.com",
     mappyCallback);
+}
+
+function loadUsersList() {
+  $.ajax({
+    type: 'GET',
+    url: baseUrl+'/users',
+    data: {
+    },
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function (jsonData) {
+
+
+      console.log(jsonData.data.users[0].token_id);
+
+      var pageNo=1;
+
+      uploadUserData(jsonData,pageNo);
+    },
+    error: function (error) {
+      console.log('Error loading username=' + document.getElementById("usernameTb").value + error);
+    }
+  });
 }
 
 function getQRCode() {
@@ -135,7 +135,7 @@ function getQRCode() {
     console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
   };
 
-  let workflowId = window.OstSdkWallet.createSession(
+  let workflowId = OstWalletSdk.createSession(
     currentUser.user_id,
     (parseInt(Date.now()/1000) + 60*60*24*30*5),
     '1',
@@ -161,7 +161,7 @@ function sendTokens(tokenHolderAddress) {
 		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
 	};
 
-	let workflowId = window.OstSdkWallet.executePayTransaction(currentUser.user_id,
+	let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id,
 		{
 			token_holder_addresses: [tokenHolderAddress],
 			amounts: ['100'],
@@ -366,7 +366,7 @@ function makeCode(object){
 
 function getUser() {
 
-  window.OstSdkWallet.getUser(currentUser.user_id)
+  OstWalletSdk.getUser(currentUser.user_id)
   .then((user) => {
       console.log("MAppy :: index :: getUser :: then :: " , user);
    })
@@ -378,7 +378,7 @@ function getUser() {
 
 function getToken() {
 
-  window.OstSdkWallet.getToken(currentUser.user_id)
+  OstWalletSdk.getToken(currentUser.user_id)
   .then((token) => {
       console.log("MAppy :: index :: getToken :: then :: " ,  token);
    })
@@ -390,7 +390,7 @@ function getToken() {
 
 function getDevice() {
 
-  window.OstSdkWallet.getDevice(currentUser.user_id)
+  OstWalletSdk.getDevice(currentUser.user_id)
   .then((device) => {
       console.log("MAppy :: index :: getDevice :: then :: " ,  device);
    })
@@ -402,7 +402,7 @@ function getDevice() {
 // spending limit as function parameters
 var spendingLimit = '10000000000000';
 function getActiveSessions() {
-  window.OstSdkWallet.getActiveSessions(currentUser.user_id, spendingLimit)
+  OstWalletSdk.getActiveSessions(currentUser.user_id, spendingLimit)
   .then((session) => {
       console.log("MAppy :: index :: getActiveSessions :: then :: " ,  session);
    })
@@ -414,7 +414,7 @@ function getActiveSessions() {
 //json Api Calls
 
 function getUserFromServer() {
-  window.OstSdkWallet.getUserFromServer(currentUser.user_id)
+  window.OstWalletSdk.getUserFromServer(currentUser.user_id)
   .then((user) => {
     console.log("MAppy :: index :: getUserFromServer :: then :: " ,  user);
   })
@@ -424,7 +424,7 @@ function getUserFromServer() {
 }
 
 function getTokenFromServer() {
-  window.OstSdkWallet.getTokenFromServer(currentUser.user_id)
+  window.OstWalletSdk.getTokenFromServer(currentUser.user_id)
   .then((token) => {
     console.log("MAppy :: index :: getTokenFromServer :: then :: " ,  token);
   })
@@ -434,7 +434,7 @@ function getTokenFromServer() {
 }
 
 function getCurrentDeviceFromServer() {
-  window.OstSdkWallet.getCurrentDeviceFromServer(currentUser.user_id)
+  window.OstWalletSdk.getCurrentDeviceFromServer(currentUser.user_id)
   .then((device) => {
     console.log("MAppy :: index :: getCurrentDeviceFromServer :: then :: " ,  device);
   })
@@ -444,7 +444,7 @@ function getCurrentDeviceFromServer() {
 }
 
 function getBalanceFromServer() {
-  window.OstSdkWallet.getBalanceFromServer(currentUser.user_id)
+  window.OstWalletSdk.getBalanceFromServer(currentUser.user_id)
   .then((balance) => {
     console.log("MAppy :: index :: getBalanceFromServer :: then :: " ,  balance);
   })
@@ -454,7 +454,7 @@ function getBalanceFromServer() {
 }
 
 function getPricePointFromServer() {
-  window.OstSdkWallet.getPricePointFromServer(currentUser.user_id)
+  window.OstWalletSdk.getPricePointFromServer(currentUser.user_id)
   .then((pricePoint) => {
     console.log("MAppy :: index :: getPricePointFromServer :: then :: " ,  pricePoint);
   })
@@ -464,7 +464,7 @@ function getPricePointFromServer() {
 }
 
 function getBalanceWithPricePointFromServer() {
-  window.OstSdkWallet.getBalanceWithPricePointFromServer(currentUser.user_id)
+  window.OstWalletSdk.getBalanceWithPricePointFromServer(currentUser.user_id)
   .then((balancePricePointData) => {
     console.log("MAppy :: index :: getBalanceWithPricePointFromServer :: then :: " ,  balancePricePointData);
   })
@@ -474,7 +474,7 @@ function getBalanceWithPricePointFromServer() {
 }
 
 function getPendingRecoveryFromServer() {
-  window.OstSdkWallet.getPendingRecoveryFromServer(currentUser.user_id)
+  window.OstWalletSdk.getPendingRecoveryFromServer(currentUser.user_id)
   .then((pendingRecovery) => {
     console.log("MAppy :: index :: getPendingRecoveryFromServer :: then :: " ,  pendingRecovery);
   })
@@ -484,7 +484,7 @@ function getPendingRecoveryFromServer() {
 }
 
 function getTransactionsFromServer() {
-  window.OstSdkWallet.getTransactionsFromServer(currentUser.user_id)
+  window.OstWalletSdk.getTransactionsFromServer(currentUser.user_id)
   .then((transactions) => {
     console.log("MAppy :: index :: getTransactionsFromServer :: then :: " ,  transactions);
   })
@@ -494,7 +494,7 @@ function getTransactionsFromServer() {
 }
 
 function getTokenHolderFromServer() {
-  window.OstSdkWallet.getTokenHolderFromServer(currentUser.user_id)
+  window.OstWalletSdk.getTokenHolderFromServer(currentUser.user_id)
   .then((token_holder) => {
     console.log("MAppy :: index :: getTokenHolderFromServer :: then :: " ,  token_holder);
   })
@@ -504,7 +504,7 @@ function getTokenHolderFromServer() {
 }
 
 function getRulesFromServer() {
-  window.OstSdkWallet.getRulesFromServer(currentUser.user_id)
+  window.OstWalletSdk.getRulesFromServer(currentUser.user_id)
   .then((rules) => {
     console.log("MAppy :: index :: getTokenHolderFromServer :: then :: " ,  rules);
   })
