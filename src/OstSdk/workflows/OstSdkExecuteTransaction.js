@@ -4,6 +4,8 @@ import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
 import OstRule from "../entities/OstRule";
 import OstTransactionPolling from "../OstPolling/OstTransactionPolling";
+import BigNumber from 'bignumber.js';
+import OstWorkflowContext from "./OstWorkflowContext";
 
 const LOG_TAG = "OstSdk :: OstSdkExecuteTransaction :: ";
 
@@ -20,6 +22,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 		this.ruleMethod = this.transactionData.rule_method;
 		this.meta = this.transactionData.meta;
     this.options = this.transactionData.options;
+    this.expectedSpendAmount = this.transactionData.expected_spend_amount;
   }
 
   initParams() {
@@ -44,11 +47,18 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   }
 
   getAuthorizedSession() {
+  	const oThis = this;
 		return OstSession.getAllSessions()
 			.then((sessionAddress) => {
+				if (!oThis.expectedSpendAmount) {
+					oThis.expectedSpendAmount = oThis.getTotalAmount();
+				}
+				const expectedSpendingAmount = new BigNumber(oThis.expectedSpendAmount);
 				for (let i=0; i < sessionAddress.length; i++) {
 					const session = sessionAddress[i];
-					if (session.status === OstSession.STATUS.AUTHORIZED) {
+					if (session.status === OstSession.STATUS.AUTHORIZED &&
+						new BigNumber(session.spending_limit).isGreaterThanOrEqualTo(expectedSpendingAmount)
+					) {
 						return session;
 					}
 				}
@@ -59,6 +69,16 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 				return Promise.resolve(null);
 			})
   }
+
+	getTotalAmount (){
+  	const oThis = this;
+
+  	let total = new BigNumber(0);
+  	for (let i = 0;i< this.amounts.length;i++) {
+  		total = total.plus(new BigNumber(oThis.amounts[i]));
+		}
+		return total.toString();
+	}
 
 	getRule(ruleName) {
 		const oThis = this;
@@ -183,6 +203,10 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       	 return this.apiClient.getSession(this.session.getId());
       })
   }
+
+  getWorkflowName () {
+		return OstWorkflowContext.WORKFLOW_TYPE.EXECUTE_TRANSACTION;
+	}
 
 }
 

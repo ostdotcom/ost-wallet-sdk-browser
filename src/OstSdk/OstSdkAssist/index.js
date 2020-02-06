@@ -51,6 +51,24 @@ class OstSdkAssist {
 		executeTransaction.perform();
 	}
 
+	executeDirectTransferTransaction (args) {
+		args.transaction_data.rule_name = 'Direct Transfer';
+		args.transaction_data.rule_method = 'directTransfers';
+		args.transaction_data.meta = {};
+		args.transaction_data.options = {};
+
+		this.executeTransaction(args);
+  }
+
+	executePayTransaction (args) {
+		args.transaction_data.rule_name = 'pricer';
+		args.transaction_data.rule_method = 'pay';
+		args.transaction_data.meta = {};
+		args.transaction_data.options = {};
+
+		this.executeTransaction(args);
+  }
+
   getUser ( args ) {
     console.log(LOG_TAG, "getUser :: ", args);
     const userId = args.user_id;

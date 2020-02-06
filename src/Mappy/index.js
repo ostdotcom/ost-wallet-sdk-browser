@@ -141,10 +141,11 @@ function sendTokens(tokenHolderAddress) {
 		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
 	};
 
-	let workflowId = window.OstSdkWallet.executePayTransaction(currentUser.user_id,
+	let workflowId = window.OstSdkWallet.executeDirectTransferTransaction(currentUser.user_id,
 		{
 			token_holder_addresses: [tokenHolderAddress],
 			amounts: ['100'],
+			expected_spend_amount: '100'
 		},
 		mappyCallback);
 }
