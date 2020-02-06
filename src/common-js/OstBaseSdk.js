@@ -104,16 +104,13 @@ class OstBaseSdk {
   }
 
   verifyIframeInitData() {
-    console.log("verifyIframeInitData : ", this.urlParams);
     const signature = this.urlParams.signature;
-    Object.defineProperty(this, 'urlParams', {
-      value: new OstBrowserMessenger( this.getReceiverName() ),
-      writable: false
-    });
+    let pageParams = Object.assign({}, this.urlParams);
+    OstURLHelpers.deleteSignature(pageParams);
 
-    let pageParams = OstURLHelpers.deleteSignature(this.urlParams);
+    let selfUrl = this.origin+ this.pathname;
+    let url = OstURLHelpers.getStringToSign(selfUrl, pageParams);
 
-    let url = OstURLHelpers.getStringToSign(this.origin+ this.pathname, pageParams);
     return this.browserMessenger.verifyIframeInit(url, signature);
   }
 
