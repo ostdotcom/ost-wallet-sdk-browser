@@ -183,8 +183,27 @@ class OstBaseSdk {
   } 
 
   getDownstreamIframeUrl() {
-    const error = new Error("getDownstreamIframeUrl needs to be overridden by derived class.");
-    const ostError = OstError.sdkError(error, "obsdk_gdiu_1");
+    const oThis = this;
+    const downstreamEndpoint = this.getDownstreamEndpoint();
+    const params = {
+      publicKeyHex: oThis.getPublicKeyHex(),
+      sdkConfig: this.sdkConfig
+    };
+    const stringToSign = OstURLHelpers.getStringToSign(downstreamEndpoint, params );
+    console.log(params);
+    
+    
+    // Sign the data.
+    return oThis.signDataWithPrivateKey(stringToSign)
+      // Return the url.
+      .then((signature) => {
+        return OstURLHelpers.appendSignature(stringToSign, signature);
+      })
+  }
+
+  getDownstreamEndpoint() {
+    const error = new Error("getDownstreamEndpoint needs to be overridden by derived class.");
+    const ostError = OstError.sdkError(error, "obsdk_gdsep_1");
     return Promise.reject( ostError );
   }
 

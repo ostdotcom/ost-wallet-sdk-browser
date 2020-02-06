@@ -14,25 +14,8 @@ class OstWalletSdkCore extends OstBaseSdk {
     this._window = window;
   }
 
-  getDownstreamIframeUrl() {
-    const oThis = this;
-    const sdkEndpoint = this.sdkConfig.sdk_endpoint;
-    const params = {
-      publicKeyHex: oThis.getPublicKeyHex(),
-      sdkConfig: this.sdkConfig
-    };
-    const stringToSign = OstURLHelpers.getStringToSign(sdkEndpoint, params );
-    console.log("sdkEndpoint", sdkEndpoint);
-    console.log(params);
-    console.log("OstWalletSdkCore :: stringToSign", stringToSign);
-    
-    
-    // Sign the data.
-    return oThis.signDataWithPrivateKey(stringToSign)
-      // Return the url.
-      .then((signature) => {
-        return OstURLHelpers.appendSignature(stringToSign, signature);
-      })
+  getDownstreamEndpoint() {
+    return this.sdkConfig.sdk_endpoint;
   }
 }
 
