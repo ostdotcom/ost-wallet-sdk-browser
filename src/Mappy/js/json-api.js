@@ -1,9 +1,12 @@
 import OstSetup from "./common";
+import '../css/active_page.css';
 import "../../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "../../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer";
 
 //var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 var currentUser = null;
+
+
 $(function() {
 
   var ostSetup = new OstSetup();
@@ -11,13 +14,62 @@ $(function() {
   ostSetup.getCurrentUser()
     .then((current_user) => {
       console.log(current_user);
-      currentUser = current_user})
+      currentUser = current_user;
+      load_apis("getCurrentDeviceFromServer","left1","handlebar-main1");
+      load_apis("getBalanceWithPricePointFromServer","left2","handlebar-main2");
+      load_apis("getBalanceFromServer","left3","handlebar-main3");
+      load_apis("getPricePointFromServer","left4","handlebar-main4");
+      load_apis("getPendingRecoveryFromServer","left5","handlebar-main5");
+      load_apis("getDeviceListFromServer","left6","handlebar-main6");
+      load_apis("getTransactionsFromServer","left7","handlebar-main7");
+
+    })
     .catch(err=> alert(err));
 
     document.getElementById("logOutBtn").addEventListener("click", function(e) {
       logout();
  });
 });
+function load_apis(functionName,upperTag,lowerTag){
+
+  var source = $("#replace-demo").html();
+  var template = Handlebars.compile(source);
+  var context = { current_user_id:currentUser.user_id,function_name:functionName};
+  var html = template(context);
+
+  var source1 = document.getElementById(lowerTag).innerHTML;
+  var template1 = Handlebars.compile(source1);
+  var context1 = { replace:html};
+  var html1 = template1(context1);
+  
+    document.getElementById(upperTag).innerHTML = html1;
+    switch(functionName) {
+      case "getCurrentDeviceFromServer":
+        getCurrentDeviceFromServer();
+        break;
+      case "getBalanceWithPricePointFromServer":
+        getBalanceWithPricePointFromServer();
+        break;
+      case "getBalanceFromServer":
+        getBalanceFromServer();
+        break;
+      case "getPricePointFromServer":
+        getPricePointFromServer();
+          break;
+      case "getPendingRecoveryFromServer":
+        getPendingRecoveryFromServer();
+        break;
+      case "getDeviceListFromServer":
+        getDeviceListFromServer();
+        break;
+      case "getTransactionsFromServer":
+        getTransactionsFromServer();
+        break;
+      default:
+        console.error("Not valid function call");
+    }
+  
+}
 function logout(){
   $.post(baseUrl+"/users/logout",
   {
