@@ -80,10 +80,10 @@ export class OstSetup {
       .then((currentUser) => {
 
         console.log("user_id =======> ",currentUser.user_id);
-        let workflowId = window.OstSdkWallet.setupDevice(
+        let workflowId = OstSdkWallet.setupDevice(
           currentUser.user_id,
           currentUser.token_id,
-          "http://stagingpepo.com",
+          //"http://stagingpepo.com",
           mappyCallback);
       })
       .catch(err => console.log(err));

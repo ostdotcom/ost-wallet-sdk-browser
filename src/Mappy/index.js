@@ -109,7 +109,7 @@ function setupDevice(args) {
   let workflowId = window.OstSdkWallet.setupDevice(
     currentUser.user_id,
     currentUser.token_id,
-    "http://stagingpepo.com",
+    //"http://stagingpepo.com",
     mappyCallback);
 }
 

@@ -31,7 +31,7 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
       return 'OstWalletSdk';
     }
 
-    setupDevice ( userId, tokenId, baseURL, ostWorkflowDelegate) {
+    setupDevice ( userId, tokenId, ostWorkflowDelegate) {
       let setupDevice = new OstSetupDevice(userId, tokenId, ostWorkflowDelegate, this.browserMessenger);
       let workflowId = setupDevice.perform();
 

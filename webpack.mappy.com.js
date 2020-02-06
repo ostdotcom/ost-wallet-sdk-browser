@@ -7,7 +7,8 @@ const commonConfig = {
         'users': './src/Mappy/js/users.js',
         'login': './src/Mappy/js/login.js',
         'json-api':'./src/Mappy/js/json-api.js',
-        'sdk-getters':'./src/Mappy/js/sdk-getters.js'
+        'sdk-getters':'./src/Mappy/js/sdk-getters.js',
+        'workflow':'./src/Mappy/js/workflow.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -92,6 +93,13 @@ const devConfig = {
             inject: false,
             filename: "sdk-getters",
             chunks: ['sdk-getters']
+        }),
+        new HtmlWebpackPlugin({
+            title: "workflow.com",
+            template: "./src/Mappy/html/workflow.html",
+            inject: false,
+            filename: "workflow",
+            chunks: ['workflow']
         })
     ]
 };
