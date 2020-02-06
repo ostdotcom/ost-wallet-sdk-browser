@@ -62,6 +62,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 						return session;
 					}
 				}
+				console.warn(LOG_TAG, "Session not found");
 				return null;
 			})
 			.catch((err) => {
