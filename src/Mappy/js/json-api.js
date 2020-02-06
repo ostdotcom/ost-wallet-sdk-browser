@@ -7,7 +7,7 @@ var currentUser = null;
 $(function() {
 
   var ostSetup = new OstSetup();
-  ostSetup.deviceSetupCall();
+  ostSetup.setupDevice();
   ostSetup.getCurrentUser()
     .then((current_user) => {
       console.log(current_user);
@@ -16,6 +16,8 @@ $(function() {
 });
 
 $("#get-cur-device").on('click', function(event){
+  //getTokenFromServer()
+  //getUserFromServer()
   getCurrentDeviceFromServer();
 });
 
@@ -36,7 +38,7 @@ $("#recovery-uid").on('click', function(event){
 });
 
 $("#dev-list-uid").on('click', function(event){
-  getCurrentDeviceFromServer();
+  getDeviceListFromServer();
 });
 
 $("#transactions-uid").on('click', function(event){

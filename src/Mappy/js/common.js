@@ -69,124 +69,56 @@ export class OstSetup {
         
   }
 
-  deviceSetupCall(){
-    var baseUrl = this.getBaseUrl();
-      $.ajax({
-        type: 'GET',
-        url: baseUrl+'/users/current-user',
-        data: {
-        },
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        success: function (jsonData) {
-    
-          console.log("result =====> ", jsonData.success);
-          setupDevice( jsonData.data );
-        },
-        error: function (error) {
-          alert(error);
-        }
-      });
-  }
+  setupDevice(){
 
+    let mappyCallback =  new OstMappyCallbacks();
+    mappyCallback.registerDevice = function( apiParams ) {
+    console.log(LOG_TAG, "registerDevice")
+    return registerDevice(apiParams);
+    };
+    this.getCurrentUser()
+      .then((currentUser) => {
+
+        console.log("user_id =======> ",currentUser.user_id);
+        let workflowId = window.OstSdkWallet.setupDevice(
+          currentUser.user_id,
+          currentUser.token_id,
+          "http://stagingpepo.com",
+          mappyCallback);
+      })
+      .catch(err => console.log(err));
+  }
 }
 
 export default OstSetup;
 
-// export function deviceSetup() {
 
-//     $(function() {
+function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
 
-//         $.ajaxSetup({
-//           type: "POST",
-//           xhrFields: {
-//             withCredentials: true
-//           },
-//           crossDomain: true
-//         });
-      
-//         $.ajaxSetup({
-//           type: "GET",
-//           xhrFields: {
-//             withCredentials: true
-//           },
-//           crossDomain: true
-//         });
-      
-      
-//         $.ajax({
-//           type: 'GET',
-//           url: baseUrl+'/users/current-user',
-//           data: {
-//           },
-//           contentType: 'application/json; charset=utf-8',
-//           dataType: 'json',
-//           success: function (jsonData) {
-      
-//             console.log("result =====> ", jsonData.success);
-            
-//             setupDevice( jsonData.data );
-//           },
-//           error: function (error) {
-//             alert("hey+error");
-            
-//           }
-//         });
-//       });
-   
-// }
+  return new Promise((resolve, reject)=> {
 
-function setupDevice(args) {
-
-  var currentUser = null;
-    console.log(LOG_TAG, "setupDevice");
-  
-    let resultType = args.result_type
-    ;
-    currentUser = args[resultType];
-  
-  
-    let mappyCallback =  new OstMappyCallbacks();
-    mappyCallback.registerDevice = function( apiParams ) {
-      console.log(LOG_TAG, "registerDevice");
-  
-      return registerDevice(apiParams);
+    const response = function (data, status) {
+      console.log("regData: " + data + "\nStatus: " + status);
+      // Make another api call to fetch current user info.
+      console.log("reg",data.success);
+      console.log("reg",data.code);
+      if(data.success==false){
+        alert("Already exists or invalid entry");
+        return resolve()
+      }
+      else{
+        return resolve();
+      }
     };
-    console.log("user_id =======> ",currentUser.user_id);
-    let workflowId = window.OstSdkWallet.setupDevice(
-      currentUser.user_id,
-      currentUser.token_id,
-      "http://stagingpepo.com",
-      mappyCallback);
-  }
+    var ostSetup = new OstSetup();
+    var baseUrl = ostSetup.getBaseUrl();
+    $.post(baseUrl+"/devices",
+      {
+        address: apiParams.device_address,
+        api_signer_address: apiParams.api_signer_address,
+        device_name: device_name,
+        device_uuid: device_uuid
 
-
-  function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
-
-    return new Promise((resolve, reject)=> {
-  
-      const response = function (data, status) {
-        console.log("regData: " + data + "\nStatus: " + status);
-        // Make another api call to fetch current user info.
-        console.log("reg",data.success);
-        console.log("reg",data.code);
-        if(data.success==false){
-          alert("Already exists or invalid entry");
-          return resolve()
-        }
-        else{
-          return resolve();
-        }
-      };
-      var ostSetup = new OstSetup();
-      var baseUrl = ostSetup.getBaseUrl();
-      $.post(baseUrl+"/devices",
-        {
-          address: apiParams.device_address,
-          api_signer_address: apiParams.api_signer_address,
-          device_name: device_name,
-          device_uuid: device_uuid
-  
-        }, response)
-    })
-  }
+      }, response)
+  })
+}

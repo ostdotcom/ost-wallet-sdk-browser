@@ -199,7 +199,7 @@ class OstSdkAssist {
     apiClient.getUser()
       .then((user) => {
           if (user) {
-            functionParams = {user: user.data.data.user};
+            functionParams = {root: user.data.data};
             functionName = 'onSuccess';
             console.log("user api ====", user.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -225,7 +225,7 @@ class OstSdkAssist {
     apiClient.getToken()
       .then((token) => {
           if (token) {
-            functionParams = {token: token.data.data.token};
+            functionParams = {root: token.data.data};
             functionName = 'onSuccess';
             console.log("token api ====", token.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -251,7 +251,7 @@ class OstSdkAssist {
     apiClient.getTransactions()
       .then((transactions) => {
           if (transactions) {
-            functionParams = {transactions: transactions.data.data};
+            functionParams = {root: transactions.data.data};
             functionName = 'onSuccess';
             console.log("transactions api ====", transactions.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -277,7 +277,7 @@ class OstSdkAssist {
     apiClient.getTokenHolder()
       .then((tokenHolder) => {
           if (tokenHolder) {
-            functionParams = {token_holder: tokenHolder.data.data};
+            functionParams = {root: tokenHolder.data.data};
             functionName = 'onSuccess';
             console.log("tokenHolder api ====", tokenHolder.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -303,7 +303,7 @@ class OstSdkAssist {
     apiClient.getRules()
       .then((rules) => {
           if (rules) {
-            functionParams = {token_holder: rules.data.data};
+            functionParams = {root: rules.data.data};
             functionName = 'onSuccess';
             console.log("rules api ====", rules.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -349,7 +349,7 @@ class OstSdkAssist {
       .then((deviceData) => {
         if (deviceData) {
           let deviceEntity = deviceData.data.data;
-          functionParams = {device: deviceEntity};
+          functionParams = {root: deviceEntity};
           functionName = 'onSuccess';
           console.log("device api ====", deviceData.data.data);
           this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -378,7 +378,7 @@ class OstSdkAssist {
     apiClient.getBalance()
       .then((balance) => {
           if (balance) {
-            functionParams = {balance: balance.data.data};
+            functionParams = {root: balance.data.data};
             functionName = 'onSuccess';
             console.log("balance api ====", balance.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -419,7 +419,7 @@ class OstSdkAssist {
               apiClient.getPricePoints(chainId)
                 .then((pricePoint) => {
                     if (pricePoint) {
-                      functionParams = {price_points: pricePoint.data.data};
+                      functionParams = {root: pricePoint.data.data};
                       functionName = 'onSuccess';
                       console.log("pricepoints api ====", pricePoint.data.data);
                       this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -468,7 +468,7 @@ class OstSdkAssist {
               apiClient1.getBalance()
                 .then((balance) => {
                     if (balance) {
-                      functionParams = {balance: balance.data.data};
+                      functionParams = {root: balance.data.data};
                       return functionParams;
                     }
                     else {
@@ -484,7 +484,7 @@ class OstSdkAssist {
                     .then((pricePoint) => {
                         if (pricePoint) {
                           functionParams1 = pricePoint.data.data.price_point;
-                          functionParams.price_point = functionParams1;
+                          functionParams.root.price_point = functionParams1;
                           functionName = 'onSuccess';
                           console.log("balance pricepoints api ====>>", functionParams);
                           this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -526,7 +526,7 @@ class OstSdkAssist {
     apiClient.getPendingRecovery()
       .then((devices) => {
           if (devices) {
-            functionParams = {devices: devices.data.data};
+            functionParams = {root: devices.data.data};
             functionName = 'onSuccess';
             console.log("pending recovery api ====", devices.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -536,8 +536,13 @@ class OstSdkAssist {
           }
       })
       .catch((err) => {
-        let error = OstError.sdkError(err, 'os_osa_i_gprfs_2');
-        console.log(error);
+        var ostError = new OstError(err, 'os_osa_i_gprfs_2',OstErrorCodes.SDK_RESPONSE_ERROR);
+        //let error = OstError.sdkError(err, 'os_osa_i_gprfs_2');
+        console.log("root-->",ostError.getJSONObject())
+        let error = ostError.getJSONObject();
+        functionName = 'onSuccess';
+        functionParams = {root: error};
+        this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       });
   }
 
@@ -557,7 +562,7 @@ class OstSdkAssist {
     apiClient.getDeviceList()
       .then((devices) => {
           if (devices) {
-            functionParams = {devices: devices.data.data};
+            functionParams = {root: devices.data.data};
             functionName = 'onSuccess';
             console.log("getDeviceList api ====", devices.data.data);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);

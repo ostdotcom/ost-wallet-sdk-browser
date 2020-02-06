@@ -27,5 +27,6 @@
 
   },
 
-  "SKD_INTERNAL_ERROR": "Something expected happen."
+  "SKD_INTERNAL_ERROR": "Something expected happen.",
+  "SDK_RESPONSE_ERROR": "SDK returned error"
 }

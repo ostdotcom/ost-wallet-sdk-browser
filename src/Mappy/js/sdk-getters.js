@@ -4,7 +4,7 @@ var currentUser = null;
 $(function() {
 
   var ostSetup = new OstSetup();
-  ostSetup.deviceSetupCall();
+  ostSetup.setupDevice();
   ostSetup.getCurrentUser()
     .then((current_user) => {
       console.log(current_user);

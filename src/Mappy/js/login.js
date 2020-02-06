@@ -65,7 +65,7 @@ $("#signupBtn").click(function () {
             alert("INVALID USERNAME OR PASSWORD");
           }
           if(data.success==true) {
-            ostSetup.deviceSetupCall();
+            ostSetup.setupDevice();
             window.location = "/users";
           } else {
               $("#signupBtn").removeAttr("disabled");
