@@ -1,6 +1,11 @@
 import './css/login.css';
 import '../common-js/qrcode';
 
+console.log("DEMO_MAPPY_UI_API_ENDPOINT", DEMO_MAPPY_UI_API_ENDPOINT);
+console.log("DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT", DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT);
+console.log("DEMO_MAPPY_UI_OST_SDK_IFRAME_URL", DEMO_MAPPY_UI_OST_SDK_IFRAME_URL);
+console.log("DEMO_MAPPY_UI_OST_SDK_JS_URL", DEMO_MAPPY_UI_OST_SDK_JS_URL);
+
 var i=1;
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 

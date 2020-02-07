@@ -1,9 +1,21 @@
 const path = require('path');
+var webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const mappyDefinations = new webpack.DefinePlugin({
+    "DEMO_MAPPY_UI_API_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_API_ENDPOINT),
+    "DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT),
+    "DEMO_MAPPY_UI_OST_SDK_IFRAME_URL": JSON.stringify(process.env.DEMO_MAPPY_UI_OST_SDK_IFRAME_URL),
+    "DEMO_MAPPY_UI_OST_SDK_JS_URL": JSON.stringify(process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL),
+    "DEMO_MAPPY_UI_JS_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_JS_ENDPOINT),
+});
+
+console.log("DEMO_MAPPY_UI_API_ENDPOINT", process.env.DEMO_MAPPY_API_ENDPOINT);
+
 const commonConfig = {
-    entry: {'Mappy':'./src/Mappy/index.js',
+    entry: {
+        'Mappy':'./src/Mappy/index.js',
         'users': './src/Mappy/js/users.js',
         'login': './src/Mappy/js/login.js',
         'json-api':'./src/Mappy/js/json-api.js',
@@ -60,6 +72,7 @@ const devConfig = {
         disableHostCheck: true
     },
     plugins: [
+        mappyDefinations,
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "Mappy.com",
@@ -85,6 +98,8 @@ const devConfig = {
             title: "JsonApi.com",
             template: "./src/Mappy/html/json-api.html",
             inject: false,
+            baseUrl: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
+            OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
             filename: "json-api",
             chunks: ['json-api']
         }),

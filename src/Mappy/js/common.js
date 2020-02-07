@@ -20,8 +20,7 @@ export class OstSetup {
   }
 
   getBaseUrl() {
-    var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
-    return baseUrl;
+    return DEMO_MAPPY_UI_API_ENDPOINT;
   }
 
   ajaxSetupFunction(){
@@ -64,45 +63,115 @@ export class OstSetup {
         }
       });
     })
-        
+  }
+
+  initOstWalletSdk() {
+    if ( this.isOstWalletSdkInitialized ) {
+      return Promise.resolve();
+    }
+
+    const sdkConfig = {
+      "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
+      "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
+    };
+    console.log("sdkConfig", sdkConfig);
+
+    return OstWalletSdk.init( sdkConfig ).then(() => {
+      console.log("init resolved");
+      this.isOstWalletSdkInitialized = true;
+      return true;
+    }).catch(( error ) => {
+      console.log("init caught!");
+      console.error(error);
+    });
+  }
+
+  setupDeviceWorkflow( currentUser ) {
+      let _resolve, _reject;
+      let sdkDelegate =  new OstSetupDeviceDelegate();
+      // Define register device.
+      sdkDelegate.registerDevice = function( apiParams ) {
+        console.log(LOG_TAG, "registerDevice")
+        return registerDevice(apiParams);
+      };
+
+      //Define flowComplete
+      sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+        console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+        _resolve( ostContextEntity );
+      };
+
+      //Define flowInterrupt
+      sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {
+        console.log("setupDeviceWorkflow :: sdkDelegate.flowInterrupt called");
+        _reject( ostError );
+      };
+
+      // Return a promise that invokes the workflow.
+      return new Promise( (res, rej) => {
+        _resolve = res;
+        _reject  = rej;
+
+        // Invoke the workflow.
+        OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      });
   }
 
   setupDevice(){
-    return new Promise((resolve, reject) => {
-    let mappyCallback =  new OstSetupDeviceDelegate();
-    mappyCallback.registerDevice = function( apiParams ) {
-    console.log(LOG_TAG, "registerDevice")
-    return registerDevice(apiParams);
-    };
-    this.getCurrentUser()
+    const oThis = this;
+    let currentUserInstance = null;
+
+    return this.getCurrentUser()
+      // Store currentUser and invoke OstWalletSdk.init
       .then((currentUser) => {
-
-        console.log("user_id =======> ",currentUser.user_id);
-        let workflowId = OstWalletSdk.setupDevice(
-          currentUser.user_id,
-          currentUser.token_id,
-          //"http://stagingpepo.com",
-          mappyCallback);
-          resolve(currentUser);
+        currentUserInstance = currentUser;
+        return oThis.initOstWalletSdk();
       })
-      .catch(err => {
-        console.log(err);
-        reject(err);
 
-      });
-    })
+      // Perform the setup Device
+      .then( () => {
+        return oThis.setupDeviceWorkflow( currentUserInstance );
+      })
+
+
+    // return new Promise((resolve, reject) => {
+      
+    //     .then((currentUser) => {
+
+    //       console.log("user_id =======> ",currentUser.user_id);
+    //       let workflowId = OstWalletSdk.setupDevice(
+    //         currentUser.user_id,
+    //         currentUser.token_id,
+    //         //"http://stagingpepo.com",
+    //         mappyCallback);
+
+
+    //         resolve(currentUser);
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //       reject(err);
+
+    //     });
+    //   })
   }
 
-  
-
+  static loadOstWalletSdk() {
+  var newScript = document.createElement("script");
+    newScript.src = DEMO_MAPPY_UI_OST_SDK_JS_URL;
+    document.head.appendChild(newScript);
+    console.log("loadOstWalletSdk done!");
+  }
 }
 
 export default OstSetup;
 
+// OstSetup.loadOstWalletSdk();
+
 
 function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
 
-  return new Promise((resolve, reject)=> {
+  return new Promise((resolve, reject) => {
 
     const response = function (data, status) {
       console.log("regData: " + data + "\nStatus: " + status);
