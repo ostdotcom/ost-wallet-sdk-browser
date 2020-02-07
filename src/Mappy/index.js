@@ -281,22 +281,8 @@ function uploadUserData(jsonData, pageNo) {
   });
 
   $(".QrCodeBtnClass").on('click', function(event){
-
     getQRCode()
-    //getUser();
-    //getDevice();
     getToken();
-    //getActiveSessions()
-    //getCurrentDeviceFromServer();
-    //getBalanceFromServer();
-    //getPricePointFromServer()
-    //getBalanceWithPricePointFromServer()
-    //getPendingRecoveryFromServer() ----> error
-    //getUserFromServer()
-    //getTokenFromServer()
-    //getTransactionsFromServer() ----> no api call
-    //getTokenHolderFromServer();
-    //getRulesFromServer()
   });
 
 }
@@ -310,7 +296,7 @@ function getOnSendClickFn ( rowUserData ) {
 
 function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
 
-  return new Promise((resolve, reject)=> {
+  return new Promise((resolve, reject) => {
 
     const response = function (data, status) {
       console.log("regData: " + data + "\nStatus: " + status);
