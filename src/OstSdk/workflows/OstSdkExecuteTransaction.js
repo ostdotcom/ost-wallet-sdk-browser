@@ -59,11 +59,11 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					if (session.status === OstSession.STATUS.AUTHORIZED &&
 						new BigNumber(session.spending_limit).isGreaterThanOrEqualTo(expectedSpendingAmount)
 					) {
-						return session;
+						return [session];
 					}
 				}
 				console.warn(LOG_TAG, "Session not found");
-				return null;
+				return [];
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Error while fetching authorized session" ,err);
@@ -134,7 +134,11 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					console.error(LOG_TAG, "Session fetch failed");
 					return Promise.reject("Session fetch failed");
 				}
-				const session = resp[0];
+				const sessionArray = resp[0];
+				if (!sessionArray.length) {
+					throw new OstError('o_w_rt_odv_1', 'SESSION_NOT_FOUND');
+				}
+				const session = sessionArray[0];
 				this.session = new OstSession(session);
 
 				if (!resp[1]) {

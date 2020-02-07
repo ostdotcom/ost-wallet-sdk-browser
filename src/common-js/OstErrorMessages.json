@@ -22,6 +22,7 @@
   "INVALID_DOWNSTREAM_PUBLIC_KEY": "Invalid downstream public key.",
   "INVALID_UPSTREAM_ORIGIN": "Invalid upstream origin",
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
+  "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
 
   "__developer_Error": {
 
