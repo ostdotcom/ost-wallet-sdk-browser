@@ -20,13 +20,13 @@ $(function() {
   ostSetup.setupDevice()
     .then((current_user) => {
       currentUser = current_user;
-      load_apis("getCurrentDeviceFromServer","left1","handlebar-main1");
-      load_apis("getBalanceWithPricePointFromServer","left2","handlebar-main2");
-       load_apis("getBalanceFromServer","left3","handlebar-main3");
-       load_apis("getPricePointFromServer","left4","handlebar-main4");
-       load_apis("getPendingRecoveryFromServer","left5","handlebar-main5");
+      load_apis("getCurrentDevice","left1","handlebar-main1");
+      load_apis("getBalanceWithPricePoint","left2","handlebar-main2");
+       load_apis("getBalance","left3","handlebar-main3");
+       load_apis("getPricePoint","left4","handlebar-main4");
+
        load_apis("getDeviceListFromServer","left6","handlebar-main6");
-       load_apis("getTransactionsFromServer","left7","handlebar-main7");
+       load_apis("getTransactions","left7","handlebar-main7");
   });
 
   function load_apis(functionName,upperTag,lowerTag){
@@ -43,29 +43,26 @@ $(function() {
     
       document.getElementById(upperTag).innerHTML = html1;
       switch(functionName) {
-        case "getCurrentDeviceFromServer":
+        case "getCurrentDevice":
           
-          getCurrentDeviceFromServer();
+          getCurrentDevice();
           break;
-        case "getBalanceWithPricePointFromServer":
+        case "getBalanceWithPricePoint":
           
-          getBalanceWithPricePointFromServer();
+          getBalanceWithPricePoint();
           
           break;
-        case "getBalanceFromServer":
-          getBalanceFromServer();
+        case "getBalance":
+          getBalance();
           break;
-        case "getPricePointFromServer":
-          getPricePointFromServer();
+        case "getPricePoint":
+          getPricePoint();
             break;
-        case "getPendingRecoveryFromServer":
-          getPendingRecoveryFromServer();
-          break;
         case "getDeviceListFromServer":
           getDeviceListFromServer();
           break;
-        case "getTransactionsFromServer":
-          getTransactionsFromServer();
+        case "getTransactions":
+          getTransactions();
           break;
         default:
           console.error("Not valid function call");
@@ -75,27 +72,20 @@ $(function() {
 
 
   $("#get-cur-device").on('click', function(event){
-    //getTokenFromServer()
-    //getUserFromServer()
-    getRulesFromServer()
-    //getCurrentDeviceFromServer();
+    getRules();
   });
 
   $("#balance-wpp").on('click', function(event){
     getTokenHolderFromServer()
-    //getBalanceWithPricePointFromServer();
+    //getBalanceWithPricePoint();
   });
 
   $("#bal-uid").on('click', function(event){
-    getBalanceFromServer();
+    getBalance();
   });
 
   $("#pp-uid").on('click', function(event){
-    getPricePointFromServer();
-  });
-
-  $("#recovery-uid").on('click', function(event){
-    getPendingRecoveryFromServer();
+    getPricePoint();
   });
 
   $("#dev-list-uid").on('click', function(event){
@@ -103,112 +93,100 @@ $(function() {
   });
 
   $("#transactions-uid").on('click', function(event){
-    getTransactionsFromServer();
+    getTransactions();
   });
 
     //json Api Calls
     
-    function getUserFromServer() {
-      OstWalletSdk.getUserFromServer(currentUser.user_id)
+    function getUser() {
+      OstJsonApi.getUser(currentUser.user_id)
       .then((user) => {
-        console.log("MAppy :: index :: getUserFromServer :: then :: " ,  user);
+        console.log("MAppy :: index :: getUser :: then :: " ,  user);
         $('#json-renderer').jsonViewer(user, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getUserFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getUser :: catch ::" , err);
         $('#json-renderer').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
       });
     }
     
-    function getTokenFromServer() {
-      OstWalletSdk.getTokenFromServer(currentUser.user_id)
+    function getToken() {
+      OstJsonApi.getToken(currentUser.user_id)
       .then((token) => {
-        console.log("MAppy :: index :: getTokenFromServer :: then :: " ,  token);
+        console.log("MAppy :: index :: getToken :: then :: " ,  token);
         $('#json-renderer').jsonViewer(token, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getTokenFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getToken :: catch ::" , err);
       });
     }
     
-    function getCurrentDeviceFromServer() {
-      OstWalletSdk.getCurrentDeviceFromServer(currentUser.user_id)
+    function getCurrentDevice() {
+      OstJsonApi.getCurrentDevice(currentUser.user_id)
       .then((device) => {
-        console.log("MAppy :: index :: getCurrentDeviceFromServer :: then :: " ,  device);
+        console.log("MAppy :: index :: getCurrentDevice :: then :: " ,  device);
         $('#json-renderer').jsonViewer(device, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getCurrentDeviceFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getCurrentDevice :: catch ::" , err);
         $('#json-renderer').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
       });
     }
     
-    function getBalanceFromServer() {
-      OstWalletSdk.getBalanceFromServer(currentUser.user_id)
+    function getBalance() {
+      OstJsonApi.getBalance(currentUser.user_id)
       .then((balance) => {
         
-        console.log("MAppy :: index :: getBalanceFromServer :: then :: " ,  balance);
+        console.log("MAppy :: index :: getBalance :: then :: " ,  balance);
         $('#json-renderer-bal-id').jsonViewer(balance, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
         
-        console.log("MAppy :: index :: getBalanceFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getBalance :: catch ::" , err);
         $('#json-renderer-bal-id').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
       });
     }
     
-    function getPricePointFromServer() {
-      OstWalletSdk.getPricePointFromServer(currentUser.user_id)
+    function getPricePoint() {
+      OstJsonApi.getPricePoint(currentUser.user_id)
       .then((pricePoint) => {
-        console.log("MAppy :: index :: getPricePointFromServer :: then :: " ,  pricePoint);
+        console.log("MAppy :: index :: getPricePoint :: then :: " ,  pricePoint);
         $('#json-renderer-pp-id').jsonViewer(pricePoint, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getPricePointFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getPricePoint :: catch ::" , err);
         $('#json-renderer-pp-id').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
       });
     }
     
-    function getBalanceWithPricePointFromServer() {
-      OstWalletSdk.getBalanceWithPricePointFromServer(currentUser.user_id)
+    function getBalanceWithPricePoint() {
+      OstJsonApi.getBalanceWithPricePoint(currentUser.user_id)
       .then((balancePricePointData) => {
-        console.log("MAppy :: index :: getBalanceWithPricePointFromServer :: then :: " ,  balancePricePointData);
+        console.log("MAppy :: index :: getBalanceWithPricePoint :: then :: " ,  balancePricePointData);
         console.error("it is here");
         $('#json-renderer-bal-pp').jsonViewer(balancePricePointData, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
         console.error("it is here");
-        console.log("MAppy :: index :: getBalanceWithPricePointFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getBalanceWithPricePoint :: catch ::" , err);
         $('#json-renderer-bal-pp').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
       });
     }
     
-    function getPendingRecoveryFromServer() {
-      OstWalletSdk.getPendingRecoveryFromServer(currentUser.user_id)
-      .then((pendingRecovery) => {
-        console.log("MAppy :: index :: getPendingRecoveryFromServer :: then :: " ,  pendingRecovery);
-        $('#json-renderer-recovery').jsonViewer(pendingRecovery, { collapsed: false, withQuotes: true, withLinks: false});
-      })
-      .catch((err) => {
-        console.error("MAppy :: index :: getPendingRecoveryFromServer :: catch ::" , err);
-        $('#json-renderer-recovery').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
-      });
-    }
-    
-    function getTransactionsFromServer() {
-      OstWalletSdk.getTransactionsFromServer(currentUser.user_id)
+    function getTransactions() {
+      OstJsonApi.getTransactions(currentUser.user_id)
       .then((transactions) => {
-        console.log("MAppy :: index :: getTransactionsFromServer :: then :: " ,  transactions);
+        console.log("MAppy :: index :: getTransactions :: then :: " ,  transactions);
         $('#json-renderer-transaction').jsonViewer(transactions, { collapsed: false, withQuotes: true, withLinks: false});
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getTransactionsFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getTransactions :: catch ::" , err);
         $('#json-renderer-transaction').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
       });
     }
     
     function getTokenHolderFromServer() {
-      OstWalletSdk.getTokenHolderFromServer(currentUser.user_id)
+      OstJsonApi.getTokenHolderFromServer(currentUser.user_id)
       .then((token_holder) => {
         console.log("MAppy :: index :: getTokenHolderFromServer :: then :: " ,  token_holder);
       })
@@ -217,18 +195,18 @@ $(function() {
       });
     }
     
-    function getRulesFromServer() {
-      OstWalletSdk.getRulesFromServer(currentUser.user_id)
+    function getRules() {
+      OstJsonApi.getRules(currentUser.user_id)
       .then((rules) => {
-        console.log("MAppy :: index :: getRulesFromServer :: then :: " ,  rules);
+        console.log("MAppy :: index :: getRules :: then :: " ,  rules);
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getRulesFromServer :: catch ::" , err);
+        console.log("MAppy :: index :: getRules :: catch ::" , err);
       });
     }
 
     function getDeviceListFromServer() {
-      OstWalletSdk.getDeviceListFromServer(currentUser.user_id)
+      OstJsonApi.getDeviceListFromServer(currentUser.user_id)
       .then((rules) => {
         console.log("MAppy :: index :: getDeviceListFromServer :: then :: " ,  rules);
         $('#json-renderer-dev-list').jsonViewer(rules, { collapsed: false, withQuotes: true, withLinks: false});
