@@ -15,7 +15,6 @@ console.log("DEMO_MAPPY_UI_API_ENDPOINT", process.env.DEMO_MAPPY_UI_API_ENDPOINT
 
 const commonConfig = {
     entry: {
-        'Mappy':'./src/Mappy/index.js',
         'users': './src/Mappy/js/users.js',
         'login': './src/Mappy/js/login.js',
         'json-api':'./src/Mappy/js/json-api.js',
@@ -75,18 +74,11 @@ const devConfig = {
         mappyDefinations,
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: "Mappy.com",
-            template: "./devserver/mappy.com.html",
-            inject: false,
-            chunks: ['Mappy']
-        }),
-        new HtmlWebpackPlugin({
             title: "login.com",
             template: "./src/Mappy/html/login.html",
             inject: false,
             jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
             OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
-            filename: "login",
             chunks: ['login']
         }),
         new HtmlWebpackPlugin({
