@@ -11,7 +11,7 @@ const mappyDefinations = new webpack.DefinePlugin({
     "DEMO_MAPPY_UI_JS_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_JS_ENDPOINT),
 });
 
-console.log("DEMO_MAPPY_UI_API_ENDPOINT", process.env.DEMO_MAPPY_API_ENDPOINT);
+console.log("DEMO_MAPPY_UI_API_ENDPOINT", process.env.DEMO_MAPPY_UI_API_ENDPOINT);
 
 const commonConfig = {
     entry: {
@@ -84,6 +84,8 @@ const devConfig = {
             title: "login.com",
             template: "./src/Mappy/html/login.html",
             inject: false,
+            jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
+            OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
             filename: "login",
             chunks: ['login']
         }),
@@ -91,6 +93,8 @@ const devConfig = {
             title: "users.com",
             template: "./src/Mappy/html/users.html",
             inject: false,
+            jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
+            OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
             filename: "users",
             chunks: ['users']
         }),
@@ -98,7 +102,7 @@ const devConfig = {
             title: "JsonApi.com",
             template: "./src/Mappy/html/json-api.html",
             inject: false,
-            baseUrl: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
+            jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
             OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
             filename: "json-api",
             chunks: ['json-api']
@@ -107,6 +111,8 @@ const devConfig = {
             title: "Getters.com",
             template: "./src/Mappy/html/sdk-getters.html",
             inject: false,
+            jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
+            OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
             filename: "sdk-getters",
             chunks: ['sdk-getters']
         }),
@@ -114,6 +120,8 @@ const devConfig = {
             title: "workflow.com",
             template: "./src/Mappy/html/workflow.html",
             inject: false,
+            jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
+            OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
             filename: "workflow",
             chunks: ['workflow']
         })

@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <base href="<%= htmlWebpackPlugin.options.baseUrl %>"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title><%= htmlWebpackPlugin.options.title %></title>
@@ -15,7 +14,7 @@
     <script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script type="text/javascript" src="<%= htmlWebpackPlugin.options.OstWalletSdkUrl %>"></script>
-    <script type="text/javascript" src="json-api.js"></script>
+    <script type="text/javascript" src="<%= htmlWebpackPlugin.options.jsEndpoint %>/json-api.js"></script>
 </head>
 <body>
   <div id="replace-div">

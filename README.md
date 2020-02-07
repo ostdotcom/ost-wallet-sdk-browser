@@ -267,11 +267,14 @@ npm install
 ```
 If you don't have npm installed on your machine then go to https://www.npmjs.com/get-npm for installing npm and node.
 
-## Fire Up the servers
+
+## Set Environment variables and Fire Up the servers
 - To run servers on browser, run command-
 ```
+source ./file_name.sh
 npm run dev-servers
 ```
+Replace file_name with your environment variables file name.
 
 ### Grant permission to all proxied domains.
 Open the follwoing links in browser and grant permission
