@@ -14,35 +14,9 @@ export {
   OstWalletSdk,
   OstJsonApi,
   OstSetupDeviceDelegate,
-  OstWorkflowDelegate
+  OstWorkflowDelegate,
+  OstError
 };
-
-/**
- * Self Executing Method to Expose the exports to window object.
- */
-((_win) => {
-  Object.defineProperty(_win, "OstWalletSdk", {
-    "value": OstWalletSdk,
-    "writable": false,
-    "enumerable": true
-  });
-  Object.defineProperty(_win, "OstJsonApi", {
-    "value": OstJsonApi,
-    "writable": false,
-    "enumerable": true
-  });
-  Object.defineProperty(_win, "OstSetupDeviceDelegate", {
-    "value": OstSetupDeviceDelegate,
-    "writable": false,
-    "enumerable": true
-  });
-  Object.defineProperty(_win, "OstWorkflowDelegate", {
-    "value": OstWorkflowDelegate,
-    "writable": false,
-    "enumerable": true
-  });
-})(window);
-
 
 /**
  * Self executing method to generate wrapper methods.
