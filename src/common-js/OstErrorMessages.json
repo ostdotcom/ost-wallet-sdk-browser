@@ -23,10 +23,11 @@
   "INVALID_UPSTREAM_ORIGIN": "Invalid upstream origin",
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
   "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
+  "SKD_INTERNAL_ERROR": "Something expected happen.",
+  "SDK_RESPONSE_ERROR": "SDK returned error"
 
   "__developer_Error": {
 
   },
-
-  "SKD_INTERNAL_ERROR": "Something expected happen."
 }
+

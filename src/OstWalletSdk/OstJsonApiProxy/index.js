@@ -17,7 +17,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getCurrentDeviceFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
     }
 
@@ -29,7 +29,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getBalanceFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
@@ -41,7 +41,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getPricePointFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 	
@@ -53,7 +53,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getBalanceWithPricePointFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	} 
 
@@ -65,7 +65,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getPendingRecoveryFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
@@ -77,7 +77,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getUserFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
@@ -89,7 +89,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getTokenFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
@@ -101,7 +101,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getTransactionsFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
@@ -113,7 +113,7 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getTokenHolderFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
@@ -125,12 +125,21 @@ class OstJsonApiProxy {
 
         return oThis.getFromOstSdk('getRulesFromServer', functionParams)
             .then((response) => {
-                alert(JSON.stringify(response));
+                return response;
             });
 	}
 
+    getDeviceListFromServer( userId ) {
+        let oThis = this;
+        let functionParams = {
+            user_id: userId,
+        };
 
-
+        return oThis.getFromOstSdk('getDeviceListFromServer', functionParams)
+            .then((response) => {
+                return response;
+            });
+    }
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;
@@ -164,7 +173,7 @@ const ResponseHandler = function (success, error){
 	const oThis = this;
 
 	oThis.onSuccess = function(args) {
-			return success(args);
+		return success(args);
 	};
 
 	oThis.onError = function(args) {

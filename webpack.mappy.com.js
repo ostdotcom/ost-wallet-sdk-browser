@@ -3,10 +3,16 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
-    entry: './src/Mappy/index.js',
+    entry: {'Mappy':'./src/Mappy/index.js',
+        'users': './src/Mappy/js/users.js',
+        'login': './src/Mappy/js/login.js',
+        'json-api':'./src/Mappy/js/json-api.js',
+        'sdk-getters':'./src/Mappy/js/sdk-getters.js',
+        'workflow':'./src/Mappy/js/workflow.js'
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'Mappy.js',
+        filename: '[name].js',
     },
     module: {
         rules: [
@@ -58,7 +64,43 @@ const devConfig = {
         new HtmlWebpackPlugin({
             title: "Mappy.com",
             template: "./devserver/mappy.com.html",
-            inject: false
+            inject: false,
+            chunks: ['Mappy']
+        }),
+        new HtmlWebpackPlugin({
+            title: "login.com",
+            template: "./src/Mappy/html/login.html",
+            inject: false,
+            filename: "login",
+            chunks: ['login']
+        }),
+        new HtmlWebpackPlugin({
+            title: "users.com",
+            template: "./src/Mappy/html/users.html",
+            inject: false,
+            filename: "users",
+            chunks: ['users']
+        }),
+        new HtmlWebpackPlugin({
+            title: "JsonApi.com",
+            template: "./src/Mappy/html/json-api.html",
+            inject: false,
+            filename: "json-api",
+            chunks: ['json-api']
+        }),
+        new HtmlWebpackPlugin({
+            title: "Getters.com",
+            template: "./src/Mappy/html/sdk-getters.html",
+            inject: false,
+            filename: "sdk-getters",
+            chunks: ['sdk-getters']
+        }),
+        new HtmlWebpackPlugin({
+            title: "workflow.com",
+            template: "./src/Mappy/html/workflow.html",
+            inject: false,
+            filename: "workflow",
+            chunks: ['workflow']
         })
     ]
 };

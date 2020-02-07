@@ -1,8 +1,12 @@
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes from '../../common-js/OstErrorCodes'
+import OstErrorCodes from  '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
+import OstMessage from "../../common-js/OstMessage";
+import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstSessionPolling from "../OstPolling/OstSessionPolling";
 import OstRule from "../entities/OstRule";
+import OstTransaction from "../entities/OstTransaction";
 import OstTransactionPolling from "../OstPolling/OstTransactionPolling";
 import BigNumber from 'bignumber.js';
 import OstWorkflowContext from "./OstWorkflowContext";
@@ -82,44 +86,13 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 	}
 
 	getRule(ruleName) {
-		const oThis = this;
-		return new Promise((resolve) => {
+  	return new Promise((resolve) => {
 			OstRule.getById(ruleName)
 				.then((res) => {
-					if (res) return resolve(res.getData());
-
-					// If rule Not found fetch rules
-					return oThis.syncRules()
-						.then(() => {
-							return OstRule.getById(ruleName)
-								.then((res) => {
-									if (!res) throw "Rule not found";
-
-									return resolve(res.getData());
-								})
-						});
+					return resolve(res.getData());
 				})
 				.catch((err) => {
-					console.error(LOG_TAG, "Error while fetching rule", err);
-					return resolve();
-				})
-		});
-	}
-
-	getPricePoint() {
-		const oThis = this;
-		return new Promise((resolve) => {
-			const chainId = oThis.token.getAuxiliaryChainId();
-			oThis.apiClient.getPricePoints(chainId)
-				.then((dataObj) => {
-					console.log(LOG_TAG, "Price point response", dataObj);
-
-					const pricePoint = dataObj['price_point'];
-					const pricePointOfBaseToken = pricePoint[oThis.token.getBaseToken()];
-					return resolve(pricePointOfBaseToken);
-				})
-				.catch((err) => {
-					console.error(LOG_TAG, "Error while fetching price point", err);
+					console.error(LOG_TAG, "Error while fetching rule");
 					return resolve();
 				})
 		});
@@ -128,11 +101,11 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   onDeviceValidated() {
     const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
-    Promise.all([oThis.getAuthorizedSession(), oThis.getRule(oThis.ruleName), oThis.getPricePoint()])
+    Promise.all([oThis.getAuthorizedSession(), oThis.getRule("Direct Transfer"), oThis.syncRules()])
 			.then((resp) => {
 				if (!resp[0]) {
 					console.error(LOG_TAG, "Session fetch failed");
-					return Promise.reject("Session fetch failed");
+					return Promise.reject();
 				}
 				const sessionArray = resp[0];
 				if (!sessionArray.length) {
@@ -143,26 +116,12 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 
 				if (!resp[1]) {
 					console.error(LOG_TAG, "Rule fetch failed");
-					return Promise.reject("Rule fetch failed");
+					return Promise.reject();
 				}
 				const rule = resp[1];
-
-				if (!resp[2]) {
-					console.error(LOG_TAG, "Price point fetch failed");
-					return Promise.reject("Price point fetch failed");
-				}
-				const pricePointOfBaseToken = resp[2];
-
-				return oThis.keyManagerProxy.signTransaction(session,
-					oThis.user.getTokenHolderAddress(),
-					oThis.token_holder_addresses,
-					oThis.amounts,
-					rule,
-					oThis.ruleMethod,
-					pricePointOfBaseToken,
-					oThis.options);
+					return oThis.keyManagerProxy.signTransaction(session, rule, oThis.user.getTokenHolderAddress() ,oThis.token_holder_addresses, oThis.amounts);
 			})
-			.then((response) => {
+      .then((response) => {
 				const struct = response.signed_transaction_struct;
 				const txnData = response.transaction_data;
 
