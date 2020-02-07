@@ -450,15 +450,6 @@ function getBalanceWithPricePointFromServer() {
   });
 }
 
-function getPendingRecoveryFromServer() {
-  window.OstWalletSdk.getPendingRecoveryFromServer(currentUser.user_id)
-  .then((pendingRecovery) => {
-    console.log("MAppy :: index :: getPendingRecoveryFromServer :: then :: " ,  pendingRecovery);
-  })
-  .catch((err) => {
-    console.log("MAppy :: index :: getPendingRecoveryFromServer :: catch ::" , err);
-  });
-}
 
 function getTransactionsFromServer() {
   window.OstWalletSdk.getTransactionsFromServer(currentUser.user_id)
