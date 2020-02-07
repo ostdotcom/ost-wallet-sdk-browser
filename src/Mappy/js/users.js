@@ -1,7 +1,6 @@
 import '../css/login.css';
 import '../css/active_page.css';
 import OstSetup from "./common";
-import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
 
 //var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
@@ -198,7 +197,7 @@ userSetup.loadUserPage();
 
 function sendTokens(tokenHolderAddress) {
 
-	let mappyCallback =  new OstMappyCallbacks();
+	let mappyCallback =  new OstWorkflowDelegate();
 	mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
 		alert("Transaction Acknowledged");
 	};

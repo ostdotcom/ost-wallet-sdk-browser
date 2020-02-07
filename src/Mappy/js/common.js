@@ -1,5 +1,3 @@
-import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
-
 const LOG_TAG = "Mappy :: common :: ";
 export class OstSetup {
 
@@ -71,7 +69,7 @@ export class OstSetup {
 
   setupDevice(){
     return new Promise((resolve, reject) => {
-    let mappyCallback =  new OstMappyCallbacks();
+    let mappyCallback =  new OstSetupDeviceDelegate();
     mappyCallback.registerDevice = function( apiParams ) {
     console.log(LOG_TAG, "registerDevice")
     return registerDevice(apiParams);

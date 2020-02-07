@@ -1,5 +1,4 @@
 import '../css/login.css';
-import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
 import OstSetup from "./common";
 
 var ostSetup;
@@ -11,7 +10,7 @@ class Workflows {
     }
 
     setupDeviceWorkflow(){
-        let mappyCallback =  new OstMappyCallbacks();
+        let mappyCallback =  new OstSetupDeviceDelegate();
 
         mappyCallback.registerDevice = function( apiParams ) {
           return Promise.reject("registerDevice not allowed here.");
@@ -62,7 +61,7 @@ class Workflows {
     }
 
     createSessionWorkflow(){
-        let mappyCallback =  new OstMappyCallbacks();
+        let mappyCallback =  new OstWorkflowDelegate();
 
           mappyCallback.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
               var object = {};
@@ -111,7 +110,7 @@ class Workflows {
     }
 
     executeTransactionWorkflow(){
-        let mappyCallback =  new OstMappyCallbacks();
+        let mappyCallback =  new OstWorkflowDelegate();
         mappyCallback.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
             var object = {};
             var object2 = {};
