@@ -86,11 +86,13 @@ class IKM {
 		this.kmStruct.isTrustable = false;
 
 		return oThis.createApiKey()
-			.then(() => {
+			.then((apiKey) => {
+				oThis.kmStruct.apiAddress = apiKey;
 				return oThis.createDeviceKey();
 			})
-			.then(() => {
-				return this.kmStruct;
+			.then((deviceKey) => {
+				oThis.kmStruct.deviceAddress = deviceKey;
+				return oThis.kmStruct;
 			})
 			.catch((err) =>{
 				throw "Meta Struct building failed";
@@ -168,12 +170,9 @@ class IKM {
 				console.log(LOG_TAG, "CreateApiKey :: Inserting keys");
 				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
 					.then(() => {
+						console.log(LOG_TAG, "created Api key", apiKeyAddress);
 						return apiKeyAddress;
 					})
-			})
-			.then((apiKeyAddress) => {
-				oThis.kmStruct.apiAddress = apiKeyAddress;
-				return true;
 			})
 			.catch((err) => {
 				throw OstError.sdkError(err, "okm_e_ikm_cak_1");
@@ -184,34 +183,10 @@ class IKM {
 		const oThis = this;
 
 		const mnemonics = oThis.generateMnemonics();
-
 		const ecKeyPair = oThis.generateECWalletWithMnemonics(mnemonics, KEY_TYPE.DEVICE);
-		const privateKey = ecKeyPair.getPrivateKeyString();
-		console.log(LOG_TAG, "createDeviceKey :: Encrypting the generated keys");
-
-		return OstSecureEnclave.encrypt(oThis.userId, privateKey)
-			.then((encryptedData) => {
-				const deviceAddress = ecKeyPair.getChecksumAddressString();
-				const deviceAddressId = oThis.createEthKeyMetaId(deviceAddress);
-
-				const dataToStore = {
-					id: deviceAddressId,
-					data: encryptedData
-				};
-
-				console.log(LOG_TAG, "CreateDeviceKey :: Inserting keys");
-				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
-					.then(() => {
-						return deviceAddress;
-					})
-			})
-			.then((deviceAddress) => {
-				oThis.kmStruct.deviceAddress = deviceAddress;
-				return true;
-			})
-			.catch((err) => {
-				throw OstError.sdkError(err, "okm_e_ikm_cdk_1");
-			});
+		const deviceAddress = ecKeyPair.getChecksumAddressString();
+		console.log(LOG_TAG, "created device key", deviceAddress);
+		return Promise.resolve(deviceAddress);
 	}
 
 	createEthKeyMetaId( address) {
