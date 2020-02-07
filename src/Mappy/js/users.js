@@ -16,8 +16,8 @@ class UsersSetup {
 
   loadUserPage() {
     $(".logOutBtn").click( function(e) {
-    logout();
-  });
+      logout();
+    });
     var baseUrl = ostSetup.getBaseUrl();
     $.ajax({
         type: 'GET',
@@ -40,6 +40,7 @@ class UsersSetup {
   }
 
   uploadUserData(jsonData, pageNo) {
+    const oThis = this;
    
     if(!jsonData.data.meta.next_page_payload){
       return ;
@@ -114,14 +115,8 @@ class UsersSetup {
     $(".QrCodeBtnClass").on('click', function(event){
         let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
         let obj =JSON.parse(text);
-        makeCode(text);
+        oThis.makeCode(text);
     });
-            // document.getElementsByClassName("QrCode").addEventListener("click", function(e) {
-        //   let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
-        //   let obj =JSON.parse(text);
-        //   makeCode(text);
-            
-        // });
 }
 
 
