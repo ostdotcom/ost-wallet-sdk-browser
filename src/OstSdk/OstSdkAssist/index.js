@@ -215,11 +215,10 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getUser()
-      .then((user) => {
-          if (user) {
-            functionParams = {root: user};
+      .then(( response ) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("user api ====", user);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
@@ -241,11 +240,10 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getToken()
-      .then((token) => {
-          if (token) {
-            functionParams = {root: token};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("token api ====", token);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
@@ -267,12 +265,10 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getTransactions()
-      .then((transactions) => {
-          if (transactions) {
-            console.log("transactions api ====", transactions);
-            functionParams = {root: transactions};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("transactions api ====", transactions);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
@@ -294,11 +290,10 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getTokenHolder()
-      .then((tokenHolder) => {
-          if (tokenHolder) {
-            functionParams = {root: tokenHolder};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("tokenHolder api ====", tokenHolder);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
@@ -320,11 +315,10 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getRules()
-      .then((rules) => {
-          if (rules) {
-            functionParams = {root: rules};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("rules api ====", rules);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
@@ -354,6 +348,9 @@ class OstSdkAssist {
     let address = null
     OstUser.getById(userId)
       .then((user) => {
+        //BUG: New device should not be created here.
+        //If no current device, throw an error.
+        //Someone took a short-cut. Not good.
         return user.createOrGetDevice(this.getKeyManagerProxy(userId));
       })
       .then((device) => {
@@ -365,21 +362,25 @@ class OstSdkAssist {
         let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
         return apiClient.getDevice(address);
       })
-      .then((deviceData) => {
-        if (deviceData) {
-          let deviceEntity = deviceData;
-          functionParams = {root: deviceEntity};
+      .then((response) => {
+        console.log("apiClient.getDevice response", response);
+        if (response) {
+          functionParams = response;
           functionName = 'onSuccess';
-          console.log("device api ====", deviceData);
           this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
         }
         else {
+          //BUG: #1: This error be informed to upstream OstWalletSdk.
+          //BUG: #2: OstError.sdkError null ???? 
+          //Someone took a too many short-cuts. Not good.
           let error = OstError.sdkError(null, 'os_osa_i_gcdfs_2');
           throw error;
         }
       })
       .catch((err) => {
-          console.log(err);
+        //BUG: This error be informed to upstream OstWalletSdk.
+        //Someone took a short-cut. Not good.
+        console.log(err);
       })
   }
   /**
@@ -395,11 +396,11 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getBalance()
-      .then((balance) => {
-          if (balance) {
-            functionParams = {root: balance};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("balance api ====", balance);
+            console.log("balance api ====", response);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
@@ -543,9 +544,9 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getPendingRecovery()
-      .then((devices) => {
-          if (devices) {
-            functionParams = {root: devices};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
             console.log("pending recovery api ====", devices);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -579,11 +580,10 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getDeviceList()
-      .then((devices) => {
-          if (devices) {
-            functionParams = {root: devices};
+      .then((response) => {
+          if (response) {
+            functionParams = response;
             functionName = 'onSuccess';
-            console.log("getDeviceList api ====", devices);
             this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
           }
           else {
