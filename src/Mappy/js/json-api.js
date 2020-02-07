@@ -25,7 +25,6 @@ $(function() {
        load_apis("getBalance","left3","handlebar-main3");
        load_apis("getPricePoint","left4","handlebar-main4");
 
-       load_apis("getDeviceListFromServer","left6","handlebar-main6");
        load_apis("getTransactions","left7","handlebar-main7");
   });
 
@@ -58,9 +57,6 @@ $(function() {
         case "getPricePoint":
           getPricePoint();
             break;
-        case "getDeviceListFromServer":
-          getDeviceListFromServer();
-          break;
         case "getTransactions":
           getTransactions();
           break;
@@ -86,10 +82,6 @@ $(function() {
 
   $("#pp-uid").on('click', function(event){
     getPricePoint();
-  });
-
-  $("#dev-list-uid").on('click', function(event){
-    getDeviceListFromServer();
   });
 
   $("#transactions-uid").on('click', function(event){
@@ -202,17 +194,6 @@ $(function() {
       })
       .catch((err) => {
         console.log("MAppy :: index :: getRules :: catch ::" , err);
-      });
-    }
-
-    function getDeviceListFromServer() {
-      OstJsonApi.getDeviceListFromServer(currentUser.user_id)
-      .then((rules) => {
-        console.log("MAppy :: index :: getDeviceListFromServer :: then :: " ,  rules);
-        $('#json-renderer-dev-list').jsonViewer(rules, { collapsed: false, withQuotes: true, withLinks: false});
-      })
-      .catch((err) => {
-        console.log("MAppy :: index :: getDeviceListFromServer :: catch ::" , err);
       });
     }
 
