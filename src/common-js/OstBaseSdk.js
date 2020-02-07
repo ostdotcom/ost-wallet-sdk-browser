@@ -367,6 +367,7 @@ class OstBaseSdk {
         //Mark Sdk as init.
         .then( () => {
           oThis.markSdkInitialized();
+          return true;
         })
   }
 
