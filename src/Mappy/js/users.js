@@ -1,6 +1,7 @@
 import '../css/login.css';
 import '../css/active_page.css';
 import OstSetup from "./common";
+import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
 
 //var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 
@@ -25,6 +26,7 @@ class UsersSetup {
       dataType: 'json',
       success: function (jsonData) {
         //window.location.href = "/devserver/users.html";
+        if(jsonData.success == false) { console.log("failure ------------",jsonData) }
         console.log(jsonData.data.users[0].token_id);
         var pageNo=1;
         userSetup.uploadUserData(jsonData,pageNo);
@@ -73,7 +75,7 @@ class UsersSetup {
       //cell1.setAttribute("scope","col");
       cell1 = row.insertCell(1).innerHTML = "Username";
       //cell1.setAttribute("scope","col");
-      cell1 = row.insertCell(2).innerHTML = "Balance";
+      cell1 = row.insertCell(2).innerHTML = "Address";
       //cell1.setAttribute("scope","col");
       cell1 = row.insertCell(3).innerHTML = "Send";
       //cell1.setAttribute("scope","col");
@@ -84,26 +86,29 @@ class UsersSetup {
     for( ; i<count+10 ; i++,k++){
       var row1 = document.createElement("tr");
       //var textNode = document.createTextNode(i);
-
+  
       //var row1 = table.insertRow(i);
       var cell1 = row1.insertCell(0).innerHTML = i;
       console.log(jsonData.data.users[k].username);
       var cell2 = row1.insertCell(1).innerHTML = jsonData.data.users[k].username;
-    
-      var cell3 = row1.insertCell(2).innerHTML = "Balance=0";
-      var cell4 = row1.insertCell(3).innerHTML = '<button id="btn" class="btn btn-info" name="btn">Send</button>';
+      var cell3 = row1.insertCell(2).innerHTML = jsonData.data.users[k].token_holder_address;
+  
+      var row1cell3 = row1.insertCell(3);
+      var cell4 = row1cell3.innerHTML = '<button id="btn" class="btn btn-info sendButtonClass" name="btn">Send</button>';
+      row1cell3.addEventListener('click', this.getOnSendClickFn( jsonData.data.users[k] ) );
+  
       var cell5 = row1.insertCell(4).innerHTML = '<button id="Qrcodebtn" class="btn btn-info QrCodeBtnClass"  " data-toggle="modal" data-target="#myModal">Get QR</button> ';
       table.appendChild(row1);
     }
     count = i;
-
+  
     var span = document.createElement('span');
     var buttonDiv = document.getElementById("buttonDiv");
   
     buttonDiv.innerHTML = '<button id="nextBtn" value="Next"  class ="nextButton arrow" >Next</button>';
     //buttonDiv.onclick = requestNextData(pageNo);
-    document.getElementById("nextBtn").addEventListener("click", function(e) { 
-        requestNextData(pageNo);
+    document.getElementById("nextBtn").addEventListener("click", function(e) {
+      requestNextData(pageNo);
     });
 
     $(".QrCodeBtnClass").on('click', function(event){
@@ -118,6 +123,15 @@ class UsersSetup {
             
         // });
 }
+
+
+getOnSendClickFn ( rowUserData ) {
+  return function () {
+		sendTokens(rowUserData.token_holder_address);
+  }
+}
+
+
   requestNextData(pageNo){
     var baseUrl = ostSetup.getBaseUrl();
     pageNo+=1;
@@ -178,3 +192,30 @@ class UsersSetup {
 var userSetup = new UsersSetup();
 userSetup.loadUserPage();
 
+function sendTokens(tokenHolderAddress) {
+
+	let mappyCallback =  new OstMappyCallbacks();
+	mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
+		alert("Transaction Acknowledged");
+	};
+
+	mappyCallback.flowInterrupt = function (ostWorkflowContext , ostError ) {
+	  console.log(LOG_TAG, ostError);
+		alert("Transaction Interruped");
+	};
+
+
+	mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
+
+		console.log(LOG_TAG, "getQRCode");
+		console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
+		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
+	};
+
+	let workflowId = window.OstSdkWallet.executePayTransaction(currentUser.user_id,
+		{
+			token_holder_addresses: [tokenHolderAddress],
+			amounts: ['100'],
+		},
+		mappyCallback);
+}

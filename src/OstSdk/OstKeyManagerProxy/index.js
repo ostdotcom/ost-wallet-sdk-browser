@@ -97,7 +97,7 @@ export default class OstKeyManagerProxy {
 				session: ostSession,
 				rule: ostRule,
 				to_token_holder_addresses: tokenHolderAddresses,
-			  from_token_holder_addresses: userTokenHolderAddresses,
+			  	from_token_holder_addresses: userTokenHolderAddresses,
 				amounts: amounts,
 				options: options
 			}

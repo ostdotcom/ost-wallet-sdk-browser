@@ -1,4 +1,4 @@
-import OstMappyCallbacks from "../OstWalletSdk/OstMappyCallbacks";
+import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
 
 
 import './css/login.css';

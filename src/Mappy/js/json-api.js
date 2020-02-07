@@ -89,11 +89,13 @@ function logout(){
 $("#get-cur-device").on('click', function(event){
   //getTokenFromServer()
   //getUserFromServer()
-  getCurrentDeviceFromServer();
+  getRulesFromServer()
+  //getCurrentDeviceFromServer();
 });
 
 $("#balance-wpp").on('click', function(event){
-  getBalanceWithPricePointFromServer();
+  getTokenHolderFromServer()
+  //getBalanceWithPricePointFromServer();
 });
 
 $("#bal-uid").on('click', function(event){
@@ -226,10 +228,10 @@ $("#transactions-uid").on('click', function(event){
   function getRulesFromServer() {
     window.OstSdkWallet.getRulesFromServer(currentUser.user_id)
     .then((rules) => {
-      console.log("MAppy :: index :: getTokenHolderFromServer :: then :: " ,  rules);
+      console.log("MAppy :: index :: getRulesFromServer :: then :: " ,  rules);
     })
     .catch((err) => {
-      console.log("MAppy :: index :: getTokenHolderFromServer :: catch ::" , err);
+      console.log("MAppy :: index :: getRulesFromServer :: catch ::" , err);
     });
   }
 
