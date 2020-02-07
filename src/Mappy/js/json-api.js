@@ -8,7 +8,11 @@ import hljs from "../../../node_modules/highlight.js";
 
 var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 var currentUser = null;
-
+const jsonViewerProps = { 
+  collapsed: false, 
+  withQuotes: true, 
+  withLinks: false
+};
 
 $(function() {
   console.log("document loaded!");
@@ -22,17 +26,20 @@ $(function() {
       currentUser = current_user;
       load_apis("getCurrentDevice","left1","handlebar-main1");
       load_apis("getBalanceWithPricePoint","left2","handlebar-main2");
-       load_apis("getBalance","left3","handlebar-main3");
-       load_apis("getPricePoint","left4","handlebar-main4");
-
-       load_apis("getTransactions","left7","handlebar-main7");
+      load_apis("getBalance","left3","handlebar-main3");
+      load_apis("getPricePoint","left4","handlebar-main4");
+      load_apis("getTransactions","left7","handlebar-main7");
   });
 
   function load_apis(functionName,upperTag,lowerTag){
 
     var source = $("#replace-demo").html();
     var template = Handlebars.compile(source);
-    var context = { current_user_id:currentUser.user_id,function_name:functionName};
+    var context = { 
+      current_user_id: currentUser.user_id,
+      token_id: currentUser.token_id,
+      function_name:functionName
+    };
     var html = template(context);
 
     var source1 = document.getElementById(lowerTag).innerHTML;
@@ -42,23 +49,22 @@ $(function() {
     
       document.getElementById(upperTag).innerHTML = html1;
       switch(functionName) {
-        case "getCurrentDevice":
-          
-          getCurrentDevice();
+        case "getCurrentDevice":          
+          getCurrentDevice( context );
           break;
         case "getBalanceWithPricePoint":
           
-          getBalanceWithPricePoint();
+          getBalanceWithPricePoint( context );
           
           break;
         case "getBalance":
-          getBalance();
+          getBalance( context );
           break;
         case "getPricePoint":
-          getPricePoint();
+          getPricePoint( context );
             break;
         case "getTransactions":
-          getTransactions();
+          getTransactions( context );
           break;
         default:
           console.error("Not valid function call");
@@ -69,11 +75,6 @@ $(function() {
 
   $("#get-cur-device").on('click', function(event){
     getRules();
-  });
-
-  $("#balance-wpp").on('click', function(event){
-    getTokenHolderFromServer()
-    //getBalanceWithPricePoint();
   });
 
   $("#bal-uid").on('click', function(event){
@@ -94,48 +95,45 @@ $(function() {
       OstJsonApi.getUser(currentUser.user_id)
       .then((user) => {
         console.log("MAppy :: index :: getUser :: then :: " ,  user);
-        $('#json-renderer').jsonViewer(user, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer').jsonViewer(user, jsonViewerProps);
       })
       .catch((err) => {
         console.log("MAppy :: index :: getUser :: catch ::" , err);
-        $('#json-renderer').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer').jsonViewer(err, jsonViewerProps);
       });
     }
     
     function getToken() {
       OstJsonApi.getToken(currentUser.user_id)
       .then((token) => {
-        console.log("MAppy :: index :: getToken :: then :: " ,  token);
-        $('#json-renderer').jsonViewer(token, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer').jsonViewer(token, jsonViewerProps);
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getToken :: catch ::" , err);
+        $('#json-renderer').jsonViewer(err, jsonViewerProps);
       });
     }
     
     function getCurrentDevice() {
       OstJsonApi.getCurrentDevice(currentUser.user_id)
-      .then((device) => {
-        console.log("MAppy :: index :: getCurrentDevice :: then :: " ,  device);
-        $('#json-renderer').jsonViewer(device, { collapsed: false, withQuotes: true, withLinks: false});
+      .then((response) => {
+        $('#json-renderer-get-current-device').jsonViewer(response, jsonViewerProps);
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getCurrentDevice :: catch ::" , err);
-        $('#json-renderer').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-get-current-device').jsonViewer(err, jsonViewerProps);
       });
     }
     
     function getBalance() {
       OstJsonApi.getBalance(currentUser.user_id)
-      .then((balance) => {
-        
-        console.log("MAppy :: index :: getBalance :: then :: " ,  balance);
-        $('#json-renderer-bal-id').jsonViewer(balance, { collapsed: false, withQuotes: true, withLinks: false});
+      .then((response) => {
+        $('#json-renderer-bal-id').jsonViewer(response, { 
+          collapsed: false, 
+          withQuotes: true, 
+          withLinks: false
+        });
       })
       .catch((err) => {
-        
-        console.log("MAppy :: index :: getBalance :: catch ::" , err);
-        $('#json-renderer-bal-id').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-bal-id').jsonViewer(err, jsonViewerProps);
       });
     }
     
@@ -143,11 +141,11 @@ $(function() {
       OstJsonApi.getPricePoint(currentUser.user_id)
       .then((pricePoint) => {
         console.log("MAppy :: index :: getPricePoint :: then :: " ,  pricePoint);
-        $('#json-renderer-pp-id').jsonViewer(pricePoint, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-pp-id').jsonViewer(pricePoint, jsonViewerProps);
       })
       .catch((err) => {
         console.log("MAppy :: index :: getPricePoint :: catch ::" , err);
-        $('#json-renderer-pp-id').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-pp-id').jsonViewer(err, jsonViewerProps);
       });
     }
     
@@ -155,38 +153,25 @@ $(function() {
       OstJsonApi.getBalanceWithPricePoint(currentUser.user_id)
       .then((balancePricePointData) => {
         console.log("MAppy :: index :: getBalanceWithPricePoint :: then :: " ,  balancePricePointData);
-        console.error("it is here");
-        $('#json-renderer-bal-pp').jsonViewer(balancePricePointData, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-bal-pp').jsonViewer(balancePricePointData, jsonViewerProps);
       })
       .catch((err) => {
         console.error("it is here");
         console.log("MAppy :: index :: getBalanceWithPricePoint :: catch ::" , err);
-        $('#json-renderer-bal-pp').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-bal-pp').jsonViewer(err, jsonViewerProps);
       });
     }
     
     function getTransactions() {
       OstJsonApi.getTransactions(currentUser.user_id)
       .then((transactions) => {
-        console.log("MAppy :: index :: getTransactions :: then :: " ,  transactions);
-        $('#json-renderer-transaction').jsonViewer(transactions, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-transaction').jsonViewer(transactions, jsonViewerProps);
       })
       .catch((err) => {
-        console.log("MAppy :: index :: getTransactions :: catch ::" , err);
-        $('#json-renderer-transaction').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
+        $('#json-renderer-transaction').jsonViewer(err, jsonViewerProps);
       });
     }
-    
-    function getTokenHolderFromServer() {
-      OstJsonApi.getTokenHolderFromServer(currentUser.user_id)
-      .then((token_holder) => {
-        console.log("MAppy :: index :: getTokenHolderFromServer :: then :: " ,  token_holder);
-      })
-      .catch((err) => {
-        console.log("MAppy :: index :: getTokenHolderFromServer :: catch ::" , err);
-      });
-    }
-    
+        
     function getRules() {
       OstJsonApi.getRules(currentUser.user_id)
       .then((rules) => {
@@ -210,7 +195,7 @@ $(function() {
       function (data, status) {
         
         if(data.success==true){
-          window.location="login"; 
+          window.location="/"; 
         }
       });
       

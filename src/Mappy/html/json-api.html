@@ -17,19 +17,7 @@
     <script type="text/javascript" src="<%= htmlWebpackPlugin.options.jsEndpoint %>/json-api.js"></script>
 </head>
 <body>
-  <div id="replace-div">
-    <script id="replace-demo" type="text/x-handlebars-template">
-OstSdkWallet.{{function_name}}(
-{{current_user_id}}
-)
-.then((result_type) => {
-console.log( result_type);
-})
-.catch(({{err}}) => {
-console.log(err);
-});
-    </script>
-</div>
+  <div id="replace-div"></div>
    
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
     <div class="navbar-header">
@@ -66,7 +54,7 @@ console.log(err);
         <div class="card-header" id="headingOne">
           <h5 class="mb-0">
             <button class="btn btn-link"    data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              getCurrentDeviceForUserId
+              OstJsonApi.getCurrentDevice( USER_ID );
             </button>
             
             <button class="btn btn-link" style="float: right;" id="get-cur-device"   data-target='#collapseOne' aria-expanded="true" aria-controls="collapseOne">
@@ -91,12 +79,45 @@ console.log(err);
               </div>
             
               <div id="right" style="float:right" class="scroll">
-                <pre id="json-renderer"></pre>
+                <pre id="json-renderer-get-current-device"></pre>
               </div>
               <br style="clear:both;"/>
           </div>
           </div>
-        
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed"    data-target="#collapseThree"  aria-expanded="true" aria-controls="collapseThree">
+              OstJsonApi.getBalance( USER_ID )
+            </button>
+            <button class="btn btn-link" style="float: right;" id="bal-uid"   data-target='#collapseThree' aria-expanded="true" aria-controls="collapseOne">
+              Retry
+          </button>
+          </h5>
+        </div>
+        <div id="collapseThree"  aria-labelledby="headingThree" data-parent="#accordion">
+          <div class="card-body">
+            
+            <div id="content">
+              <div id="left3" style="float:left" class="scroll">
+                  <script id="handlebar-main3" type="text/x-handlebars-template">
+                      
+                      <pre  class="language-javascript" align="left">
+                        <code  class="javascript">
+                          {{replace}}
+                        </code>
+                      </pre>
+                  </script>
+              </div>
+            
+              <div id="right" style="float:right" class="scroll">
+                <pre id="json-renderer-bal-id"></pre>
+              </div>
+              <br style="clear:both;"/>
+          </div>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="card-header" id="headingTwo">
@@ -128,40 +149,6 @@ console.log(err);
               </div>
               <br style="clear:both;"/>
           </div>
-          </div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header" id="headingThree">
-          <h5 class="mb-0">
-            <button class="btn btn-link collapsed"    data-target="#collapseThree"  aria-expanded="true" aria-controls="collapseThree">
-              getBalanceForUserId
-            </button>
-            <button class="btn btn-link" style="float: right;" id="bal-uid"   data-target='#collapseThree' aria-expanded="true" aria-controls="collapseOne">
-              Retry
-          </button>
-          </h5>
-        </div>
-        <div id="collapseThree"  aria-labelledby="headingThree" data-parent="#accordion">
-          <div class="card-body">
-            
-            <div id="content">
-              <div id="left3" style="float:left" class="scroll">
-                  <script id="handlebar-main3" type="text/x-handlebars-template">
-                      
-                      <pre  class="language-javascript" align="left">
-                        <code  class="javascript">
-                          {{replace}}
-                        </code>
-                      </pre>
-                  </script>
-              </div>
-            
-              <div id="right" style="float:right" class="scroll">
-                <pre id="json-renderer-bal-id"></pre>
-              </div>
-              <br style="clear:both;"/>
           </div>
           </div>
         </div>
@@ -205,7 +192,7 @@ console.log(err);
         <div class="card-header" id="headingThree">
           <h5 class="mb-0">
             <button class="btn btn-link collapsed"    data-target="#collapseSeven"  aria-expanded="true" aria-controls="collapseSeven">
-              getTransactionsForUserId
+              OstJsonApi.getTransactions
             </button>
             <button class="btn btn-link" style="float: right;" id="transactions-uid"   data-target='#collapseSeven' aria-expanded="true" aria-controls="collapseOne">
               Retry
@@ -236,6 +223,14 @@ console.log(err);
       
     </div>
   </div>
-
+<script id="replace-demo" type="text/x-handlebars-template">
+  OstJsonApi.{{function_name}}('{{current_user_id}}')
+    .then((result) => {
+      console.log( result );
+    })
+    .catch(( error ) => {
+      console.error("OstJsonApi.{{function_name}} returned an error.\n", error);
+    });
+</script>
   </body>
 </html>
