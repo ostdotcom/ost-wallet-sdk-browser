@@ -1,7 +1,6 @@
 import {SOURCE} from '../common-js/OstBrowserMessenger'
 import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
 import OstError from "../common-js/OstError";
-import OstHelpers from "../common-js/OstHelpers";
 import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'
@@ -48,7 +47,7 @@ const LOG_TAG = "OstSdk :: index :: ";
           this.sendPublicKey();
         })
         .catch((err) => {
-          console.log("err", err);
+          console.error("err", err);
 
           this.browserMessenger.removeUpstreamPublicKey();
 

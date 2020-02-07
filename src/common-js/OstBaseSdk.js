@@ -7,6 +7,9 @@ import '../common-css/sdk-stylesheet.css';
 
 let hasBeenInitialized = false;
 let downstreamIframe = null;
+
+const LOG_TAG = "OstBaseSdk";
+
 class OstBaseSdk {
   constructor(origin, pathname, ancestorOrigins, searchParams){
     this.defineImmutableProperty("origin", origin);
@@ -42,11 +45,11 @@ class OstBaseSdk {
     this.browserMessenger.setDownstreamPublicKeyHex( args.publicKeyHex );
   };
 
-  //TODO: To be Deprecated. 
+  //TODO: To be Deprecated.
   //@Deprecated
   perform() {
     let oThis = this;
-    
+
     return oThis.createBrowserMessengerObject()
       .then(() => {
         oThis.subscribeOnSetupComplete();
@@ -58,7 +61,7 @@ class OstBaseSdk {
     return '';
   }
 
-  //TODO: To be Deprecated. 
+  //TODO: To be Deprecated.
   //@Deprecated
   setUpstreamOrigin() {
     if (this.ancestorOrigins) {
@@ -69,7 +72,7 @@ class OstBaseSdk {
   }
 
   getUpstreamOrigin() {
-    if (this.ancestorOrigins) { 
+    if (this.ancestorOrigins) {
       return this.ancestorOrigins[0];
     }
     return null;
@@ -92,7 +95,7 @@ class OstBaseSdk {
     return this.browserMessenger.getSignature(stringToSign)
       .then((signatureBytes) => {
         return OstHelpers.byteArrayToHex(signatureBytes);
-      });    
+      });
   }
 
   setUpstreamPublicKey() {
@@ -112,7 +115,53 @@ class OstBaseSdk {
     let selfUrl = this.origin+ this.pathname;
     let url = OstURLHelpers.getStringToSign(selfUrl, pageParams);
 
-    return this.browserMessenger.verifyIframeInit(url, signature);
+    const oThis = this;
+    return this.browserMessenger.verifyIframeInit(url, signature)
+      .then((verified) => {
+        if (!verified) {
+          return verified;
+        }
+        return oThis.isWhiteListedParent()
+      });
+  }
+
+  isWhiteListedParent() {
+    const oThis = this
+      , ancestorOrigin = oThis.ancestorOrigins[0]
+    ;
+    console.log(LOG_TAG, "AncestorOrigin of this iframe", ancestorOrigin);
+
+    return oThis.getWhiteListedUrls()
+      .then((whiteListedUrls) => {
+        if (!Array.isArray(whiteListedUrls)) {
+          throw "whiteListedUrls is not an array"
+        }
+        for (let i=0; i < whiteListedUrls.length; i++) {
+          let urlObject = whiteListedUrls[i];
+          if ( ancestorOrigin === urlObject.domain ) {
+						console.log(LOG_TAG, "White listed url found", ancestorOrigin,urlObject.domain );
+						return true
+          }
+        }
+				console.log(LOG_TAG, "White listed url NOT found", ancestorOrigin);
+        return false;
+      })
+  }
+
+	getWhiteListedUrls() {
+    //Todo: should come from Mappy Sdk endpoint
+    return Promise.resolve([
+			{
+				"id": 1,
+				"uts": 1234567890,
+				"domain": "https://devmappy.com"
+			},
+			{
+				"id": 2,
+				"uts": 1234567890,
+				"domain": "https://sdk-devmappy.ostsdkproxy.com"
+			}
+		]);
   }
 
   setDownstreamPublicKeyHex( signer ) {
@@ -152,7 +201,7 @@ class OstBaseSdk {
 
 
   //region - new code
-  
+
   //TODO: Ensure all features required by the sdk are supported by the browser.
   /**
    * Ensures all features required by the Sdk are supported by the browser.
@@ -187,7 +236,7 @@ class OstBaseSdk {
 
   waitForIframeLoad() {
     const oThis = this;
-    
+
     // Create a promise.
     let _resolve  = null;
     let _reject   = null;
@@ -273,10 +322,10 @@ class OstBaseSdk {
 
   /**
    * Method to initialize the sdk
-   * @param  {Object}  sdkConfig - See output of OstBaseSdk.getDefaultConfig() for all config options. 
+   * @param  {Object}  sdkConfig - See output of OstBaseSdk.getDefaultConfig() for all config options.
    * @return {Promise} Promise that resolves if init is successful.
    */
-  init( sdkConfig ) { 
+  init( sdkConfig ) {
     let oThis = this;
     if ( oThis.isSdkInitialized() ) {
       return Promise.reject( new OstError("obsdk_init_1", EC.SDK_ALREADY_INITIALIZED) );
@@ -289,7 +338,7 @@ class OstBaseSdk {
         .then( () => {
           return oThis.setSdkConfig( sdkConfig );
         })
-        
+
         // Create Browser Messenger Object
         .then( () => {
           return oThis.createBrowserMessengerObject();
@@ -299,9 +348,9 @@ class OstBaseSdk {
         .then( () => {
           return oThis.onBrowserMessengerCreated( this.browserMessenger );
         })
-        
+
         // Subscribe to on setup complete
-        .then( () => {          
+        .then( () => {
           return oThis.subscribeOnSetupComplete();
         })
 
@@ -331,7 +380,7 @@ class OstBaseSdk {
     }
     let finalConfig = OstBaseSdk.getDefaultConfig();
     Object.assign( finalConfig, sdkConfig);
-    
+
     // Validate Config
     if ( !this.isValidHttpsUrl(finalConfig.api_endpoint) ) {
       let error = new OstError("obsdk_setSdkConfig_1", EC.INVALID_INITIALIZATION_CONFIGURATION, {
@@ -450,7 +499,7 @@ class OstBaseSdk {
   destoryDownstreamIframe() {
     if ( downstreamIframe ) {
       try {
-        getDocument().body.removeChild( downstreamIframe );  
+        getDocument().body.removeChild( downstreamIframe );
       } catch( err ) {
         //ignore.
       }

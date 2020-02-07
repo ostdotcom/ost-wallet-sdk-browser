@@ -60,6 +60,7 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
           oThis.sendPublicKey();
         })
         .catch((err) => {
+					console.error("err", err);
           this.browserMessenger.removeUpstreamPublicKey();
 
           if (err instanceof OstError) {
