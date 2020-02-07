@@ -7,6 +7,7 @@ import OstCreateSession from "./OstWorkflows/OstCreateSession";
 import OstSdkProxy from './OstSdkProxy'
 import OstJsonApiProxy from "./OstJsonApiProxy";
 import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
+import EC from "../common-js/OstErrorCodes";
 
 class OstWalletSdkCore extends OstBaseSdk {
   constructor( window ) {
@@ -32,9 +33,40 @@ class OstWalletSdkCore extends OstBaseSdk {
   }
 
 
-  //TODO: Task for Rachin - Figure it out.
   waitForDownstreamInitialization() {
-    return Promise.resolve(true);
+    const oThis = this;
+
+    if ( oThis.isDownstreamInitialized() ) {
+      // Downstream is already initialized.
+      return Promise.resolve( true );
+    }
+
+    let isTimedout = false;
+    let _resolve, _reject;
+    oThis.onDownstreamInitialzedCallback = () => {
+      if ( isTimedout ) {
+        // We have already rejected the promise.
+        // Do nothing.
+        return;
+      }
+      oThis.markDownstreamInitialized();
+      _resolve( true );
+    };
+
+    setTimeout(() => {
+      if ( oThis.isDownstreamInitialized() ) {
+        // Do nothing. all good.
+        return;
+      }
+      isTimedout = true;
+      let error = new OstError("owsdkc_wfdsi_1", EC.SDK_INITIALIZATION_TIMEDOUT);
+      _reject( error );
+    }, 5000);
+
+    return new Promise((resolve, reject) => {
+      _resolve = resolve;
+      _reject = reject;
+    });
   }
 
   //region - Workflows.

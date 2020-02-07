@@ -79,12 +79,16 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
 
       let ostMessage = new OstMessage();
       ostMessage.setFunctionName( "onSetupComplete" );
-      ostMessage.setReceiverName( "OstSdk" );
+      ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
       ostMessage.setArgs({
         publicKeyHex: this.browserMessenger.getPublicKeyHex()
       });
 
       this.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
+    }
+
+    getUpstreamReceiverName() {
+      return "OstSdk";
     }
   }
 

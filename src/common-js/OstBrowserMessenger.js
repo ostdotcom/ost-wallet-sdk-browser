@@ -210,16 +210,19 @@ class OstBrowserMessenger {
   }
 
   setDownstreamPublicKeyHex(hex) {
+    const oThis = this;
 
     if (!hex || typeof hex !== 'string') {
-      return;
+      let err = new Error("Invalid Downstream Public Key Hex");
+      let ostError = OstError.sdkError(err , "obm_sdspkh_1");
+      return Promise.reject( ostError );
     }
 
-    this.downstreamPublicKeyHex = hex;
+    oThis.defineImmutableProperty("downstreamPublicKeyHex", hex);
 
-    return this.importPublicKey(this.downstreamPublicKeyHex)
+    return oThis.importPublicKey(oThis.downstreamPublicKeyHex)
       .then((cryptoKey) => {
-        this.downstreamPublicKey = cryptoKey;
+        oThis.downstreamPublicKey = cryptoKey;
       })
       .catch((err) => {
         if (err instanceof OstError) {

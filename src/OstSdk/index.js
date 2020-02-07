@@ -63,17 +63,33 @@ const LOG_TAG = "OstSdk :: index :: ";
     }
 
     sendPublicKey() {
+      const oThis = this;
       console.log("sending OstSdk public key");
 
       let ostMessage = new OstMessage();
       ostMessage.setFunctionName( "onSetupComplete" );
-      ostMessage.setReceiverName( "OstWalletSdk" );
+      ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
       ostMessage.setArgs({
-        publicKeyHex: this.browserMessenger.getPublicKeyHex()
+        publicKeyHex: oThis.browserMessenger.getPublicKeyHex()
       });
 
-      this.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
+      return oThis.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM);
     }
+
+    onSetupComplete (args) {
+      const oThis = this;
+      return super.onSetupComplete(args)
+        // Inform Upstream
+        .then( () => {
+          return oThis.triggerDownstreamInitialzed();
+        })
+    }
+
+    getUpstreamReceiverName() {
+      return "OstWalletSdk";
+    }
+
+
 
   }
 

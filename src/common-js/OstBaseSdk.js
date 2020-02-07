@@ -3,9 +3,11 @@ import OstURLHelpers from "./OstHelpers/OstUrlHelper";
 import OstError from "./OstError";
 import EC from "./OstErrorCodes";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
+import OstMessage from './OstMessage';
 import '../common-css/sdk-stylesheet.css';
 
 let hasBeenInitialized = false;
+let hasDownstreamBeenInitialized = false;
 let downstreamIframe = null;
 
 const LOG_TAG = "OstBaseSdk";
@@ -27,8 +29,17 @@ class OstBaseSdk {
     return hasBeenInitialized;
   }
 
+  isDownstreamInitialized() {
+    return hasDownstreamBeenInitialized;
+  }
+
   markSdkInitialized() {
     hasBeenInitialized = true;
+  }
+
+
+  markDownstreamInitialized() {
+    hasDownstreamBeenInitialized = true;
   }
 
 
@@ -42,7 +53,7 @@ class OstBaseSdk {
 
   onSetupComplete (args) {
     console.log("OstBaseSdk :: onSetupComplete :: ", this.getReceiverName(), " :: ",  args);
-    this.browserMessenger.setDownstreamPublicKeyHex( args.publicKeyHex );
+    return this.browserMessenger.setDownstreamPublicKeyHex( args.publicKeyHex );
   };
 
   //TODO: To be Deprecated.
@@ -200,6 +211,7 @@ class OstBaseSdk {
   //endregion
 
 
+  /** -------------------------------------- NEW CODE ------------------------------- */
   //region - new code
 
   //TODO: Ensure all features required by the sdk are supported by the browser.
@@ -219,6 +231,10 @@ class OstBaseSdk {
     } else {
       iframeCssClassName = OstBaseSdk.getHiddenIframeCssClassName();
     }
+
+    oThis.onDownstreamInitialzedCallback = () => {
+      oThis.markDownstreamInitialized();
+    };
 
     return oThis.getDownstreamIframeUrl()
       .then( ( signedUrl ) => {
@@ -508,10 +524,36 @@ class OstBaseSdk {
     downstreamIframe = null;
   }
 
+
+
+  getUpstreamReceiverName() {
+    const error = new Error("getUpstreamReceiverName needs to be overridden by derived class.");
+    const ostError = OstError.sdkError(error, "obsdk_wfhsc_1");
+  }
+
   waitForDownstreamInitialization() {
     const error = new Error("waitForDownstreamInitialization needs to be overridden by derived class.");
     const ostError = OstError.sdkError(error, "obsdk_wfhsc_1");
     return Promise.reject( ostError );
+  }
+
+  triggerDownstreamInitialzed() {
+    const oThis = this;
+    
+    let ostMessage = new OstMessage();
+    ostMessage.setFunctionName( "onDownstreamInitialzed" );
+    ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
+    // ostMessage.setArgs({
+    //   publicKeyHex: this.browserMessenger.getPublicKeyHex()
+    // });
+    return oThis.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
+  }
+
+  onDownstreamInitialzed(...args) {
+    const oThis = this;
+    if ( oThis.onDownstreamInitialzedCallback ) {
+      oThis.onDownstreamInitialzedCallback(...args);
+    }
   }
 
   /**
