@@ -136,7 +136,7 @@ class OstSdkAssist {
       .then((user) => {
 
         user.createOrGetDevice(this.getKeyManagerProxy(userId))
-          .then( (deviceData)=> {
+          .then( (deviceData) => {
             console.log("device ====",deviceData);
 
             if (deviceData) {
@@ -425,7 +425,7 @@ class OstSdkAssist {
     let functionName = 'onError';
 
     OstUser.getById(userId)
-      .then((user)=> {
+      .then((user) => {
         var tokenId = user.getTokenId();
         console.log(" token id", tokenId);
         OstToken.getById(tokenId)
@@ -473,7 +473,7 @@ class OstSdkAssist {
     let functionName = 'onError';
 
     OstUser.getById(userId)
-      .then((user)=> {
+      .then((user) => {
         var tokenId = user.getTokenId();
         console.log(" token id", tokenId);
         OstToken.getById(tokenId)
