@@ -33,6 +33,10 @@ export {
     "executeTransaction",
     "executePayTransaction",
     "executeDirectTransferTransaction"];
+  const getterMethods = ["getUser",
+    "getToken",
+    "getDevice",
+    "getActiveSessions"];
   /**
    * jsonApiMethodsMap - is a map of sdkCore.jsonApiProxy methods names
    * key - names of methods exposed to the api consumer.
@@ -63,6 +67,20 @@ export {
         return fromObj[methodName](...args);
       }
       let internalErrorCode = ["ows_generator_", "workflowFunctionGenerator", methodName].join("_");
+      let errorInfo = {
+        "methodName": methodName,
+        "reason": "Sdk must be initialized before using this method."
+      }
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  };
+
+  const getterFunctionGenerator = (fromObj, methodName) => {
+    return (...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.proxy[methodName](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "getterFunctionGenerator", methodName].join("_");
       let errorInfo = {
         "methodName": methodName,
         "reason": "Sdk must be initialized before using this method."
@@ -124,7 +142,8 @@ export {
   // Add wrapper methods to OstWalletSdk
   addMethods(sdkCore, OstWalletSdk, simpleFunctionGenerator, simpleMethods);
   addMethods(sdkCore, OstWalletSdk, workflowFunctionGenerator, workflowMethods);
-
+  addMethods(sdkCore, OstWalletSdk, getterFunctionGenerator, getterMethods);
+  
   // Add wrapper methods to OstJsonApi
   addMethods(sdkCore, OstJsonApi, jsonApiFunctionGenerator, jsonApiMethods);
 
