@@ -51,7 +51,20 @@ class OstVerifier {
   }
 
   isDownstreamOrigin ( origin ) {
-    return this.downstreamOrigin === origin;
+    console.log("downstreamOrigin", this.downstreamOrigin);
+    console.log("origin", origin);
+    console.log("this.downstreamOrigin === signer", (this.downstreamOrigin === origin) );
+
+    let expectedOrigin = origin;
+    if ( expectedOrigin && !expectedOrigin.endsWith("/") ) {
+      expectedOrigin = expectedOrigin + "/";
+    }
+
+    let registeredOrigin = this.downstreamOrigin;
+    if ( registeredOrigin && !registeredOrigin.endsWith("/") ) {
+      registeredOrigin = registeredOrigin + "/";
+    }
+    return registeredOrigin === expectedOrigin;
   }
 
   isUpstreamSigner ( signer ) {

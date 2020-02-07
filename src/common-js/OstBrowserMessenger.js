@@ -22,9 +22,13 @@ const SOURCE = {
 
 class OstBrowserMessenger {
 
-  constructor( receiverName ) {
+  constructor( receiverName, upStreamOrigin ) {
 
-    this.receiverName = receiverName;
+    this.defineImmutableProperty("receiverName", receiverName);
+    if ( upStreamOrigin ) {
+      this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
+    }
+
 
     this.signer = null;
     this.downStreamOrigin = null;
@@ -37,9 +41,10 @@ class OstBrowserMessenger {
     this.downstreamPublicKeyHex = null;
     this.downstreamPublicKey = null;
 
+
     this.eventEmitter = new EventEmitter();
 
-    this.idMap = {};
+    this.defineImmutableProperty("idMap", {});
   }
 
   perform() {
@@ -166,7 +171,9 @@ class OstBrowserMessenger {
   }
 
   //Setter
-
+  
+  //TODO: To be Deprecated. 
+  //@Deprecated
   setUpStreamOrigin( upStreamOrigin ) {
     this.upStreamOrigin = upStreamOrigin;
   }
@@ -244,6 +251,7 @@ class OstBrowserMessenger {
 
   getUpStreamOrigin() {
     if (!this.upStreamOrigin || typeof this.upStreamOrigin !== 'string' ) {
+      console.log("this.upStreamOrigin", this.upStreamOrigin);
       throw new OstError('cj_obm_guso_1', 'INVALID_UPSTREAM_ORIGIN');
     }
 
@@ -378,6 +386,36 @@ class OstBrowserMessenger {
     }
 
     return this.idMap[name];
+  }
+
+  /**
+   * shallowCloneToImmutableObject - shallow clones the input object such that properties of returned objet are immutable.
+   * @param  {Object} input Object to be cloned.
+   * @return {Object}       Shallow cloned object.
+   */
+  shallowCloneToImmutableObject( input ) {
+    const output = {};
+    for( let k in input ) {
+      let v = input[k];
+      Object.defineProperty(output, k, {
+        "value": v,
+        "writable": false
+      })
+    }
+    return output;
+  }
+
+
+  /**
+   * defineImmutableProperty defines the property on 'this' scope, sets the value such that property is immutable.
+   * @param  {String} propName Name of the property to be defined.
+   * @param  {Any} val         Value of the property to be set.
+   */
+  defineImmutableProperty(propName, val) {
+    Object.defineProperty( this, propName, {
+      "value": val,
+      "writable": false
+    })
   }
 }
 

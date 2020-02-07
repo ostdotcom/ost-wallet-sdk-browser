@@ -37,6 +37,7 @@ const commonConfig = {
             }
         ]
     },
+    target: "web"
 };
 
 

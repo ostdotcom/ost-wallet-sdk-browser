@@ -1,0 +1,19 @@
+.ostsdk-iframe-style {
+  position: fixed;
+  top: -10000px;
+  left: -10000px;
+  width: 0px;
+  height: 0px;
+}
+
+.ostsdk-iframe-debug-style {
+
+}
+
+.ostsdk-sdk-iframe-debug-style {
+
+}
+
+.ostsdk-km-iframe-debug-style {
+
+}

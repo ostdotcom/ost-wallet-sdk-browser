@@ -48,6 +48,8 @@ const LOG_TAG = "OstSdk :: index :: ";
           this.sendPublicKey();
         })
         .catch((err) => {
+          console.log("err", err);
+
           this.browserMessenger.removeUpstreamPublicKey();
 
           if (err instanceof OstError) {
@@ -100,8 +102,7 @@ const LOG_TAG = "OstSdk :: index :: ";
     let stringToSign = OstURLHelpers.getStringToSign(url, params );
 
     ostSdkObj.signDataWithPrivateKey(stringToSign)
-      .then((signedMessage) => {
-        const signature = OstHelpers.byteArrayToHex(signedMessage);
+      .then((signature) => {
         let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
 
         ifrm.setAttribute('src', iframeURL);
