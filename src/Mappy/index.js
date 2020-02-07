@@ -15,7 +15,7 @@ $(function() {
   console.log("Calling OstWalletSdk.init", OstWalletSdk);
   OstWalletSdk.init({
     "api_endpoint": ostApiEndpoint,
-    "sdk_endpoint": sdkUrl    
+    "sdk_endpoint": sdkUrl
   }).then(() => {
     console.log("init resolved");
   }).catch(( error ) => {
@@ -78,24 +78,24 @@ function setupDevice(args) {
   currentUser = args[resultType];
 
 
-  let mappyCallback =  new OstMappyCallbacks();
-  mappyCallback.registerDevice = function( apiParams ) {
+  let sdkDelegate =  new OstSetupDeviceDelegate();
+  sdkDelegate.registerDevice = function( apiParams ) {
     console.log(LOG_TAG, "registerDevice");
 
     return registerDevice(apiParams);
   };
-  mappyCallback.flowInterupt = () => {
+  sdkDelegate.flowInterupt = () => {
     console.log("setupDevice workflow interupted!");
     document.getElementById("signupBtn").disabled = false;
   }
-  mappyCallback.flowComplete = () => {
+  sdkDelegate.flowComplete = () => {
     console.log("setupDevice workflow completed!");
     loadUsersList();
   }
   let workflowId = OstWalletSdk.setupDevice(
     currentUser.user_id,
     currentUser.token_id,
-    mappyCallback);
+    sdkDelegate);
 }
 
 function loadUsersList() {
@@ -122,13 +122,13 @@ function loadUsersList() {
 }
 
 function getQRCode() {
-  let mappyCallback =  new OstMappyCallbacks();
-  mappyCallback.showSessionQRCode = function (qrData) {
+  let sdkDelegate =  new OstWorkflowDelegate();
+  sdkDelegate.showSessionQRCode = function (qrData) {
     makeCode(qrData);
 
   };
 
-  mappyCallback.requestAcknowledged = function( ostWorkflowContext, ostContextEntity ) {
+  sdkDelegate.requestAcknowledged = function( ostWorkflowContext, ostContextEntity ) {
     makeCode(ostContextEntity.qr_data);
     console.log(LOG_TAG, "getQRCode");
     console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
@@ -139,22 +139,22 @@ function getQRCode() {
     currentUser.user_id,
     (parseInt(Date.now()/1000) + 60*60*24*30*5),
     '1',
-    mappyCallback);
+    sdkDelegate);
 }
 
 function sendTokens(tokenHolderAddress) {
 
-	let mappyCallback =  new OstMappyCallbacks();
-	mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
+	let sdkDelegate =  new OstWorkflowDelegate();
+	sdkDelegate.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
 		alert("Transaction Acknowledged");
 	};
 
-	mappyCallback.flowInterrupt = function (ostWorkflowContext , ostError ) {
+	sdkDelegate.flowInterrupt = function (ostWorkflowContext , ostError ) {
 	  console.log(LOG_TAG, ostError);
 		alert("Transaction Interruped");
 	};
 
-	mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
+	sdkDelegate.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
 
 		console.log(LOG_TAG, "getQRCode");
 		console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
@@ -166,7 +166,7 @@ function sendTokens(tokenHolderAddress) {
 			token_holder_addresses: [tokenHolderAddress],
 			amounts: ['100'],
 		},
-		mappyCallback);
+		sdkDelegate);
 }
 
 
