@@ -78,7 +78,7 @@ export class OstSetup {
       .then((currentUser) => {
 
         console.log("user_id =======> ",currentUser.user_id);
-        let workflowId = window.OstSdkWallet.setupDevice(
+        let workflowId = OstWalletSdk.setupDevice(
           currentUser.user_id,
           currentUser.token_id,
           //"http://stagingpepo.com",

@@ -128,7 +128,7 @@ $("#transactions-uid").on('click', function(event){
   //json Api Calls
   
   function getUserFromServer() {
-    window.OstSdkWallet.getUserFromServer(currentUser.user_id)
+    OstWalletSdk.getUserFromServer(currentUser.user_id)
     .then((user) => {
       console.log("MAppy :: index :: getUserFromServer :: then :: " ,  user);
       $('#json-renderer').jsonViewer(user, { collapsed: false, withQuotes: true, withLinks: false});
@@ -140,7 +140,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getTokenFromServer() {
-    window.OstSdkWallet.getTokenFromServer(currentUser.user_id)
+    OstWalletSdk.getTokenFromServer(currentUser.user_id)
     .then((token) => {
       console.log("MAppy :: index :: getTokenFromServer :: then :: " ,  token);
       $('#json-renderer').jsonViewer(token, { collapsed: false, withQuotes: true, withLinks: false});
@@ -151,7 +151,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getCurrentDeviceFromServer() {
-    window.OstSdkWallet.getCurrentDeviceFromServer(currentUser.user_id)
+    OstWalletSdk.getCurrentDeviceFromServer(currentUser.user_id)
     .then((device) => {
       console.log("MAppy :: index :: getCurrentDeviceFromServer :: then :: " ,  device);
       $('#json-renderer').jsonViewer(device, { collapsed: false, withQuotes: true, withLinks: false});
@@ -163,7 +163,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getBalanceFromServer() {
-    window.OstSdkWallet.getBalanceFromServer(currentUser.user_id)
+    OstWalletSdk.getBalanceFromServer(currentUser.user_id)
     .then((balance) => {
       
       console.log("MAppy :: index :: getBalanceFromServer :: then :: " ,  balance);
@@ -177,7 +177,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getPricePointFromServer() {
-    window.OstSdkWallet.getPricePointFromServer(currentUser.user_id)
+    OstWalletSdk.getPricePointFromServer(currentUser.user_id)
     .then((pricePoint) => {
       console.log("MAppy :: index :: getPricePointFromServer :: then :: " ,  pricePoint);
       $('#json-renderer-pp-id').jsonViewer(pricePoint, { collapsed: false, withQuotes: true, withLinks: false});
@@ -189,7 +189,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getBalanceWithPricePointFromServer() {
-    window.OstSdkWallet.getBalanceWithPricePointFromServer(currentUser.user_id)
+    OstWalletSdk.getBalanceWithPricePointFromServer(currentUser.user_id)
     .then((balancePricePointData) => {
       console.log("MAppy :: index :: getBalanceWithPricePointFromServer :: then :: " ,  balancePricePointData);
       console.error("it is here");
@@ -203,7 +203,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getPendingRecoveryFromServer() {
-    window.OstSdkWallet.getPendingRecoveryFromServer(currentUser.user_id)
+    OstWalletSdk.getPendingRecoveryFromServer(currentUser.user_id)
     .then((pendingRecovery) => {
       console.log("MAppy :: index :: getPendingRecoveryFromServer :: then :: " ,  pendingRecovery);
       $('#json-renderer-recovery').jsonViewer(pendingRecovery, { collapsed: false, withQuotes: true, withLinks: false});
@@ -215,7 +215,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getTransactionsFromServer() {
-    window.OstSdkWallet.getTransactionsFromServer(currentUser.user_id)
+    OstWalletSdk.getTransactionsFromServer(currentUser.user_id)
     .then((transactions) => {
       console.log("MAppy :: index :: getTransactionsFromServer :: then :: " ,  transactions);
       $('#json-renderer-transaction').jsonViewer(transactions, { collapsed: false, withQuotes: true, withLinks: false});
@@ -227,7 +227,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getTokenHolderFromServer() {
-    window.OstSdkWallet.getTokenHolderFromServer(currentUser.user_id)
+    OstWalletSdk.getTokenHolderFromServer(currentUser.user_id)
     .then((token_holder) => {
       console.log("MAppy :: index :: getTokenHolderFromServer :: then :: " ,  token_holder);
     })
@@ -237,7 +237,7 @@ $("#transactions-uid").on('click', function(event){
   }
   
   function getRulesFromServer() {
-    window.OstSdkWallet.getRulesFromServer(currentUser.user_id)
+    OstWalletSdk.getRulesFromServer(currentUser.user_id)
     .then((rules) => {
       console.log("MAppy :: index :: getRulesFromServer :: then :: " ,  rules);
     })
@@ -247,7 +247,7 @@ $("#transactions-uid").on('click', function(event){
   }
 
   function getDeviceListFromServer() {
-    window.OstSdkWallet.getDeviceListFromServer(currentUser.user_id)
+    OstWalletSdk.getDeviceListFromServer(currentUser.user_id)
     .then((rules) => {
       console.log("MAppy :: index :: getDeviceListFromServer :: then :: " ,  rules);
       $('#json-renderer-dev-list').jsonViewer(rules, { collapsed: false, withQuotes: true, withLinks: false});

@@ -142,7 +142,7 @@ function expand_all(){
 
 function getUser() {
 
-    window.OstSdkWallet.getUser(currentUser.user_id)
+    OstWalletSdk.getUser(currentUser.user_id)
     .then((user) => {
         console.log("MAppy :: index :: getUser :: then :: " , user);
         $('#json-renderer-get-user').jsonViewer(user, { collapsed: false, withQuotes: true, withLinks: false});
@@ -157,7 +157,7 @@ function getUser() {
   
   function getToken() {
   
-    window.OstSdkWallet.getToken(currentUser.user_id)
+    OstWalletSdk.getToken(currentUser.user_id)
     .then((token) => {
         console.log("MAppy :: index :: getToken :: then :: " ,  token);
         $('#json-renderer-get-token').jsonViewer(token, { collapsed: false, withQuotes: true, withLinks: false});
@@ -172,7 +172,7 @@ function getUser() {
   
   function getDevice() {
   
-    window.OstSdkWallet.getDevice(currentUser.user_id)
+    OstWalletSdk.getDevice(currentUser.user_id)
     .then((device) => {
         console.log("MAppy :: index :: getDevice :: then :: " ,  device);
         $('#json-renderer-get-device').jsonViewer(device, {collapsed: false, withQuotes: true, withLinks: false});
@@ -188,7 +188,7 @@ function getUser() {
   var spendingLimit = '10000000000000';
 
   function getActiveSessions() {
-    window.OstSdkWallet.getActiveSessions(currentUser.user_id, spendingLimit)
+    OstWalletSdk.getActiveSessions(currentUser.user_id, spendingLimit)
     .then((session) => {
         console.log("MAppy :: index :: getActiveSessions :: then :: " ,  session);
         $('#json-renderer-get-active-sessions').jsonViewer(session, {collapsed: false, withQuotes: true, withLinks: false});
