@@ -70,7 +70,7 @@ export class OstSetup {
   }
 
   setupDevice(){
-
+    return new Promise((resolve, reject) => {
     let mappyCallback =  new OstMappyCallbacks();
     mappyCallback.registerDevice = function( apiParams ) {
     console.log(LOG_TAG, "registerDevice")
@@ -80,14 +80,23 @@ export class OstSetup {
       .then((currentUser) => {
 
         console.log("user_id =======> ",currentUser.user_id);
-        let workflowId = OstSdkWallet.setupDevice(
+        let workflowId = window.OstSdkWallet.setupDevice(
           currentUser.user_id,
           currentUser.token_id,
           //"http://stagingpepo.com",
           mappyCallback);
+          resolve(currentUser);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        reject(err);
+
+      });
+    })
   }
+
+  
+
 }
 
 export default OstSetup;

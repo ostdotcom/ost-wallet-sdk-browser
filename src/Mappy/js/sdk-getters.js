@@ -2,6 +2,9 @@ import OstSetup from "./common";
 import '../css/active_page.css';
 import "../../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "../../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer";
+import hljs from "../../../node_modules/highlight.js";
+hljs.registerLanguage('javascript', require('../../../node_modules/highlight.js/lib/languages/javascript'));
+//const hljs = require("highlight.js");
 
 
 
@@ -15,7 +18,7 @@ var device_Json = null;
 var token_Json = null;
 var active_session_json = null;
 $(function() {
-
+  loadGetters("getUser","left","handlebar-main");
   var ostSetup = new OstSetup();
   ostSetup.setupDevice();
   ostSetup.getCurrentUser()
@@ -38,18 +41,19 @@ function loadGetters(functionName,upperTag,lowerTag){
 
   var source = $("#replace-demo").html();
   var template = Handlebars.compile(source);
-  var context = { current_user_id:currentUser.user_id,function_name:functionName};
+  var context = { current_user_id:"123",function_name:functionName};
   var html = template(context);
 
   var source1 = document.getElementById(lowerTag).innerHTML;
   var template1 = Handlebars.compile(source1);
   var context1 = { replace:html};
   var html1 = template1(context1);
+  const highlightedCode = hljs.highlight('javascript',html).value
   
-    document.getElementById(upperTag).innerHTML = html1;
+    document.getElementById(upperTag).innerHTML = highlightedCode;
     switch(functionName) {
       case "getUser":
-          getUser();
+          //getUser();
         break;
       case "getDevice":
           getDevice();

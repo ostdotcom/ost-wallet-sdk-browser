@@ -16,6 +16,9 @@ class UsersSetup {
   }
 
   loadUserPage() {
+    $(".logOutBtn").click( function(e) {
+    logout();
+  });
     var baseUrl = ostSetup.getBaseUrl();
     $.ajax({
         type: 'GET',
@@ -54,9 +57,7 @@ class UsersSetup {
     // logOutBtn.classList.add("btn");
     // logOutBtn.classList.add("btn-default"); 
     // logOutBtn.classList.add("btn-sm");
-    document.getElementById("logOutBtn").addEventListener("click", function(e) {
-          userSetup.logout();
-    });
+    
 
     document.getElementById("usersData").classList.add("table-responsive");  
     var table = document.getElementById("usersTable");
@@ -162,7 +163,10 @@ getOnSendClickFn ( rowUserData ) {
 
 }
   logout(){
-    var baseUrl = ostSetup.getBaseUrl();
+    
+    var baseUrl = OstSetup.getBaseUrl();
+    
+    console.error(baseUrl);
     $.post(baseUrl+"/users/logout",
     {
 

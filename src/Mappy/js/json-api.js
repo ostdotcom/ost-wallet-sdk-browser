@@ -2,34 +2,52 @@ import OstSetup from "./common";
 import '../css/active_page.css';
 import "../../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "../../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer";
+import { stringify } from "qs";
+import hljs from "../../../node_modules/highlight.js";
+//const hljs = require('../../ ./highlight.js');
 
-//var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
 var currentUser = null;
 
 
 $(function() {
 
+  $(".logOutBtn").click( function(e) {
+   
+    logout(); 
+});
+
   var ostSetup = new OstSetup();
-  ostSetup.setupDevice();
-  ostSetup.getCurrentUser()
+  ostSetup.setupDevice()
+    .then((current_user) => {
+      currentUser = current_user;
+      load_apis("getCurrentDeviceFromServer","left1","handlebar-main1");
+      load_apis("getBalanceWithPricePointFromServer","left2","handlebar-main2");
+       load_apis("getBalanceFromServer","left3","handlebar-main3");
+       load_apis("getPricePointFromServer","left4","handlebar-main4");
+       load_apis("getPendingRecoveryFromServer","left5","handlebar-main5");
+       load_apis("getDeviceListFromServer","left6","handlebar-main6");
+       load_apis("getTransactionsFromServer","left7","handlebar-main7");
+  /*ostSetup.getCurrentUser()
     .then((current_user) => {
       console.log(current_user);
       currentUser = current_user;
       load_apis("getCurrentDeviceFromServer","left1","handlebar-main1");
       load_apis("getBalanceWithPricePointFromServer","left2","handlebar-main2");
-      load_apis("getBalanceFromServer","left3","handlebar-main3");
-      load_apis("getPricePointFromServer","left4","handlebar-main4");
-      load_apis("getPendingRecoveryFromServer","left5","handlebar-main5");
-      load_apis("getDeviceListFromServer","left6","handlebar-main6");
-      load_apis("getTransactionsFromServer","left7","handlebar-main7");
+       load_apis("getBalanceFromServer","left3","handlebar-main3");
+       load_apis("getPricePointFromServer","left4","handlebar-main4");
+       load_apis("getPendingRecoveryFromServer","left5","handlebar-main5");
+       load_apis("getDeviceListFromServer","left6","handlebar-main6");
+       load_apis("getTransactionsFromServer","left7","handlebar-main7");
 
     })
-    .catch(err=> alert(err));
-
-    document.getElementById("logOutBtn").addEventListener("click", function(e) {
-      logout();
- });
+    .catch(err=> alert(err));*/
+  });
+  
+    
 });
+
+
 function load_apis(functionName,upperTag,lowerTag){
 
   var source = $("#replace-demo").html();
@@ -45,10 +63,13 @@ function load_apis(functionName,upperTag,lowerTag){
     document.getElementById(upperTag).innerHTML = html1;
     switch(functionName) {
       case "getCurrentDeviceFromServer":
+        
         getCurrentDeviceFromServer();
         break;
       case "getBalanceWithPricePointFromServer":
+        
         getBalanceWithPricePointFromServer();
+        
         break;
       case "getBalanceFromServer":
         getBalanceFromServer();
@@ -70,21 +91,7 @@ function load_apis(functionName,upperTag,lowerTag){
     }
   
 }
-function logout(){
-  $.post(baseUrl+"/users/logout",
-  {
 
-
-  },
-  function (data, status) {
-
-  if(data.success==true){
-    window.location="/login"; 
-  }
-
-
-  });
-}
 
 $("#get-cur-device").on('click', function(event){
   //getTokenFromServer()
@@ -158,10 +165,12 @@ $("#transactions-uid").on('click', function(event){
   function getBalanceFromServer() {
     window.OstSdkWallet.getBalanceFromServer(currentUser.user_id)
     .then((balance) => {
+      
       console.log("MAppy :: index :: getBalanceFromServer :: then :: " ,  balance);
       $('#json-renderer-bal-id').jsonViewer(balance, { collapsed: false, withQuotes: true, withLinks: false});
     })
     .catch((err) => {
+      
       console.log("MAppy :: index :: getBalanceFromServer :: catch ::" , err);
       $('#json-renderer-bal-id').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
     });
@@ -183,9 +192,11 @@ $("#transactions-uid").on('click', function(event){
     window.OstSdkWallet.getBalanceWithPricePointFromServer(currentUser.user_id)
     .then((balancePricePointData) => {
       console.log("MAppy :: index :: getBalanceWithPricePointFromServer :: then :: " ,  balancePricePointData);
+      console.error("it is here");
       $('#json-renderer-bal-pp').jsonViewer(balancePricePointData, { collapsed: false, withQuotes: true, withLinks: false});
     })
     .catch((err) => {
+      console.error("it is here");
       console.log("MAppy :: index :: getBalanceWithPricePointFromServer :: catch ::" , err);
       $('#json-renderer-bal-pp').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
     });
@@ -198,7 +209,7 @@ $("#transactions-uid").on('click', function(event){
       $('#json-renderer-recovery').jsonViewer(pendingRecovery, { collapsed: false, withQuotes: true, withLinks: false});
     })
     .catch((err) => {
-      console.log("MAppy :: index :: getPendingRecoveryFromServer :: catch ::" , err);
+      console.error("MAppy :: index :: getPendingRecoveryFromServer :: catch ::" , err);
       $('#json-renderer-recovery').jsonViewer(err, { collapsed: false, withQuotes: true, withLinks: false});
     });
   }
@@ -239,10 +250,28 @@ $("#transactions-uid").on('click', function(event){
     window.OstSdkWallet.getDeviceListFromServer(currentUser.user_id)
     .then((rules) => {
       console.log("MAppy :: index :: getDeviceListFromServer :: then :: " ,  rules);
+      $('#json-renderer-dev-list').jsonViewer(rules, { collapsed: false, withQuotes: true, withLinks: false});
     })
     .catch((err) => {
       console.log("MAppy :: index :: getDeviceListFromServer :: catch ::" , err);
     });
   }
 
-  
+
+  function logout(){
+    
+    //var baseUrl = OstSetup.getBaseUrl();
+    
+    //console.error(baseUrl);
+    $.post("https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/users/logout",
+    {
+
+    },
+    function (data, status) {
+      
+      if(data.success==true){
+        window.location="login"; 
+      }
+    });
+    
+  }
