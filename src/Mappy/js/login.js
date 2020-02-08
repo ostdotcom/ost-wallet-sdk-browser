@@ -8,7 +8,7 @@ export class LoginSetup {
     ostSetup = new OstSetup();
     this.getLoginStatus(function () {
       //if logged in Navigate to /users page.
-      window.location = "/users";
+      window.location = "/sdk-getters";
   });
   }
 
