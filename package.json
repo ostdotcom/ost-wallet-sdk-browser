@@ -36,12 +36,7 @@
     "ethereumjs-wallet": "0.6.3",
     "eventemitter3": "4.0.0",
     "form-data": "3.0.0",
-    "handlebars": "^4.7.2",
-    "highlight.js": "^9.18.1",
-    "jquery.json-viewer": "^1.4.0",
     "lodash": "4.17.4",
-    "moment-timezone": "0.5.13",
-    "object-keys": "^1.1.1",
     "qs": "6.9.1",
     "sha3": "2.1.1",
     "uuidv4": "6.0.0"
@@ -68,6 +63,9 @@
     "webpack": "4.41.5",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.10.1",
-    "webpack-merge": "4.2.2"
+    "webpack-merge": "4.2.2",
+    "handlebars": "^4.7.2",
+    "highlight.js": "^9.18.1",
+    "jquery.json-viewer": "^1.4.0"
   }
 }
