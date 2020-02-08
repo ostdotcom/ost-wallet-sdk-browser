@@ -95,32 +95,32 @@ class OstSdkAssist {
   }
 
   getToken ( args ) {
+    const oThis = this;
     console.log(LOG_TAG, "getToken :: ", args);
-    const userId = args.user_id;
+
+
+    const tokenId = args.token_id;
     const subscriberId =  args.subscriber_id;
     let functionParams = {};
-    let functionName = 'onError';
-    OstUser.getById(userId)
-      .then((user) => {
-        console.log("token id ", user.getTokenId());
+    let functionName;
+    OstToken.getById( tokenId )
+      .then( (tokenData) => {
+        if (tokenData) {
+          console.log("token data ", tokenData);
+          functionParams = {token: tokenData};
+          functionName = 'onSuccess';
+        } else {
+          let err = new OstError('os_osa_i_gt_1', OstErrorCodes.INVALID_TOKEN_ID);
+          functionParams = err.getJSONObject()
+          functionName = 'onError';
+        }
 
-        OstToken.getById(user.getTokenId())
-          .then( (tokenData => {
-            if (tokenData) {
-              console.log("token data ", tokenData);
-              functionParams = {token: tokenData};
-              functionName = 'onSuccess';
-            }
-            else {
-              let err = new OstError('os_osa_i_gt_1', OstErrorCodes.INVALID_TOKEN_ID);
-              functionParams = err.getJSONObject()
-            }
-            this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-          })).catch((err) => {
-            throw OstError.sdkError(err, 'os_osa_i_gt_2', OstErrorCodes.INVALID_TOKEN_ID);
-          });
-      }).catch((err) => {
-        throw OstError.sdkError(err, 'os_osa_i_gt_3', OstErrorCodes.INVALID_USER_ID);
+        oThis.sendToOstWalletSdk(functionName, subscriberId, functionParams);
+      })
+      .catch((err) => {
+        let ostError = OstError.sdkError(err, 'os_osa_i_gt_2', OstErrorCodes.INVALID_TOKEN_ID);
+        functionParams = ostError.getJSONObject();
+        oThis.sendToOstWalletSdk('onError', subscriberId, functionParams);
       });
   }
 

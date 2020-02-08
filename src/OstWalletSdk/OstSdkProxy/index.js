@@ -21,10 +21,10 @@ class OstSdkProxy {
             });
     }
 
-    getToken(userId) {
+    getToken( token_id) {
         let oThis = this;
             let functionParams = {
-                user_id: userId,
+                token_id: token_id,
             };
     
             return oThis.getFromOstSdk('getToken', functionParams)
