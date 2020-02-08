@@ -15,6 +15,7 @@ class PageInitializer {
     this.validatePage();
     $(() => {
       ajaxUtils.setupAjax();
+      oThis.bindEvents();
       oThis.perform();
     })
   }
@@ -75,6 +76,12 @@ class PageInitializer {
 
   }
 
+  bindEvents() {
+    const oThis = this;
+    $("#j-logout-btn").click(() => {
+      oThis.logout();
+    })
+  }
   onPageInitialized( callback ) {
     this.onPageInitializedCallback = callback;
   }
@@ -90,11 +97,18 @@ class PageInitializer {
   getCurrentUserFromServer(successCb, failuerCb) {
     const oThis = this;
     const apiUrl = this.getBaseUrl() + '/users/current-user';
-    return ajaxUtils.get( apiUrl ).then( ( data ) =>{
-      const resultType = data.result_type;
-      oThis.currentUserInfo = data[ resultType ];
-      return oThis.currentUserInfo;
-    });
+    return ajaxUtils.get( apiUrl )
+      .then( ( data ) =>{
+        const resultType = data.result_type;
+        oThis.currentUserInfo = data[ resultType ];
+        return oThis.currentUserInfo;
+      })
+      .catch( (error) => {
+        // Trigger logout.
+        // TODO: Detect if error is 401 before triggering logout.
+        oThis.logout();
+        throw error;
+      })
   }
 
   initOstWalletSdk() {
@@ -143,6 +157,33 @@ class PageInitializer {
       // Invoke the workflow.
       OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
     });
+  }
+
+  logout() {
+    const oThis = this;
+    //BUG: This logout url is incorrect.
+    const apiUrl = this.getBaseUrl() + '/users/logout';
+    return ajaxUtils.get( apiUrl )
+      .catch(() => {
+        // ignore error.
+        return true;
+      })
+      .then( () => {
+        // Very old code for clearing cookies.
+        // Most likely not going to work.
+        var cookies = document.cookie.split(";");
+        for(var i=0; i < cookies.length; i++) {
+            var equals = cookies[i].indexOf("=");
+            var name = equals > -1 ? cookies[i].substr(0, equals) : cookies[i];
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+
+        console.log("document.cookie", document.cookie);
+        // Go to login page.
+        setTimeout(() => {
+          window.location = "/";  
+        }, 100);
+      })
   }
 
 }

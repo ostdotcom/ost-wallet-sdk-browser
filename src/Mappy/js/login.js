@@ -50,7 +50,7 @@ export class LoginSetup {
             }
             if(data.success==true) {
               ostSetup.setupDevice();
-              window.location = "/users";
+              window.location = "/sdk-getters";
             } else {
                 $("#signupBtn").removeAttr("disabled");
                 // TODO: Display error on page.
