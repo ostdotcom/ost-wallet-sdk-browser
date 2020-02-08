@@ -17,8 +17,8 @@ const commonConfig = {
     entry: {
         'users': './src/Mappy/js/users.js',
         'login': './src/Mappy/js/login.js',
-        'json-api':'./src/Mappy/js/json-api.js',
-        'sdk-getters':'./src/Mappy/js/sdk-getters.js',
+        'json-api':'./src/Mappy/js/json-api-new.js',
+        'sdk-getters':'./src/Mappy/js/sdk-getter-new.js',
         'workflow':'./src/Mappy/js/workflow.js'
     },
     output: {
@@ -92,7 +92,7 @@ const devConfig = {
         }),
         new HtmlWebpackPlugin({
             title: "JsonApi.com",
-            template: "./src/Mappy/html/json-api.html",
+            template: "./src/Mappy/html/json-api-new.html",
             inject: false,
             jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
             OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
@@ -101,7 +101,7 @@ const devConfig = {
         }),
         new HtmlWebpackPlugin({
             title: "Getters.com",
-            template: "./src/Mappy/html/sdk-getters.html",
+            template: "./src/Mappy/html/sdk-getters-new.html",
             inject: false,
             jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
             OstWalletSdkUrl: process.env.DEMO_MAPPY_UI_OST_SDK_JS_URL,
