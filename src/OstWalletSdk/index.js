@@ -22,7 +22,6 @@ export {
  * Self executing method to generate wrapper methods.
  */
 (function( _win ) {
-  console.log("----- window", window);
 
   const sdkCore = new OstWalletSdkCore( window );
 
@@ -122,7 +121,6 @@ export {
     }
 
     let len = methodsToAdd.length;
-    console.log("len", len);
     while( len-- ) {
       let methodName = methodsToAdd[ len ];
       let generatedFunction = functionGenerator(fromObj, methodName);
@@ -134,7 +132,7 @@ export {
         });
       } else {
         let fnRef = fromObj[ methodName ];
-        console.log("generatedFunction is undefined for methodName", methodName, "typeof fnRef", typeof fnRef);
+        console.warn("generatedFunction is undefined for methodName", methodName, "typeof fnRef", typeof fnRef);
       }
     }
   };
@@ -148,6 +146,3 @@ export {
   addMethods(sdkCore, OstJsonApi, jsonApiFunctionGenerator, jsonApiMethods);
 
 })(window);
-
-console.log("OstWalletSdk", OstWalletSdk);
-console.log("OstJsonApi", OstJsonApi);
