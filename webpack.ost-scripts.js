@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
     entry: {
-        "OstWalletSdk": "./src/browser.js",
+        "OstWalletSdk": "./src/index.js",
         "ost-sdk-iframe-script": "./src/OstSdk/index.js",
         "ost-sdk-key-manager-script": "./src/OstSdkKeyManager/index.js"
     },

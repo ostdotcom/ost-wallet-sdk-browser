@@ -271,7 +271,7 @@ If you don't have npm installed on your machine then go to https://www.npmjs.com
 ## Set Environment variables and Fire Up the servers
 - To run servers on browser, run command-
 ```
-source ./file_name.sh
+source ./set_env_vars.sh
 npm run dev-servers
 ```
 Replace file_name with your environment variables file name.
