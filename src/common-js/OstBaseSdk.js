@@ -13,7 +13,8 @@ let downstreamIframe = null;
 const LOG_TAG = "OstBaseSdk";
 
 class OstBaseSdk {
-  constructor(origin, pathname, ancestorOrigins, searchParams){
+  constructor(window, origin, pathname, ancestorOrigins, searchParams){
+    this.defineImmutableProperty("_window", window);
     this.defineImmutableProperty("origin", origin);
     this.defineImmutableProperty("pathname", pathname);
     this.defineImmutableProperty("ancestorOrigins", ancestorOrigins);

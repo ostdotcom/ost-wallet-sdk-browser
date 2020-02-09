@@ -16,8 +16,8 @@ const LOG_TAG = "OstSdk :: index :: ";
   ;
 
   class OstSdk extends OstBaseSdk {
-    constructor(origin, pathname, ancestorOrigins, searchParams){
-      super(origin, pathname, ancestorOrigins, searchParams);
+    constructor(window, origin, pathname, ancestorOrigins, searchParams){
+      super(window, origin, pathname, ancestorOrigins, searchParams);
 
       this.ostSdkAssist = null
     }
@@ -93,7 +93,7 @@ const LOG_TAG = "OstSdk :: index :: ";
 
   }
 
-  const ostSdkObj = new OstSdk(origin, pathname, ancestorOrigins, searchParams);
+  const ostSdkObj = new OstSdk(window, origin, pathname, ancestorOrigins, searchParams);
   ostSdkObj.perform()
     .then(() => {
       createSdkKeyManagerIframe();

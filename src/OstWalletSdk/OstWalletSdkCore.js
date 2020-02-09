@@ -11,8 +11,7 @@ import EC from "../common-js/OstErrorCodes";
 
 class OstWalletSdkCore extends OstBaseSdk {
   constructor( window ) {
-    super();
-    this._window = window;
+    super(window);
   }
 
   getDownstreamEndpoint() {
