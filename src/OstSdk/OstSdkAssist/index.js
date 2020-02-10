@@ -420,10 +420,10 @@ class OstSdkAssist {
   * @public
   */
   getPricePointFromServer( args ) {
-    const userId = args.user_id;
-    const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionName = 'onError';
+    const oThis = this
+			, userId = args.user_id
+			, subscriberId = args.subscriber_id
+		;
 
     OstUser.getById(userId)
       .then((user) => {
@@ -439,19 +439,19 @@ class OstSdkAssist {
               apiClient.getPricePoints(chainId)
                 .then((pricePoint) => {
                     if (pricePoint) {
-                      functionParams = pricePoint;
-                      functionName = 'onSuccess';
                       console.log("pricepoints api ====", pricePoint);
-                      this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
+                      return oThis.onSuccess(pricePoint, subscriberId);
                     }
                     else {
-                      let error = OstError.sdkError(null, 'os_osa_i_gppfs_1');
-                      console.log(error);
+                      let ostError = OstError.sdkError(null, 'os_osa_i_gppfs_1');
+                      console.log(ostError);
+                      return oThis.onError(ostError, subscriberId);
                     }
                 })
                 .catch((err) => {
                   let error = OstError.sdkError(err, 'os_osa_i_gppfs_2');
                   console.log(error);
+                  return oThis.onError(ostError, subscriberId);
                 });
             }).catch((err) => {
               throw OstError.sdkError(err, 'os_osa_i_gppfs_3', OstErrorCodes.INVALID_TOKEN_ID);
@@ -488,10 +488,10 @@ class OstSdkAssist {
 				return OstToken.getById(tokenId)
 					.then((token) => {
 						const chainId = token.getAuxiliaryChainId();
-						if (true) {
-							console.error(LOG_TAG, 'chainId not found');
-							return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR).getJSONObject()});
-						}
+						// if (true) {
+						// 	console.error(LOG_TAG, 'chainId not found');
+						// 	return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR).getJSONObject()});
+						// }
 						console.log("auxiliary chain id", chainId);
 						let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
 						return apiClient.getPricePoints(chainId)
@@ -533,7 +533,7 @@ class OstSdkAssist {
 				}
 
 				if (!pricePointResponse || pricePointResponse.err) {
-					const ostError = OstError.sdkError(pricePointResponse.err, 'os_osa_i_gbppfs_1', OstErrorCodes.SDK_API_ERROR);
+					const ostError = OstError.sdkError(pricePointResponse.err, 'os_osa_i_gbppfs_2', OstErrorCodes.SDK_API_ERROR);
 					return oThis.onError(ostError, subscriberId);
 				}
 
@@ -553,23 +553,6 @@ class OstSdkAssist {
         console.error(LOG_TAG, "Unexpected state error", error);
       });
   }
-
-
-	onSuccess(args, subscriberId) {
-		const ostMsg = new OstMessage();
-		ostMsg.setSubscriberId(subscriberId);
-		ostMsg.setFunctionName('onSuccess');
-		ostMsg.setArgs(args);
-		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
-	}
-
-	onError(errMsgObj, subscriberId) {
-		const ostMsg = new OstMessage();
-		ostMsg.setSubscriberId(subscriberId);
-		ostMsg.setFunctionName('onError');
-		ostMsg.setArgs(errMsgObj.getJSONObject());
-		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
-	}
 
 
   /**
@@ -636,6 +619,23 @@ class OstSdkAssist {
         console.log(error);
       });
   }
+
+  onSuccess(args, subscriberId) {
+		const ostMsg = new OstMessage();
+		ostMsg.setSubscriberId(subscriberId);
+		ostMsg.setFunctionName('onSuccess');
+		ostMsg.setArgs(args);
+		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+	}
+
+	onError(errMsgObj, subscriberId) {
+		const ostMsg = new OstMessage();
+		ostMsg.setSubscriberId(subscriberId);
+		ostMsg.setFunctionName('onError');
+		ostMsg.setArgs(errMsgObj.getJSONObject());
+		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+	}
+
 
   sendToOstWalletSdk(functionName, subscriberId, functionParams) {
     let oThis = this;
