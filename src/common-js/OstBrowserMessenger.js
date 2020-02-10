@@ -20,6 +20,7 @@ const SOURCE = {
   DOWNSTREAM: "DOWNSTREAM"
 };
 
+let LOG_TAG = "OstMessenger";
 class OstBrowserMessenger {
 
   constructor( receiverName, upStreamOrigin ) {
@@ -45,6 +46,8 @@ class OstBrowserMessenger {
     this.eventEmitter = new EventEmitter();
 
     this.defineImmutableProperty("idMap", {});
+
+    LOG_TAG = LOG_TAG + "-" + receiverName;
   }
 
   perform() {
@@ -97,7 +100,7 @@ class OstBrowserMessenger {
       return;
     }
 
-    console.log("OstBrowserMessenger :: onMessageReceived :: message object formed => ", ostMessage);
+    console.log(LOG_TAG, "OstBrowserMessenger :: onMessageReceived :: message object formed: ", ostMessage);
 
     ostMessage.isVerifiedMessage( )
       .then ((isVerified) => {
@@ -109,7 +112,7 @@ class OstBrowserMessenger {
         }
       })
       .catch ((err) => {
-        console.error("catch of isVerifiedMessage : ", err);
+        console.error(LOG_TAG, "catch of isVerifiedMessage : ", err);
         oThis.onOtherMessageReceived(ostMessage, err);
       });
 
@@ -133,7 +136,7 @@ class OstBrowserMessenger {
   }
 
   onValidMessageReceived(ostMessage) {
-    console.log("OstBrowserMessenger :: onValidMessageReceived : ", ostMessage);
+    console.log(LOG_TAG, "OstBrowserMessenger :: onValidMessageReceived : ", ostMessage);
 
     let functionId = ostMessage.getSubscriberId();
 
@@ -144,20 +147,20 @@ class OstBrowserMessenger {
     let subscribedObject = this.getSubscribedObject( functionId );
 
     if ( subscribedObject ) {
-      console.log("OstBrowserMessenger :: onOtherMessageReceived :: got subscribed object");
+      console.log(LOG_TAG, "OstBrowserMessenger :: onOtherMessageReceived :: got subscribed object");
       const method = subscribedObject[ostMessage.getMethodName()];
 
       if (method && typeof method === 'function') {
         method.call(subscribedObject, ostMessage.getArgs());
       }
     }else  {
-      console.log("OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
+      console.log(LOG_TAG, "OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
       console.log(this.idMap);
     }
   }
 
   onOtherMessageReceived( ostMessage, err) {
-    console.log("ostMessage.getMethodName() :: ", ostMessage.getMethodName());
+    console.log(LOG_TAG, "ostMessage.getMethodName() :: ", ostMessage.getMethodName());
     if (['onSetupComplete'].includes(ostMessage.getMethodName())) {
       this.onValidMessageReceived(ostMessage);
     }
@@ -187,7 +190,7 @@ class OstBrowserMessenger {
 
   setDownStreamOrigin( downStreamOrigin ) {
     this.downStreamOrigin = downStreamOrigin;
-    console.log('setDownStreamOrigin', downStreamOrigin);
+    console.log(LOG_TAG, 'setDownStreamOrigin', downStreamOrigin);
   }
 
   setUpstreamPublicKeyHex(hex) {
@@ -254,7 +257,7 @@ class OstBrowserMessenger {
 
   getUpStreamOrigin() {
     if (!this.upStreamOrigin || typeof this.upStreamOrigin !== 'string' ) {
-      console.log("this.upStreamOrigin", this.upStreamOrigin);
+      console.log(LOG_TAG, "this.upStreamOrigin", this.upStreamOrigin);
       throw new OstError('cj_obm_guso_1', 'INVALID_UPSTREAM_ORIGIN');
     }
 
@@ -328,16 +331,16 @@ class OstBrowserMessenger {
 
     return this.getSignature(dataToSign)
       .then((signedMessage) => {
-        console.log("signature generated.");
+        console.log(LOG_TAG, "signature generated.");
         const signature = OstHelpers.byteArrayToHex( signedMessage );
 
         ostMessage.setSignature( signature );
 
-        console.log("OstBrowserMessenger :: sendMessage ::  => ", ostMessage.buildPayloadToSend());
+        console.log(LOG_TAG, "OstBrowserMessenger :: sendMessage ::  ", ostMessage.buildPayloadToSend());
 
         targetWindow.postMessage(ostMessage.buildPayloadToSend(), targetOrigin);
       }).catch((err) => {
-        console.log("signature generation failed.");
+        console.log(LOG_TAG, "signature generation failed.");
 
         throw OstError.sdkError(err,'cj_obm_sm_5');
       });
@@ -371,7 +374,7 @@ class OstBrowserMessenger {
 
     this.idMap[name] = obj;
 
-    console.log("subscribing for :: ", name, " on :: ", this.receiverName);
+    console.log(LOG_TAG, "subscribing for :: ", name, " on :: ", this.receiverName);
     return name;
   }
 
