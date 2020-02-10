@@ -246,28 +246,25 @@ class IKM {
 			});
 	}
 
-  deleteLocalSessions(addresses) {
-    const oThis = this;
+	deleteSessions(addresses) {
+		const oThis = this;
+		let promiseList = [];
 
-    let promiseList = [];
-    let _resolve;
-    addresses.forEach((address) => {
-      let apiKeyId = oThis.createEthKeyMetaId(address);
-      promiseList.push(address);
-	});
+		addresses.forEach((address) => {
+			let apiKeyId = oThis.createEthKeyMetaId(address);
+			let deletePromise = oThis.kmDB.deleteData(STORES.KEY_STORE_TABLE, apiKeyId);
+			promiseList.push(deletePromise);
+		});
 
-    Promise.all(promiseList)
-	  .then(() => {
-        _resolve()
-	  })
-	  .catch(() => {
-        _resolve()
-	  });
-
-	return new Promise((resolve) => {
-		_resolve = resolve;
-	})
-  }
+		return Promise.all(promiseList)
+			.then(() => {
+				return Promise.resolve();
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "Delete Session failed", err);
+				return Promise.resolve();
+			});
+	}
 
 	signWithSession(sessionAddress, hashToSign) {
 		const oThis = this;

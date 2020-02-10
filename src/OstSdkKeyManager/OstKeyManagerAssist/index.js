@@ -121,6 +121,27 @@ export default class OstKeyManagerAssist {
 			});
 	}
 
+	deleteLocalSessions(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const sessionAddresses = args.session_addresses;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				return ikm.deleteLocalSessions(sessionAddresses);
+			})
+			.then( () => {
+				return oThis.onSuccess(args, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err}, subscriberId);
+			});
+	}
+
 	setTrustable(args) {
 		const oThis = this;
 		const userId = args.user_id;
@@ -181,24 +202,6 @@ export default class OstKeyManagerAssist {
 				return oThis.onError({err: err, msg: "Sign Transaction got failed"}, subscriberId);
 			});
 	}
-
-  deleteLocalSessions(args) {
-    const oThis = this;
-    const userId = args.user_id;
-    const sessionAddresses = args.session_addresses;
-    const subscriberId = args.subscriber_id;
-    if (!userId) {
-      return oThis.onError({msg: "userId not found"}, subscriberId);
-    }
-
-    return oThis.onSuccess({isDeleted: true}, subscriberId);
-    //todo: sachin :: Delete all session private keys.
-
-    return IKM.getKeyManager(userId)
-	  .then((ikm) => {
-        return ikm.deleteLocalSessions(sessionAddresses);
-	  })
-  }
 
 	onError(errMsgObj, subscriberId) {
 		const ostMsg = new OstMessage();
