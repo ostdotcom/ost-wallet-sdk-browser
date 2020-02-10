@@ -1,5 +1,9 @@
 import CodeTesterBase from "./CodeTesterBase";
 
+
+/**
+ * Note for devs: user_id is mandatory param as it is needed to sign the api requests.
+ */
 class JsonApiPage extends CodeTesterBase {
 
   addTesterConfigs() {
@@ -11,37 +15,27 @@ class JsonApiPage extends CodeTesterBase {
     oThis.addTestConfig("getBalanceWithPricePoint", "OstJsonApi.getBalanceWithPricePoint('{{user_id}}')");
     oThis.addTestConfig("getCurrentDevice", "OstJsonApi.getCurrentDevice('{{user_id}}')");
     oThis.addTestConfig("getTransactions", "OstJsonApi.getTransactions('{{user_id}}')");
-    
-    // Token-Id Dependent Api Calls.
-    // NOTE FOR DEV: The fix is NOT sending user_id. 
-    // The fix is to fix the OstJsonApi method to accept token_id.
-    oThis.addTestConfig("getToken", "OstJsonApi.getToken('{{token_id}}')");
-    oThis.addTestConfig("getRules", "OstJsonApi.getRules('{{token_id}}')");
-    oThis.addTestConfig("getPricePoint", "OstJsonApi.getPricePoint('{{token_id}}')");
+    oThis.addTestConfig("getToken", "OstJsonApi.getToken('{{user_id}}')");
+    oThis.addTestConfig("getRules", "OstJsonApi.getRules('{{user_id}}')");
+    oThis.addTestConfig("getPricePoint", "OstJsonApi.getPricePoint('{{user_id}}')");
   }
 
   getToken() {
-    // NOTE FOR DEV: The fix is NOT sending user_id. 
-    // The fix is to fix the OstJsonApi method to accept token_id.
     const oThis = this;
-    const tokenId = oThis.currentUser.token_id;
-    return OstJsonApi.getToken( tokenId );
+    const ostUserId = oThis.currentUser.user_id;
+    return OstJsonApi.getToken( ostUserId );
   }
 
   getRules() {
-    // NOTE FOR DEV: The fix is NOT sending user_id. 
-    // The fix is to fix the OstJsonApi method to accept token_id.
     const oThis = this;
-    const tokenId = oThis.currentUser.token_id;
-    return OstJsonApi.getRules( tokenId );
+    const ostUserId = oThis.currentUser.user_id;
+    return OstJsonApi.getRules( ostUserId );
   }
 
   getPricePoint() {
-    // NOTE FOR DEV: The fix is NOT sending user_id. 
-    // The fix is to fix the OstJsonApi method to accept token_id.
     const oThis = this;
-    const tokenId = oThis.currentUser.token_id;
-    return OstJsonApi.getPricePoint( tokenId );
+    const ostUserId = oThis.currentUser.user_id;
+    return OstJsonApi.getPricePoint( ostUserId );
   }
 
   getUser() {

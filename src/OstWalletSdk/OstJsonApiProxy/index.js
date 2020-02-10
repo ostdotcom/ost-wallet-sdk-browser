@@ -32,11 +32,11 @@ class OstJsonApiProxy {
                 return response;
             });
 	}
-   //fix: replace userId with tokenId 
-	getPricePointFromServer( tokenId ) {
+
+	getPricePointFromServer( userId ) {
 		let oThis = this;
         let functionParams = {
-            token_id: tokenId,
+            user_id: userId,
         };
 
         return oThis.getFromOstSdk('getPricePointFromServer', functionParams)
@@ -79,8 +79,8 @@ class OstJsonApiProxy {
             .then((response) => {
                 return response;
             });
-	}
-    //fix: replace userId with tokenId 
+    }
+    
 	getTokenFromServer( userId ) {
 		let oThis = this;
         let functionParams = {
@@ -116,7 +116,7 @@ class OstJsonApiProxy {
                 return response;
             });
 	}
-    //fix: replace userId with tokenId 
+
 	getRulesFromServer( userId ) {
 		let oThis = this;
         let functionParams = {
