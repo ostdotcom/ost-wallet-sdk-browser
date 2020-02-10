@@ -373,10 +373,7 @@ class OstBrowserMessenger {
   }
 
   subscribe(obj, name) {
-    if ( !obj || !obj[name] ) {
-      console.trace();
-      console.error(LOG_TAG, "check trace");
-    }
+
     if (!name || typeof name !== 'string') {
       name = uuidv4();
     }
@@ -384,7 +381,6 @@ class OstBrowserMessenger {
     this.idMap[name] = obj;
 
     console.log(LOG_TAG, "subscribing for :: ", name, " on :: ", this.receiverName);
-    console.trace();
     return name;
   }
 
