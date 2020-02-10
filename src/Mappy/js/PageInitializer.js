@@ -163,7 +163,7 @@ class PageInitializer {
     const oThis = this;
     //BUG: This logout url is incorrect.
     const apiUrl = this.getBaseUrl() + '/users/logout';
-    return ajaxUtils.get( apiUrl )
+    return ajaxUtils.post( apiUrl )
       .catch(() => {
         // ignore error.
         return true;
