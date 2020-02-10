@@ -242,6 +242,29 @@ class IKM {
 			});
 	}
 
+  deleteLocalSessions(addresses) {
+    const oThis = this;
+
+    let promiseList = [];
+    let _resolve;
+    addresses.forEach((address) => {
+      let apiKeyId = oThis.createEthKeyMetaId(address);
+      promiseList.push(address);
+	});
+
+    Promise.all(promiseList)
+	  .then(() => {
+        _resolve()
+	  })
+	  .catch(() => {
+        _resolve()
+	  });
+
+	return new Promise((resolve) => {
+		_resolve = resolve;
+	})
+  }
+
 	signWithSession(sessionAddress, hashToSign) {
 		const oThis = this;
 		const bufferHash = Buffer.from(hashToSign, 'hex');

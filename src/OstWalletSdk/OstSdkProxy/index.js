@@ -58,6 +58,18 @@ class OstSdkProxy {
                 });
             }
 
+  deleteLocalSessions(userId) {
+      let oThis = this;
+      const functionParams = {
+        user_id: userId
+      };
+
+      return oThis.getFromOstSdk('deleteLocalSessions', functionParams)
+        .then((response) => {
+          return response;
+        });
+    }
+
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;

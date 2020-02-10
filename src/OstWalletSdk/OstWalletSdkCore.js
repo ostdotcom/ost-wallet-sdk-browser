@@ -109,6 +109,11 @@ class OstWalletSdkCore extends OstBaseSdk {
   }
   //endregion
 
+
+  //region - Actions
+  deleteLocalSessions( userId ) {
+    return this.proxy.deleteLocalSessions(userId)
+  }
 }
 
 export default OstWalletSdkCore;
