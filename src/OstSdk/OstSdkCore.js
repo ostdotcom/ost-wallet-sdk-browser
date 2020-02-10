@@ -18,37 +18,16 @@ class OstSdk extends OstBaseSdk {
   createOstSdkAssist () {
     let oThis = this;
     this.ostSdkAssist = new OstSdkAssist(this.browserMessenger, this.getReceiverName());
+    console.log(LOG_TAG, "ostSdkAssist created");
     this.ostSdkAssist.onSetupComplete = function (args) {
       console.log(LOG_TAG,"createOstSdkAssist :: onSetupComplete", args);
       oThis.onSetupComplete(args)
     }
   }
 
-  perform() {
-    return  super.perform()
-      .then(() => {
-        return this.setUpstreamPublicKey();
-      })
-      .then(() => {
-        return this.verifyIframeInitData();
-      })
-      .then((isVerified) => {
-        if (!isVerified) {
-          throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
-        }
-        this.createOstSdkAssist();
-        this.sendPublicKey();
-      })
-      .catch((err) => {
-        console.error("err", err);
-
-        this.browserMessenger.removeUpstreamPublicKey();
-
-        if (err instanceof OstError) {
-          throw err;
-        }
-        throw new OstError('os_i_p_1', 'SKD_INTERNAL_ERROR', err);
-      });
+  createAssist() {
+    const oThis = this;
+    return oThis.createOstSdkAssist();
   }
 
   getReceiverName() {
@@ -72,14 +51,24 @@ class OstSdk extends OstBaseSdk {
   onSetupComplete (args) {
     const oThis = this;
     return super.onSetupComplete(args)
-      // Inform Upstream
-      .then( () => {
-        return oThis.triggerDownstreamInitialzed();
+      // Inform self.
+      .then(() => {
+        oThis.onDownstreamInitialzed(args);
+        return true;
       })
   }
 
   getUpstreamReceiverName() {
     return "OstWalletSdk";
+  }
+
+  getDownstreamEndpoint() {
+    const oThis = this;
+    const selfOrigin = oThis.origin;
+    const kmOrigin = selfOrigin.replace("https://sdk-", "https://km-");
+    const kmEndpoint = kmOrigin + oThis.pathname;
+    console.log("kmEndpoint", kmEndpoint);
+    return kmEndpoint;
   }
 }
 

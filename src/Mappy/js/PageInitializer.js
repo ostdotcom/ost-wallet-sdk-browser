@@ -7,7 +7,7 @@ const sdkConfig = {
   "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
 };
-
+const LOG_TAG = "PageInitializer";
 class PageInitializer {
   constructor() {
     const oThis = this;

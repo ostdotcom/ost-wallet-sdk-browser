@@ -100,11 +100,11 @@ class OstBrowserMessenger {
       return;
     }
 
-    console.log(LOG_TAG, "OstBrowserMessenger :: onMessageReceived :: message object formed: ", ostMessage);
+    console.log(LOG_TAG, ":: onMessageReceived :: message object formed: ", ostMessage);
 
     ostMessage.isVerifiedMessage( )
       .then ((isVerified) => {
-        console.log("then of isVerifiedMessage  :: ", isVerified);
+        console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
         if (isVerified) {
           oThis.onValidMessageReceived(ostMessage);
         }else {
@@ -112,7 +112,7 @@ class OstBrowserMessenger {
         }
       })
       .catch ((err) => {
-        console.error(LOG_TAG, "catch of isVerifiedMessage : ", err);
+        console.error(LOG_TAG, "onMessageReceived :: catch of isVerifiedMessage : ", err);
         oThis.onOtherMessageReceived(ostMessage, err);
       });
 
@@ -136,7 +136,7 @@ class OstBrowserMessenger {
   }
 
   onValidMessageReceived(ostMessage) {
-    console.log(LOG_TAG, "OstBrowserMessenger :: onValidMessageReceived : ", ostMessage);
+    console.log(LOG_TAG, ":: onValidMessageReceived : ", ostMessage);
 
     let functionId = ostMessage.getSubscriberId();
 
@@ -144,14 +144,19 @@ class OstBrowserMessenger {
       functionId = ostMessage.getReceiverName()
     }
 
+    console.log(LOG_TAG, ":: onValidMessageReceived : functionId: ", functionId);
+
     let subscribedObject = this.getSubscribedObject( functionId );
 
     if ( subscribedObject ) {
-      console.log(LOG_TAG, "OstBrowserMessenger :: onOtherMessageReceived :: got subscribed object");
+      console.log(LOG_TAG, "onValidMessageReceived :: got subscribed object", subscribedObject);
       const method = subscribedObject[ostMessage.getMethodName()];
 
+      console.log(LOG_TAG, "onValidMessageReceived :: typeof method", typeof method, "method", method);
       if (method && typeof method === 'function') {
         method.call(subscribedObject, ostMessage.getArgs());
+      } else {
+        console.error(LOG_TAG, "onValidMessageReceived :: typeof method", typeof method, "method", method);
       }
     }else  {
       console.log(LOG_TAG, "OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
@@ -368,6 +373,10 @@ class OstBrowserMessenger {
   }
 
   subscribe(obj, name) {
+    if ( !obj || !obj[name] ) {
+      console.trace();
+      console.error(LOG_TAG, "check trace");
+    }
     if (!name || typeof name !== 'string') {
       name = uuidv4();
     }
@@ -375,6 +384,7 @@ class OstBrowserMessenger {
     this.idMap[name] = obj;
 
     console.log(LOG_TAG, "subscribing for :: ", name, " on :: ", this.receiverName);
+    console.trace();
     return name;
   }
 

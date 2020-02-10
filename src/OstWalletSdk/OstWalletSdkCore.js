@@ -22,50 +22,31 @@ class OstWalletSdkCore extends OstBaseSdk {
     return 'OstWalletSdk';
   }
 
-  onBrowserMessengerCreated( browserMessenger ) {
-    const oThis = this;
-    const proxy = new OstSdkProxy(this.browserMessenger);
-    const jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
-    oThis.defineImmutableProperty("proxy", proxy);
-    oThis.defineImmutableProperty("jsonApiProxy", jsonApiProxy);
-    return Promise.resolve();
+  getDownstreamInitializationTimeout() {
+    return 15000;
   }
 
+  hasUpstream() {
+    return false;
+  }
 
-  waitForDownstreamInitialization() {
+  onBrowserMessengerCreated( browserMessenger ) {
     const oThis = this;
 
-    if ( oThis.isDownstreamInitialized() ) {
-      // Downstream is already initialized.
-      return Promise.resolve( true );
-    }
+    return super.onBrowserMessengerCreated() 
+      .then( () => {
+        const proxy = new OstSdkProxy(this.browserMessenger);
+        const jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
+        oThis.defineImmutableProperty("proxy", proxy);
+        oThis.defineImmutableProperty("jsonApiProxy", jsonApiProxy);
+        return Promise.resolve();
+      });
+  }
 
-    let isTimedout = false;
-    let _resolve, _reject;
-    oThis.onDownstreamInitialzedCallback = () => {
-      if ( isTimedout ) {
-        // We have already rejected the promise.
-        // Do nothing.
-        return;
-      }
-      oThis.markDownstreamInitialized();
-      _resolve( true );
-    };
-
-    setTimeout(() => {
-      if ( oThis.isDownstreamInitialized() ) {
-        // Do nothing. all good.
-        return;
-      }
-      isTimedout = true;
-      let error = new OstError("owsdkc_wfdsi_1", EC.SDK_INITIALIZATION_TIMEDOUT);
-      _reject( error );
-    }, 5000);
-
-    return new Promise((resolve, reject) => {
-      _resolve = resolve;
-      _reject = reject;
-    });
+  createAssist() {
+    // I am my own assistor.
+    this.browserMessenger.subscribe(this, this.getReceiverName());
+    return Promise.resolve( true );
   }
 
   //region - Workflows.

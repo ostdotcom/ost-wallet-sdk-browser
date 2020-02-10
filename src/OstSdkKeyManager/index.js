@@ -36,6 +36,11 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
       }
     }
 
+  createAssist() {
+    const oThis = this;
+    return oThis.createOstSdkKeyManagerAssist();
+  }
+
     perform() {
       const oThis = this;
       return super.perform()

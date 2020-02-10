@@ -10,7 +10,7 @@ let hasBeenInitialized = false;
 let hasDownstreamBeenInitialized = false;
 let downstreamIframe = null;
 
-const LOG_TAG = "OstBaseSdk";
+let LOG_TAG = "OstBaseSdk";
 
 class OstBaseSdk {
   constructor(window){
@@ -33,6 +33,7 @@ class OstBaseSdk {
     this.browserMessenger = null;
     this.sdkConfig = null;
     this.setURLParams();
+    LOG_TAG = LOG_TAG + "-" + this.getReceiverName();
   }
 
   isSdkInitialized() {
@@ -52,12 +53,14 @@ class OstBaseSdk {
     hasDownstreamBeenInitialized = true;
   }
 
-
-
   setURLParams() {
     if (this.searchParams) {
       this.urlParams = OstURLHelpers.getParamsFromURL(this.searchParams);
     }
+  }
+
+  getUrlParams() {
+    return this.urlParams;
   }
 
 
@@ -73,7 +76,7 @@ class OstBaseSdk {
 
     return oThis.createBrowserMessengerObject()
       .then(() => {
-        oThis.subscribeOnSetupComplete();
+        // oThis.createAssist();
       })
   }
 
@@ -205,13 +208,6 @@ class OstBaseSdk {
 
   unRegister(type, callback) {
     this.browserMessenger.unRegister(type, callback);
-  }
-
-  //region - revist these methods
-
-  subscribeOnSetupComplete() {
-    this.browserMessenger.subscribe(this, this.getReceiverName());
-    return Promise.resolve( true );
   }
 
   getDocument() {
@@ -362,39 +358,59 @@ class OstBaseSdk {
 
         //Validate Sdk Config
         .then( () => {
+          console.log(LOG_TAG, ":: init :: calling setSdkConfig");
           return oThis.setSdkConfig( sdkConfig );
         })
 
         // Create Browser Messenger Object
         .then( () => {
+          console.log(LOG_TAG, ":: init :: calling createBrowserMessengerObject");
           return oThis.createBrowserMessengerObject();
         })
 
         // Allow sub-clases to do tasks on browserMessenger creation.
         .then( () => {
+          console.log(LOG_TAG, ":: init :: calling onBrowserMessengerCreated");
           return oThis.onBrowserMessengerCreated( this.browserMessenger );
         })
 
         // Subscribe to on setup complete
         .then( () => {
-          return oThis.subscribeOnSetupComplete();
+          console.log(LOG_TAG, ":: init :: calling createAssist");
+          return oThis.createAssist() || true;
         })
 
         // Create Downstream Iframe
         .then( () => {
+          console.log(LOG_TAG, ":: init :: calling createDownstreamIframe");
           return oThis.createDownstreamIframe();
         })
 
         // Wait for Downstream Iframe Initialization.
         .then( () => {
+          console.log(LOG_TAG, ":: init :: calling waitForDownstreamInitialization");
           return oThis.waitForDownstreamInitialization();
         })
 
         //Mark Sdk as init.
         .then( () => {
+          console.log(LOG_TAG, ":: init :: calling markSdkInitialized");
           oThis.markSdkInitialized();
           return true;
         })
+
+        // Inform Upstream
+        .then( () => {
+          if ( oThis.hasUpstream() ) {
+            console.log(LOG_TAG, ":: init :: calling sendInitialzedMessage");
+            return oThis.sendInitialzedMessage();
+          }
+          return true;
+        });
+  }
+
+  hasUpstream() {
+    return true;
   }
 
   /**
@@ -453,7 +469,46 @@ class OstBaseSdk {
    * @return {Promise} Dericed class must return a promise.
    */
   onBrowserMessengerCreated( browserMessenger ) {
-    return Promise.resolve();
+    const oThis = this;
+    if ( !oThis.hasUpstream() ) {
+      console.log(LOG_TAG, ":: onBrowserMessengerCreated :: hasUpstream returned false");
+      return Promise.resolve();
+    }
+
+    console.log(LOG_TAG, ":: onBrowserMessengerCreated :: calling setUpstreamPublicKey");
+
+    // Set up stream public key
+    return oThis.setUpstreamPublicKey()
+
+      // Verify Iframe Init Data - whatever that means.
+      .then(() => {
+        console.log(LOG_TAG, ":: onBrowserMessengerCreated :: calling verifyIframeInitData");
+        return oThis.verifyIframeInitData();
+      })
+
+      // Do post verification tasks.
+      .then((isVerified) => {
+        if (!isVerified) {
+          console.log(LOG_TAG, ":: onBrowserMessengerCreated :: isVerified is false");
+          throw new OstError('os_i_p_1', 'INVALID_VERIFIER');
+        }
+
+        console.log(LOG_TAG, ":: onBrowserMessengerCreated :: calling sendPublicKey");
+        oThis.sendPublicKey();
+      })
+
+      // Catch the error and throw the erro.
+      // Remove the public key.
+      .catch((err) => {
+        console.error(LOG_TAG, ":: onBrowserMessengerCreated :: err", err);
+        console.log(LOG_TAG, ":: onBrowserMessengerCreated :: calling removeUpstreamPublicKey");
+        oThis.browserMessenger.removeUpstreamPublicKey();
+
+        if (err instanceof OstError) {
+          throw err;
+        }
+        throw new OstError('os_i_p_1', 'SKD_INTERNAL_ERROR', err);
+      });
   }
 
   /**
@@ -542,13 +597,51 @@ class OstBaseSdk {
   }
 
   waitForDownstreamInitialization() {
-    const error = new Error("waitForDownstreamInitialization needs to be overridden by derived class.");
-    const ostError = OstError.sdkError(error, "obsdk_wfhsc_1");
-    return Promise.reject( ostError );
+    const oThis = this;
+
+    if ( oThis.isDownstreamInitialized() ) {
+      // Downstream is already initialized.
+      return Promise.resolve( true );
+    }
+
+    let isTimedout = false;
+    let _resolve, _reject;
+    oThis.onDownstreamInitialzedCallback = () => {
+      if ( isTimedout ) {
+        // We have already rejected the promise.
+        // Do nothing.
+        return;
+      }
+      oThis.markDownstreamInitialized();
+      _resolve( true );
+    };
+
+    setTimeout(() => {
+      if ( oThis.isDownstreamInitialized() ) {
+        // Do nothing. all good.
+        return;
+      }
+      isTimedout = true;
+      let error = new OstError("obsdk_wfdsi_1", EC.SDK_INITIALIZATION_TIMEDOUT);
+      _reject( error );
+    }, oThis.getDownstreamInitializationTimeout());
+
+    return new Promise((resolve, reject) => {
+      _resolve = resolve;
+      _reject = reject;
+    });
   }
 
-  triggerDownstreamInitialzed() {
+  getDownstreamInitializationTimeout() {
+    return 5000;
+  }
+
+  sendInitialzedMessage() {
     const oThis = this;
+
+    if ( !oThis.hasUpstream() ) {
+      return Promise.resolve( true );
+    }
     
     let ostMessage = new OstMessage();
     ostMessage.setFunctionName( "onDownstreamInitialzed" );
