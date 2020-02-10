@@ -246,7 +246,7 @@ class OstSdkAssist {
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getTransactions()
       .then((response) => {
-          
+
         if (!response) {
           let ostError = OstError.sdkError(null, 'os_osa_i_gtxfs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
           return oThis.onError(ostError, subscriberId);
@@ -270,7 +270,7 @@ class OstSdkAssist {
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getTokenHolder()
       .then((response) => {
-          
+
         if (!response) {
           let ostError = OstError.sdkError(null, 'os_osa_i_gthfs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
           return oThis.onError(ostError, subscriberId);
@@ -294,7 +294,7 @@ class OstSdkAssist {
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
     apiClient.getRules()
       .then((response) => {
-          
+
         if (!response) {
           let ostError = OstError.sdkError(null, 'os_osa_i_grfs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
           return oThis.onError(ostError, subscriberId);
@@ -317,7 +317,7 @@ class OstSdkAssist {
   */
 
   getCurrentDeviceFromServer( args ) {
-   
+
     const oThis = this
 			, userId = args.user_id
 			, subscriberId = args.subscriber_id
@@ -372,7 +372,7 @@ class OstSdkAssist {
 			, userId = args.user_id
 			, subscriberId = args.subscriber_id
     ;
-    
+
     const balance = oThis.getBalanceFromOstPlatform( args );
 
     return Promise.resolve(balance)
@@ -403,7 +403,7 @@ class OstSdkAssist {
 			, userId = args.user_id
 			, subscriberId = args.subscriber_id
     ;
-    
+
     const pricePoint = oThis.getPricePointFromOstPlatform( args );
 
     return Promise.resolve(pricePoint)
@@ -536,13 +536,11 @@ class OstSdkAssist {
 		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
 	}
 
-  /**
-  * Api to get user balance
-  * @param {String} userId - Ost User id
-  * @public
-  */
+	/**
+	 * Api to get user balance
+	 * @param args
+	 */
   getPendingRecoveryFromServer( args ) {
-    //const nextPagePayload = args.next_page_payload;
     const oThis = this
     , userId = args.user_id
     , subscriberId = args.subscriber_id

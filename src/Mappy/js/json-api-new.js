@@ -18,7 +18,7 @@ class JsonApiPage extends CodeTesterBase {
     oThis.addTestConfig("getToken", "OstJsonApi.getToken('{{user_id}}')");
     oThis.addTestConfig("getRules", "OstJsonApi.getRules('{{user_id}}')");
     oThis.addTestConfig("getPricePoint", "OstJsonApi.getPricePoint('{{user_id}}')");
-    oThis.addTestConfig("getPendingRecovery", "OstJsonApi.getPendingRecovery('{{user_id}}')");
+    // oThis.addTestConfig("getPendingRecovery", "OstJsonApi.getPendingRecovery('{{user_id}}')");
   }
 
   getToken() {

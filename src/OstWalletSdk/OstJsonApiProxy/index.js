@@ -44,7 +44,7 @@ class OstJsonApiProxy {
                 return response;
             });
 	}
-	
+
 	getBalanceWithPricePointFromServer( userId ) {
 		let oThis = this;
         let functionParams = {
@@ -55,19 +55,19 @@ class OstJsonApiProxy {
             .then((response) => {
                 return response;
             });
-	} 
-
-	getPendingRecoveryFromServer( userId ) {
-		let oThis = this;
-        let functionParams = {
-            user_id: userId,
-        };
-
-        return oThis.getFromOstSdk('getPendingRecoveryFromServer', functionParams)
-            .then((response) => {
-                return response;
-            });
 	}
+
+	// getPendingRecoveryFromServer( userId ) {
+	// 	let oThis = this;
+   //      let functionParams = {
+   //          user_id: userId,
+   //      };
+	//
+   //      return oThis.getFromOstSdk('getPendingRecoveryFromServer', functionParams)
+   //          .then((response) => {
+   //              return response;
+   //          });
+	// }
 
 	getUserFromServer( userId ) {
 		let oThis = this;
@@ -80,7 +80,7 @@ class OstJsonApiProxy {
                 return response;
             });
     }
-    
+
 	getTokenFromServer( userId ) {
 		let oThis = this;
         let functionParams = {
@@ -166,7 +166,7 @@ class OstJsonApiProxy {
 			this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
 		});
     }
-    
+
 }
 
 const ResponseHandler = function (success, error){
