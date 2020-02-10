@@ -74,7 +74,7 @@ const devConfig = {
         mappyDefinations,
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: "login.com",
+            title: "Demo Mappy Web UI",
             template: "./src/Mappy/html/login.html",
             inject: false,
             jsEndpoint: process.env.DEMO_MAPPY_UI_JS_ENDPOINT,
