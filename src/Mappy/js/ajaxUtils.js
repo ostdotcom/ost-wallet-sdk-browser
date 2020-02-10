@@ -16,7 +16,7 @@ const ajaxUtils = {
         _resolve( response.data );
       } else {
         console.error("Api call responsed with error. \n", response.err, "\n url:", url);
-        _reject( response.err );
+        _reject( response );
       }
     };
 
