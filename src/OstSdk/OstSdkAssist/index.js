@@ -11,6 +11,7 @@ import OstConstants from "../OstConstants";
 import OstError from "../../common-js/OstError";
 import OstErrorCodes  from '../../common-js/OstErrorCodes'
 import OstSdkExecuteTransaction from "../workflows/OstSdkExecuteTransaction";
+import BigNumber from 'bignumber.js';
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -89,121 +90,103 @@ class OstSdkAssist {
         }
       })
       .catch((err) => {
-				return oThis.onError(OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID));
+				return oThis.onError(OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.SKD_INTERNAL_ERROR));
       });
 
   }
 
   getToken ( args ) {
-    const oThis = this;
-    console.log(LOG_TAG, "getToken :: ", args);
+		const oThis = this
+			, tokenId = args.token_id
+			, subscriberId = args.subscriber_id
+		;
 
-
-    const tokenId = args.token_id;
-    const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionName;
+		console.log(LOG_TAG, "getToken :: ", args);
     OstToken.getById( tokenId )
       .then( (tokenData) => {
         if (tokenData) {
-          console.log("token data ", tokenData);
-          functionParams = {token: tokenData};
-          functionName = 'onSuccess';
+          console.log(LOG_TAG, "token data ", tokenData);
+					return oThis.onSuccess({token: tokenData}, subscriberId);
         } else {
           let err = new OstError('os_osa_i_gt_1', OstErrorCodes.INVALID_TOKEN_ID);
-          functionParams = err.getJSONObject()
-          functionName = 'onError';
+					return oThis.onError(err, subscriberId);
         }
-
-        oThis.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gt_2', OstErrorCodes.INVALID_TOKEN_ID);
-        functionParams = ostError.getJSONObject();
-        oThis.sendToOstWalletSdk('onError', subscriberId, functionParams);
+				return oThis.onError(OstError.sdkError(err, 'os_osa_i_gt_2', OstErrorCodes.SKD_INTERNAL_ERROR));
       });
   }
 
   //get current device Getter Method
   getDevice ( args ) {
-    console.log(LOG_TAG, "getDevice :: ", args);
-    const userId = args.user_id;
-    const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionName = 'onError';
+		const oThis = this
+			, userId = args.user_id
+			, subscriberId = args.subscriber_id
+		;
 
-    OstUser.getById(userId)
-      .then((user) => {
-
-        user.createOrGetDevice(this.getKeyManagerProxy(userId))
-          .then( (deviceData) => {
-            console.log("device ====",deviceData);
-
-            if (deviceData) {
-              functionParams = {device: deviceData};
-              functionName = 'onSuccess';
-            }
-            else {
-              let err = new OstError('os_osa_i_gd_1', OstErrorCodes.DEVICE_NOT_SETUP);
-              functionParams = err.getJSONObject();
-            }
-
-            this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-          }).catch((err) => {
-        throw OstError.sdkError(err, 'os_osa_i_gd_2', OstErrorCodes.DEVICE_NOT_SETUP);
-        });
-      }).catch((err) => {
-        throw OstError.sdkError(err, 'os_osa_i_gd_3', OstErrorCodes.INVALID_USER_ID);
-      });
-    }
+		console.log(LOG_TAG, "getDevice :: ", args);
+		OstUser.getById(userId)
+			.then((user) => {
+				if (!user) {
+					let err = new OstError('os_osa_i_gd_1', OstErrorCodes.INVALID_USER_ID);
+					return oThis.onError(err, subscriberId);
+				}
+				//Todo:: Fix Me: createOrGetDevice create Device if not exist this should just whether device exist or not before creating it.
+				return user.createOrGetDevice(this.getKeyManagerProxy(userId))
+					.then((deviceData) => {
+						console.log("device ====", deviceData);
+						if (deviceData) {
+							return oThis.onSuccess({device: deviceData}, subscriberId);
+						} else {
+							let err = new OstError('os_osa_i_gd_2', OstErrorCodes.DEVICE_NOT_SETUP);
+							return oThis.onError(err, subscriberId);
+						}
+					})
+			})
+			.catch((err) => {
+				err = OstError.sdkError(err, 'os_osa_i_gd_3', OstErrorCodes.INVALID_USER_ID);
+				return oThis.onError(err, subscriberId);
+			});
+	}
 
   getActiveSessions( args ) {
-    console.log(LOG_TAG, "getActiveSessions :: ", args);
-    const userId = args.user_id;
-    const spendingLimit = args.spending_limit;
-    const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionName = 'onError';
+		const oThis = this
+			, userId = args.user_id
+			, spendingLimit = args.spending_limit
+			, subscriberId = args.subscriber_id
+		;
 
+		console.log(LOG_TAG, "getActiveSessions :: ", args);
 		OstSession.getAllSessions()
-			.then((sessionsData) => {
-				console.log("sessions ==== ", sessionsData);
-				if (sessionsData) {
-					let filterSessions;
-					console.log("spending limit-----", spendingLimit);
-					if (spendingLimit) {
-						const spendingLimitBN = new BigNumber(spendingLimit);
-						filterSessions = sessionsData.filter(function (x) {
-							return x.user_id === userId
-								&& x.status === 'AUTHORIZED'
-								&& new BigNumber(x.spending_limit).isGreaterThanOrEqualTo(spendingLimitBN);
-						});
-					}
-					else {
-						filterSessions = sessionsData.filter(function (x) {
-							return x.user_id === userId
-								&& x.status === 'AUTHORIZED';
-						});
-					}
+			.then((sessionArray) => {
+				console.log(LOG_TAG, "sessions ==== ", sessionArray);
 
-          console.log("filtered =====", filterSessions);
-          if(filterSessions){
-            functionParams = {activeSessions: filterSessions};
-            functionName = 'onSuccess';
-          }
-          else {
-            console.error("Unexpected state: filterSessions is undefined");
-          }
-        } else {
-          console.log("No session data found ");
-          throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.DEVICE_NOT_SETUP);
-        }
+				if (!sessionArray) sessionArray = [];
 
-        this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-      }).catch( (err) => {
-        console.log(err);
-      });
-  }
+				if (!sessionArray.length) {
+					return oThis.onSuccess({activeSessions: []}, subscriberId);
+				}
+
+				let spendingLimitBN = new BigNumber(0);
+				if (spendingLimit) {
+					spendingLimitBN = new BigNumber(spendingLimit);
+				}
+
+				console.log(LOG_TAG, "spending limit-----", spendingLimitBN.toString());
+				let filterSessions = sessionArray.filter(function (x) {
+					return x.user_id === userId
+						&& x.status === 'AUTHORIZED'
+						&& new BigNumber(x.spending_limit).isGreaterThanOrEqualTo(spendingLimitBN);
+				});
+
+				console.log(LOG_TAG, "filtered =====", filterSessions);
+				return oThis.onSuccess({activeSessions: filterSessions}, subscriberId);
+			})
+			.catch((err) => {
+				err = OstError.sdkError(err, 'os_osa_i_gas_1', OstErrorCodes.SKD_INTERNAL_ERROR);
+				return oThis.onError(err, subscriberId);
+			});
+	}
 
   //JSON APIs
 
