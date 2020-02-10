@@ -473,7 +473,7 @@ class OstSdkAssist {
 			})
 			.catch((err)=> {
 				console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
-				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gbfop_1')});
+				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gbfop_1').getJSONObject()});
 			});
 	}
 
@@ -488,9 +488,9 @@ class OstSdkAssist {
 				return OstToken.getById(tokenId)
 					.then((token) => {
 						const chainId = token.getAuxiliaryChainId();
-						if (!chainId) {
+						if (true) {
 							console.error(LOG_TAG, 'chainId not found');
-							return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR)});
+							return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR).getJSONObject()});
 						}
 						console.log("auxiliary chain id", chainId);
 						let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
@@ -503,7 +503,7 @@ class OstSdkAssist {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
-				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gppfop_1')});
+				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gppfop_1').getJSONObject()});
 			});
 
 	}
@@ -533,7 +533,7 @@ class OstSdkAssist {
 				}
 
 				if (!pricePointResponse || pricePointResponse.err) {
-					const ostError = OstError.sdkError(balanceResponse.err, 'os_osa_i_gbppfs_1', OstErrorCodes.SDK_API_ERROR);
+					const ostError = OstError.sdkError(pricePointResponse.err, 'os_osa_i_gbppfs_1', OstErrorCodes.SDK_API_ERROR);
 					return oThis.onError(ostError, subscriberId);
 				}
 
@@ -567,7 +567,7 @@ class OstSdkAssist {
 		const ostMsg = new OstMessage();
 		ostMsg.setSubscriberId(subscriberId);
 		ostMsg.setFunctionName('onError');
-		ostMsg.setArgs(errMsgObj);
+		ostMsg.setArgs(errMsgObj.getJSONObject());
 		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
 	}
 
