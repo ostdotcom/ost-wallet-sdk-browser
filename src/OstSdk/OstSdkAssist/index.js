@@ -131,8 +131,7 @@ class OstSdkAssist {
 					let err = new OstError('os_osa_i_gd_1', OstErrorCodes.INVALID_USER_ID);
 					return oThis.onError(err, subscriberId);
 				}
-				//Todo:: Fix Me: createOrGetDevice create Device if not exist this should just whether device exist or not before creating it.
-				return user.createOrGetDevice(this.getKeyManagerProxy(userId))
+				return user.getCurrentDevice(this.getKeyManagerProxy(userId))
 					.then((deviceData) => {
 						console.log("device ====", deviceData);
 						if (deviceData) {
