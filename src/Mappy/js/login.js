@@ -1,15 +1,16 @@
-
 import '../css/login.css';
 import OstSetup from "./common";
 
 var ostSetup;
 export class LoginSetup {
   constructor() {
+    const oThis = this;
     ostSetup = new OstSetup();
     this.getLoginStatus(function () {
       //if logged in Navigate to /users page.
       window.location = "/sdk-getters";
-  });
+    });
+    oThis.bindEvents();
   }
 
   getLoginStatus( successCallback, failuerCallback ) {
@@ -32,10 +33,20 @@ export class LoginSetup {
         });
   }
 
+  bindEvents() {
+    const oThis = this;
+    $(function () {
+      $("#signupBtn").click(function () {
+        console.log("login");
+        oThis.onClickLogin();
+     });
+    })
+  }
+
   onClickLogin() {
     var baseUrl = ostSetup.getBaseUrl();
     document.getElementById("signupBtn").disabled = true;
-    $("#signupBtn").attr("disabled", true);
+    $("#signupBtn").attr("disabled", true); 
     $.post(baseUrl+"/login", {
             username: document.getElementById("usernameTb").value,
             password: document.getElementById("password").value
@@ -59,10 +70,6 @@ export class LoginSetup {
         });
   }
 }
-
-$("#signupBtn").click(function () {
-      loginSetup.onClickLogin();
-   });
 
 var loginSetup = new LoginSetup();
    
