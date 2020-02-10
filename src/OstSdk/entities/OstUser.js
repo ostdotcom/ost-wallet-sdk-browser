@@ -84,11 +84,6 @@ class OstUser extends OstBaseEntity {
       });
   }
 
-  //Getter
-  getTokenId() {
-    return this.getData().token_id
-  }
-
   getTokenHolderAddress() {
     return this.getData().token_holder_address
   }
