@@ -170,7 +170,8 @@ class OstSdkAssist {
         console.log("sessions ==== ", sessionsData);
         if(sessionsData) {
           let filterSessions;
-          if(spendingLimit !== ''){
+          console.log("spending limit-----",spendingLimit)
+          if(spendingLimit){
             filterSessions = sessionsData.filter( function(x){
               return x.user_id === userId
                     && x.status === 'AUTHORIZED'
@@ -439,7 +440,7 @@ class OstSdkAssist {
               apiClient.getPricePoints(chainId)
                 .then((pricePoint) => {
                     if (pricePoint) {
-                      functionParams = {root: pricePoint};
+                      functionParams = pricePoint;
                       functionName = 'onSuccess';
                       console.log("pricepoints api ====", pricePoint);
                       this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
@@ -488,7 +489,7 @@ class OstSdkAssist {
               apiClient1.getBalance()
                 .then((balance) => {
                     if (balance) {
-                      functionParams = {root: balance};
+                      functionParams = balance;
                       return functionParams;
                     }
                     else {
@@ -504,7 +505,7 @@ class OstSdkAssist {
                     .then((pricePoint) => {
                         if (pricePoint) {
                           functionParams1 = pricePoint.price_point;
-                          functionParams.root.price_point = functionParams1;
+                          functionParams.price_point = functionParams1;
                           functionName = 'onSuccess';
                           console.log("balance pricepoints api ====>>", functionParams);
                           this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
