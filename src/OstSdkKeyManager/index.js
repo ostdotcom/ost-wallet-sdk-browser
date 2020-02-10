@@ -20,16 +20,9 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
 
 (function(window) {
 
-  const location = window.location
-    , origin = location.origin
-    , pathname = location.pathname
-    , ancestorOrigins = location.ancestorOrigins
-    , searchParams = location.search
-  ;
-
   class OstSdkKeyManager extends OstBaseSdk {
-    constructor(window, origin, pathname, ancestorOrigins, searchParams){
-      super(window, origin, pathname, ancestorOrigins, searchParams);
+    constructor(window){
+      super(window);
       this.ostKeyManagerAssist = null;
     }
 
@@ -94,7 +87,7 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
   }
 
 
-  let sdkKmManager = new OstSdkKeyManager(window, origin, pathname, ancestorOrigins, searchParams);
+  let sdkKmManager = new OstSdkKeyManager(window);
   sdkKmManager.perform()
     .then(() => {
 
