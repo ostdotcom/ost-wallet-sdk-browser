@@ -50,7 +50,8 @@ export {
     getUser: "getUserFromServer",
     getToken: "getTokenFromServer",
     getTransactions: "getTransactionsFromServer",
-    getRules: "getRulesFromServer"
+    getRules: "getRulesFromServer",
+    getPendingRecovery: "getPendingRecoveryFromServer"
   };
   const jsonApiMethods = Object.keys( jsonApiMethodsMap );
 
