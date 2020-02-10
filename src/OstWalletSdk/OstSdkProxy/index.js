@@ -2,7 +2,7 @@
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 
-const LOG_TAG = 'OstSdkProxy :: '
+const LOG_TAG = 'OstSdkProxy :: ';
 
 class OstSdkProxy {
     constructor(messengerObj){
@@ -26,7 +26,7 @@ class OstSdkProxy {
             let functionParams = {
                 token_id: token_id,
             };
-    
+
             return oThis.getFromOstSdk('getToken', functionParams)
                 .then((response) => {
                     return response;
@@ -38,7 +38,7 @@ class OstSdkProxy {
             let functionParams = {
                 user_id: userId,
             };
-    
+
             return oThis.getFromOstSdk('getDevice', functionParams)
                 .then((response) => {
                     return response;
@@ -51,7 +51,7 @@ class OstSdkProxy {
                 user_id: userId,
                 spending_limit: spendingLimit,
             };
-    
+
             return oThis.getFromOstSdk('getActiveSessions', functionParams)
                 .then((response) => {
                     return response;
@@ -84,7 +84,7 @@ class OstSdkProxy {
 			this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
 		});
     }
-    
+
 }
 
 const ResponseHandler = function (success, error){

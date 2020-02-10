@@ -85,11 +85,11 @@ class OstSdkAssist {
         }
         else {
           let err = new OstError('os_osa_i_gu_1', OstErrorCodes.INVALID_USER_ID);
-          return oThis.onError(err.getJSONObject(), subscriberId);
+          return oThis.onError(err, subscriberId);
         }
       })
       .catch((err) => {
-				return oThis.onError(OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID).getJSONObject());
+				return oThis.onError(OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID));
       });
 
   }
@@ -488,7 +488,7 @@ class OstSdkAssist {
 				return OstToken.getById(tokenId)
 					.then((token) => {
 						const chainId = token.getAuxiliaryChainId();
-						if (chainId) {
+						if (!chainId) {
 						 	console.error(LOG_TAG, 'chainId not found');
 						 	return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR).getJSONObject()});
 						}
