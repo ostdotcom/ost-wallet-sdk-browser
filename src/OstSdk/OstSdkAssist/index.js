@@ -70,26 +70,26 @@ class OstSdkAssist {
   }
 
   getUser ( args ) {
+		const oThis = this
+		;
+
     console.log(LOG_TAG, "getUser :: ", args);
     const userId = args.user_id;
     const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionName = 'onError';
+
     OstUser.getById(userId)
       .then((userData) => {
-        console.log("user data ", userData);
+        console.log(LOG_TAG, "user data ", userData);
         if (userData) {
-          functionParams = {user: userData};
-          functionName = 'onSuccess';
+					return oThis.onSuccess({user: userData}, subscriberId);
         }
         else {
           let err = new OstError('os_osa_i_gu_1', OstErrorCodes.INVALID_USER_ID);
-          functionParams = err.getJSONObject()
+          return oThis.onError(err.getJSONObject(), subscriberId);
         }
-        this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       })
       .catch((err) => {
-        throw OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID)
+				return oThis.onError(OstError.sdkError(err, 'os_osa_i_gu_2', OstErrorCodes.INVALID_USER_ID).getJSONObject());
       });
 
   }
@@ -473,7 +473,7 @@ class OstSdkAssist {
 			})
 			.catch((err)=> {
 				console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
-				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gbfop_1').getJSONObject()});
+				return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gbfop_1').getJSONObject());
 			});
 	}
 
@@ -488,10 +488,10 @@ class OstSdkAssist {
 				return OstToken.getById(tokenId)
 					.then((token) => {
 						const chainId = token.getAuxiliaryChainId();
-						// if (true) {
-						// 	console.error(LOG_TAG, 'chainId not found');
-						// 	return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR).getJSONObject()});
-						// }
+						if (chainId) {
+						 	console.error(LOG_TAG, 'chainId not found');
+						 	return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR).getJSONObject()});
+						}
 						console.log("auxiliary chain id", chainId);
 						let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
 						return apiClient.getPricePoints(chainId)
@@ -503,7 +503,7 @@ class OstSdkAssist {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
-				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gppfop_1').getJSONObject()});
+				return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gppfop_1').getJSONObject());
 			});
 
 	}
@@ -554,6 +554,22 @@ class OstSdkAssist {
       });
   }
 
+
+	onSuccess(args, subscriberId) {
+		const ostMsg = new OstMessage();
+		ostMsg.setSubscriberId(subscriberId);
+		ostMsg.setFunctionName('onSuccess');
+		ostMsg.setArgs({data: args});
+		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+	}
+
+	onError(errMsgObj, subscriberId) {
+		const ostMsg = new OstMessage();
+		ostMsg.setSubscriberId(subscriberId);
+		ostMsg.setFunctionName('onError');
+		ostMsg.setArgs({err: errMsgObj.getJSONObject()});
+		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+	}
 
   /**
   * Api to get user balance
@@ -619,23 +635,6 @@ class OstSdkAssist {
         console.log(error);
       });
   }
-
-  onSuccess(args, subscriberId) {
-		const ostMsg = new OstMessage();
-		ostMsg.setSubscriberId(subscriberId);
-		ostMsg.setFunctionName('onSuccess');
-		ostMsg.setArgs(args);
-		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
-	}
-
-	onError(errMsgObj, subscriberId) {
-		const ostMsg = new OstMessage();
-		ostMsg.setSubscriberId(subscriberId);
-		ostMsg.setFunctionName('onError');
-		ostMsg.setArgs(errMsgObj.getJSONObject());
-		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
-	}
-
 
   sendToOstWalletSdk(functionName, subscriberId, functionParams) {
     let oThis = this;
