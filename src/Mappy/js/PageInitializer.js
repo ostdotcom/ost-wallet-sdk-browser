@@ -1,8 +1,6 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
 
-const LOG_TAG = "Register Device";
-
 const sdkConfig = {
   "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
