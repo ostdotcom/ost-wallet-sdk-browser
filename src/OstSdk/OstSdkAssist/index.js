@@ -165,25 +165,26 @@ class OstSdkAssist {
     let functionParams = {};
     let functionName = 'onError';
 
-    OstSession.getAllSessions()
-      .then( (sessionsData) => {
-        console.log("sessions ==== ", sessionsData);
-        if(sessionsData) {
-          let filterSessions;
-          console.log("spending limit-----",spendingLimit)
-          if(spendingLimit){
-            filterSessions = sessionsData.filter( function(x){
-              return x.user_id === userId
-                    && x.status === 'AUTHORIZED'
-                    && x.spending_limit >= spendingLimit ;
-            });
-          }
-          else {
-            filterSessions = sessionsData.filter( function(x){
-              return x.user_id === userId
-                    && x.status === 'AUTHORIZED';
-            });
-          }
+		OstSession.getAllSessions()
+			.then((sessionsData) => {
+				console.log("sessions ==== ", sessionsData);
+				if (sessionsData) {
+					let filterSessions;
+					console.log("spending limit-----", spendingLimit);
+					if (spendingLimit) {
+						const spendingLimitBN = new BigNumber(spendingLimit);
+						filterSessions = sessionsData.filter(function (x) {
+							return x.user_id === userId
+								&& x.status === 'AUTHORIZED'
+								&& new BigNumber(x.spending_limit).isGreaterThanOrEqualTo(spendingLimitBN);
+						});
+					}
+					else {
+						filterSessions = sessionsData.filter(function (x) {
+							return x.user_id === userId
+								&& x.status === 'AUTHORIZED';
+						});
+					}
 
           console.log("filtered =====", filterSessions);
           if(filterSessions){
@@ -191,11 +192,9 @@ class OstSdkAssist {
             functionName = 'onSuccess';
           }
           else {
-            console.log("No Active Sessions ");
-            //let err = new OstError('os_osa_i_gas_1', OstErrorCodes.DEVICE_NOT_SETUP);
-            //functionParams = err.getJSONObject();
+            console.error("Unexpected state: filterSessions is undefined");
           }
-        }else {
+        } else {
           console.log("No session data found ");
           throw OstError.sdkError(err, 'os_osa_i_gas_2', OstErrorCodes.DEVICE_NOT_SETUP);
         }
@@ -372,7 +371,7 @@ class OstSdkAssist {
         }
         else {
           //BUG: #1: This error be informed to upstream OstWalletSdk.
-          //BUG: #2: OstError.sdkError null ???? 
+          //BUG: #2: OstError.sdkError null ????
           //Someone took a too many short-cuts. Not good.
           let error = OstError.sdkError(null, 'os_osa_i_gcdfs_2');
           throw error;

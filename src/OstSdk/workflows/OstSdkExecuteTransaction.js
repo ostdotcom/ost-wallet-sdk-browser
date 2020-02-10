@@ -53,13 +53,13 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   getAuthorizedSession() {
   	const oThis = this;
 		return OstSession.getAllSessions()
-			.then((sessionAddress) => {
+			.then((sessionArray) => {
 				if (!oThis.expectedSpendAmount) {
 					oThis.expectedSpendAmount = oThis.getTotalAmount();
 				}
 				const expectedSpendingAmount = new BigNumber(oThis.expectedSpendAmount);
-				for (let i=0; i < sessionAddress.length; i++) {
-					const session = sessionAddress[i];
+				for (let i=0; i < sessionArray.length; i++) {
+					const session = sessionArray[i];
 					if (session.status === OstSession.STATUS.AUTHORIZED &&
 						new BigNumber(session.spending_limit).isGreaterThanOrEqualTo(expectedSpendingAmount)
 					) {
