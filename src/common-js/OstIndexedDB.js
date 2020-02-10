@@ -164,6 +164,28 @@ class OstIndexedDB {
 			};
 		});
 	}
+
+  deleteData(name, key) {
+    const oThis = this;
+
+    return new Promise (function (resolve, reject) {
+      const objectStore = oThis.dbObject
+        .transaction(name, "readwrite")
+        .objectStore(name)
+	  ;
+      const request = objectStore.delete(String(key).toLowerCase());
+
+      request.onsuccess = (event) => {
+        console.log(LOG_TAG, "Data deleted successfully", event.target.result);
+        resolve(event.target.result);
+      };
+
+      request.onerror = (err) => {
+        console.error(LOG_TAG, "Data deletion fail", err);
+        reject(err);
+      };
+    });
+  }
 }
 
 export default {

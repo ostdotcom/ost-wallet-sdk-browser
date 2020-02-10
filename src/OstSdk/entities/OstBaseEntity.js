@@ -57,6 +57,25 @@ class OstBaseEntity {
 			});
 	}
 
+  deleteData() {
+    const oThis = this;
+    let resolve;
+    this.getInstance()
+      .then((dbInstance) => {
+        return dbInstance.deleteData(oThis.getStoreName(), oThis.getData().id)
+      })
+      .then((data) => {
+        resolve(true);
+      })
+      .catch((err) => {
+        resolve(false);
+      });
+
+    return new Promise((_resolve) => {
+      resolve = _resolve;
+    })
+  }
+
 	commit() {
 		const oThis = this;
 		return this.getInstance()

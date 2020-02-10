@@ -25,4 +25,8 @@ export default class OstKeyManager {
 	setTrustable(trustable) {
 		return ikmInstance.setIsTrustable(trustable);
 	}
+
+	deleteLocalSessions(addresses) {
+		return ikmInstance.deleteSessions(addresses);
+	}
 }

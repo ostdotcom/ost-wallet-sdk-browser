@@ -246,6 +246,26 @@ class IKM {
 			});
 	}
 
+	deleteSessions(addresses) {
+		const oThis = this;
+		let promiseList = [];
+
+		addresses.forEach((address) => {
+			let apiKeyId = oThis.createEthKeyMetaId(address);
+			let deletePromise = oThis.kmDB.deleteData(STORES.KEY_STORE_TABLE, apiKeyId);
+			promiseList.push(deletePromise);
+		});
+
+		return Promise.all(promiseList)
+			.then(() => {
+				return Promise.resolve();
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "Delete Session failed", err);
+				return Promise.resolve();
+			});
+	}
+
 	signWithSession(sessionAddress, hashToSign) {
 		const oThis = this;
 		const bufferHash = Buffer.from(hashToSign, 'hex');

@@ -122,6 +122,16 @@ export default class OstKeyManagerProxy {
 		return oThis.getFromKM('signTransaction', functionParams);
 	}
 
+  deleteLocalSessions(address) {
+      const oThis = this
+		  , functionParams = {
+          		user_id: this.userId,
+				session_addresses: address
+	  		}
+	  ;
+      return oThis.getFromKM('deleteLocalSessions', functionParams);
+	}
+
 	getFromKM(functionName, functionParams) {
 		let oThis = this;
 		return new Promise((resolve, reject) => {

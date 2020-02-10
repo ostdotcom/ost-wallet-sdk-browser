@@ -35,7 +35,8 @@ export {
   const getterMethods = ["getUser",
     "getToken",
     "getDevice",
-    "getActiveSessions"];
+    "getActiveSessions",
+  "deleteLocalSessions"];
   /**
    * jsonApiMethodsMap - is a map of sdkCore.jsonApiProxy methods names
    * key - names of methods exposed to the api consumer.
