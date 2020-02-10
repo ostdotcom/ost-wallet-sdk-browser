@@ -16,14 +16,14 @@ export default class OstKeyManagerAssist {
     }
 
 
-	getDeviceAddress(args) {
+	getDeviceAddress(args, avoidKMBuilding) {
 		const oThis = this;
 		const userId = args.user_id;
 		const subscriberId = args.subscriber_id;
 		if (!userId) {
 			return oThis.onError({msg: "userId not found"}, subscriberId);
 		}
-		return IKM.getKeyManager(userId)
+		return IKM.getKeyManager(userId, avoidKMBuilding)
 			.then((ikm) => {
 				let deviceAddress = ikm.getDeviceAddress();
 				return oThis.onSuccess({user_id: userId, device_address: deviceAddress}, subscriberId)
@@ -32,6 +32,11 @@ export default class OstKeyManagerAssist {
 				return oThis.onError({err: err, msg: "Device address fetch failed"}, subscriberId);
 			});
 
+	}
+
+	getCurrentDeviceAddress(args) {
+		const avoidKMBuilding = true;
+		return this.getDeviceAddress(args, avoidKMBuilding);
 	}
 
 	getApiAddress(args) {

@@ -51,7 +51,8 @@ export {
     getUser: "getUserFromServer",
     getToken: "getTokenFromServer",
     getTransactions: "getTransactionsFromServer",
-    getRules: "getRulesFromServer"
+    getRules: "getRulesFromServer",
+    // getPendingRecovery: "getPendingRecoveryFromServer"
   };
   const jsonApiMethods = Object.keys( jsonApiMethodsMap );
 
@@ -142,7 +143,7 @@ export {
   addMethods(sdkCore, OstWalletSdk, simpleFunctionGenerator, simpleMethods);
   addMethods(sdkCore, OstWalletSdk, workflowFunctionGenerator, workflowMethods);
   addMethods(sdkCore, OstWalletSdk, getterFunctionGenerator, getterMethods);
-  
+
   // Add wrapper methods to OstJsonApi
   addMethods(sdkCore, OstJsonApi, jsonApiFunctionGenerator, jsonApiMethods);
 

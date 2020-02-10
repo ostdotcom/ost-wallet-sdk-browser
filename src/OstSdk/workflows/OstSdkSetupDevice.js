@@ -105,10 +105,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     return OstUser.init(this.userId, this.tokenId);
   }
 
-  getCurrentDevice() {
-    this.user.getCurrentDevice();
-  }
-
 
   registerDevice(deviceEntity) {
     let message = new OstMessage();

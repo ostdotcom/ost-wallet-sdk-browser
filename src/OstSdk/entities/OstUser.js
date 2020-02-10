@@ -44,14 +44,18 @@ class OstUser extends OstBaseEntity {
     return this.getData().token_id;
   }
 
-  getCurrentDevice() {
-    let currentDevice = null;
-    if (!this.currentDeviceAddress) {
-      return Promise.resolve(null);
-    }
-    console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
-    return OstDevice.getById(this.currentDeviceAddress);
-  }
+	getCurrentDevice(keyManagerProxy) {
+		const oThis = this;
+		if (!this.currentDeviceAddress) {
+			return keyManagerProxy.getCurrentDeviceAddress()
+				.then((deviceAddress) => {
+					oThis.currentDeviceAddress = deviceAddress;
+					return deviceAddress;
+				});
+		}
+		console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
+		return Promise.resolve(OstDevice.getById(this.currentDeviceAddress));
+	}
 
   getStoreName() {
     return STORES.OST_USER;
@@ -82,11 +86,6 @@ class OstUser extends OstBaseEntity {
         }
         return deviceEntity;
       });
-  }
-
-  //Getter
-  getTokenId() {
-    return this.getData().token_id
   }
 
   getTokenHolderAddress() {

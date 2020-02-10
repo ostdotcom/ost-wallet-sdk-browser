@@ -32,8 +32,9 @@ const KEY_TYPE = {
 };
 
 class IKM {
-	constructor(userId) {
+	constructor(userId, avoidKMBuilding) {
 		this.userId = userId;
+		this.avoidKMBuilding = avoidKMBuilding;
 		this.kmDB = OstIndexDB.newInstance(KM_DB_NAME, KM_DB_VERSION, STORES);
 	}
 
@@ -53,6 +54,9 @@ class IKM {
 					oThis.kmStruct = kmData.data;
 					return kmData;
 				} else {
+					if (oThis.avoidKMBuilding) {
+						return {};
+					}
 					console.log(LOG_TAG, "Key meta struct not found", "Building it...");
 					return oThis.buildKeyMetaStruct()
 						.then((kmData) => {
@@ -367,14 +371,15 @@ class KeyMetaStruct {
 let ostKeyManager = null;
 let ostKeyManagerUserId = null;
 
-const getInstance = (userId) => {
+const getInstance = (userId, avoidKMBuilding) => {
 	if (ostKeyManager && ostKeyManagerUserId === userId) {
 		return Promise.resolve(ostKeyManager);
 	}
+	avoidKMBuilding = avoidKMBuilding || false;
 
 	console.debug(LOG_TAG,'Creating IKM instance for userId ', userId);
 	let uid = userId;
-	let okm = new IKM(userId);
+	let okm = new IKM(userId, avoidKMBuilding);
 
 	return okm.init()
 		.then(() => {
@@ -389,8 +394,8 @@ const getInstance = (userId) => {
 
 
 export default {
-	getKeyManager (userId) {
-		return getInstance(userId)
+	getKeyManager (userId, avoidKMBuilding) {
+		return getInstance(userId, avoidKMBuilding)
 			.then( (instance) => {
 				return new OstKeyManager(instance);
 			});

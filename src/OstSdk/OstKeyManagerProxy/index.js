@@ -33,6 +33,18 @@ export default class OstKeyManagerProxy {
 
 	}
 
+	getCurrentDeviceAddress () {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+		};
+
+		return oThis.getFromKM('getCurrentDeviceAddress', functionParams)
+			.then((response) => {
+				return response.device_address;
+			});
+	}
+
   getApiKeyAddress ( ) {
 		let oThis = this;
 		let functionParams = {
