@@ -1,6 +1,8 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
 
+const LOG_TAG = "Register Device";
+
 const sdkConfig = {
   "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
@@ -133,8 +135,8 @@ class PageInitializer {
     let sdkDelegate =  new OstSetupDeviceDelegate();
     // Define register device.
     sdkDelegate.registerDevice = function( apiParams ) {
-      //console.log(LOG_TAG, "registerDevice")
-      return registerDevice(apiParams);
+      console.log(LOG_TAG, "registerDevice")
+      return oThis.registerDevice(apiParams);
     };
 
     //Define flowComplete
@@ -186,5 +188,33 @@ class PageInitializer {
       })
   }
 
+  registerDevice(apiParams, device_name = 'a', device_uuid = 'b') {
+    const apiUrl = this.getBaseUrl() + '/devices';
+    return ajaxUtils.post( apiUrl, {
+        "address": apiParams.device_address,
+        "api_signer_address": apiParams.api_signer_address,
+        "original_payload": apiParams
+      })
+      .catch( (errorResponse) => {
+        let isDeviceAlreadyRegistered = false;
+        // Response if already registered.
+        //{"success":false,"internal_id":"l_oah_1","code":"ALREADY_EXISTS","msg":"Duplicate entity already exists."}
+
+        if ( errorResponse && errorResponse.success === false ) {
+          if ( errorResponse.code === "ALREADY_EXISTS") {
+            isDeviceAlreadyRegistered = true;
+          }
+        }
+
+        if ( isDeviceAlreadyRegistered ) {
+          console.log("device already registered.");
+          // ignore the error.
+          return true;
+        }
+        alert('Unable to register device.');
+        // If not, throw the error.
+        throw error;
+      });
+  }
 }
 export default PageInitializer;
