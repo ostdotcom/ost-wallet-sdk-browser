@@ -435,7 +435,7 @@ class OstSdkAssist {
           })
             .then((chainId) => {
               console.log("auxiliary chain id", chainId);
-              let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+              let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
               apiClient.getPricePoints(chainId)
                 .then((pricePoint) => {
                     if (pricePoint) {
@@ -461,75 +461,116 @@ class OstSdkAssist {
         });
   }
 
+
+	getBalanceFromOstPlatform(args) {
+		const userId = args.user_id
+		;
+
+		let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+		return apiClient.getBalance()
+			.then((response) => {
+				return Promise.resolve(response);
+			})
+			.catch((err)=> {
+				console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
+				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gbfop_1')});
+			});
+	}
+
+	getPricePointFromOstPlatform(args) {
+		const userId = args.user_id
+		;
+
+		return OstUser.getById(userId)
+			.then((user) => {
+				const tokenId = user.getTokenId();
+				console.log(" token id", tokenId);
+				return OstToken.getById(tokenId)
+					.then((token) => {
+						const chainId = token.getAuxiliaryChainId();
+						if (!chainId) {
+							console.error(LOG_TAG, 'chainId not found');
+							return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR)});
+						}
+						console.log("auxiliary chain id", chainId);
+						let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+						return apiClient.getPricePoints(chainId)
+							.then((pricePoint) => {
+								return Promise.resolve(pricePoint);
+							})
+					})
+
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
+				return Promise.resolve({err: OstError.sdkError(err, 'os_osa_i_gppfop_1')});
+			});
+
+	}
+
   /**
   * Api to get user balance and PricePoint
   * @param {String} userId - Ost User id
   * @public
   */
   getBalanceWithPricePointFromServer( args ) {
-    const userId = args.user_id;
-    const subscriberId =  args.subscriber_id;
-    let functionParams = {};
-    let functionParams1 = {};
-    let functionName = 'onError';
+		const oThis = this
+			, userId = args.user_id
+			, subscriberId = args.subscriber_id
+		;
 
-    OstUser.getById(userId)
-      .then((user) => {
-        var tokenId = user.getTokenId();
-        console.log(" token id", tokenId);
-        OstToken.getById(tokenId)
-          .then( (token) => {
-            return token.getAuxiliaryChainId();
-          })
-            .then((chainId) => {
-              console.log("auxiliary chain id", chainId);
+		const promiseArray = [oThis.getBalanceFromOstPlatform(args), oThis.getPricePointFromOstPlatform(args)];
 
-              let apiClient1 = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
-              apiClient1.getBalance()
-                .then((balance) => {
-                    if (balance) {
-                      functionParams = balance;
-                      return functionParams;
-                    }
-                    else {
-                      let error = OstError.sdkError(null, 'os_osa_i_gbwppfs_1');
-                      throw error;
-                    }
-                })
-                .then( (functionParams) => {
+		return Promise.all(promiseArray)
+			.then((response) => {
+				const balanceResponse = response[0]
+					, pricePointResponse = response[1]
+				;
 
-                  console.log("balance :: functionParams1", functionParams);
-                  let apiClient2 = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
-                  apiClient2.getPricePoints(chainId)
-                    .then((pricePoint) => {
-                        if (pricePoint) {
-                          functionParams1 = pricePoint.price_point;
-                          functionParams.price_point = functionParams1;
-                          functionName = 'onSuccess';
-                          console.log("balance pricepoints api ====>>", functionParams);
-                          this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
-                        }
-                        else {
-                          let error = OstError.sdkError(null, 'os_osa_i_gbwppfs_2');
-                          throw error;
-                        }
-                    })
-                    .catch((err) => {
-                      let error = OstError.sdkError(err, 'os_osa_i_gbwppfs_3');
-                      console.log(error);
-                    });
-                })
-                .catch((err) => {
-                  let error = OstError.sdkError(err, 'os_osa_i_gbwppfs_4');
-                  console.log(error);
-                });
-            }).catch((err) => {
-              throw OstError.sdkError(err, 'os_osa_i_gbwppfs_5', OstErrorCodes.INVALID_TOKEN_ID);
-            });
-        }).catch((err) => {
-          throw OstError.sdkError(err, 'os_osa_i_gbwppfs_6', OstErrorCodes.INVALID_USER_ID);
-        });
+				if (!balanceResponse || balanceResponse.err) {
+					const ostError = OstError.sdkError(balanceResponse.err, 'os_osa_i_gbppfs_1', OstErrorCodes.SDK_API_ERROR);
+					return oThis.onError(ostError, subscriberId);
+				}
+
+				if (!pricePointResponse || pricePointResponse.err) {
+					const ostError = OstError.sdkError(balanceResponse.err, 'os_osa_i_gbppfs_1', OstErrorCodes.SDK_API_ERROR);
+					return oThis.onError(ostError, subscriberId);
+				}
+
+				const successResponse = {};
+				console.log(LOG_TAG, "balanceResponse :", balanceResponse);
+				console.log(LOG_TAG, "pricePointResponse :", pricePointResponse);
+
+				const balanceRespKey = balanceResponse['result_type'];
+				successResponse[balanceRespKey] = balanceResponse[balanceRespKey];
+
+				const pricePointRespKey = pricePointResponse['result_type'];
+				successResponse[pricePointRespKey] = pricePointResponse[pricePointRespKey];
+
+				return oThis.onSuccess(successResponse, subscriberId);
+			})
+      .catch( (error) => {
+        console.error(LOG_TAG, "Unexpected state error", error);
+      });
   }
+
+
+	onSuccess(args, subscriberId) {
+		const ostMsg = new OstMessage();
+		ostMsg.setSubscriberId(subscriberId);
+		ostMsg.setFunctionName('onSuccess');
+		ostMsg.setArgs(args);
+		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+	}
+
+	onError(errMsgObj, subscriberId) {
+		const ostMsg = new OstMessage();
+		ostMsg.setSubscriberId(subscriberId);
+		ostMsg.setFunctionName('onError');
+		ostMsg.setArgs(errMsgObj);
+		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+	}
+
 
   /**
   * Api to get user balance
@@ -542,7 +583,7 @@ class OstSdkAssist {
     let functionParams = {};
     let functionName = 'onError';
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getPendingRecovery()
       .then((response) => {
           if (response) {

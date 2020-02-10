@@ -24,6 +24,7 @@
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
   "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
   "SKD_INTERNAL_ERROR": "Something expected happen.",
-  "SDK_RESPONSE_ERROR": "SDK returned error"
+  "SDK_RESPONSE_ERROR": "SDK returned error",
+  "SDK_API_ERROR": "Sdk Api returned error response"
 }
 
