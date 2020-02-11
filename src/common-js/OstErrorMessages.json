@@ -25,6 +25,7 @@
   "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
   "SKD_INTERNAL_ERROR": "Something expected happen.",
   "SDK_RESPONSE_ERROR": "SDK returned error",
-  "SDK_API_ERROR": "Sdk Api returned error response"
+  "SDK_API_ERROR": "Sdk Api returned error response",
+  "WORKFLOW_CANCELLED": "User canceled"
 }
 

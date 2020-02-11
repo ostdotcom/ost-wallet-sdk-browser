@@ -226,6 +226,7 @@ function sendTokens(tokenHolderAddress) {
 	};
 
 	let workflowId = OstWalletSdk.executeDirectTransferTransaction(userSetup.getCurrentUser().user_id,
+	// let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
 		{
 			token_holder_addresses: [tokenHolderAddress],
 			amounts: ['100'],

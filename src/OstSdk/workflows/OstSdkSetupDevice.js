@@ -143,7 +143,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
-    message.setArgs(params, this.deviceRegisteredUUID);
+    message.setArgs({device: params}, this.deviceRegisteredUUID);
 
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }

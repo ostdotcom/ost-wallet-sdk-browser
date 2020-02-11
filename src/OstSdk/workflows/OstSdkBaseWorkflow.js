@@ -336,4 +336,8 @@ export default class OstSdkBaseWorkflow {
 			});
   }
 
+  cancelFlow() {
+    const err = new OstError("os_osdw_cf_1", OstErrorCodes.WORKFLOW_CANCELLED);
+    this.postError(err)
+  }
 }
