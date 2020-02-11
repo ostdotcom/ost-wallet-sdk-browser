@@ -71,13 +71,13 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       .then((token) => {
         oThis.token = token;
 
-        console.log(LOG_TAG, "initToken :: then");
+        console.log(LOG_TAG, "init token completed");
         return oThis.initUser()
       })
       .then((user) => {
         oThis.user = user;
 
-        console.log(LOG_TAG, "initToken :: then");
+        console.log(LOG_TAG, "init user completed");
         return oThis.user.createOrGetDevice(this.keyManagerProxy)
       })
       .then((deviceEntity) => {
@@ -98,11 +98,33 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   initToken() {
-    return OstToken.init(this.tokenId);
+    return OstToken.getById(this.tokenId)
+      .then((token) => {
+        if (token) {
+          return token;
+        }
+        return OstToken.init(this.tokenId);
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, "error while init user => ", err);
+        return OstToken.init(this.tokenId);
+      })
   }
 
   initUser() {
-    return OstUser.init(this.userId, this.tokenId);
+
+    return OstUser.getById(this.userId)
+      .then((user) => {
+        if (user) {
+          return user;
+        }
+        return OstUser.init(this.userId, this.tokenId);
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, "error while init user => ", err);
+        return OstUser.init(this.userId, this.tokenId);
+      })
+
   }
 
 
@@ -127,11 +149,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   deviceRegistered ( args ) {
 
-    // let subscriberId = args.subscriber_id;
-    // if (subscriberId) {
-    //   this.subscriberId = subscriberId;
-    // }
-
     this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
     this.performState( OstStateManager.state.REGISTERED, args);
   }
@@ -145,12 +162,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       .then(() => {
 
         console.log(LOG_TAG, "verifyDeviceRegistered :: then");
-        return oThis.syncUser()
+        return oThis.ensureUser()
       })
       .then(() => {
 
         console.log(LOG_TAG, "syncUser :: then");
-        return oThis.syncToken()
+        return oThis.ensureToken()
       })
       .then((obj) => {
         console.log(LOG_TAG, "Session Address", obj);
