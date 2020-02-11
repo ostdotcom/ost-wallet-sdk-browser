@@ -239,7 +239,10 @@ function getQRCode() {
 
 	let mappyCallback =  new OstWorkflowDelegate();
 	mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
-		userSetup.makeCode(ostContextEntity.qr_data);
+        const entityType = ostContextEntity.entity_type
+          , entity = ostContextEntity[entityType]
+          ;
+		userSetup.makeCode(entity);
 
 	};
 

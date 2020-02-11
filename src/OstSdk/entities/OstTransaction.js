@@ -18,6 +18,11 @@ class OstTransaction extends OstBaseEntity {
     return 'id';
   }
 
+  getType() {
+    return 'transaction';
+  }
+
+
   static getAllTransaction() {
     const ostSession = new OstTransaction({id: 'DummyInstance'});
     return ostSession.getAll();

@@ -35,7 +35,11 @@ class OstBaseEntity {
 	}
 
 	getData() {
-		return this.data;
+	  return this.data;
+	}
+
+	getType() {
+		return 'entity';
 	}
 
 	getStatus() {

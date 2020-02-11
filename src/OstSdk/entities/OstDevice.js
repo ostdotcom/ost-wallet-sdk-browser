@@ -23,6 +23,10 @@ class OstDevice extends OstBaseEntity {
     return 'address';
   }
 
+  getType() {
+    return 'device';
+  }
+
   static getById(deviceId) {
     const device = new OstDevice(
       {address: deviceId}

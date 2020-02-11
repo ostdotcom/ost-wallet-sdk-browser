@@ -10,6 +10,11 @@ class OstRule extends OstBaseEntity {
     return 'name';
   }
 
+  getType() {
+    return 'rule';
+  }
+
+
   static getById(name) {
     const rule = new OstRule(
       {name: name}

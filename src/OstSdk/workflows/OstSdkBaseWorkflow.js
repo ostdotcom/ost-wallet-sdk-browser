@@ -243,8 +243,12 @@ export default class OstSdkBaseWorkflow {
     let message = new OstMessage();
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('flowComplete');
+
+    const contextEntity = {entity_type: entity.getType()};
+    contextEntity[entity.getType()] = entity.getData();
+
     message.setArgs({
-      ost_context_entity: entity.getData(),
+      ost_context_entity: contextEntity,
       ost_workflow_context: this.getWorkflowContext().getJSONObject()
     });
 

@@ -18,6 +18,11 @@ class OstSession extends OstBaseEntity {
     return 'address';
   }
 
+  getType() {
+    return 'session';
+  }
+
+
   static init(userId, address, spendingLimit, expiryTime) {
     const session = new OstSession(
       {user_id: userId, address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.CREATED}
