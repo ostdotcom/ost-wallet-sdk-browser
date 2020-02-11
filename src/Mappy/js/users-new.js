@@ -18,6 +18,9 @@ class UserPage{
         oThis.previousPage = 1;
         oThis.bindEvents();
     }
+    getCurrentUser(){
+        return this.currentUser;
+    }
     init() {
         console.log("userpage:init");
         const oThis = this;
@@ -133,6 +136,7 @@ class UserPage{
     }
     sendDT(event){
         console.log(event.data.token_holder_address);
+        sendTokens(event.data.token_holder_address);
         // send token function needed to be called 
        // send token not working properly
        // oThis.sendToken(event.data.token_holder_address);
@@ -170,33 +174,55 @@ class UserPage{
         let apiUrl= oThis.generateUrl(oThis.nextPagePayload);
         oThis.loadUsers(apiUrl);
       }
-       sendTokens(tokenHolderAddress) {
+ 
+    
+}
+var userPage = new UserPage();
+function sendTokens(tokenHolderAddress,transactionType) {
+    const currentUser = userPage.getCurrentUser();
+    let mappyCallback =  new OstWorkflowDelegate();
+    mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
+        alert("Transaction Acknowledged");
+    };
 
-            let delegate =  new OstWorkflowDelegate();
-            delegate.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
-                alert("Transaction Acknowledged");
-            };
-        
-            delegate.flowInterrupt = function (ostWorkflowContext , ostError ) {
-            console.log(LOG_TAG, ostError);
-                alert("Transaction Interruped");
-            };
-        
-        
-            delegate.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
-        
-                console.log(LOG_TAG, "getQRCode");
-                console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
-                console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
-            };
-        
+    mappyCallback.flowInterrupt = function (ostWorkflowContext , ostError ) {
+      console.log( ostError);
+        alert("Transaction Interruped");
+    };
+
+
+    mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
+
+        console.log( "getQRCode");
+        console.log( "ostWorkflowContext :: ", ostWorkflowContext);
+        console.log( "ostContextEntity :: ", ostContextEntity);
+    };
+    switch(transactionType){
+        case "executeDirectTransferTransaction":
+            let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id,
+                // let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
+                    {
+                        token_holder_addresses: [tokenHolderAddress],
+                        amounts: ['10'],
+                    },
+                    mappyCallback);
+        break;
+        case "executePayTransaction":
             let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id,
-                {
-                    token_holder_ : [tokenHolderAddress],
-                    amounts: ['100'],
-                },
-                delegate);
+                // let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
+                    {
+                        token_holder_addresses: [tokenHolderAddress],
+                        amounts: ['10'],
+                    },
+                    mappyCallback);
     }
+    let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id,
+    // let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
+        {
+            token_holder_addresses: [tokenHolderAddress],
+            amounts: ['10'],
+        },
+        mappyCallback);
 }
 
-export default new UserPage();
+export default UserPage;
