@@ -1,19 +1,30 @@
 import '../css/login.css';
 import '../css/active_page.css';
 import OstSetup from "./common";
+import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
+import PageInitializer from "./PageInitializer";
 
 //var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
+
+const LOG_TAG = 'Mappy :: Users';
 
 var i=1;
 
 var ostSetup;
-
 class UsersSetup {
 
   constructor() {
-    ostSetup = new OstSetup();
+		ostSetup = new OstSetup();
+		this.pageInitializer = new PageInitializer();
+		this.pageInitializer.onPageInitialized((currentUser) => {
+			this.currentUser = currentUser;
+			console.log("currentUser", currentUser);
+		});
   }
 
+  getCurrentUser(){
+  	return this.currentUser;
+	}
   loadUserPage() {
     $(".logOutBtn").click( function(e) {
       logout();
@@ -41,13 +52,13 @@ class UsersSetup {
 
   uploadUserData(jsonData, pageNo) {
     const oThis = this;
-   
+
     if(!jsonData.data.meta.next_page_payload){
       return ;
     }
 
     console.log("user data is going to be add in this function");
-  
+
     //document.getElementById("signUpForm").style.display = "none";
     // document.getElementById("icon").style.display = "none";
     //document.createElement("label");
@@ -55,18 +66,18 @@ class UsersSetup {
     // label.innerHTML = '<button id="logOutBtn" class="btn btn-info navbar-brand pull-right" name="btn">Log Out</button>';
     // let logOutBtn = document.getElementById("logOutBtn");
     // logOutBtn.classList.add("btn");
-    // logOutBtn.classList.add("btn-default"); 
+    // logOutBtn.classList.add("btn-default");
     // logOutBtn.classList.add("btn-sm");
-    
 
-    document.getElementById("usersData").classList.add("table-responsive");  
+
+    document.getElementById("usersData").classList.add("table-responsive");
     var table = document.getElementById("usersTable");
-    
+
     table.classList.add("table");
     table.classList.add("table-striped");
-    
+
     table.style.width = "100%";
-    
+
 
     if (pageNo == 1){
       var header = table.createTHead();
@@ -87,25 +98,25 @@ class UsersSetup {
     for( ; i<count+10 ; i++,k++){
       var row1 = document.createElement("tr");
       //var textNode = document.createTextNode(i);
-  
+
       //var row1 = table.insertRow(i);
       var cell1 = row1.insertCell(0).innerHTML = i;
       console.log(jsonData.data.users[k].username);
       var cell2 = row1.insertCell(1).innerHTML = jsonData.data.users[k].username;
       var cell3 = row1.insertCell(2).innerHTML = jsonData.data.users[k].token_holder_address;
-  
+
       var row1cell3 = row1.insertCell(3);
       var cell4 = row1cell3.innerHTML = '<button id="btn" class="btn btn-info sendButtonClass" name="btn">Send</button>';
       row1cell3.addEventListener('click', this.getOnSendClickFn( jsonData.data.users[k] ) );
-  
+
       var cell5 = row1.insertCell(4).innerHTML = '<button id="Qrcodebtn" class="btn btn-info QrCodeBtnClass"  " data-toggle="modal" data-target="#myModal">Get QR</button> ';
       table.appendChild(row1);
     }
     count = i;
-  
+
     var span = document.createElement('span');
     var buttonDiv = document.getElementById("buttonDiv");
-  
+
     buttonDiv.innerHTML = '<button id="nextBtn" value="Next"  class ="nextButton arrow" >Next</button>';
     //buttonDiv.onclick = requestNextData(pageNo);
     document.getElementById("nextBtn").addEventListener("click", function(e) {
@@ -113,9 +124,10 @@ class UsersSetup {
     });
 
     $(".QrCodeBtnClass").on('click', function(event){
-        let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
-        let obj =JSON.parse(text);
-        oThis.makeCode(text);
+
+        //let text = '{"token_id":1129,"token_name":"STC1","token_symbol":"SC1","url_id":"3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a","mappy_api_endpoint":"https://demo-mappy.stagingost.com/demo/","saas_api_endpoint":"https://api.stagingost.com/testnet/v2/","view_api_endpoint":"https://ost:A$F^\u0026n!@$ghf%7@view.stagingost.com/testnet//testnet/"}';
+        //let obj =JSON.parse(text);
+        getQRCode();
     });
 }
 
@@ -157,9 +169,9 @@ getOnSendClickFn ( rowUserData ) {
 
 }
   logout(){
-    
+
     var baseUrl = OstSetup.getBaseUrl();
-    
+
     console.error(baseUrl);
     $.post(baseUrl+"/users/logout",
     {
@@ -167,14 +179,17 @@ getOnSendClickFn ( rowUserData ) {
     },
     function (data, status) {
       if(data.success==true){
-        window.location="/login"; 
+        window.location="/login";
       }
     });
   }
 
   makeCode(object){
-    let text  =  JSON.stringify(object);
-    $("#QrMainDiv div").html('');  
+		let text  = object;
+		if( object && typeof object === 'object') {
+			text  =  JSON.stringify(object);
+		}
+    $("#QrMainDiv div").html('');
       var qrcode = new QRCode(document.getElementById("qrcode"), {
       text: text,
       width: 470,
@@ -184,7 +199,7 @@ getOnSendClickFn ( rowUserData ) {
       correctLevel : QRCode.CorrectLevel.H
     });
   }
-  
+
 }
 
 var userSetup = new UsersSetup();
@@ -210,10 +225,35 @@ function sendTokens(tokenHolderAddress) {
 		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
 	};
 
-	let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id,
+	let workflowId = OstWalletSdk.executeDirectTransferTransaction(userSetup.getCurrentUser().user_id,
+	// let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
 		{
 			token_holder_addresses: [tokenHolderAddress],
 			amounts: ['100'],
 		},
 		mappyCallback);
 }
+
+function getQRCode() {
+	// getDevice();
+
+	let mappyCallback =  new OstMappyCallbacks();
+	mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
+		userSetup.makeCode(ostContextEntity.qr_data);
+
+	};
+
+	mappyCallback.flowComplete = function( ostWorkflowContext, ostContextEntity ) {
+
+		console.log(LOG_TAG, "getQRCode");
+		console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
+		console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
+	};
+
+	let workflowId = OstWalletSdk.createSession(
+		userSetup.getCurrentUser().user_id,
+		(parseInt(Date.now()/1000) + 60*60*24*30*5),
+		'100',
+		mappyCallback);
+}
+
