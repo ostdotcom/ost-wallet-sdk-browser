@@ -98,31 +98,32 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   initToken() {
-    return OstToken.getById(this.tokenId)
+    const oThis = this;
+    return OstToken.getById(oThis.tokenId)
       .then((token) => {
         if (token) {
           return token;
         }
-        return OstToken.init(this.tokenId);
+        return OstToken.init(oThis.tokenId);
       })
       .catch((err) => {
         console.log(LOG_TAG, "error while init user => ", err);
-        return OstToken.init(this.tokenId);
+        return OstToken.init(oThis.tokenId);
       })
   }
 
   initUser() {
-
-    return OstUser.getById(this.userId)
+		const oThis = this;
+    return OstUser.getById(oThis.userId)
       .then((user) => {
         if (user) {
           return user;
         }
-        return OstUser.init(this.userId, this.tokenId);
+        return OstUser.init(oThis.userId, oThis.tokenId);
       })
       .catch((err) => {
         console.log(LOG_TAG, "error while init user => ", err);
-        return OstUser.init(this.userId, this.tokenId);
+        return OstUser.init(oThis.userId, oThis.tokenId);
       })
 
   }
