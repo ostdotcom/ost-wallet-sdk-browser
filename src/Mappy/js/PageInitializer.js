@@ -186,7 +186,7 @@ class PageInitializer {
       })
   }
 
-  registerDevice(apiParams, device_name = 'a', device_uuid = 'b') {
+  registerDevice(apiParams) {
     const apiUrl = this.getBaseUrl() + '/devices';
     return ajaxUtils.post( apiUrl, {
         "address": apiParams.device_address,

@@ -169,7 +169,7 @@ export default OstSetup;
 // OstSetup.loadOstWalletSdk();
 
 
-function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
+function registerDevice(apiParams){
 
   return new Promise((resolve, reject) => {
 
@@ -191,10 +191,7 @@ function registerDevice(apiParams, device_name = 'a', device_uuid = 'b'){
     $.post(baseUrl+"/devices",
       {
         address: apiParams.device_address,
-        api_signer_address: apiParams.api_signer_address,
-        device_name: device_name,
-        device_uuid: device_uuid
-
+        api_signer_address: apiParams.api_signer_address
       }, response)
   })
 }
