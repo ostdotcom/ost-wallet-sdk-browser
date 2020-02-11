@@ -2,7 +2,6 @@ import '../css/login.css';
 import OstSetup from "./common";
 
 var ostSetup;
-var mappyCallback;
 class Workflows {
 
     constructor() {
@@ -10,13 +9,13 @@ class Workflows {
     }
 
     setupDeviceWorkflow(){
-        let mappyCallback =  new OstSetupDeviceDelegate();
+        let workflowDelegate =  new OstSetupDeviceDelegate();
 
-        mappyCallback.registerDevice = function( apiParams ) {
+        workflowDelegate.registerDevice = function( apiParams ) {
           return Promise.reject("registerDevice not allowed here.");
         };
 
-        mappyCallback.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
+        workflowDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
             var object = {};
             var object2 = {};
             object2.ost_context_entity = ostContextEntity;
@@ -26,7 +25,7 @@ class Workflows {
             console.log("requestAcknowledged ---> ",object);
         };
 
-        mappyCallback.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+        workflowDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
             var object = {};
             var object2 = {};
             object2.ost_context_entity = ostContextEntity;
@@ -36,7 +35,7 @@ class Workflows {
             console.log("flowComplete ---> ",object);
         };
 
-        mappyCallback.flowInterrupt = (ostWorkflowContext , ostError) => {   
+        workflowDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {   
             var object = {};
             var object2 = {};
             object2.ost_context_entity = ostError;
@@ -54,16 +53,16 @@ class Workflows {
             currentUser.user_id,
             currentUser.token_id,
             //"http://stagingpepo.com",
-            mappyCallback);
+            workflowDelegate);
             console.log("Workflow id ------>",workflowId);
         })
         .catch(err => console.log(err));
     }
 
     createSessionWorkflow(){
-        let mappyCallback =  new OstWorkflowDelegate();
+        let workflowDelegate =  new OstWorkflowDelegate();
 
-          mappyCallback.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
+          workflowDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
               var object = {};
               var object2 = {};
               object2.ost_context_entity = ostContextEntity;
@@ -73,7 +72,7 @@ class Workflows {
               console.log("requestAcknowledged ---> ",object);
           };
   
-          mappyCallback.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+          workflowDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
               var object = {};
               var object2 = {};
               object2.ost_context_entity = ostContextEntity;
@@ -83,7 +82,7 @@ class Workflows {
               console.log("flowComplete ---> ",object);
           };
   
-          mappyCallback.flowInterrupt = (ostWorkflowContext , ostError) => {   
+          workflowDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {   
               var object = {};
               var object2 = {};
               object2.ost_context_entity = ostError;
@@ -102,7 +101,7 @@ class Workflows {
               10000000000,              //expirationTime
               "10000000000",              //spendingLimit
               //"http://stagingpepo.com",
-              mappyCallback);
+              workflowDelegate);
               console.log("Workflow id ------>",workflowId);
           })
           .catch(err => console.log(err));
@@ -110,8 +109,8 @@ class Workflows {
     }
 
     executeTransactionWorkflow(){
-        let mappyCallback =  new OstWorkflowDelegate();
-        mappyCallback.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
+        let workflowDelegate =  new OstWorkflowDelegate();
+        workflowDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
             var object = {};
             var object2 = {};
             object2.ost_context_entity = ostContextEntity;
@@ -121,7 +120,7 @@ class Workflows {
             console.log("requestAcknowledged ---> ",object);
         };
 
-        mappyCallback.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+        workflowDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
             var object = {};
             var object2 = {};
             object2.ost_context_entity = ostContextEntity;
@@ -131,7 +130,7 @@ class Workflows {
             console.log("flowComplete ---> ",object);
         };
 
-        mappyCallback.flowInterrupt = (ostWorkflowContext , ostError) => {   
+        workflowDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {   
             var object = {};
             var object2 = {};
             object2.ost_context_entity = ostError;
@@ -154,7 +153,7 @@ class Workflows {
             currentUser.user_id,
             transactionData,
             //"http://stagingpepo.com",
-            mappyCallback);
+            workflowDelegate);
             console.log("Workflow id ------>",workflowId);
         })
         .catch(err => console.log(err));
