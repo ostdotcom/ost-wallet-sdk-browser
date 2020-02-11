@@ -52,7 +52,9 @@ export {
     getToken: "getTokenFromServer",
     getTransactions: "getTransactionsFromServer",
     getRules: "getRulesFromServer",
-    // getPendingRecovery: "getPendingRecoveryFromServer"
+    //getPendingRecovery: "getPendingRecoveryFromServer",
+    getDeviceList: "getDeviceListFromServer",
+    getTokenHolder: "getTokenHolderFromServer"
   };
   const jsonApiMethods = Object.keys( jsonApiMethodsMap );
 

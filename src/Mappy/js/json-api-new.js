@@ -18,7 +18,9 @@ class JsonApiPage extends CodeTesterBase {
     oThis.addTestConfig("getToken", "OstJsonApi.getToken('{{user_id}}')");
     oThis.addTestConfig("getRules", "OstJsonApi.getRules('{{user_id}}')");
     oThis.addTestConfig("getPricePoint", "OstJsonApi.getPricePoint('{{user_id}}')");
-    // oThis.addTestConfig("getPendingRecovery", "OstJsonApi.getPendingRecovery('{{user_id}}')");
+    //oThis.addTestConfig("getPendingRecovery", "OstJsonApi.getPendingRecovery('{{user_id}}')");
+    oThis.addTestConfig("getDeviceList", "OstJsonApi.getDeviceList('{{user_id}}')");
+    oThis.addTestConfig("getTokenHolder", "OstJsonApi.getTokenHolder('{{user_id}}')");
   }
 
   getToken() {
@@ -73,6 +75,18 @@ class JsonApiPage extends CodeTesterBase {
     const oThis = this;
     const ostUserId = oThis.currentUser.user_id;
     return OstJsonApi.getPendingRecovery(ostUserId);
+  }
+
+  getDeviceList() {
+    const oThis = this;
+    const ostUserId = oThis.currentUser.user_id;
+    return OstJsonApi.getDeviceList(ostUserId);
+  }
+
+  getTokenHolder(){
+    const oThis = this;
+    const ostUserId = oThis.currentUser.user_id;
+    return OstJsonApi.getTokenHolder(ostUserId);
   }
 }
 

@@ -48,7 +48,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 
   getAuthorizedSession() {
   	const oThis = this;
-		return OstSession.getAllSessions()
+		return OstSession.getActiveSessions(oThis.userId)
 			.then((sessionArray) => {
 				if (!oThis.expectedSpendAmount) {
 					oThis.expectedSpendAmount = oThis.getTotalAmount();

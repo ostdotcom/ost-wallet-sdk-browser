@@ -1,7 +1,6 @@
 import '../css/login.css';
 import '../css/active_page.css';
 import OstSetup from "./common";
-import OstMappyCallbacks from "../../OstWalletSdk/OstMappyCallbacks";
 import PageInitializer from "./PageInitializer";
 
 //var baseUrl="https://demo-devmappy.stagingostproxy.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a";
@@ -9,6 +8,7 @@ import PageInitializer from "./PageInitializer";
 const LOG_TAG = 'Mappy :: Users';
 
 var i=1;
+var ostSetup = new OstSetup();
 
 var ostSetup;
 class UsersSetup {
@@ -206,8 +206,8 @@ var userSetup = new UsersSetup();
 userSetup.loadUserPage();
 
 function sendTokens(tokenHolderAddress) {
-
-	let mappyCallback =  new OstWorkflowDelegate();
+    const currentUser = userSetup.getCurrentUser();
+    let mappyCallback =  new OstWorkflowDelegate();
 	mappyCallback.requestAcknowledged = function (ostWorkflowContext , ostContextEntity ) {
 		alert("Transaction Acknowledged");
 	};
@@ -229,7 +229,7 @@ function sendTokens(tokenHolderAddress) {
 	// let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
 		{
 			token_holder_addresses: [tokenHolderAddress],
-			amounts: ['100'],
+			amounts: ['10'],
 		},
 		mappyCallback);
 }
@@ -237,7 +237,7 @@ function sendTokens(tokenHolderAddress) {
 function getQRCode() {
 	// getDevice();
 
-	let mappyCallback =  new OstMappyCallbacks();
+	let mappyCallback =  new OstWorkflowDelegate();
 	mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
 		userSetup.makeCode(ostContextEntity.qr_data);
 

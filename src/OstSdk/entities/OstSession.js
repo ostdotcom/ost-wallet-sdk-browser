@@ -20,7 +20,7 @@ class OstSession extends OstBaseEntity {
 
   static init(userId, address, spendingLimit, expiryTime) {
     const session = new OstSession(
-      {user_id: userId, address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.AUTHORIZED}
+      {user_id: userId, address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.CREATED}
     );
     return session.forceCommit();
   }
