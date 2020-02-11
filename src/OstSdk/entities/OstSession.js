@@ -43,7 +43,7 @@ class OstSession extends OstBaseEntity {
 
         let filterSessions = sessionArray.filter(function (x) {
           return x.user_id === userId
-            && x.status === 'AUTHORIZED'
+            && x.status === OstSession.STATUS.AUTHORIZED
         });
 
         _resolve(filterSessions)

@@ -69,6 +69,11 @@ class IKM {
 			});
 	}
 
+	askForConfirmation() {
+		const result = confirm("Would you like to setup your wallet?");
+		return Promise.resolve(!!result);
+	}
+
 	storeKmData(kmData) {
 		const oThis = this;
 		const dataToStore = {
@@ -96,6 +101,10 @@ class IKM {
 			})
 			.then((deviceKey) => {
 				oThis.kmStruct.deviceAddress = deviceKey;
+				return oThis.askForConfirmation();
+			})
+			.then((isTrustable)=> {
+				oThis.kmStruct.isTrustable = isTrustable;
 				return oThis.kmStruct;
 			})
 			.catch((err) =>{
