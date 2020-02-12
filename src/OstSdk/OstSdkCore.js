@@ -1,6 +1,4 @@
 import {SOURCE} from '../common-js/OstBrowserMessenger'
-import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
-import OstError from "../common-js/OstError";
 import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'

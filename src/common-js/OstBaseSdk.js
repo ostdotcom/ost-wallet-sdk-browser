@@ -4,7 +4,7 @@ import OstError from "./OstError";
 import EC from "./OstErrorCodes";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
 import OstMessage from './OstMessage';
-//import '../common-css/sdk-stylesheet.css';
+import '../common-css/sdk-stylesheet.css';
 
 let hasBeenInitialized = false;
 let hasDownstreamBeenInitialized = false;
@@ -15,14 +15,14 @@ let LOG_TAG = "OstBaseSdk";
 class OstBaseSdk {
   constructor(window){
     this.defineImmutableProperty("_window", window);
-    
+
     const location = window.location
       , origin = location.origin
       , pathname = location.pathname
       , ancestorOrigins = location.ancestorOrigins
       , searchParams = location.search
     ;
-    
+
     this.defineImmutableProperty("_location", location);
     this.defineImmutableProperty("origin", origin);
     this.defineImmutableProperty("pathname", pathname);
@@ -642,7 +642,7 @@ class OstBaseSdk {
     if ( !oThis.hasUpstream() ) {
       return Promise.resolve( true );
     }
-    
+
     let ostMessage = new OstMessage();
     ostMessage.setFunctionName( "onDownstreamInitialzed" );
     ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
