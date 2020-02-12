@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {};
 
+const DEMO_MAPPY_UI_DOMAIN = process.env.DEMO_MAPPY_UI_DOMAIN;
 
 const devConfig = {
     mode: "development",
@@ -19,10 +20,17 @@ const devConfig = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: "Sdk-mappy.ostwalletsdk.com",
+            title: "",
             template: "./devserver/sdk-mappy.ostwalletsdk.com.html",
             inject: false
-        })
+        }),
+        new HtmlWebpackPlugin({
+            title: "Sdk-mappy.ostwalletsdk.com",
+            template: "./src/OstSdk/html/allowed-domains",
+            ALLOWED_DOMAIN: DEMO_MAPPY_UI_DOMAIN,
+            filename: "allowed-domains",
+            inject: false
+        }),
     ]
 };
 

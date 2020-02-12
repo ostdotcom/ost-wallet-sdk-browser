@@ -34,7 +34,7 @@ class UserPage {
         oThis.loadUsers(apiUrl);
     }
     generateUrl(page) {
-        return this.pageInitializer.getBaseUrl() + '/users?page=' + page;
+        return this.pageInitializer.getApiBaseUrl() + '/users?page=' + page;
     }
     loadUsers(apiUrl) {
         const oThis = this;

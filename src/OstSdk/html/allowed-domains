@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "result_type": "valid_domains",
+    "valid_domains": [
+        {
+          "id": 1,
+          "uts": 1234567890,
+          "domain": "<%= htmlWebpackPlugin.options.ALLOWED_DOMAIN %>"
+        }
+      ]
+  }
+}

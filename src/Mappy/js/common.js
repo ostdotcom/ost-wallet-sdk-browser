@@ -155,19 +155,9 @@ export class OstSetup {
     //     });
     //   })
   }
-
-  static loadOstWalletSdk() {
-  var newScript = document.createElement("script");
-    newScript.src = DEMO_MAPPY_UI_OST_SDK_JS_URL;
-    document.head.appendChild(newScript);
-    console.log("loadOstWalletSdk done!");
-  }
 }
 
 export default OstSetup;
-
-// OstSetup.loadOstWalletSdk();
-
 
 function registerDevice(apiParams){
 

@@ -5,6 +5,9 @@ const sdkConfig = {
   "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
 };
+
+const MAPPY_BASE_URL = DEMO_MAPPY_UI_BASE_URL;
+
 const LOG_TAG = "PageInitializer";
 class PageInitializer {
   constructor() {
@@ -98,17 +101,26 @@ class PageInitializer {
     this.onPageInitializedCallback = callback;
   }
 
-  getBaseUrl() {
+  getApiBaseUrl() {
     return DEMO_MAPPY_UI_API_ENDPOINT;
+  }
+
+  getBaseUrl() {
+    return MAPPY_BASE_URL;
   }
 
   getCurrentUser() {
     return this.currentUserInfo;
   }
 
-  getCurrentUserFromServer(successCb, failuerCb) {
+  getCurrentUserFromServer(dontLogout) {
     const oThis = this;
-    const apiUrl = this.getBaseUrl() + '/users/current-user';
+
+    if (typeof dontLogout !== 'boolean') {
+      dontLogout = false;
+    }
+
+    const apiUrl = this.getApiBaseUrl() + '/users/current-user';
     return ajaxUtils.get( apiUrl )
       .then( ( data ) =>{
         const resultType = data.result_type;
@@ -118,7 +130,9 @@ class PageInitializer {
       .catch( (error) => {
         // Trigger logout.
         // TODO: Detect if error is 401 before triggering logout.
-        oThis.logout();
+        if ( !dontLogout ) {
+          oThis.logout();
+        }
         throw error;
       })
   }
@@ -174,7 +188,7 @@ class PageInitializer {
   logout() {
     const oThis = this;
     //BUG: This logout url is incorrect.
-    const apiUrl = this.getBaseUrl() + '/users/logout';
+    const apiUrl = this.getApiBaseUrl() + '/users/logout';
     return ajaxUtils.post( apiUrl )
       .catch(() => {
         // ignore error.
@@ -193,13 +207,13 @@ class PageInitializer {
         console.log("document.cookie", document.cookie);
         // Go to login page.
         setTimeout(() => {
-          window.location = "/";
+          window.location = oThis.getBaseUrl() + "/login";
         }, 100);
       })
   }
 
   registerDevice(apiParams) {
-    const apiUrl = this.getBaseUrl() + '/devices';
+    const apiUrl = this.getApiBaseUrl() + '/devices';
     return ajaxUtils.post( apiUrl, {
         "address": apiParams.device_address,
         "api_signer_address": apiParams.api_signer_address,
