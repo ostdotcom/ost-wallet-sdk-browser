@@ -140,12 +140,7 @@ class OstBaseSdk {
     let url = OstURLHelpers.getStringToSign(selfUrl, pageParams);
 
     const oThis = this;
-    return this.browserMessenger.verifyIframeInit(url, signature)
-      .then((verified) => {
-        if (!verified) {
-          return verified;
-        }
-      });
+    return this.browserMessenger.verifyIframeInit(url, signature);
   }
 
   setDownstreamPublicKeyHex( signer ) {

@@ -9,8 +9,6 @@ const LOG_TAG = "OstSdk :: index :: ";
 class OstSdk extends OstBaseSdk {
   constructor(window, origin, pathname, ancestorOrigins, searchParams){
     super(window, origin, pathname, ancestorOrigins, searchParams);
-    this.defineImmutableProperty
-
     this.ostSdkAssist = null
   }
 
@@ -74,12 +72,17 @@ class OstSdk extends OstBaseSdk {
     return kmEndpoint;
   }
 
-  verifyIframeInitData(...args) {
-    return super.verifyIframeInitData(...args)
-      .then(() => {
-        return oThis.isWhiteListedParent()
-      })
-  }
+	verifyIframeInitData(...args) {
+		const oThis = this
+		;
+		return super.verifyIframeInitData(...args)
+			.then((verified) => {
+				if (!verified) {
+					return verified;
+				}
+				return oThis.isWhiteListedParent();
+			})
+	}
 
   isWhiteListedParent() {
     const oThis = this
@@ -108,9 +111,9 @@ class OstSdk extends OstBaseSdk {
 
 
     //Todo: should come from Mappy Sdk endpoint
-    // path is ./allowed-domains
+    // path is ./allowed-domains.json
     // IMPORTANT: note the DOT before THE SLASH.
-    
+
     return Promise.resolve([
       {
         "id": 1,
