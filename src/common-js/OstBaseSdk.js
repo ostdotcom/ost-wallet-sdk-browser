@@ -305,9 +305,9 @@ class OstBaseSdk {
 
     let _isIframeLoaded = false;
     let _isIframeTimedout = false;
-    let ifrmLoadEventListner = (event) => {
+    const iframeLoadEventListener = (event) => {
       try {
-        console.log("Downstream Iframe loaded!");
+        console.log(LOG_TAG, oThis.getReceiverName(), " :: Downstream Iframe loaded! :: ", _isIframeLoaded);
         if ( _isIframeLoaded ) {
           // Already received load event. Something is not right.
           console.warn("Unexpectedly received load event more than once from downstream iframe. Destroying the iframe. The sdk shall not work any more");
@@ -331,7 +331,7 @@ class OstBaseSdk {
       }
     };
 
-    downstreamIframe.addEventListener('load', ifrmLoadEventListner);
+    downstreamIframe.addEventListener('load', iframeLoadEventListener);
 
     setTimeout(() => {
       if ( _isIframeLoaded ) {
@@ -450,8 +450,14 @@ class OstBaseSdk {
           return true;
         })
         .catch((err) => {
-          oThis.destroySelfIfRequired();
-          throw OstError.sdkError(err, 'cj_obs_i_1')
+          try  {
+            oThis.sendInitializationFailed();
+            setTimeout(() => {
+              oThis.destroySelfIfRequired();
+            },1000);
+          }catch(err) {
+            console.log(LOG_TAG, ":: init :: failed to destroy iframe");
+          }
         });
   }
 
@@ -509,7 +515,7 @@ class OstBaseSdk {
    */
   createBrowserMessengerObject () {
     const messenger = new OstBrowserMessenger( this.getReceiverName(), this.getUpstreamOrigin() );
-    this.defineImmutableProperty("browserMessenger", messenger)
+    this.defineImmutableProperty("browserMessenger", messenger);
     return this.browserMessenger.perform();
   }
 
@@ -641,18 +647,13 @@ class OstBaseSdk {
     downstreamIframe = null;
   }
 
-  destroySelf() {
-    const oThis = this;
-    oThis.destroyDownstreamIframe();
-    oThis.getDocument().location = 'about:blank';
-  }
-
   destroySelfIfRequired() {
     const oThis = this;
-    console.log(LOG_TAG, " :: init :: catch :: ", this.getReceiverName());
-    if ('OstWalletSdk' !== this.getReceiverName()) {
+    console.log(LOG_TAG, " :: destroySelfIfRequired :: ", this.getReceiverName());
+    if ('OstWalletSdk' !== this.getReceiverName() || oThis.hasUpstream()) {
       console.log(LOG_TAG, " :: destroySelf", this.getReceiverName());
-      oThis.destroySelf();
+      oThis.destroyDownstreamIframe();
+      oThis.getDocument().location = 'about:blank';
     }else {
       console.log(LOG_TAG, " :: destroyDownstreamIframe ", this.getReceiverName());
       oThis.destroyDownstreamIframe();
@@ -725,6 +726,22 @@ class OstBaseSdk {
     if ( oThis.onDownstreamInitialzedCallback ) {
       oThis.onDownstreamInitialzedCallback(...args);
     }
+  }
+
+  sendInitializationFailed() {
+    const oThis = this;
+
+    let ostMessage = new OstMessage();
+    ostMessage.setFunctionName( "onDownstreamInitializationFailed" );
+    ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
+
+    return oThis.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM)
+  }
+
+  onDownstreamInitializationFailed(args) {
+    const oThis = this;
+
+    oThis.destroySelfIfRequired();
   }
 
   /**
