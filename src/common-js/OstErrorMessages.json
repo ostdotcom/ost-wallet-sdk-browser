@@ -27,6 +27,7 @@
   "SDK_RESPONSE_ERROR": "SDK returned error",
   "SDK_API_ERROR": "Sdk Api returned error response",
   "BROWSER_VALIDATION_FAILED": "Browser prerequisites needed to run sdk are missing ",
+  "BROWSER_IS_NOT_TRUSTED": "Browser is not trusted",
   "WORKFLOW_CANCELLED": "User canceled"
 }
 

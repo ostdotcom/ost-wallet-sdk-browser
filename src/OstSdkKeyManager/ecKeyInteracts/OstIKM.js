@@ -49,10 +49,10 @@ class IKM {
 				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, userMetaId)
 			})
 			.then((kmData) => {
-				if (kmData) {
+				if (kmData && kmData.data && kmData.data.isTrustable) {
 					console.log(LOG_TAG, "Key meta struct found", kmData);
 					oThis.kmStruct = kmData.data;
-					return kmData;
+					return kmData.data;
 				} else {
 					if (oThis.avoidKMBuilding) {
 						return {};
@@ -94,20 +94,28 @@ class IKM {
 		this.kmStruct = new KeyMetaStruct();
 		this.kmStruct.isTrustable = false;
 
-		return oThis.createApiKey()
-			.then((apiKey) => {
-				oThis.kmStruct.apiAddress = apiKey;
-				return oThis.createDeviceKey();
-			})
-			.then((deviceKey) => {
-				oThis.kmStruct.deviceAddress = deviceKey;
-				return oThis.askForConfirmation();
-			})
-			.then((isTrustable)=> {
+		return oThis.askForConfirmation()
+			.then((isTrustable) => {
 				oThis.kmStruct.isTrustable = isTrustable;
-				return oThis.kmStruct;
+
+				//If not trustable don't crate api and device keys
+				if (!isTrustable) {
+					return oThis.kmStruct;
+				}
+
+				//Browser is trustable create api and device keys
+				return oThis.createApiKey()
+					.then((apiKey) => {
+						oThis.kmStruct.apiAddress = apiKey;
+						return oThis.createDeviceKey();
+					})
+					.then((deviceKey) => {
+						oThis.kmStruct.deviceAddress = deviceKey;
+						return oThis.kmStruct;
+					});
 			})
-			.catch((err) =>{
+			.catch((err) => {
+				console.error(LOG_TAG, "Error while building meta", err);
 				throw "Meta Struct building failed";
 			})
 	}

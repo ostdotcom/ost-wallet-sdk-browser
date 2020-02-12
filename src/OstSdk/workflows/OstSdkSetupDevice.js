@@ -67,7 +67,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     console.log(LOG_TAG, "onParamsValidated");
 
-    return oThis.initToken()
+    return oThis.isBrowserTrustable()
+      .then(() => {
+				return oThis.initToken();
+      })
       .then((token) => {
         oThis.token = token;
 
@@ -192,4 +195,15 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       });
   }
 
+	isBrowserTrustable() {
+		const oThis = this
+		;
+		return oThis.keyManagerProxy.isTrustable()
+			.then((isTrustable) => {
+				if (!isTrustable) {
+					throw new OstError('os_w_ossd_ibt_1', OstErrorCodes.BROWSER_IS_NOT_TRUSTED);
+				}
+				return isTrustable;
+			});
+	}
 }
