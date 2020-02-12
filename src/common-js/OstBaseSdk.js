@@ -311,7 +311,7 @@ class OstBaseSdk {
         if ( _isIframeLoaded ) {
           // Already received load event. Something is not right.
           console.warn("Unexpectedly received load event more than once from downstream iframe. Destroying the iframe. The sdk shall not work any more");
-          oThis.destoryDownstreamIframe();
+          oThis.destroySelfIfRequired();
           return;
         }
 
@@ -342,7 +342,7 @@ class OstBaseSdk {
       _isIframeTimedout = true;
 
       // Destory the downstream iframe.
-      oThis.destoryDownstreamIframe();
+      oThis.destroySelfIfRequired();
 
       // Reject the promise.
       let errorInfo = {
@@ -448,6 +448,10 @@ class OstBaseSdk {
             return oThis.sendInitialzedMessage();
           }
           return true;
+        })
+        .catch((err) => {
+          oThis.destroySelfIfRequired();
+          throw OstError.sdkError(err, 'cj_obs_i_1')
         });
   }
 
@@ -621,13 +625,15 @@ class OstBaseSdk {
   }
 
   /**
-   * destoryDownstreamIframe - Removes downstream iframe from the document.
+   * destroyDownstreamIframe - Removes downstream iframe from the document.
    * @return {null} null.
    */
-  destoryDownstreamIframe() {
+  destroyDownstreamIframe() {
+    const oThis = this;
     if ( downstreamIframe ) {
       try {
-        getDocument().body.removeChild( downstreamIframe );
+        downstreamIframe.src = 'about:blank';
+        oThis.getDocument().body.removeChild( downstreamIframe );
       } catch( err ) {
         //ignore.
       }
@@ -635,7 +641,23 @@ class OstBaseSdk {
     downstreamIframe = null;
   }
 
+  destroySelf() {
+    const oThis = this;
+    oThis.destroyDownstreamIframe();
+    oThis.getDocument().location = 'about:blank';
+  }
 
+  destroySelfIfRequired() {
+    const oThis = this;
+    console.log(LOG_TAG, " :: init :: catch :: ", this.getReceiverName());
+    if ('OstWalletSdk' !== this.getReceiverName()) {
+      console.log(LOG_TAG, " :: destroySelf", this.getReceiverName());
+      oThis.destroySelf();
+    }else {
+      console.log(LOG_TAG, " :: destroyDownstreamIframe ", this.getReceiverName());
+      oThis.destroyDownstreamIframe();
+    }
+  }
 
   getUpstreamReceiverName() {
     const error = new Error("getUpstreamReceiverName needs to be overridden by derived class.");

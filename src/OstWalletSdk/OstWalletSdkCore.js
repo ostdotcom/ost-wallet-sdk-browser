@@ -114,6 +114,10 @@ class OstWalletSdkCore extends OstBaseSdk {
   deleteLocalSessions( userId ) {
     return this.proxy.deleteLocalSessions(userId)
   }
+
+  destroySelf() {
+    throw new OstError('ows_owsc_ds_1', EC.SKD_INTERNAL_ERROR);
+  }
 }
 
 export default OstWalletSdkCore;
