@@ -1,6 +1,5 @@
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import IKM from "../ecKeyInteracts/OstIKM";
-import OstIndexDB from "../../common-js/OstIndexedDB";
 import OstMessage from "../../common-js/OstMessage";
 
 const LOG_TAG = 'IKM: OstKeyManagerAssist';

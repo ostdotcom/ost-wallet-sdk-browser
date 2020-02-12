@@ -1,22 +1,11 @@
-
-
 import {SOURCE} from "../common-js/OstBrowserMessenger";
 import OstError from "../common-js/OstError";
 import OstBaseSdk from "../common-js/OstBaseSdk";
-
-// import IKM from './ecKeyInteracts/internalKeyManager'
-//
-// const ikm = new IKM(uuidv4());
-// const wallet = ikm.generateHDWallet();
-// const gensig = ikm.signMessage(wallet, "message");
-// const persig = ikm.personalSign(wallet, "message");
-
-import OstKeyManager from './OstKeyManagerAssist'
-import OstMessage from "../common-js/OstMessage";
-const LOG_TAG = 'KM';
-
-import OstSecureEnclave from "./ecKeyInteracts/OstSecureEnclave";
 import OstKeyManagerAssist from './OstKeyManagerAssist'
+import OstMessage from "../common-js/OstMessage";
+
+
+const LOG_TAG = 'KM';
 
 (function(window) {
 
@@ -66,6 +55,28 @@ import OstKeyManagerAssist from './OstKeyManagerAssist'
           }
           throw new OstError('os_i_p_1', 'SKD_INTERNAL_ERROR', err);
         });
+    }
+
+		verifyIframeInitData() {
+			const oThis = this
+        , kMOrigin = oThis.origin
+			;
+			const determinedKMOrigin = oThis.determineUpStreamOrigin();
+			if (determinedKMOrigin !== kMOrigin) {
+				console.error(LOG_TAG, "KM origin does not conform with determined KM origin",
+					"Determined KM Origin", ancestorOrigin, "KMOrigin", kMOrigin);
+				return Promise.resolve(false)
+			}
+
+      return super.verifyIframeInitData();
+    }
+
+    determineUpStreamOrigin() {
+      const oThis = this
+        , ancestorOrigin = oThis.ancestorOrigins[0]
+      ;
+
+			return ancestorOrigin.replace("https://sdk-", "https://km-");
     }
 
     getReceiverName() {
