@@ -46,30 +46,29 @@ export class LoginSetup {
   onClickLogin() {
     var baseUrl = ostSetup.getBaseUrl();
     document.getElementById("signupBtn").disabled = true;
-    $("#signupBtn").attr("disabled", true); 
+    $("#signupBtn").attr("disabled", true);
     $.post(baseUrl+"/login", {
             username: document.getElementById("usernameTb").value,
             password: document.getElementById("password").value
         },
         function (data, status) {
-          
+
             console.log("Data: " + data + "\nStatus: " + status);
             // Make another api call to fetch current user info.
             console.log(data.success);
-            if(data.success==false){
-              alert("INVALID USERNAME OR PASSWORD");
-            }
-            if(data.success==true) {
-              ostSetup.setupDevice();
-              window.location = "/sdk-getters";
-            } else {
-                $("#signupBtn").removeAttr("disabled");
-                // TODO: Display error on page.
-                console.log("Issues logging in", error);
-            }
+					  if(data.success) {
+						  ostSetup.setupDevice();
+						  window.location = "/sdk-getters";
+						}
+						else {
+							alert("INVALID USERNAME OR PASSWORD");
+							// TODO: Display error on page.
+							// console.log("Issues logging in", error);
+						}
+					 $("#signupBtn").removeAttr("disabled");
+
         });
   }
 }
 
 var loginSetup = new LoginSetup();
-   
