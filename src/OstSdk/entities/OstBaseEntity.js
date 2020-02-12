@@ -115,19 +115,23 @@ class OstBaseEntity {
 	}
 
 	getInstance() {
-		if (dbInstance) {
-			return Promise.resolve(dbInstance);
-		} else {
-			let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME, ENTITIES_DB_VERSION, STORES);
-			return instance.createDatabase()
-				.then(() => {
-					dbInstance = instance;
-					return dbInstance;
-				})
-				.catch((err) => {
-					console.err(LOG_TAG, "Error while creating db for Entities", err);
-				});
-		}
+		return OstBaseEntity.initInstance();
+	}
+
+	static initInstance() {
+      if (dbInstance) {
+        return Promise.resolve(dbInstance);
+      } else {
+        let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME, ENTITIES_DB_VERSION, STORES);
+        return instance.createDatabase()
+          .then(() => {
+            dbInstance = instance;
+            return dbInstance;
+          })
+          .catch((err) => {
+            console.err(LOG_TAG, "Error while creating db for Entities", err);
+          });
+      }
 	}
 }
 

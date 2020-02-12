@@ -2,6 +2,7 @@ import {SOURCE} from '../common-js/OstBrowserMessenger'
 import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'
+import {OstBaseEntity} from "./entities/OstBaseEntity";
 
 const LOG_TAG = "OstSdk :: index :: ";
 
@@ -26,6 +27,10 @@ class OstSdk extends OstBaseSdk {
   createAssist() {
     const oThis = this;
     return oThis.createOstSdkAssist();
+  }
+
+  initDBInstance() {
+    return OstBaseEntity.initInstance();
   }
 
   getReceiverName() {

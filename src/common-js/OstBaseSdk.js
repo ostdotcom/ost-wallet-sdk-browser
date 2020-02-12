@@ -374,6 +374,12 @@ class OstBaseSdk {
           return oThis.onBrowserMessengerCreated( this.browserMessenger );
         })
 
+        // Init db instance
+        .then(() => {
+         console.log(LOG_TAG, ":: init :: calling initDb");
+          return oThis.initDBInstance();
+        })
+
         // Subscribe to on setup complete
         .then( () => {
           console.log(LOG_TAG, ":: init :: calling createAssist");
@@ -407,6 +413,10 @@ class OstBaseSdk {
           }
           return true;
         });
+  }
+
+  initDBInstance() {
+    return Promise.resolve();
   }
 
   hasUpstream() {
