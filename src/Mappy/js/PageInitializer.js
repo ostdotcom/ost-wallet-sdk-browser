@@ -1,6 +1,5 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
-import {OstWalletSdk} from "../../OstWalletSdk";
 
 const sdkConfig = {
   "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
@@ -31,7 +30,7 @@ class PageInitializer {
       .then( () => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>✅ Done</span>");
-        
+
 
         jEl = $("#loading-sdk-init");
         jEl.removeClass("d-none");
@@ -56,7 +55,7 @@ class PageInitializer {
         if ( oThis.onPageInitializedCallback ) {
           setTimeout( () => {
             // Do not break promise chian.
-            oThis.onPageInitializedCallback( oThis.currentUserInfo );  
+            oThis.onPageInitializedCallback( oThis.currentUserInfo );
           }, 0);
         }
         return true;
@@ -194,7 +193,7 @@ class PageInitializer {
         console.log("document.cookie", document.cookie);
         // Go to login page.
         setTimeout(() => {
-          window.location = "/";  
+          window.location = "/";
         }, 100);
       })
   }
