@@ -40,6 +40,11 @@ class OstUser extends OstBaseEntity {
 		return 'id';
 	}
 
+  getType() {
+    return 'user';
+  }
+
+
   getTokenId() {
     return this.getData().token_id;
   }

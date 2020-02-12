@@ -237,20 +237,26 @@ function getQRCode() {
 
     let mappyCallback = new OstWorkflowDelegate();
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
-        userSetup.makeCode(ostContextEntity.qr_data);
+        const entityType = ostContextEntity.entity_type,
+            entity = ostContextEntity[entityType];
+        userSetup.makeCode(entity);
 
-    };
+        let mappyCallback = new OstWorkflowDelegate();
+        mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
+            userSetup.makeCode(ostContextEntity.qr_data);
 
-    mappyCallback.flowComplete = function(ostWorkflowContext, ostContextEntity) {
+        };
 
-        console.log(LOG_TAG, "getQRCode");
-        console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
-        console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
-    };
+        mappyCallback.flowComplete = function(ostWorkflowContext, ostContextEntity) {
 
-    let workflowId = OstWalletSdk.createSession(
-        userSetup.getCurrentUser().user_id,
-        (parseInt(Date.now() / 1000) + 60 * 60 * 24 * 30 * 5),
-        '100',
-        mappyCallback);
-}
+            console.log(LOG_TAG, "getQRCode");
+            console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
+            console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
+        };
+
+        let workflowId = OstWalletSdk.createSession(
+            userSetup.getCurrentUser().user_id,
+            (parseInt(Date.now() / 1000) + 60 * 60 * 24 * 30 * 5),
+            '100',
+            mappyCallback);
+    }

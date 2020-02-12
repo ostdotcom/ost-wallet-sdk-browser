@@ -23,6 +23,11 @@ class OstToken extends OstBaseEntity {
     return 'id';
   }
 
+  getType() {
+    return 'token';
+  }
+
+
   static getById(tokenId) {
     const token = new OstToken(
       {id: tokenId}

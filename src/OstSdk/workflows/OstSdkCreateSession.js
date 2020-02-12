@@ -85,6 +85,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   postShowQRData( qrData ) {
 
     let params = {
+        entity_type: "qr_data",
         qr_data : qrData
     };
 
