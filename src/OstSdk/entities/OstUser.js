@@ -55,7 +55,7 @@ class OstUser extends OstBaseEntity {
 			return keyManagerProxy.getCurrentDeviceAddress()
 				.then((deviceAddress) => {
 					oThis.currentDeviceAddress = deviceAddress;
-					return deviceAddress;
+					return OstDevice.getById(this.currentDeviceAddress);
 				});
 		}
 		console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
