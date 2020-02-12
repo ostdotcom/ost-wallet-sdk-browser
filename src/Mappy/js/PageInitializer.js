@@ -1,5 +1,6 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
+import {OstWalletSdk} from "../../OstWalletSdk";
 
 const sdkConfig = {
   "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
@@ -80,7 +81,19 @@ class PageInitializer {
     const oThis = this;
     $("#j-logout-btn").click(() => {
       oThis.logout();
-    })
+    });
+
+    $("#j-delsession-btn").click(() => {
+      const oThis = this;
+      const ostUserId = oThis.getCurrentUser().user_id;
+      OstWalletSdk.deleteLocalSessions(ostUserId)
+        .then((isDeleted) => {
+            console.log(LOG_TAG, "deleteLocalSessions :: then :: ", isDeleted)
+        })
+        .catch((err) => {
+          console.log(LOG_TAG, "deleteLocalSessions :: catch :: ", err)
+        })
+    });
   }
   onPageInitialized( callback ) {
     this.onPageInitializedCallback = callback;

@@ -8,7 +8,6 @@ class SdkGettersPage extends CodeTesterBase {
     oThis.addTestConfig("getUser", "OstWalletSdk.getUser('{{user_id}}')");
     oThis.addTestConfig("getDevice", "OstWalletSdk.getDevice('{{user_id}}')");
     oThis.addTestConfig("getActiveSessions", "OstWalletSdk.getActiveSessions('{{user_id}}')");
-    // oThis.addTestConfig("deleteLocalSessions", "OstWalletSdk.deleteLocalSessions('{{user_id}}')");
   }
 
   getUser() {
@@ -33,13 +32,6 @@ class SdkGettersPage extends CodeTesterBase {
     const oThis = this;
     const ostUserId = oThis.currentUser.user_id;
     return OstWalletSdk.getActiveSessions(ostUserId);
-  }
-
-
-  deleteLocalSessions() {
-    const oThis = this;
-    const ostUserId = oThis.currentUser.user_id;
-    return OstWalletSdk.deleteLocalSessions(ostUserId)
   }
 }
 
