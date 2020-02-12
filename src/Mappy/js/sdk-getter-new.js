@@ -1,6 +1,10 @@
-import CodeTesterBase from "./CodeTesterBase";
+import CodeTesterPageBase from "./CodeTesterPageBase";
 
-class SdkGettersPage extends CodeTesterBase {
+class SdkGettersPage extends CodeTesterPageBase {
+  
+  constructor() {
+    super(".container", "#j-method-template");
+  }
 
   addTesterConfigs() {
     const oThis = this;

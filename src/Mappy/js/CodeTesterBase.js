@@ -1,5 +1,4 @@
 import codeHighlighter from "highlight.js";
-import PageInitializer from "./PageInitializer";
 import Handlebars from "handlebars";
 import CodeHighlight from "highlight.js";
 import CodeHighlightJSLanguageSupport from "highlight.js/lib/languages/javascript";
@@ -11,15 +10,11 @@ import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 class CodeTesterBase {
-  constructor() {
+  constructor(jqsContainer = ".container", jqsTemplate = "#j-method-template") {
     const oThis = this;
     // Create Page Initializer
-    oThis.pageInitializer = new PageInitializer();
-    oThis.pageInitializer.onPageInitialized( ( currentUser ) => {
-      oThis.currentUser = currentUser;
-      console.log("currentUser", currentUser);
-      oThis.onPageInitialized( currentUser );
-    });
+    oThis.jqsContainer = jqsContainer;
+    oThis.jqsTemplate = jqsTemplate;
 
     //
     oThis.methods = [];
@@ -27,13 +22,7 @@ class CodeTesterBase {
     oThis.addTesterConfigs();
   }
 
-  init() {
-    const oThis = this;
-    this.validatePage();
-    this.setupSdkHelper.perform();
-  }
-
-  onPageInitialized( ) {
+  perform( currentUser ) {
     const oThis = this;
     oThis.compileTemplates();
 
@@ -57,7 +46,7 @@ class CodeTesterBase {
       };
 
       // Copy current user info.
-      Object.assign(templateData, oThis.currentUser);
+      Object.assign(templateData, currentUser || oThis.currentUser);
 
       let finalDisplayCode = displayCodeTemplate( templateData );
       templateData.displayCode = finalDisplayCode;
@@ -68,7 +57,7 @@ class CodeTesterBase {
       let codeEl = jOutputEl.find("#" + templateData.displayCodeViewId)[ 0 ];
       codeEl && CodeHighlight.highlightBlock( codeEl );
 
-      $(".container").first().append( jOutputEl );
+      $(oThis.jqsContainer).first().append( jOutputEl );
       oThis.makeMethodCall(templateData, jOutputEl);
     }
   }
@@ -94,20 +83,16 @@ class CodeTesterBase {
       })
       .catch( (error) => {
         jsonEl.jsonViewer( error, jsonViewerSettings);
-        jsonEl.css({
-          backgroundColor: "yellow"
-        })
+        jsonEl.addClass("alert alert-warning");
         strEl.html( JSON.stringify(error, null, 2) );
-        strEl.css({
-          backgroundColor: "yellow"
-        })
+        strEl.addClass("alert alert-warning");
       })
 
   }
 
   compileTemplates() {
     const oThis = this;
-    let methodTemplateHtml = $("#j-method-template").html();
+    let methodTemplateHtml = $(oThis.jqsTemplate).html();
     oThis.methodTemplate = Handlebars.compile( methodTemplateHtml );
   }
 

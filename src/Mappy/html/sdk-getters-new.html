@@ -100,5 +100,42 @@
     </div>
   </div>
 </script>
+<script id="j-json-api-template" type="text/x-handlebars-template">
+  <div class="row" style="display: flex; margin-top:50px;">
+    <div class="col-12"><h4>OstJsonApi.{{methodName}}()</h4></div>
+    <div class="col-md-6 col-sm-12">
+      <div class="card" style="height:100%">
+        <div class="card-header">
+          <b>Usage</b>
+        </div>
+        <div class="card-body" style="max-height: 250px; overflow: auto;">
+            <code id="{{displayCodeViewId}}" class="language-javascript">{{displayCode}}</code>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-12">
+      <div class="card" style="height:100%">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" role="tab" href="#{{jsonViewId}}">JSON</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" role="tab" href="#{{stringViewId}}">String</a>
+            </li>
+          </ul>
+        </div>
+        <div class="tab-content">
+        <div id="{{jsonViewId}}" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
+        </div>
+        <div id="{{stringViewId}}" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
+          <code class="language-json"></code>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
 </body>
 </html>
