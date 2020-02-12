@@ -68,7 +68,7 @@ class UserPage{
     processData(jsonData , template){
         const oThis = this;
         $('#user-row-div').empty();
-        //console.log(jsonData);
+
         oThis.nextPagePayload = jsonData.meta.next_page_payload.page;
         var viewId = "user_row";
         let balance =0;
@@ -76,6 +76,7 @@ class UserPage{
         let outputHtml;
         oThis.htmlwork;
         let token_holder_address;
+
         for(var i=0 ; i<10 ; i++ ){
             let app_user_id = jsonData.users[i].app_user_id;
             if(jsonData.balances.hasOwnProperty(app_user_id)){
@@ -92,6 +93,7 @@ class UserPage{
             }else{
                 token_holder_address = jsonData.users[i].token_holder_address;
             }
+
             oThis.templateData = {
                 Username : app_user_id,
                 User_Balance : balance,
@@ -104,35 +106,33 @@ class UserPage{
                 user_row:viewId + i,
                 modal_body_id:viewId + "_modal_body_id_"+i
             };
-             outputHtml = template( oThis.templateData );
-             oThis.htmlwork+=outputHtml;
-             console.log(outputHtml);
+
+            outputHtml = template( oThis.templateData );
+            oThis.htmlwork+=outputHtml;
+            
             $('#user-row-div').append( outputHtml );
             jOutputEl = $( outputHtml );
+
             let sendDT = $('#'+oThis.templateData.user_row).find("#" + oThis.templateData.sendDT)
             let sendCent = $('#'+oThis.templateData.user_row).find("#" + oThis.templateData.sendCent)
             let sendModal = $('#user_row_modal_body_id_0').find("#user_row_sendModal_0").css("color", "#17A2B8");
-            oThis.bindingButtonEvents(sendDT, sendCent, sendModal, oThis.templateData.Token_Holder_Address);
-            
 
-        }
-       
+            oThis.bindingButtonEvents(sendDT, sendCent, sendModal, oThis.templateData.Token_Holder_Address);
+          }
     }
+
     bindingButtonEvents(sendDT ,sendCent, sendModal, token_holder_address){
         const oThis =this;
         sendDT.off().on('click',{token_holder_address: token_holder_address},oThis.sendDT);
-        //sendDT.click({token_holder_address: token_holder_address}, oThis.sendDT);
         sendCent.off().on('click',{token_holder_address: token_holder_address}, oThis.sendCent);
         sendModal.off().on('click',{token_holder_address: token_holder_address}, oThis.sendModal);
-        
     }
-    sendCent(event){
-        console.log(event.data.token_holder_address);
-        sendTokens(event.data.token_holder_address,"executePayTransaction");
 
+    sendCent(event){
+        sendTokens(event.data.token_holder_address,"executePayTransaction");
     }
+
     sendModal(event){
-        //alert(event.data.token_holder_address);
         var index = document.getElementById("transaction-type");
         var value = index.options[index.selectedIndex].value;
         if(value === "executeDirectTransferTransaction"){
@@ -141,10 +141,12 @@ class UserPage{
             sendTokens(event.data.token_holder_address,"executePayTransaction");
         }
     }
+
     sendDT(event){
         console.log(event.data.token_holder_address);
         sendTokens(event.data.token_holder_address,"executeDirectTransferTransaction");
     }
+
     compileTemplates() {
         const oThis = this;
         let methodTemplateHtml = $("#user-method-template").html();
@@ -163,21 +165,32 @@ class UserPage{
             oThis.prevPageload();
           });
         })
-      }
-      nextPageload(){
-        $("#previous").disabled = false;
+    }
+
+    nextPageload(){
         const oThis = this;
+        if(oThis.nextPagePayload == null){
+            $("#next").disabled = false;
+            alert("You have arrived on the last page");
+            return;
+        }
+        $("#previous").disabled = false;
+        
         oThis.previousPage = oThis.nextPagePayload-1;
         let apiUrl= oThis.generateUrl(oThis.nextPagePayload);
         oThis.loadUsers(apiUrl);
-      }
-      prevPageload(){
+    }
+    prevPageload(){
         const oThis = this;
+        if(oThis.previousPage <= 0){
+            $("#previous").disabled = false;
+            return;
+        }
         console.log(oThis.previousPage);
         let apiUrl= oThis.generateUrl(oThis.previousPage);
         oThis.previousPage = oThis.previousPage-1;
         oThis.loadUsers(apiUrl);
-      }
+    }
  
     
 }
