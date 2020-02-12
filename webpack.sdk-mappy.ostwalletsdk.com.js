@@ -28,7 +28,7 @@ const devConfig = {
             title: "Sdk-mappy.ostwalletsdk.com",
             template: "./src/OstSdk/html/allowed-domains",
             ALLOWED_DOMAIN: DEMO_MAPPY_UI_DOMAIN,
-            filename: "allowed-domains",
+            filename: "allowed-domains.json",
             inject: false
         }),
     ]
