@@ -6,7 +6,8 @@
   "scripts": {
     "dev-mappy-server": "webpack-dev-server --config webpack.mappy.com.js --env.NODE_ENV=dev",
     "dev-ost-server": "webpack-dev-server --config webpack.ost-scripts.js --env.NODE_ENV=dev",
-    "dev-servers": "concurrently \"npm run dev-ost-server\" \"npm run dev-mappy-server\"",
+    "dev-servers": "webpack-dev-server --config webpack.ost-scripts.js --env.NODE_ENV=dev",
+    "dev-servers-old": "concurrently \"npm run dev-ost-server\"",
     "build-ost-sdk": "webpack --config webpack.ost-scripts.js --env.NODE_ENV=prod"
   },
   "repository": {
