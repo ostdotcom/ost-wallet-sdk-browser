@@ -3,6 +3,9 @@ import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'
 import {OstBaseEntity} from "./entities/OstBaseEntity";
+import EC from "../common-js/OstErrorCodes";
+import * as axios from "axios";
+import OstError from "../common-js/OstError";
 
 const LOG_TAG = "OstSdk :: index :: ";
 
@@ -97,7 +100,7 @@ class OstSdk extends OstBaseSdk {
         }
         for (let i=0; i < whiteListedUrls.length; i++) {
           let urlObject = whiteListedUrls[i];
-          if ( ancestorOrigin === urlObject.domain ) {
+          if (  urlObject.domain.startsWith(ancestorOrigin) ) {
             console.log(LOG_TAG, "White listed url found", ancestorOrigin,urlObject.domain );
             return true
           }
@@ -107,26 +110,40 @@ class OstSdk extends OstBaseSdk {
       })
   }
 
-  getWhiteListedUrls() {
+	getWhiteListedUrls() {
+		let _resolve
+			, _reject
+		;
 
+		// GET request for Mappy Sdk Endpoint
+		axios({
+			method: 'get',
+			url: './allowed-domains.json',
+			responseType: 'json'
+		})
+			.then(function (response) {
+				const responseData = response.data;
+				const data = responseData.data;
+				console.log(LOG_TAG, "allowed-domians", data);
+				if (!responseData.success || !data.result_type || !data[data.result_type]) {
+					console.error(LOG_TAG, "allowed-domains.json response parsing failed");
+					const ostError = new OstError('os_wf_osc_gwlu_1', EC.SDK_API_ERROR);
+					return _reject(ostError);
+				}
+				const validDomains = data[data.result_type];
+				return _resolve(validDomains);
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "allowed-domains.json fetch failed", err);
+				const ostError = OstError.sdkError(err, 'os_wf_osc_gwlu_2', EC.SDK_API_ERROR);
+				return _reject(ostError);
+			});
 
-    //Todo: should come from Mappy Sdk endpoint
-    // path is ./allowed-domains.json
-    // IMPORTANT: note the DOT before THE SLASH.
-
-    return Promise.resolve([
-      {
-        "id": 1,
-        "uts": 1234567890,
-        "domain": "https://devmappy.com"
-      },
-      {
-        "id": 2,
-        "uts": 1234567890,
-        "domain": "https://sdk-devmappy.ostsdkproxy.com"
-      }
-    ]);
-  }
+		return new Promise((resolve, reject) => {
+			_resolve = resolve;
+			_reject = reject;
+		});
+	}
 }
 
 export default OstSdk;
