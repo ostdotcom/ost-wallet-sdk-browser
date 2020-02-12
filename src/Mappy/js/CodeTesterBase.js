@@ -64,7 +64,7 @@ class CodeTesterBase {
 
       let outputHtml = oThis.methodTemplate( templateData );
       let jOutputEl = $( outputHtml );
-      
+
       let codeEl = jOutputEl.find("#" + templateData.displayCodeViewId)[ 0 ];
       codeEl && CodeHighlight.highlightBlock( codeEl );
 
