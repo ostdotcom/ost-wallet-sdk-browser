@@ -29,14 +29,12 @@ class UserPage{
     }
     onPageInitialized(){
         const oThis = this;
-        var pageInitializer =new PageInitializer();
         oThis.compileTemplates();
         let apiUrl = oThis.generateUrl(1);
         oThis.loadUsers(apiUrl);
     }
     generateUrl(page){
-        var pageInitializer =new PageInitializer();
-        return pageInitializer.getBaseUrl() +'/users?page=' +page;
+        return this.pageInitializer.getBaseUrl() +'/users?page=' +page;
     }
     loadUsers(apiUrl){
         const oThis =this;
@@ -111,9 +109,9 @@ class UserPage{
              console.log(outputHtml);
             $('#user-row-div').append( outputHtml );
             jOutputEl = $( outputHtml );
-            let sendDT = $('#'+oThis.templateData.user_row).find("#" + oThis.templateData.sendDT).css("color", "#002e3f");
-            let sendCent = $('#'+oThis.templateData.user_row).find("#" + oThis.templateData.sendCent).css("color", "#002e3f");
-            let sendModal = $('#user_row_modal_body_id_9').find("#user_row_sendModal_9").css("color", "red");
+            let sendDT = $('#'+oThis.templateData.user_row).find("#" + oThis.templateData.sendDT)
+            let sendCent = $('#'+oThis.templateData.user_row).find("#" + oThis.templateData.sendCent)
+            let sendModal = $('#user_row_modal_body_id_0').find("#user_row_sendModal_0").css("color", "#17A2B8");
             oThis.bindingButtonEvents(sendDT, sendCent, sendModal, oThis.templateData.Token_Holder_Address);
             
 
@@ -130,16 +128,22 @@ class UserPage{
     }
     sendCent(event){
         console.log(event.data.token_holder_address);
+        sendTokens(event.data.token_holder_address,"executePayTransaction");
+
     }
     sendModal(event){
-        alert(event.data.token_holder_address);
+        //alert(event.data.token_holder_address);
+        var index = document.getElementById("transaction-type");
+        var value = index.options[index.selectedIndex].value;
+        if(value === "executeDirectTransferTransaction"){
+            sendTokens(event.data.token_holder_address,"executeDirectTransferTransaction");
+        }else{
+            sendTokens(event.data.token_holder_address,"executePayTransaction");
+        }
     }
     sendDT(event){
         console.log(event.data.token_holder_address);
-        sendTokens(event.data.token_holder_address);
-        // send token function needed to be called 
-       // send token not working properly
-       // oThis.sendToken(event.data.token_holder_address);
+        sendTokens(event.data.token_holder_address,"executeDirectTransferTransaction");
     }
     compileTemplates() {
         const oThis = this;
@@ -163,15 +167,15 @@ class UserPage{
       nextPageload(){
         $("#previous").disabled = false;
         const oThis = this;
-        oThis.previousPage = oThis.nextPagePayload;
+        oThis.previousPage = oThis.nextPagePayload-1;
         let apiUrl= oThis.generateUrl(oThis.nextPagePayload);
         oThis.loadUsers(apiUrl);
       }
       prevPageload(){
-        if(oThis.nextPagePayload==2){
-            $("#previous").disabled = true;
-        }
-        let apiUrl= oThis.generateUrl(oThis.nextPagePayload);
+        const oThis = this;
+        console.log(oThis.previousPage);
+        let apiUrl= oThis.generateUrl(oThis.previousPage);
+        oThis.previousPage = oThis.previousPage-1;
         oThis.loadUsers(apiUrl);
       }
  
@@ -197,6 +201,7 @@ function sendTokens(tokenHolderAddress,transactionType) {
         console.log( "ostWorkflowContext :: ", ostWorkflowContext);
         console.log( "ostContextEntity :: ", ostContextEntity);
     };
+    let workflowId;
     switch(transactionType){
         case "executeDirectTransferTransaction":
             let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id,
@@ -208,21 +213,18 @@ function sendTokens(tokenHolderAddress,transactionType) {
                     mappyCallback);
         break;
         case "executePayTransaction":
-            let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id,
+             workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id,
                 // let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
                     {
                         token_holder_addresses: [tokenHolderAddress],
                         amounts: ['10'],
                     },
                     mappyCallback);
+        break;
+        default:
+            console.log("Not any transaction type");
     }
-    let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id,
-    // let workflowId = OstWalletSdk.executePayTransaction(userSetup.getCurrentUser().user_id,
-        {
-            token_holder_addresses: [tokenHolderAddress],
-            amounts: ['10'],
-        },
-        mappyCallback);
+    
 }
 
 export default UserPage;
