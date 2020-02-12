@@ -220,13 +220,94 @@ class OstBaseSdk {
   /** -------------------------------------- NEW CODE ------------------------------- */
   //region - new code
 
-  //TODO: Ensure all features required by the sdk are supported by the browser.
   /**
    * Ensures all features required by the Sdk are supported by the browser.
    * @return {Promise} The promise resolves if all features required by the Sdk are supported by the browser.
    */
   validateBrowser() {
-    return Promise.resolve( true );
+		const oThis = this
+    ;
+
+		oThis.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+		//Check for DB
+		if(!oThis.indexedDB) {
+		  let ostError = new OstError('obsdk_pr_vb_1', EC.BROWSER_VALIDATION_FAILED);
+			console.error(LOG_TAG, "Browser does not support IndexedDB");
+			return Promise.reject( ostError );
+		}
+
+		//Check for Crypto object
+		let cryptoNotSupported = (
+		  !window.crypto ||
+      !window.crypto.subtle ||
+      !window.crypto.subtle.encrypt || !window.crypto.subtle.decrypt ||
+			!window.crypto.subtle.sign || !window.crypto.subtle.verify ||
+      !window.crypto.getRandomValues
+    );
+
+		if(cryptoNotSupported) {
+			let ostError = new OstError('obsdk_pr_vb_2', EC.BROWSER_VALIDATION_FAILED);
+			console.error(LOG_TAG, "Browser does not support crypto and its apis");
+			return Promise.reject( ostError );
+    }
+
+		//Check for postMessage
+		if(!window.postMessage) {
+			let ostError = new OstError('obsdk_pr_vb_3', EC.BROWSER_VALIDATION_FAILED);
+			console.error(LOG_TAG, "Browser does not support postMessage");
+			return Promise.reject( ostError );
+		}
+
+    //Check for encryption and decryption
+		return oThis.validateCryptoEncryptDecrypt()
+			.then(() => {
+				return Promise.resolve(true);
+			})
+			.catch((err) => {
+				let ostError = new OstError('obsdk_pr_vb_4', EC.BROWSER_VALIDATION_FAILED);
+				console.error("Browser does not support crypto's encryption or decryption algorithm", err);
+				return Promise.reject(ostError);
+			});
+  }
+
+	validateCryptoEncryptDecrypt() {
+		const oThis = this
+			, algoKeyGen = {
+				name: 'AES-GCM',
+				length: 256
+			}
+			, keyUsages = [
+				'encrypt',
+				'decrypt'
+			]
+		;
+
+		let iv = window.crypto.getRandomValues(new Uint8Array(12));
+		let algo = {
+			name: 'AES-GCM',
+			iv: iv,
+			tagLength: 128
+		};
+		let aesKey;
+
+		//generate key
+		return window.crypto.subtle.generateKey(algoKeyGen, false, keyUsages)
+			.then(function (key) {
+			  aesKey = key;
+			  //encrypt using key
+        let dataToEncryptAB = OstHelpers.strToArrayBuffer("data");
+				return window.crypto.subtle.encrypt(
+					algo,
+					aesKey,
+					dataToEncryptAB);
+			}).then(function (encryptedData) {
+				//decrypt using key
+				return window.crypto.subtle.decrypt(
+					algo,
+					aesKey,
+					encryptedData);
+      });
   }
 
   createDownstreamIframe() {

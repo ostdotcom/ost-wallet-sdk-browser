@@ -26,6 +26,7 @@
   "SKD_INTERNAL_ERROR": "Something expected happen.",
   "SDK_RESPONSE_ERROR": "SDK returned error",
   "SDK_API_ERROR": "Sdk Api returned error response",
+  "BROWSER_VALIDATION_FAILED": "Browser prerequisites needed to run sdk are missing ",
   "WORKFLOW_CANCELLED": "User canceled"
 }
 
