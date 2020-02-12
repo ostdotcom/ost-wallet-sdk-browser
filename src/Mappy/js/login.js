@@ -8,7 +8,7 @@ export class LoginSetup {
     ostSetup = new OstSetup();
     this.getLoginStatus(function () {
       //if logged in Navigate to /users page.
-      window.location = "/sdk-getters";
+      window.location = "./sdk-getters.html";
     });
     oThis.bindEvents();
   }
@@ -58,7 +58,7 @@ export class LoginSetup {
             console.log(data.success);
 					  if(data.success) {
 						  ostSetup.setupDevice();
-						  window.location = "/sdk-getters";
+						  window.location = "./sdk-getters.html";
 						}
 						else {
 							alert("INVALID USERNAME OR PASSWORD");

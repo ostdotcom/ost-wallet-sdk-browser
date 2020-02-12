@@ -71,8 +71,8 @@ export class OstSetup {
     }
 
     const sdkConfig = {
-      "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
-      "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
+      "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
+      "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
     };
     console.log("sdkConfig", sdkConfig);
 

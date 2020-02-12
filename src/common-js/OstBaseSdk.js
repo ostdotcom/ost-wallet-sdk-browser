@@ -455,9 +455,12 @@ class OstBaseSdk {
             setTimeout(() => {
               oThis.destroySelfIfRequired();
             },1000);
-          }catch(err) {
+          }catch(otherErr) {
             console.log(LOG_TAG, ":: init :: failed to destroy iframe");
+            console.error(otherErr);
           }
+          // Promise should NOT resolve. init has failed.
+          throw err;
         });
   }
 

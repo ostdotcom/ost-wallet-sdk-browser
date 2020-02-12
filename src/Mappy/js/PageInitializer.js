@@ -2,8 +2,8 @@ import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
 
 const sdkConfig = {
-  "api_endpoint": DEMO_MAPPY_UI_PLATFORM_API_ENDPOINT,
-  "sdk_endpoint": DEMO_MAPPY_UI_OST_SDK_IFRAME_URL
+  "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
+  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
 const MAPPY_BASE_URL = DEMO_MAPPY_UI_BASE_URL;
@@ -207,7 +207,7 @@ class PageInitializer {
         console.log("document.cookie", document.cookie);
         // Go to login page.
         setTimeout(() => {
-          window.location = oThis.getBaseUrl() + "/login";
+          window.location = "./login.html";
         }, 100);
       })
   }
