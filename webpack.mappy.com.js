@@ -166,6 +166,10 @@ module.exports = env => {
 
     let envConfig = env.NODE_ENV === 'prod' ? prodConfig : devConfig;
 
+    if ( !process.env.OST_BROWSER_SDK_BASE_URL )  {
+        throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_BASE_URL is not set.\n" + "||| BUILD FAILED!!! |||\n";
+    }
+
     return {
         ...commonConfig,
         ...envConfig

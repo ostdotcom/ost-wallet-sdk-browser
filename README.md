@@ -186,7 +186,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9001/;
+            proxy_pass http://localhost:9090/ost-sdk/;
         }
     }
 
@@ -213,7 +213,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9002/;
+            proxy_pass http://localhost:9090/ost-sdk-key-manager/;
         }
     }
 

@@ -10,6 +10,16 @@ String.prototype.trimRight = function(charlist) {
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
 
+//region - validations
+if ( !process.env.DEMO_MAPPY_UI_DOMAIN ) {
+    throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable DEMO_MAPPY_UI_DOMAIN is not set.\n" + "||| BUILD FAILED!!! |||\n";
+}
+
+if ( !process.env.OST_BROWSER_SDK_BASE_URL )  {
+    throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_BASE_URL is not set.\n" + "||| BUILD FAILED!!! |||\n";
+}
+//endregion
+
 const commonConfig = {
     entry: {
         "OstWalletSdk": "./src/browser.js",
@@ -55,6 +65,7 @@ const DEMO_MAPPY_UI_DOMAIN = process.env.DEMO_MAPPY_UI_DOMAIN;
 const sdkVersion = process.env.OST_BROWSER_SDK_VERSION;
 
 let sdkBaseUrl = process.env.OST_BROWSER_SDK_BASE_URL;
+console.log("process.env.OST_BROWSER_SDK_BASE_URL", process.env.OST_BROWSER_SDK_BASE_URL);
 sdkBaseUrl = sdkBaseUrl.trimRight("/");
 
 let publicPath = sdkBaseUrl;
@@ -65,8 +76,6 @@ if ( sdkVersion ) {
  distPath = distPath + "/" + sdkVersion + "/ost-sdk-scripts/";
 }
 publicPath = publicPath.trimRight("/");
-
-console.log("publicPath", publicPath);
 
 const devConfig = {
     mode: "development",
@@ -146,17 +155,7 @@ const prodConfig = {
 };
 
 module.exports = (env) => {
-
     let envConfig = env.NODE_ENV === 'prod' ? prodConfig : devConfig;
-    
-    if ( !process.env.DEMO_MAPPY_UI_DOMAIN ) {
-        throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable DEMO_MAPPY_UI_DOMAIN is not set.\n" + "||| BUILD FAILED!!! |||\n";
-    }
-
-    if ( !process.env.OST_BROWSER_SDK_BASE_URL )  {
-        throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_BASE_URL is not set.\n" + "||| BUILD FAILED!!! |||\n";
-    }
-
 
     if ( env.NODE_ENV === 'prod' ) {
        if ( !process.env.OST_BROWSER_SDK_VERSION ) {

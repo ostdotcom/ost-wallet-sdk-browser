@@ -5,11 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "dev-mappy-server": "webpack-dev-server --config webpack.mappy.com.js --env.NODE_ENV=dev",
-    "dev-ostsdk-server": "webpack-dev-server --config webpack.sdk-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
-    "dev-ostkm-server": "webpack-dev-server --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
     "dev-ost-server": "webpack-dev-server --config webpack.ost-scripts.js --env.NODE_ENV=dev",
-    "dev-servers": "concurrently \"npm run dev-mappy-server\" \"npm run dev-ostsdk-server\" \"npm run dev-ostkm-server\" \"npm run dev-ost-server\"",
-    "build-ost-scripts": "webpack --config webpack.ost-scripts.js --env.NODE_ENV=prod"
+    "dev-servers": "concurrently \"npm run dev-ost-server\" \"npm run dev-mappy-server\"",
+    "build-ost-sdk": "webpack --config webpack.ost-scripts.js --env.NODE_ENV=prod"
   },
   "repository": {
     "type": "git",
