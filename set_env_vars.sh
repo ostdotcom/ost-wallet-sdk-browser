@@ -2,8 +2,8 @@
 # Core ENV Details
 # Version of the Ost browser sdk
 
-export OST_BROWSER_SDK_DOMAIN="http://localhost:9090"
-export OST_BROWSER_SDK_VERSION_PATH="/"
+export OST_BROWSER_SDK_BASE_URL="http://localhost:9090/"
+export OST_BROWSER_SDK_VERSION=""
 
 export DEMO_MAPPY_UI_DOMAIN="https://devmappy.com/";
 export DEMO_MAPPY_UI_FOLDER_PATH="/";

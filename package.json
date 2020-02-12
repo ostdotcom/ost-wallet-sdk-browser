@@ -7,17 +7,9 @@
     "dev-mappy-server": "webpack-dev-server --config webpack.mappy.com.js --env.NODE_ENV=dev",
     "dev-ostsdk-server": "webpack-dev-server --config webpack.sdk-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
     "dev-ostkm-server": "webpack-dev-server --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
-    "dev-ost-scripts-server": "webpack-dev-server --config webpack.ost-scripts.js --env.NODE_ENV=dev",
-    "dev-servers": "concurrently \"npm run dev-mappy-server\" \"npm run dev-ostsdk-server\" \"npm run dev-ostkm-server\" \"npm run dev-ost-scripts-server\"",
-    "d-sdk-w": "webpack-dev-server --open --config webpack.mappy.com.js --env.NODE_ENV=dev",
-    "b-sdk-w": "webpack --config webpack.mappy.com.js --env.NODE_ENV=prod",
-    "d-sdk": "webpack-dev-server --open --config webpack.sdk-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
-    "b-sdk": "webpack --config webpack.sdk-mappy.ostwalletsdk.com.js --env.NODE_ENV=prod",
-    "d-sdk-km": "webpack-dev-server --open --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=dev",
-    "b-sdk-km": "webpack --config webpack.km-mappy.ostwalletsdk.com.js --env.NODE_ENV=prod",
-    "develop-all": "concurrently \"npm run d-sdk-w\" \"npm run d-sdk\" \"npm run d-sdk-km\"",
-    "sdkWallet": "npm run d-sdk-w",
-    "run-app": "node src/AppServer/index.js"
+    "dev-ost-server": "webpack-dev-server --config webpack.ost-scripts.js --env.NODE_ENV=dev",
+    "dev-servers": "concurrently \"npm run dev-mappy-server\" \"npm run dev-ostsdk-server\" \"npm run dev-ostkm-server\" \"npm run dev-ost-server\"",
+    "build-ost-scripts": "webpack --config webpack.ost-scripts.js --env.NODE_ENV=prod"
   },
   "repository": {
     "type": "git",
@@ -48,9 +40,9 @@
     "@babel/plugin-proposal-export-default-from": "7.0.0",
     "@babel/plugin-transform-async-to-generator": "7.8.3",
     "@babel/plugin-transform-runtime": "7.8.3",
-    "@babel/runtime": "7.8.3",
     "@babel/polyfill": "7.0.0",
     "@babel/preset-env": "7.7.7",
+    "@babel/runtime": "7.8.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "9.0.0",
     "babel-jest": "23.4.2",
@@ -58,14 +50,15 @@
     "clean-webpack-plugin": "3.0.0",
     "concurrently": "5.0.2",
     "css-loader": "3.4.2",
+    "handlebars": "^4.7.2",
+    "highlight.js": "^9.18.1",
     "html-webpack-plugin": "3.2.0",
+    "jquery.json-viewer": "^1.4.0",
     "style-loader": "1.1.2",
     "webpack": "4.41.5",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.10.1",
     "webpack-merge": "4.2.2",
-    "handlebars": "^4.7.2",
-    "highlight.js": "^9.18.1",
-    "jquery.json-viewer": "^1.4.0"
+    "webpack-subresource-integrity": "^1.4.0"
   }
 }

@@ -10,7 +10,11 @@ String.prototype.trimRight = function(charlist) {
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
 
-let OstSdkJSBaseUrl = process.env.OST_BROWSER_SDK_DOMAIN + process.env.OST_BROWSER_SDK_VERSION_PATH;
+let OstSdkJSBaseUrl = process.env.OST_BROWSER_SDK_BASE_URL;
+OstSdkJSBaseUrl = OstSdkJSBaseUrl.trimRight("/");
+if ( process.env.OST_BROWSER_SDK_VERSION ) {
+    OstSdkJSBaseUrl = OstSdkJSBaseUrl + "/" + process.env.OST_BROWSER_SDK_VERSION;
+}
 OstSdkJSBaseUrl = OstSdkJSBaseUrl.trimRight("/");
 
 const OstSdkJSUrl = OstSdkJSBaseUrl + "/OstWalletSdk.js";
