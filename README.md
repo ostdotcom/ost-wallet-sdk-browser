@@ -112,6 +112,10 @@ http {
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
 
+        location /v-dev/ {
+            proxy_pass http://localhost:9090/v-dev/mappy/;
+        }
+
         #Loading HTML and other static resources from webpack server.
         location / {
 
@@ -166,7 +170,7 @@ http {
         listen       443 ssl;
         server_name  sdk-devmappy.ostsdkproxy.com;
 
-        add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
+        add_header 'Access-Control-Allow-Origin' 'https://api.stagingost.com' always;
         add_header 'Access-Control-Allow-Credentials' 'true' always;
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
@@ -180,7 +184,7 @@ http {
         location / {
 
             if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
+                add_header 'Access-Control-Allow-Origin' 'https://api.stagingost.com' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
                 add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
@@ -289,7 +293,6 @@ Open the follwoing links in browser and grant permission
 > Click on `Proceed to...` On Chrome
 >
 > Click on `Accept Risk and Continue` on Firefox
-* [https://api.stagingostproxy.com/testnet/v2/tokens](https://api.stagingostproxy.com/testnet/v2/token)
 * [https://km-devmappy.ostsdkproxy.com/](https://km-devmappy.ostsdkproxy.com/)
 * [https://sdk-devmappy.ostsdkproxy.com/](https://sdk-devmappy.ostsdkproxy.com/)
 * [https://demo-devmappy.stagingostproxy.com](https://demo-devmappy.stagingostproxy.com)

@@ -287,12 +287,17 @@ class OstBaseSdk {
         // Set down-stream contentWindow.
         oThis.setDownStreamWindow( downstreamIframe.contentWindow );
         // Set down-stream url.
-        oThis.setDownStreamOrigin( oThis.getDownstreamEndpoint() );
-        return oThis.waitForIframeLoad();
+        let downstreamEndpoint = oThis.getDownstreamEndpoint();
+        if (downstreamEndpoint) {
+          let url = new URL(downstreamEndpoint);
+          oThis.setDownStreamOrigin( url.origin );
+        }
+
+        return oThis.waitForIframeLoad(signedUrl);
       })
   }
 
-  waitForIframeLoad() {
+  waitForIframeLoad(signedUrl) {
     const oThis = this;
 
     // Create a promise.
