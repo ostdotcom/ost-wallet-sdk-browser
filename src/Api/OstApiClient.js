@@ -1,6 +1,7 @@
 import OstUser from "../OstSdk/entities/OstUser";
 import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
+import * as qs from "qs";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -68,7 +69,48 @@ export default class OstApiClient {
     return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`);
   }
 
+  getTransaction(transactionId) {
+    return this.get(`/users/${this.userId}/transactions/${transactionId}/`);
+  }
+
+  getTransactions() {
+    return this.get(`/users/${this.userId}/transactions`);
+  }
+
+  getPricePoints(chainId) {
+    return this.get(`/chains/${chainId}/price-points`);
+  }
+
+  getPendingRecovery() {
+    return this.get(`/users/${this.userId}/devices/pending-recovery`);
+  }
+
+  getBalance() {
+    return this.get(`/users/${this.userId}/balance/`);
+  }
+
+  getTokenHolder() {
+    return this.get(`/users/${this.userId}/token-holder`);
+  }
+
+  getDeviceList() {
+    return this.get(`/users/${this.userId}/devices`);
+  }
+
+  executeTransaction(params) {
+		return this.post(`/users/${this.userId}/transactions/`, params);
+  }
+
+  getRules() {
+    return this.get("/rules/");
+  }
+
   get(resource, params) {
+    console.log("resource ------",resource);
+    var lastChar = resource.charAt( resource.length - 1 );
+    if(lastChar!=='/'){
+      resource += '/';
+    }
     const oThis = this;
     params = params || {};
     return oThis.init()
@@ -86,8 +128,32 @@ export default class OstApiClient {
         });
       })
       .then((response) => {
-        OstEntityParser.parse(response.data);
-        return response;
+        return OstEntityParser.parse(response.data);
       });
   }
+
+	post(resource, params) {
+    var lastChar = resource.charAt( resource.length - 1 );
+    if(lastChar!=='/'){
+      resource += '/';
+    }
+		const oThis = this;
+		params = params || {};
+		return oThis.init()
+			.then(() => {
+				let map = oThis.getPrerequisiteMap();
+				const paramMap = Object.assign({}, map, params);
+
+				return oThis.keyManagerProxy.signApiParams(resource, paramMap);
+			})
+			.then((response) => {
+				const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
+				console.log(LOG_TAG, "params to be sent", paramsMap);
+				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
+			})
+			.then((response) => {
+				return OstEntityParser.parse(response.data);
+			});
+	}
+
 }

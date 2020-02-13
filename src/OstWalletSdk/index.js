@@ -1,95 +1,152 @@
-import OstHelpers from "../common-js/OstHelpers";
-import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
+import OstWalletSdkCore from "./OstWalletSdkCore";
 import OstError from "../common-js/OstError";
-import OstBaseSdk from '../common-js/OstBaseSdk'
-import OstSetupDevice from "./OstWorkflows/OstSetupDevice";
-import OstCreateSession from "./OstWorkflows/OstCreateSession";
 
-(function(window) {
+import OstMappyCallbacks from "./OstMappyCallbacks";
+import OstWalletWorkFlowCallback from "./OstWalletCallback/OstWorkflowCallbacks";
+import EC from "../common-js/OstErrorCodes";
 
-  class OstWalletSdk extends OstBaseSdk {
-    constructor() {
-      super();
-    }
+// Things to export.
+const OstWalletSdk = {};
+const OstJsonApi = {};
+const OstSetupDeviceDelegate = OstMappyCallbacks;
+const OstWorkflowDelegate = OstWalletWorkFlowCallback;
+export {
+  OstWalletSdk,
+  OstJsonApi,
+  OstSetupDeviceDelegate,
+  OstWorkflowDelegate,
+  OstError
+};
 
-    perform() {
-      return super.perform()
-        .then(() => {
+/**
+ * Self executing method to generate wrapper methods.
+ */
+(function( _win ) {
 
-        })
-        .catch((err) => {
-          throw OstError.sdkError(err, 'ows_i_p_1');
-        });
-    }
+  const sdkCore = new OstWalletSdkCore( window );
 
-    getReceiverName() {
-      return 'OstWalletSdk';
-    }
+  // Core Sdk methods to expose.
+  const simpleMethods = ["init"];
+  const workflowMethods = ["setupDevice",
+    "createSession",
+    "executeTransaction",
+    "executePayTransaction",
+    "executeDirectTransferTransaction"];
+  const getterMethods = ["getUser",
+    "getToken",
+    "getDevice",
+    "getActiveSessions",
+  "deleteLocalSessions"];
+  /**
+   * jsonApiMethodsMap - is a map of sdkCore.jsonApiProxy methods names
+   * key - names of methods exposed to the api consumer.
+   * value - name of sdkCore.jsonApiProxy method to invoke.
+   * @type {*[]}
+   */
+  const jsonApiMethodsMap = {
+    getCurrentDevice: "getCurrentDeviceFromServer",
+    getBalance: "getBalanceFromServer",
+    getPricePoint: "getPricePointFromServer",
+    getBalanceWithPricePoint: "getBalanceWithPricePointFromServer",
+    getUser: "getUserFromServer",
+    getToken: "getTokenFromServer",
+    getTransactions: "getTransactionsFromServer",
+    getRules: "getRulesFromServer",
+    //getPendingRecovery: "getPendingRecoveryFromServer",
+    getDeviceList: "getDeviceListFromServer",
+    getTokenHolder: "getTokenHolderFromServer"
+  };
+  const jsonApiMethods = Object.keys( jsonApiMethodsMap );
 
-    setupDevice ( userId, tokenId, baseURL, ostWorkflowDelegate) {
-      let setupDevice = new OstSetupDevice(userId, tokenId, ostWorkflowDelegate, this.browserMessenger);
-      let workflowId = setupDevice.perform();
-
-      return workflowId;
-    }
-
-    createSession ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
-      let createSession = new OstCreateSession(userId, expirationTime, spendingLimit, ostWorkflowDelegate, this.browserMessenger);
-      let workflowId = createSession.perform();
-
-      return workflowId;
-    }
-
-  }
-
-  const walletSdk = new OstWalletSdk();
-  walletSdk.perform()
-    .then(() => {
-      return createSdkMappyIframe();
-    })
-    .catch((err) => {
-      throw OstError.sdkError(err, 'ows_i_p_2');
-    });
-
-  function createSdkMappyIframe() {
-    console.log("createSdkMappyIframe Started");
-
-    var ifrm = document.createElement('iframe');
-    ifrm.setAttribute('id', 'sdkMappyIFrame');
-
-    const url = 'https://sdk-devmappy.ostsdkproxy.com';
-
-    let params = {
-      publicKeyHex: walletSdk.getPublicKeyHex()
+  const simpleFunctionGenerator = (fromObj, methodName) => {
+    return (...args) => {
+      return fromObj[methodName](...args);
     };
+  };
 
-    let stringToSign = OstURLHelpers.getStringToSign(url, params );
+  const workflowFunctionGenerator = (fromObj, methodName) => {
+    return (...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return fromObj[methodName](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "workflowFunctionGenerator", methodName].join("_");
+      let errorInfo = {
+        "methodName": methodName,
+        "reason": "Sdk must be initialized before using this method."
+      }
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  };
 
-    walletSdk.signDataWithPrivateKey(stringToSign)
-      .then((signedMessage) => {
-        const signature = OstHelpers.byteArrayToHex(signedMessage);
-        let iframeURL = OstURLHelpers.appendSignature(stringToSign, signature);
-        ifrm.setAttribute('src', iframeURL);
-        ifrm.setAttribute('width', '100%');
-        ifrm.setAttribute('height', '200');
+  const getterFunctionGenerator = (fromObj, methodName) => {
+    return (...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.proxy[methodName](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "getterFunctionGenerator", methodName].join("_");
+      let errorInfo = {
+        "methodName": methodName,
+        "reason": "Sdk must be initialized before using this method."
+      }
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  };
 
-        document.body.appendChild(ifrm);
+  const jsonApiFunctionGenerator = (fromObj, externalMethodName) => {
+    const internalMethodName = jsonApiMethodsMap[ externalMethodName ];
+    return (...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.jsonApiProxy[ internalMethodName ](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "jsonApiFunctionGenerator", externalMethodName].join("_");
+      let errorInfo = {
+        "methodName": externalMethodName,
+        "reason": "Sdk must be initialized before using this method."
+      }
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  };
 
-				// ifrm.addEventListener("load", function() {
-				// 	ifrm.window.onerror = function (event) {
-				// 		console.error(LOG_TAG, "Miracle Miracle!!!!", event);
-				// 	};
-				// });
+  const addMethods = (fromObj, toObj, functionGenerator, methodsToAdd) => {
+    if ( !fromObj ) {
+      throw new Error("addMethods: fromObj is null");
+    }
 
-        walletSdk.setDownStreamWindow(ifrm.contentWindow);
-        walletSdk.setDownStreamOrigin(url);
+    if ( !toObj ) {
+      throw new Error("addMethods: toObj is null");
+    }
 
-        console.log("createSdkMappyIframe Completed");
+    if ( !functionGenerator ) {
+      throw new Error("addMethods: functionGenerator is null");
+    }
 
-        window.OstSdkWallet = walletSdk;
-      })
-      .catch((err) => {
-        throw OstError.sdkError(err, 'ows_i_csmif_1');
-      })
-  }
+    if ( !methodsToAdd ) {
+      methodsToAdd = Object.keys( fromObj );
+    }
+
+    let len = methodsToAdd.length;
+    while( len-- ) {
+      let methodName = methodsToAdd[ len ];
+      let generatedFunction = functionGenerator(fromObj, methodName);
+      if ( generatedFunction ) {
+        Object.defineProperty( toObj, methodName, {
+          "value": generatedFunction,
+          "writable": false,
+          "enumerable": true
+        });
+      } else {
+        let fnRef = fromObj[ methodName ];
+        console.warn("generatedFunction is undefined for methodName", methodName, "typeof fnRef", typeof fnRef);
+      }
+    }
+  };
+
+  // Add wrapper methods to OstWalletSdk
+  addMethods(sdkCore, OstWalletSdk, simpleFunctionGenerator, simpleMethods);
+  addMethods(sdkCore, OstWalletSdk, workflowFunctionGenerator, workflowMethods);
+  addMethods(sdkCore, OstWalletSdk, getterFunctionGenerator, getterMethods);
+
+  // Add wrapper methods to OstJsonApi
+  addMethods(sdkCore, OstJsonApi, jsonApiFunctionGenerator, jsonApiMethods);
+
 })(window);

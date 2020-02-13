@@ -112,7 +112,6 @@ http {
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
 
-
         #Loading HTML and other static resources from webpack server.
         location / {
 
@@ -126,7 +125,8 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9000/;
+            proxy_pass http://localhost:9090/mappy/;
+            #proxy_pass http://localhost:9090/v-dev/mappy/;
         }
     }
 
@@ -156,7 +156,7 @@ http {
             }
 
             proxy_cookie_domain demo-mappy.stagingost.com demo-devmappy.stagingostproxy.com;
-            proxy_pass https://demo-mappy.stagingost.com/;
+            proxy_pass https://demo-mappy.stagingost.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/;
         }
     }
 
@@ -173,6 +173,10 @@ http {
 
 
         #Loading HTML and other static resources from webpack server.
+        location /v-dev/ {
+            proxy_pass http://localhost:9090/v-dev/ost-sdk/;
+        }
+
         location / {
 
             if ($request_method = 'OPTIONS') {
@@ -186,7 +190,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9001/;
+            proxy_pass http://localhost:9090/ost-sdk/;
         }
     }
 
@@ -199,6 +203,10 @@ http {
         add_header 'Access-Control-Allow-Credentials' 'true' always;
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
+
+        location /v-dev/ {
+            proxy_pass http://localhost:9090/v-dev/ost-sdk-key-manager/;
+        }
 
         #Loading HTML and other static resources from webpack server.
         location / {
@@ -213,7 +221,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9002/;
+            proxy_pass http://localhost:9090/ost-sdk-key-manager/;
         }
     }
 
@@ -267,11 +275,14 @@ npm install
 ```
 If you don't have npm installed on your machine then go to https://www.npmjs.com/get-npm for installing npm and node.
 
-## Fire Up the servers
+
+## Set Environment variables and Fire Up the servers
 - To run servers on browser, run command-
 ```
+source ./set_env_vars.sh
 npm run dev-servers
 ```
+Replace file_name with your environment variables file name.
 
 ### Grant permission to all proxied domains.
 Open the follwoing links in browser and grant permission

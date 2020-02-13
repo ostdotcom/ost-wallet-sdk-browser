@@ -1,6 +1,5 @@
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import IKM from "../ecKeyInteracts/OstIKM";
-import OstIndexDB from "../../common-js/OstIndexedDB";
 import OstMessage from "../../common-js/OstMessage";
 
 const LOG_TAG = 'IKM: OstKeyManagerAssist';
@@ -16,14 +15,14 @@ export default class OstKeyManagerAssist {
     }
 
 
-	getDeviceAddress(args) {
+	getDeviceAddress(args, avoidKMBuilding) {
 		const oThis = this;
 		const userId = args.user_id;
 		const subscriberId = args.subscriber_id;
 		if (!userId) {
 			return oThis.onError({msg: "userId not found"}, subscriberId);
 		}
-		return IKM.getKeyManager(userId)
+		return IKM.getKeyManager(userId, avoidKMBuilding)
 			.then((ikm) => {
 				let deviceAddress = ikm.getDeviceAddress();
 				return oThis.onSuccess({user_id: userId, device_address: deviceAddress}, subscriberId)
@@ -32,6 +31,11 @@ export default class OstKeyManagerAssist {
 				return oThis.onError({err: err, msg: "Device address fetch failed"}, subscriberId);
 			});
 
+	}
+
+	getCurrentDeviceAddress(args) {
+		const avoidKMBuilding = true;
+		return this.getDeviceAddress(args, avoidKMBuilding);
 	}
 
 	getApiAddress(args) {
@@ -116,6 +120,27 @@ export default class OstKeyManagerAssist {
 			});
 	}
 
+	deleteLocalSessions(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const sessionAddresses = args.session_addresses;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				return ikm.deleteLocalSessions(sessionAddresses);
+			})
+			.then( () => {
+				return oThis.onSuccess(args, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err}, subscriberId);
+			});
+	}
+
 	setTrustable(args) {
 		const oThis = this;
 		const userId = args.user_id;
@@ -132,7 +157,7 @@ export default class OstKeyManagerAssist {
 				return oThis.onSuccess({user_id: userId, is_trustable: isTrustable}, subscriberId)
 			})
 			.catch((err) => {
-				return oThis.onError({err: err, msg: "Trustable set failed"}, subscriberId);
+				return oThis.onError({err: err, msg: "Trustable got failed"}, subscriberId);
 			});
 	}
 
@@ -149,7 +174,31 @@ export default class OstKeyManagerAssist {
 				return oThis.onSuccess({user_id: userId, is_trustable: isTrustable}, subscriberId)
 			})
 			.catch((err) => {
-				return oThis.onError({err: err, msg: "Trustable get failed"}, subscriberId);
+				return oThis.onError({err: err, msg: "Trustable got failed"}, subscriberId);
+			});
+	}
+
+	signTransaction(args) {
+		const oThis = this;
+		const userId = args.user_id;
+		const transactionData = args.transaction_data;
+		const subscriberId = args.subscriber_id;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+		if (!transactionData) {
+			return oThis.onError({msg: "Transaction data not found"}, subscriberId);
+		}
+		return IKM.getTransactionSigner(userId)
+			.then((transactionSigner) => {
+				return transactionSigner.signTransactionData(transactionData);
+			})
+			.then((signedTransactionStruct) => {
+				const response = Object.assign({}, args, {signed_transaction_struct: signedTransactionStruct});
+				return oThis.onSuccess(response, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err, msg: "Sign Transaction got failed"}, subscriberId);
 			});
 	}
 

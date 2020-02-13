@@ -1,14 +1,17 @@
 import OstIndexDB from "../../common-js/OstIndexedDB";
 
 let dbInstance = null;
+let LOG_TAG = "OstBaseEntity :: ";
 
-const ENTITIES_DB_VERSION = 1;
+const ENTITIES_DB_VERSION = 2;
 const ENTITIES_DB_NAME = 'EntitiesDB';
 const STORES = {
 	OST_DEVICE : 'OST_DEVICE',
 	OST_USER: 'OST_USER',
 	OST_TOKEN: 'OST_TOKEN',
-	OST_SESSION: 'OST_SESSION'
+	OST_SESSION: 'OST_SESSION',
+	OST_RULE: 'OST_RULE',
+	OST_TRANSACTION: 'OST_TRANSACTION'
 };
 
 class OstBaseEntity {
@@ -32,7 +35,11 @@ class OstBaseEntity {
 	}
 
 	getData() {
-		return this.data;
+	  return this.data;
+	}
+
+	getType() {
+		return 'entity';
 	}
 
 	getStatus() {
@@ -53,6 +60,25 @@ class OstBaseEntity {
 					});
 			});
 	}
+
+  deleteData() {
+    const oThis = this;
+    let resolve;
+    this.getInstance()
+      .then((dbInstance) => {
+        return dbInstance.deleteData(oThis.getStoreName(), oThis.getData().id)
+      })
+      .then((data) => {
+        resolve(true);
+      })
+      .catch((err) => {
+        resolve(false);
+      });
+
+    return new Promise((_resolve) => {
+      resolve = _resolve;
+    })
+  }
 
 	commit() {
 		const oThis = this;
@@ -76,24 +102,36 @@ class OstBaseEntity {
 			});
 	}
 
+	getAll() {
+		const oThis = this;
+		return this.getInstance()
+			.then((dbInstance) => {
+				return dbInstance.getAllRows(oThis.getStoreName());
+			});
+	}
+
 	getStoreName() {
 		throw "Please override getStoreName method";
 	}
 
 	getInstance() {
-		if (dbInstance) {
-			return Promise.resolve(dbInstance);
-		} else {
-			let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME, ENTITIES_DB_VERSION, STORES);
-			return instance.createDatabase()
-				.then(() => {
-					dbInstance = instance;
-					return dbInstance;
-				})
-				.catch((err) => {
-					console.err(LOG_TAG, "Error while creating db for Entities", err);
-				});
-		}
+		return OstBaseEntity.initInstance();
+	}
+
+	static initInstance() {
+      if (dbInstance) {
+        return Promise.resolve(dbInstance);
+      } else {
+        let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME, ENTITIES_DB_VERSION, STORES);
+        return instance.createDatabase()
+          .then(() => {
+            dbInstance = instance;
+            return dbInstance;
+          })
+          .catch((err) => {
+            console.err(LOG_TAG, "Error while creating db for Entities", err);
+          });
+      }
 	}
 }
 

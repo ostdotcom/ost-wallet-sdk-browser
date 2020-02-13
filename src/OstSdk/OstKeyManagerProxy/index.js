@@ -33,6 +33,18 @@ export default class OstKeyManagerProxy {
 
 	}
 
+	getCurrentDeviceAddress () {
+		let oThis = this;
+		let functionParams = {
+			user_id: this.userId,
+		};
+
+		return oThis.getFromKM('getCurrentDeviceAddress', functionParams)
+			.then((response) => {
+				return response.device_address;
+			});
+	}
+
   getApiKeyAddress ( ) {
 		let oThis = this;
 		let functionParams = {
@@ -89,6 +101,37 @@ export default class OstKeyManagerProxy {
 		};
 
 		return oThis.getFromKM('signQRSessionData', functionParams);
+	}
+
+	signTransaction(ostSession, userTokenHolderAddress, tokenHolderAddresses, amounts, ostRule, ruleMethod, pricePointBaseToken, options) {
+		const oThis = this
+			, transactionData = {
+				session: ostSession,
+				rule: ostRule,
+				to_token_holder_addresses: tokenHolderAddresses,
+			  from_token_holder_address: userTokenHolderAddress,
+				amounts: amounts,
+			  rule_method: ruleMethod,
+				price_point: pricePointBaseToken,
+				options: options
+			}
+			, functionParams = {
+				user_id: this.userId,
+				transaction_data: transactionData
+			}
+		;
+
+		return oThis.getFromKM('signTransaction', functionParams);
+	}
+
+  deleteLocalSessions(address) {
+      const oThis = this
+		  , functionParams = {
+          		user_id: this.userId,
+				session_addresses: address
+	  		}
+	  ;
+      return oThis.getFromKM('deleteLocalSessions', functionParams);
 	}
 
 	getFromKM(functionName, functionParams) {

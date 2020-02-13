@@ -67,17 +67,20 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     console.log(LOG_TAG, "onParamsValidated");
 
-    return oThis.initToken()
+    return oThis.isBrowserTrustable()
+      .then(() => {
+				return oThis.initToken();
+      })
       .then((token) => {
         oThis.token = token;
 
-        console.log(LOG_TAG, "initToken :: then");
+        console.log(LOG_TAG, "init token completed");
         return oThis.initUser()
       })
       .then((user) => {
         oThis.user = user;
 
-        console.log(LOG_TAG, "initToken :: then");
+        console.log(LOG_TAG, "init user completed");
         return oThis.user.createOrGetDevice(this.keyManagerProxy)
       })
       .then((deviceEntity) => {
@@ -98,15 +101,34 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
   }
 
   initToken() {
-    return OstToken.init(this.tokenId);
+    const oThis = this;
+    return OstToken.getById(oThis.tokenId)
+      .then((token) => {
+        if (token) {
+          return token;
+        }
+        return OstToken.init(oThis.tokenId);
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, "error while init user => ", err);
+        return OstToken.init(oThis.tokenId);
+      })
   }
 
   initUser() {
-    return OstUser.init(this.userId, this.tokenId);
-  }
+		const oThis = this;
+    return OstUser.getById(oThis.userId)
+      .then((user) => {
+        if (user) {
+          return user;
+        }
+        return OstUser.init(oThis.userId, oThis.tokenId);
+      })
+      .catch((err) => {
+        console.log(LOG_TAG, "error while init user => ", err);
+        return OstUser.init(oThis.userId, oThis.tokenId);
+      })
 
-  getCurrentDevice() {
-    this.user.getCurrentDevice();
   }
 
 
@@ -124,17 +146,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
-    message.setArgs(params, this.deviceRegisteredUUID);
+    message.setArgs({device: params}, this.deviceRegisteredUUID);
 
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
 
   deviceRegistered ( args ) {
-
-    // let subscriberId = args.subscriber_id;
-    // if (subscriberId) {
-    //   this.subscriberId = subscriberId;
-    // }
 
     this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
     this.performState( OstStateManager.state.REGISTERED, args);
@@ -149,12 +166,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       .then(() => {
 
         console.log(LOG_TAG, "verifyDeviceRegistered :: then");
-        return oThis.syncUser()
+        return oThis.ensureUser()
       })
       .then(() => {
 
         console.log(LOG_TAG, "syncUser :: then");
-        return oThis.syncToken()
+        return oThis.ensureToken()
       })
       .then((obj) => {
         console.log(LOG_TAG, "Session Address", obj);
@@ -178,4 +195,15 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       });
   }
 
+	isBrowserTrustable() {
+		const oThis = this
+		;
+		return oThis.keyManagerProxy.isTrustable()
+			.then((isTrustable) => {
+				if (!isTrustable) {
+					throw new OstError('os_w_ossd_ibt_1', OstErrorCodes.BROWSER_IS_NOT_TRUSTED);
+				}
+				return isTrustable;
+			});
+	}
 }

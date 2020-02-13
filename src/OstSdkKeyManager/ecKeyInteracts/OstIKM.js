@@ -6,12 +6,12 @@ import * as EthUtil from "ethereumjs-util";
 import OstKeyManager from "./OstKeyManager"
 import OstApiSigner from "./OstApiSigner";
 import OstQRSigner from "./OstQRSigner";
+import OstTransactionSigner from "./OstTransactionSigner";
 
-const bip39 = require('bip39');
-const randomBytes = require('randombytes');
-const { SHA3 } = require('sha3');
-var hdKey = require('ethereumjs-wallet/hdkey');
-var ethUtil = require('ethereumjs-util');
+import * as bip39 from "bip39";
+import * as randomBytes from "randombytes";
+import {SHA3} from "sha3";
+import * as hdKey from "ethereumjs-wallet/hdkey";
 
 const LOG_TAG = "IKM";
 const SHOULD_USE_SEED_PWD = true;
@@ -32,8 +32,9 @@ const KEY_TYPE = {
 };
 
 class IKM {
-	constructor(userId) {
+	constructor(userId, avoidKMBuilding) {
 		this.userId = userId;
+		this.avoidKMBuilding = avoidKMBuilding;
 		this.kmDB = OstIndexDB.newInstance(KM_DB_NAME, KM_DB_VERSION, STORES);
 	}
 
@@ -43,15 +44,19 @@ class IKM {
 		const oThis = this;
 		return this.kmDB.createDatabase()
 			.then(() => {
-				console.debug(LOG_TAG, "Getting KeyMeta struct for", oThis.createUserMataId(oThis.userId));
-				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, oThis.userId)
+				let userMetaId = oThis.createUserMataId(oThis.userId);
+				console.debug(LOG_TAG, "Getting KeyMeta struct for", userMetaId);
+				return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, userMetaId)
 			})
 			.then((kmData) => {
-				if (kmData) {
+				if (kmData && kmData.data && kmData.data.isTrustable) {
 					console.log(LOG_TAG, "Key meta struct found", kmData);
 					oThis.kmStruct = kmData.data;
-					return kmData;
+					return kmData.data;
 				} else {
+					if (oThis.avoidKMBuilding) {
+						return {};
+					}
 					console.log(LOG_TAG, "Key meta struct not found", "Building it...");
 					return oThis.buildKeyMetaStruct()
 						.then((kmData) => {
@@ -62,6 +67,11 @@ class IKM {
 			}).catch((err) => {
 				console.error(LOG_TAG, "IKM initialization failed", err);
 			});
+	}
+
+	askForConfirmation() {
+		const result = confirm("Would you like to setup your wallet?");
+		return Promise.resolve(!!result);
 	}
 
 	storeKmData(kmData) {
@@ -84,14 +94,28 @@ class IKM {
 		this.kmStruct = new KeyMetaStruct();
 		this.kmStruct.isTrustable = false;
 
-		return oThis.createApiKey()
-			.then(() => {
-				return oThis.createDeviceKey();
+		return oThis.askForConfirmation()
+			.then((isTrustable) => {
+				oThis.kmStruct.isTrustable = isTrustable;
+
+				//If not trustable don't crate api and device keys
+				if (!isTrustable) {
+					return oThis.kmStruct;
+				}
+
+				//Browser is trustable create api and device keys
+				return oThis.createApiKey()
+					.then((apiKey) => {
+						oThis.kmStruct.apiAddress = apiKey;
+						return oThis.createDeviceKey();
+					})
+					.then((deviceKey) => {
+						oThis.kmStruct.deviceAddress = deviceKey;
+						return oThis.kmStruct;
+					});
 			})
-			.then(() => {
-				return this.kmStruct;
-			})
-			.catch((err) =>{
+			.catch((err) => {
+				console.error(LOG_TAG, "Error while building meta", err);
 				throw "Meta Struct building failed";
 			})
 	}
@@ -167,12 +191,9 @@ class IKM {
 				console.log(LOG_TAG, "CreateApiKey :: Inserting keys");
 				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
 					.then(() => {
+						console.log(LOG_TAG, "created Api key", apiKeyAddress);
 						return apiKeyAddress;
 					})
-			})
-			.then((apiKeyAddress) => {
-				oThis.kmStruct.apiAddress = apiKeyAddress;
-				return true;
 			})
 			.catch((err) => {
 				throw OstError.sdkError(err, "okm_e_ikm_cak_1");
@@ -183,34 +204,10 @@ class IKM {
 		const oThis = this;
 
 		const mnemonics = oThis.generateMnemonics();
-
 		const ecKeyPair = oThis.generateECWalletWithMnemonics(mnemonics, KEY_TYPE.DEVICE);
-		const privateKey = ecKeyPair.getPrivateKeyString();
-		console.log(LOG_TAG, "createDeviceKey :: Encrypting the generated keys");
-
-		return OstSecureEnclave.encrypt(oThis.userId, privateKey)
-			.then((encryptedData) => {
-				const deviceAddress = ecKeyPair.getChecksumAddressString();
-				const deviceAddressId = oThis.createEthKeyMetaId(deviceAddress);
-
-				const dataToStore = {
-					id: deviceAddressId,
-					data: encryptedData
-				};
-
-				console.log(LOG_TAG, "CreateDeviceKey :: Inserting keys");
-				return oThis.kmDB.insertData(STORES.KEY_STORE_TABLE, dataToStore)
-					.then(() => {
-						return deviceAddress;
-					})
-			})
-			.then((deviceAddress) => {
-				oThis.kmStruct.deviceAddress = deviceAddress;
-				return true;
-			})
-			.catch((err) => {
-				throw OstError.sdkError(err, "okm_e_ikm_cdk_1");
-			});
+		const deviceAddress = ecKeyPair.getChecksumAddressString();
+		console.log(LOG_TAG, "created device key", deviceAddress);
+		return Promise.resolve(deviceAddress);
 	}
 
 	createEthKeyMetaId( address) {
@@ -226,16 +223,16 @@ class IKM {
 	}
 
 	signMessage(ethWallet, messageToSign) {
-		const messageHash = ethUtil.keccak256(messageToSign);
+		const messageHash = EthUtil.keccak256(messageToSign);
 		return this.signHash(ethWallet, messageHash);
 	}
 
 	personalSign(messageToSign, ethWallet) {
 		const oThis = this;
 		const bufferMessage = Buffer.from(messageToSign, 'utf-8');
-		const messageHash = ethUtil.hashPersonalMessage(bufferMessage);
+		const messageHash = EthUtil.hashPersonalMessage(bufferMessage);
 		if (!ethWallet) {
-			return oThis.getApiWallet()
+			return oThis.getWalletFromAddress(oThis.kmStruct.apiAddress)
 				.then((ethWallet) => {
 					return oThis.signHash(ethWallet, messageHash);
 				})
@@ -244,9 +241,9 @@ class IKM {
 		}
 	}
 
-	getApiWallet() {
+	getWalletFromAddress(walletAddress) {
 		const oThis = this,
-			apiKeyId = oThis.createEthKeyMetaId(oThis.kmStruct.apiAddress)
+			apiKeyId = oThis.createEthKeyMetaId(walletAddress)
 		;
 		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, apiKeyId)
 			.then((data) => {
@@ -266,9 +263,38 @@ class IKM {
 			});
 	}
 
+	deleteSessions(addresses) {
+		const oThis = this;
+		let promiseList = [];
+
+		addresses.forEach((address) => {
+			let apiKeyId = oThis.createEthKeyMetaId(address);
+			let deletePromise = oThis.kmDB.deleteData(STORES.KEY_STORE_TABLE, apiKeyId);
+			promiseList.push(deletePromise);
+		});
+
+		return Promise.all(promiseList)
+			.then(() => {
+				return Promise.resolve();
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "Delete Session failed", err);
+				return Promise.resolve();
+			});
+	}
+
+	signWithSession(sessionAddress, hashToSign) {
+		const oThis = this;
+		const bufferHash = Buffer.from(hashToSign, 'hex');
+		return oThis.getWalletFromAddress(sessionAddress)
+			.then((ethWallet) => {
+				return oThis.signHash(ethWallet, bufferHash);
+			});
+	}
+
 	signHash(ethWallet, msgHash) {
-		const msgSignature = ethUtil.ecsign(msgHash, ethWallet.getPrivateKey());
-		const rpcSig = ethUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
+		const msgSignature = EthUtil.ecsign(msgHash, ethWallet.getPrivateKey());
+		const rpcSig = EthUtil.toRpcSig(msgSignature.v, msgSignature.r, msgSignature.s);
 		console.debug(LOG_TAG, "signature", rpcSig);
 		return rpcSig;
 	}
@@ -359,14 +385,15 @@ class KeyMetaStruct {
 let ostKeyManager = null;
 let ostKeyManagerUserId = null;
 
-const getInstance = (userId) => {
+const getInstance = (userId, avoidKMBuilding) => {
 	if (ostKeyManager && ostKeyManagerUserId === userId) {
 		return Promise.resolve(ostKeyManager);
 	}
+	avoidKMBuilding = avoidKMBuilding || false;
 
 	console.debug(LOG_TAG,'Creating IKM instance for userId ', userId);
 	let uid = userId;
-	let okm = new IKM(userId);
+	let okm = new IKM(userId, avoidKMBuilding);
 
 	return okm.init()
 		.then(() => {
@@ -381,8 +408,8 @@ const getInstance = (userId) => {
 
 
 export default {
-	getKeyManager (userId) {
-		return getInstance(userId)
+	getKeyManager (userId, avoidKMBuilding) {
+		return getInstance(userId, avoidKMBuilding)
 			.then( (instance) => {
 				return new OstKeyManager(instance);
 			});
@@ -399,6 +426,13 @@ export default {
 		return getInstance(userId)
 			.then( (instance) => {
 				return new OstQRSigner(instance);
+			});
+	},
+
+	getTransactionSigner (userId) {
+		return getInstance(userId)
+			.then( (instance) => {
+				return new OstTransactionSigner(instance);
 			});
 	}
 }

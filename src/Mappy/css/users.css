@@ -1,0 +1,157 @@
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.data-table-row.row {
+    border-bottom: 1px solid black;
+    width: 100%;
+    position: relative;
+}
+
+.btn-group {
+    color: white;
+    font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 2rem;
+    letter-spacing: 0.01rem;
+    color: #212121;
+    background-color: #f5f5f5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.btn-group {
+    background-color: #17A2B8;
+    color: #FFFFFF;
+    text-decoration: none;
+    display: inline-block;
+    padding: 8px 16px;
+    font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 2rem;
+    letter-spacing: 0.01rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.btn-group:hover {
+    background-color: white;
+    color: 17A2B8;
+}
+
+.data-table-row.row:hover {
+    background-color: #EEEEEE;
+}
+
+.heading {
+    font-weight: bold;
+    font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    font-style: normal;
+    color: #212121;
+    background-color: #f5f5f5;
+    font-size: 15px;
+}
+
+.col-grp {
+    font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    margin-right: -1px;
+    padding: 10px;
+    width: auto;
+    word-wrap: break-word;
+    padding: 10px;
+    text-align: left;
+    flex: auto;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 2rem;
+    letter-spacing: 0.01rem;
+    color: #212121;
+    background-color: #f5f5f5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.dark {
+    background: #EEEEEE
+}
+
+.container {
+    width: 100%
+}
+
+.btn-page {
+    text-decoration: none;
+    display: inline-block;
+    padding: 8px 16px;
+}
+
+.btn-page:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.previous {
+    background-color: #17A2B8;
+    color: white;
+}
+
+.next {
+    background-color: #17A2B8;
+    color: white;
+    float: right;
+}
+
+.box {
+    position: absolute;
+    top: 80%;
+    left: 17%;
+    transform: translate(-50%, -50%);
+}
+
+.box select {
+    font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    float: left;
+    border: #f1f1f1;
+    background-color: whitesmoke;
+    color: black;
+    padding: 12px;
+    width: 250%;
+    font-style: normal;
+    height: 20%;
+    border: none;
+    font-size: 17px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    -webkit-appearance: button;
+    appearance: button;
+    outline: none;
+}
+
+.box:hover::before {
+    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.box select option {
+    padding: 30px;
+}
+
+.label-class {
+    top: 10%;
+}
+.qr-container {  
+    display: grid;  
+    grid-gap: 5px;  
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-rows: repeat(2, 100px);  
+}

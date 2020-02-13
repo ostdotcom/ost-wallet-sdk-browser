@@ -58,7 +58,12 @@ class OstMessage {
   }
 
   setArgs ( args, subscriberId ) {
-    this.args = Object.assign( args, {subscriber_id : subscriberId} );
+    if(subscriberId===undefined){
+      this.args = Object.assign( args );
+    }
+    else{
+      this.args = Object.assign( args, {subscriber_id : subscriberId} );
+    }
   }
 
   //Getter

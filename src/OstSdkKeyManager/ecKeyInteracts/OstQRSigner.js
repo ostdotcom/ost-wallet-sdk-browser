@@ -1,4 +1,6 @@
-import OstUrlHelper from "../../common-js/OstHelpers/OstUrlHelper";
+import OstHelpers from "../../common-js/OstHelpers";
+
+const LOG_TAG = "OstQRSigner";
 
 let ikmInstance = null;
 export default class OstQRSigner {
@@ -6,36 +8,40 @@ export default class OstQRSigner {
 		ikmInstance = ikm;
 	}
 
-	qrObj = {
-		dd: "AS",
-		ddv: "1.0.0",
-		d:{
-			sd: {
-				da: "0x device address",
-				sa: "0x session address",
-				sl: "spending limit",
-				et: "expiry time",
-			},
-			sig: "sign"
-		}
-	};
+	static WORKFLOW = "AS";
+	static VERSION = "2.0.0";
 
 	sign( data ) {
 		const oThis = this;
-		oThis.qrObj.d.sd.da = ikmInstance.getDeviceAddress();
-		// oThis.qrObj.d.sd.aa = ikmInstance.getApiAddress();
-		oThis.qrObj.d.sd.sa = data.session_address;
-		oThis.qrObj.d.sd.sl = data.spending_limit;
-		oThis.qrObj.d.sd.et = data.expiry_time;
-		// oThis.qrObj.d.s = ikmInstance.getApiAddress();
 
-		const objectToSign = Object.assign({}, oThis.qrObj.d.sd);
+		const deviceAddress = OstHelpers.cleanHexPrefix(ikmInstance.getDeviceAddress());
+		const sessionAddress = OstHelpers.cleanHexPrefix(data.session_address);
+		const spendingLimit = data.spending_limit;
+		const expiryTime = data.expiry_time;
 
-		const stringToSign = OstUrlHelper.getStringFromParams(objectToSign);
+		let stringToSign = `${
+			OstQRSigner.WORKFLOW
+		}|${
+			OstQRSigner.VERSION
+		}|${
+			deviceAddress
+		}|${
+			sessionAddress
+		}|${
+			spendingLimit
+		}|${
+			expiryTime
+		}`;
+
+		stringToSign = stringToSign.toLowerCase();
+		console.log(LOG_TAG, "String to sign", stringToSign);
+
 		return ikmInstance.personalSign(stringToSign)
 			.then((signature) => {
-				oThis.qrObj.d.sig = signature;
-				return Object.assign({}, oThis.qrObj);
+				const cleanHexPrefix = OstHelpers.cleanHexPrefix(signature);
+				const qrString = `${stringToSign}|${cleanHexPrefix}`;
+
+				return qrString;
 			})
 	}
 }

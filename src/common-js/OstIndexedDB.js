@@ -142,6 +142,50 @@ class OstIndexedDB {
 			};
 		});
 	}
+
+	getAllRows(name) {
+		const oThis = this;
+
+		return new Promise (function (resolve, reject) {
+			const objectStore = oThis.dbObject
+			.transaction(name)
+			.objectStore(name);
+
+			const request = objectStore.getAll();
+
+			request.onsuccess = (event) => {
+				console.log(LOG_TAG, "Data fetched successfully", event.target.result);
+				resolve(event.target.result);
+			};
+
+			request.onerror = (err) => {
+				console.error(LOG_TAG, "Data fetching fail", err);
+				reject(err);
+			};
+		});
+	}
+
+  deleteData(name, key) {
+    const oThis = this;
+
+    return new Promise (function (resolve, reject) {
+      const objectStore = oThis.dbObject
+        .transaction(name, "readwrite")
+        .objectStore(name)
+	  ;
+      const request = objectStore.delete(String(key).toLowerCase());
+
+      request.onsuccess = (event) => {
+        console.log(LOG_TAG, "Data deleted successfully", event.target.result);
+        resolve(event.target.result);
+      };
+
+      request.onerror = (err) => {
+        console.error(LOG_TAG, "Data deletion fail", err);
+        reject(err);
+      };
+    });
+  }
 }
 
 export default {

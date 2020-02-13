@@ -23,6 +23,11 @@ class OstToken extends OstBaseEntity {
     return 'id';
   }
 
+  getType() {
+    return 'token';
+  }
+
+
   static getById(tokenId) {
     const token = new OstToken(
       {id: tokenId}
@@ -50,6 +55,10 @@ class OstToken extends OstBaseEntity {
 
   getDecimals() {
     return parseInt(this.getData().decimals);
+  }
+
+  getBaseToken() {
+    return String(this.getData().base_token);
   }
 }
 export default OstToken;

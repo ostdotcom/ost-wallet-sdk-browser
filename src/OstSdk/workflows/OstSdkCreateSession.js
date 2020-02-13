@@ -5,14 +5,16 @@ import OstSession from "../entities/OstSession";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
+import OstWorkflowContext from "./OstWorkflowContext";
 
-const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
+const LOG_TAG = "OstSdk :: OstSdkCreateSession :: ";
 
 class OstSdkCreateSession extends OstSdkBaseWorkflow {
   constructor(args, browserMessenger) {
     super(args, browserMessenger);
     console.log(LOG_TAG, "constructor :: ", args);
 
+    this.user_id = args.user_id;
     this.expirationTime = parseInt(args.expiration_time);
     this.spendingLimit = String(args.spending_limit);
   }
@@ -23,6 +25,10 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     this.session = null;
 
     this.sessionPollingClass = null;
+  }
+
+  getWorkflowName() {
+    return OstWorkflowContext.WORKFLOW_TYPE.CREATE_SESSION
   }
 
   validateParams() {
@@ -73,21 +79,17 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   createSessionEntity( sessionAddress ) {
-    return OstSession.init(sessionAddress, this.spendingLimit, this.expirationTime)
+    return OstSession.init(this.user_id, sessionAddress, this.spendingLimit, this.expirationTime)
   }
 
   postShowQRData( qrData ) {
-    let message = new OstMessage();
-    message.setFunctionName("showSessionQRCode");
-    message.setSubscriberId(this.subscriberId);
 
     let params = {
+        entity_type: "qr_data",
         qr_data : qrData
     };
 
-    message.setArgs(params);
-
-    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+    this.postRequestAcknowledged(params)
   }
 
   pollingForSessionAddress() {
