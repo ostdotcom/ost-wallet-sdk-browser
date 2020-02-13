@@ -10,17 +10,11 @@ const sdkVersion = process.env.OST_BROWSER_SDK_VERSION || "";
 let OstSdkIframeUrl = process.env.OST_BROWSER_SDK_IFRAME_ORIGIN;
 OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
 
-let MappyAppPath = process.env.DEMO_MAPPY_UI_APP_ROOT_PATH || "";
-MappyAppPath = MappyAppPath.trimRight("/");
-
-
-let MappyBaseUrl = process.env.DEMO_MAPPY_UI_ORIGIN + "/" + MappyAppPath;
-MappyBaseUrl = MappyBaseUrl.trimRight("/");
-
 if ( sdkVersion && sdkVersion.length ) {
-    OstSdkIframeUrl = OstSdkIframeUrl + "/" + sdkVersion + "/";
-    MappyBaseUrl    = MappyBaseUrl    + "/" + sdkVersion;
+    OstSdkIframeUrl = OstSdkIframeUrl + "/" + sdkVersion;
 }
+OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
+OstSdkIframeUrl = OstSdkIframeUrl + "/index.html";
 
 
 
@@ -38,7 +32,6 @@ const produtionHtmlPlugins = [
         title: "Login - Demo Mappy Web UI",
         template: "./src/Mappy/html/login.html",
         inject: true,
-        MappyBaseUrl: MappyBaseUrl,
         filename: "../mappy/index.html",
         chunks: ['OstWalletSdk', 'mappy-js/login']
     },
@@ -48,7 +41,6 @@ const produtionHtmlPlugins = [
         title: "Login - Demo Mappy Web UI",
         template: "./src/Mappy/html/login.html",
         inject: true,
-        MappyBaseUrl: MappyBaseUrl,
         filename: "../mappy/login.html",
         chunks: ['OstWalletSdk', 'mappy-js/login']
     },
@@ -58,7 +50,6 @@ const produtionHtmlPlugins = [
         title: "Users List - Demo Mappy Web UI",
         template: "./src/Mappy/html/users-new.html",
         inject: true,
-        MappyBaseUrl: MappyBaseUrl,
         filename: "../mappy/users.html",
         chunks: ['OstWalletSdk', 'mappy-js/users']
     },
@@ -68,7 +59,6 @@ const produtionHtmlPlugins = [
         title: "Sdk Getter Methods - Demo Mappy Web UI",
         template: "./src/Mappy/html/sdk-getters-new.html",
         inject: true,
-        MappyBaseUrl: MappyBaseUrl,
         filename: "../mappy/sdk-getters.html",
         chunks: ['OstWalletSdk', 'mappy-js/sdk-getters']
     },
@@ -78,7 +68,6 @@ const produtionHtmlPlugins = [
         title: "JSON API Methods - Demo Mappy Web UI",
         template: "./src/Mappy/html/json-api-new.html",
         inject: true,
-        MappyBaseUrl: MappyBaseUrl,
         filename: "../mappy/json-api.html",
         chunks: ['OstWalletSdk', 'mappy-js/json-api']
     }
@@ -104,7 +93,6 @@ while(len--) {
 const webpackDefinations = {
     "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": JSON.stringify(process.env.OST_BROWSER_SDK_PLATFORM_API_ENDPOINT),
     "OST_BROWSER_SDK_IFRAME_URL": JSON.stringify(OstSdkIframeUrl),
-    "DEMO_MAPPY_UI_BASE_URL": JSON.stringify(MappyBaseUrl),
     "DEMO_MAPPY_UI_API_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_API_ENDPOINT)
 };
 

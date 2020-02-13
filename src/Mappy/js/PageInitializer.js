@@ -8,8 +8,6 @@ const sdkConfig = {
   "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
-const MAPPY_BASE_URL = DEMO_MAPPY_UI_BASE_URL;
-
 const LOG_TAG = "PageInitializer";
 class PageInitializer {
   constructor() {
@@ -101,10 +99,6 @@ class PageInitializer {
 
   getApiBaseUrl() {
     return DEMO_MAPPY_UI_API_ENDPOINT;
-  }
-
-  getBaseUrl() {
-    return MAPPY_BASE_URL;
   }
 
   getCurrentUser() {
