@@ -1,6 +1,7 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
+import CreateSessionHelper from './CreateSessionHelper';
 
 const sdkConfig = {
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
@@ -67,6 +68,7 @@ class PageInitializer {
           setTimeout( () => {
             // Do not break promise chian.
             oThis.deleteSessionsHelper = new DeleteSessionsHelper( oThis.currentUserInfo );
+            oThis.createSessionHelper = new CreateSessionHelper( oThis.currentUserInfo );
           }, 0);
         }
         return true;

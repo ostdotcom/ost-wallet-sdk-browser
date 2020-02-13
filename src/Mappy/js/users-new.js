@@ -3,7 +3,7 @@ import ajaxUtils from "./ajaxUtils";
 import Handlebars from "handlebars";
 import '../css/users.css';
 import BigNumber from 'bignumber.js';
-BigNumber.config({ EXPONENTIAL_AT: 2 })
+//BigNumber.config({ EXPONENTIAL_AT: 2 })
 class UserPage {
     constructor() {
         const oThis = this;
