@@ -1,5 +1,6 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
+import DeleteSessionsHelper from './DeleteSessionsHelper';
 
 const sdkConfig = {
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
@@ -13,9 +14,10 @@ class PageInitializer {
   constructor() {
     const oThis = this;
 
-    this.currentUserInfo = null;
+    oThis.currentUserInfo = null;
+    oThis.deleteSessionsHelper = null;
 
-    this.validatePage();
+    oThis.validatePage();
     $(() => {
       ajaxUtils.setupAjax();
       oThis.bindEvents();
@@ -61,6 +63,12 @@ class PageInitializer {
             oThis.onPageInitializedCallback( oThis.currentUserInfo );
           }, 0);
         }
+        if ( !oThis.deleteSessionsHelper ) {
+          setTimeout( () => {
+            // Do not break promise chian.
+            oThis.deleteSessionsHelper = new DeleteSessionsHelper( oThis.currentUserInfo );
+          }, 0);
+        }
         return true;
       })
       .catch( (error) => {
@@ -83,18 +91,6 @@ class PageInitializer {
     const oThis = this;
     $("#j-logout-btn").click(() => {
       oThis.logout();
-    });
-
-    $("#j-delsession-btn").click(() => {
-      const oThis = this;
-      const ostUserId = oThis.getCurrentUser().user_id;
-      OstWalletSdk.deleteLocalSessions(ostUserId)
-        .then((isDeleted) => {
-            console.log(LOG_TAG, "deleteLocalSessions :: then :: ", isDeleted)
-        })
-        .catch((err) => {
-          console.log(LOG_TAG, "deleteLocalSessions :: catch :: ", err)
-        })
     });
   }
   onPageInitialized( callback ) {
