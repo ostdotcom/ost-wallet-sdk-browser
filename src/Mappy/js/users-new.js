@@ -3,7 +3,10 @@ import ajaxUtils from "./ajaxUtils";
 import Handlebars from "handlebars";
 import '../css/users.css';
 import BigNumber from 'bignumber.js';
+import "jquery.json-viewer/json-viewer/jquery.json-viewer.css";
+import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 //BigNumber.config({ EXPONENTIAL_AT: 2 })
+const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 class UserPage {
     constructor() {
         const oThis = this;
@@ -124,10 +127,14 @@ class UserPage {
     }
 
     sendCent(event) {
+        $("#transaction-json").html('')
+        $("#transaction-string").html( '');
         sendTokens(event.data.token_holder_address, "executePayTransaction", '1');
     }
 
     sendModal(event) {
+        $("#transaction-json").html( '');
+        $("#transaction-string").html('' );
         var index = document.getElementById("transaction-type");
         var value = index.options[index.selectedIndex].value;
         var amount = document.getElementById("transaction-amount").value;
@@ -139,6 +146,8 @@ class UserPage {
     }
 
     sendDT(event) {
+        $("#transaction-json").html('');
+        $("#transaction-string").html( '' );
         console.log(event.data.token_holder_address);
         sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction", '1');
     }
@@ -222,6 +231,9 @@ class UserPage {
 var userPage = new UserPage();
 
 function sendTokens(tokenHolderAddress, transactionType, amount) {
+    
+    $('#transaction-output-modal').modal('show');
+    
     const currentUser = userPage.getCurrentUser();
     let mappyCallback = new OstWorkflowDelegate();
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
@@ -230,7 +242,9 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
 
     mappyCallback.flowInterrupt = function(ostWorkflowContext, ostError) {
         console.log(ostError);
-        alert("Transaction Interruped");
+        //alert("Transaction Interruped");
+        $("#transaction-json").jsonViewer( ostError, jsonViewerSettings);
+        $("#transaction-string").html( JSON.stringify(ostError, null, 2) );
     };
 
 
@@ -239,24 +253,31 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
         console.log("getQRCode");
         console.log("ostWorkflowContext :: ", ostWorkflowContext);
         console.log("ostContextEntity :: ", ostContextEntity);
+        //alert("Transaction Completed");
+        $("#transaction-json").jsonViewer( ostContextEntity, jsonViewerSettings);
+        $("#transaction-string").html( JSON.stringify(ostContextEntity, null, 2) );
     };
     let workflowId;
     switch (transactionType) {
         case "executeDirectTransferTransaction":
+            $('#type-label').text("Direct Transfer");
+            $('#amount-label').text(amount);
+            $('#address-label').text(tokenHolderAddress);
             userPage.convertBtToWei(amount)
             .then((value)=>{
                 const amountBN = value;
                 let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
-                    token_holder_addresses: [tokenHolderAddress],
-                    amounts: [amountBN],
-                },
-                mappyCallback);
+                        token_holder_addresses: [tokenHolderAddress],
+                        amounts: [amountBN],
+                    },
+                    mappyCallback);
             })
-            
-            
             break;
         case "executePayTransaction":
             const amountBN = userPage.convertCentToWei(amount);
+            $('#type-label').text("Execute Pay");
+            $('#amount-label').text(amount);
+            $('#address-label').text(tokenHolderAddress);
             workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
                     token_holder_addresses: [tokenHolderAddress],
                     amounts: [amountBN],
