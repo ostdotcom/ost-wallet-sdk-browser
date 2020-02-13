@@ -113,7 +113,7 @@ http {
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
 
         location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/mappy/;
+            proxy_pass https://localhost:9090/v-dev/mappy/;
         }
 
         #Loading HTML and other static resources from webpack server.
@@ -129,8 +129,8 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9090/mappy/;
-            #proxy_pass http://localhost:9090/v-dev/mappy/;
+            proxy_pass https://localhost:9090/mappy/;
+            #proxy_pass https://localhost:9090/v-dev/mappy/;
         }
     }
 
@@ -178,7 +178,7 @@ http {
 
         #Loading HTML and other static resources from webpack server.
         location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/ost-sdk/;
+            proxy_pass https://localhost:9090/v-dev/ost-sdk/;
         }
 
         location / {
@@ -194,7 +194,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9090/ost-sdk/;
+            proxy_pass https://localhost:9090/ost-sdk/;
         }
     }
 
@@ -209,7 +209,7 @@ http {
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
 
         location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/ost-sdk-key-manager/;
+            proxy_pass https://localhost:9090/v-dev/ost-sdk-key-manager/;
         }
 
         #Loading HTML and other static resources from webpack server.
@@ -225,7 +225,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9090/ost-sdk-key-manager/;
+            proxy_pass https://localhost:9090/ost-sdk-key-manager/;
         }
     }
 

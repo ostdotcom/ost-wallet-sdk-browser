@@ -402,7 +402,7 @@ const getInstance = (userId, avoidKMBuilding) => {
 		  return ostKeyManager;
 		})
 		.catch((err) => {
-			console.err(LOG_TAG, "getInstance failed", err);
+			console.error(LOG_TAG, "getInstance failed", err);
 		})
 };
 
