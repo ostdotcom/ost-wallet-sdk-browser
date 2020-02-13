@@ -45,7 +45,7 @@ class UserPage {
             .then((response) => {
                 oThis.templateData = {
                     Username: "a",
-                    User_Balance: 0,
+                    balance_in_lower_unit: 0,
                     sendDT: 1,
                     sendCent: 1,
                     send: 1,
@@ -76,7 +76,7 @@ class UserPage {
             let app_user_id = jsonData.users[i].app_user_id;
             if (jsonData.balances.hasOwnProperty(app_user_id)) {
                 //if balance is available for the app_user_id then show respective available_balance.
-                balance = BigNumber(jsonData.balances[app_user_id].available_balance);
+                balance = BigNumber(jsonData.balances[app_user_id].available_balance).toString(10);
                 //console.log("balance big",balance);
             } else {
                 // for those app_user_id whose balance is not available.
@@ -91,7 +91,7 @@ class UserPage {
 
             oThis.templateData = {
                 Username: app_user_id,
-                User_Balance: balance,
+                balance_in_lower_unit: balance,
                 sendDT: viewId + "_sendDT_" + i,
                 sendCent: viewId + "_sendCent_" + i,
                 send: viewId + "_send_" + i,

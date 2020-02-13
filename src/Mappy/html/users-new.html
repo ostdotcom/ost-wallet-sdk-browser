@@ -77,7 +77,9 @@
             <div>{{Username}}</div>
             <div id={{token_holder_address}}>{{Token_Holder_Address}}</div>
           </div>
-              <div class="col-md-3 col-grp">{{User_Balance}}</div>
+              <div class="col-md-3 col-grp">
+                <div><span>Lower Unit:&nbsp;&nbsp;</span><span>{{balance_in_lower_unit}}</span></div>
+              </div>
               <div class="col-md-4 col-grp">
                   <button class="btn btn-dark" id="{{sendDT}}">1 BT</button>
                   <button class="btn btn-dark" id="{{sendCent}}">¢1</button>
