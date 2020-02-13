@@ -124,22 +124,23 @@ class UserPage {
     }
 
     sendCent(event) {
-        sendTokens(event.data.token_holder_address, "executePayTransaction");
+        sendTokens(event.data.token_holder_address, "executePayTransaction", '1');
     }
 
     sendModal(event) {
         var index = document.getElementById("transaction-type");
         var value = index.options[index.selectedIndex].value;
-        if (value === "executeDirectTransferTransaction") {
-            sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction");
+        var amount = document.getElementById("transaction-amount").value;
+        if (value === "Direct Transfer") {
+            sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction",amount);
         } else {
-            sendTokens(event.data.token_holder_address, "executePayTransaction");
+            sendTokens(event.data.token_holder_address, "executePayTransaction",amount);
         }
     }
 
     sendDT(event) {
         console.log(event.data.token_holder_address);
-        sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction");
+        sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction", '1');
     }
 
     compileTemplates() {
@@ -187,11 +188,40 @@ class UserPage {
         oThis.loadUsers(apiUrl);
     }
 
+    convertCentToWei(amount){
+        let pricer = new BigNumber(0);
+        let amountBN = new BigNumber(amount);
+        let rateBN = new BigNumber(10).pow(16);
+        pricer = amountBN.multipliedBy(rateBN);
+        return pricer.toString();
+    }
 
+    convertBtToWei(amount){
+        console.log("currentUser :: function", this.getCurrentUser());
+        const ostUserId = this.getCurrentUser().user_id;
+        let directTransfer = new BigNumber(0);
+        return OstJsonApi.getToken( ostUserId )
+        .then((data)=>{
+            if(!data){
+                console.error("Token not found");
+                return Promise.resolve('0');
+            }
+            let decimals = data.data.token.decimals;
+            let decimalBN = new BigNumber(decimals);
+            let multiplier = new BigNumber(10).pow(decimalBN);
+            let amountBN = new BigNumber(amount);
+            directTransfer = amountBN.multipliedBy(multiplier);
+            return Promise.resolve(directTransfer.toString());
+        })
+        .catch( (err) => { 
+            console.error(err);
+            return Promise.resolve('0');
+        });
+    }
 }
 var userPage = new UserPage();
 
-function sendTokens(tokenHolderAddress, transactionType) {
+function sendTokens(tokenHolderAddress, transactionType, amount) {
     const currentUser = userPage.getCurrentUser();
     let mappyCallback = new OstWorkflowDelegate();
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
@@ -213,16 +243,23 @@ function sendTokens(tokenHolderAddress, transactionType) {
     let workflowId;
     switch (transactionType) {
         case "executeDirectTransferTransaction":
-            let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
+            userPage.convertBtToWei(amount)
+            .then((value)=>{
+                const amountBN = value;
+                let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
                     token_holder_addresses: [tokenHolderAddress],
-                    amounts: ['10'],
+                    amounts: [amountBN],
                 },
                 mappyCallback);
+            })
+            
+            
             break;
         case "executePayTransaction":
+            const amountBN = userPage.convertCentToWei(amount);
             workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
                     token_holder_addresses: [tokenHolderAddress],
-                    amounts: ['10'],
+                    amounts: [amountBN],
                 },
                 mappyCallback);
             break;

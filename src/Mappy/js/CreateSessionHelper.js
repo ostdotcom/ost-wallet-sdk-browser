@@ -22,6 +22,13 @@ class CreateSessionHelper {
         for (var k = 1; k < 30; k++) {
             $('#j-duration').append(`<option value="${k}"> ${k} </option>`);
         }
+        
+        $('#j-create-session-btn').click(() => {
+           $("#flow-complete-json").html("");
+           $("#flow-complete-string").html("");
+           $("#flow-interrupt-json").html("");
+           $("#flow-interrupt-string").html("");
+        });
         $('#j-create-btn').click(() => {
             oThis.create();
         });
