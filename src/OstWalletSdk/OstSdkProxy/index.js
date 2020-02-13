@@ -17,8 +17,30 @@ class OstSdkProxy {
 
         return oThis.getFromOstSdk('getUser', functionParams)
             .then((response) => {
-                return response;
-            });
+              const resData = response.data;
+              if (!resData) {
+                return {}
+              }
+
+              const user = resData.user;
+              if (!user) {
+                return {}
+              }
+
+              const userData = user.data;
+              if (!userData) {
+                return {}
+              }
+
+              return userData;
+            })
+            .catch((err) => {
+              const error = err.err;
+              if (!err) {
+                throw err;
+              }
+              throw error;
+            })
     }
 
     getToken( token_id) {
@@ -29,8 +51,30 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getToken', functionParams)
                 .then((response) => {
-                    return response;
-                });
+                  const resData = response.data;
+                  if (!resData) {
+                    return {}
+                  }
+
+                  const token = resData.token;
+                  if (!token) {
+                    return {}
+                  }
+
+                  const tokenData = token.data;
+                  if (!tokenData) {
+                    return {}
+                  }
+
+                  return tokenData;
+                })
+              .catch((err) => {
+                const error = err.err;
+                if (!err) {
+                  throw err;
+                }
+                throw error;
+              });
     }
 
     getDevice(userId) {
@@ -41,8 +85,30 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getDevice', functionParams)
                 .then((response) => {
-                    return response;
-                });
+                  const resData = response.data;
+                  if (!resData) {
+                    return {}
+                  }
+
+                  const device = resData.device;
+                  if (!device) {
+                    return {}
+                  }
+
+                  const deviceData = device.data;
+                  if (!deviceData) {
+                    return {}
+                  }
+
+                  return deviceData;
+                })
+              .catch((err) => {
+                const error = err.err;
+                if (!err) {
+                  throw err;
+                }
+                throw error;
+              });
     }
 
     getActiveSessions(userId, spendingLimit) {
@@ -54,8 +120,25 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getActiveSessions', functionParams)
                 .then((response) => {
-                    return response;
-                });
+                  const resData = response.data;
+                  if (!resData) {
+                    return []
+                  }
+
+                  const activeSessions = resData.activeSessions;
+                  if (!activeSessions) {
+                    return []
+                  }
+
+                  return activeSessions
+                })
+              .catch((err) => {
+                const error = err.err;
+                if (!err) {
+                  throw err;
+                }
+                throw error;
+              })  ;
             }
 
   deleteLocalSessions(userId) {
@@ -66,7 +149,10 @@ class OstSdkProxy {
 
       return oThis.getFromOstSdk('deleteLocalSessions', functionParams)
         .then((response) => {
-          return response;
+          return true;
+        })
+        .catch((err) => {
+          return false;
         });
     }
 
