@@ -21,6 +21,7 @@ class OstBaseSdk {
       , pathname = location.pathname
       , ancestorOrigins = this.getAncestorOrigins()
       , searchParams = location.search
+      , parentWindow = window.parent
     ;
 
     this.defineImmutableProperty("_location", location);
@@ -28,6 +29,7 @@ class OstBaseSdk {
     this.defineImmutableProperty("pathname", pathname);
     this.defineImmutableProperty("ancestorOrigins", ancestorOrigins);
     this.defineImmutableProperty("searchParams", searchParams);
+    this.defineImmutableProperty("parentWindow", parentWindow);
 
     this.urlParams = null;
     this.browserMessenger = null;
@@ -526,7 +528,7 @@ class OstBaseSdk {
    * @return {Promise} - resolves if browser initialization is successfull.
    */
   createBrowserMessengerObject () {
-    const messenger = new OstBrowserMessenger( this.getReceiverName(), this.getUpstreamOrigin() );
+    const messenger = new OstBrowserMessenger( this.getReceiverName(), this.getUpstreamOrigin(), this.parentWindow );
     this.defineImmutableProperty("browserMessenger", messenger);
     return this.browserMessenger.perform();
   }

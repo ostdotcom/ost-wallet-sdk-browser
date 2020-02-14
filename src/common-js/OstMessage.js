@@ -3,13 +3,14 @@ import OstError from "./OstError";
 import OstErrorCodes from './OstErrorCodes'
 
 class OstMessage {
-  static ostMessageFromReceivedMessage( message, ostVerifier ) {
+  static ostMessageFromReceivedMessage( message, ostVerifier, event ) {
     if (!message.signature || !message.ost_message) {
       return null;
     }
 
     let ostMessage = new OstMessage(message, ostVerifier);
 
+    ostMessage.event = event;
     return ostMessage
   }
 
@@ -26,6 +27,8 @@ class OstMessage {
     this.subscriberId = null;
     this.name = null;
     this.args = null;
+
+    this.event = null;
   }
 
   //Setter
@@ -230,7 +233,7 @@ class OstMessage {
           return reject( new OstError('cj_om_ivm_4', OstErrorCodes.INVALID_UPSTREAM_PUBLIC_KEY) );
         }
 
-        if ( !oThis.ostVerifier.isUpstreamOrigin( oThis.getOrigin() ) ) {
+        if ( !oThis.ostVerifier.isUpstreamEvent( this.event ) ) {
           return reject( new OstError('cj_om_ivm_5', OstErrorCodes.INVALID_UPSTREAM_ORIGIN) );
         }
 

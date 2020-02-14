@@ -23,9 +23,10 @@ const SOURCE = {
 let LOG_TAG = "OstMessenger";
 class OstBrowserMessenger {
 
-  constructor( receiverName, upStreamOrigin ) {
+  constructor( receiverName, upStreamOrigin, windowParent ) {
 
     this.defineImmutableProperty("receiverName", receiverName);
+    this.defineImmutableProperty("parentWindow", windowParent);
     if ( upStreamOrigin ) {
       this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
     }
@@ -97,7 +98,7 @@ class OstBrowserMessenger {
       return;
     }
 
-    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj() );
+    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj(), event );
 
     if ( !ostMessage ) {
       return;
@@ -134,6 +135,8 @@ class OstBrowserMessenger {
     ostVerifierObj.setDownStreamOrigin( this.downStreamOrigin );
 
     ostVerifierObj.setReceiverName ( this.receiverName );
+
+    ostVerifierObj.setParent(this.parentWindow);
 
     return ostVerifierObj
   }

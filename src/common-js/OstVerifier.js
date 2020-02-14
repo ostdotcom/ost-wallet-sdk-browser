@@ -12,6 +12,8 @@ class OstVerifier {
     this.downstreamOrigin = null;
 
     this.receiverName = null;
+
+    this.parent = null;
   }
 
   //Setter
@@ -35,7 +37,6 @@ class OstVerifier {
     this.downstreamPublicKeyHex = hex;
   }
 
-
   setDownStreamOrigin ( origin ) {
     this.downstreamOrigin = origin;
   }
@@ -44,6 +45,9 @@ class OstVerifier {
     this.receiverName = name;
   }
 
+  setParent( parent ) {
+    this.parent = parent;
+  }
 
   //Validate
   isDownstreamSigner ( signer ) {
@@ -73,6 +77,10 @@ class OstVerifier {
 
   isUpstreamOrigin ( origin ) {
     return this.upstreamOrigin === origin;
+  }
+
+  isUpstreamEvent ( event ) {
+    return this.parent === event.source;
   }
 
   isValidReceiver ( name ) {
