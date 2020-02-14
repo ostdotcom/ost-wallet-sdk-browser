@@ -236,26 +236,39 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
     
     const currentUser = userPage.getCurrentUser();
     let mappyCallback = new OstWorkflowDelegate();
+    var html =  '<div class="text-center"> <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
+    document.getElementById("transaction-json").innerHTML = html;
+    document.getElementById("transaction-string").innerHTML = html;
+
+    let output = {};
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
-        alert("Transaction Acknowledged");
+        console.log("Req Ack :: ostContextEntity :: ", ostContextEntity);
+        html = "<div>" + ostContextEntity + "</div>";
+        document.getElementById("flow-complete-json").innerHTML = html;
+        output["Request Acknowledged"] = ostContextEntity;
+        $("#transaction-json").jsonViewer( output, jsonViewerSettings);
+        $("#transaction-string").html( JSON.stringify(output, null, 2) );
     };
 
     mappyCallback.flowInterrupt = function(ostWorkflowContext, ostError) {
-        console.log(ostError);
-        //alert("Transaction Interruped");
-        $("#transaction-json").jsonViewer( ostError, jsonViewerSettings);
-        $("#transaction-string").html( JSON.stringify(ostError, null, 2) );
+        console.error(ostError);
+        html = "<div>" + ostError + "</div>";
+        document.getElementById("flow-complete-json").innerHTML = html;
+        output["Flow Interrupted"] = ostError;
+        $("#transaction-json").jsonViewer( output, jsonViewerSettings);
+        $("#transaction-string").html( JSON.stringify(output, null, 2) );
     };
 
 
     mappyCallback.flowComplete = function(ostWorkflowContext, ostContextEntity) {
 
-        console.log("getQRCode");
         console.log("ostWorkflowContext :: ", ostWorkflowContext);
-        console.log("ostContextEntity :: ", ostContextEntity);
-        //alert("Transaction Completed");
-        $("#transaction-json").jsonViewer( ostContextEntity, jsonViewerSettings);
-        $("#transaction-string").html( JSON.stringify(ostContextEntity, null, 2) );
+        console.log("Flow Complete :: ostContextEntity :: ", ostContextEntity);
+        html = "<div>" + ostContextEntity + "</div>";
+        document.getElementById("flow-complete-json").innerHTML = html;
+        output["Flow Complete"] =ostContextEntity;
+        $("#transaction-json").jsonViewer( output, jsonViewerSettings);
+        $("#transaction-string").html( JSON.stringify(output, null, 2) );
     };
     let workflowId;
     switch (transactionType) {

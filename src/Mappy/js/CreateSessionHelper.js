@@ -26,8 +26,8 @@ class CreateSessionHelper {
         $('#j-create-session-btn').click(() => {
            $("#flow-complete-json").html("");
            $("#flow-complete-string").html("");
-           $("#flow-interrupt-json").html("");
-           $("#flow-interrupt-string").html("");
+        //    $("#flow-interrupt-json").html("");
+        //    $("#flow-interrupt-string").html("");
         });
         $('#j-create-btn').click(() => {
             oThis.create();
@@ -84,6 +84,10 @@ class CreateSessionHelper {
     getQRCode() {
         const oThis = this;
         let mappyCallback = new OstWorkflowDelegate();
+        var html =  '<div class="text-center"> <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
+        document.getElementById("flow-complete-json").innerHTML = html;
+        document.getElementById("flow-complete-string").innerHTML = html;
+
         mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
             console.log("request ack");
             const entityType = ostContextEntity.entity_type,
@@ -95,20 +99,24 @@ class CreateSessionHelper {
             console.log(LOG_TAG, "getQRCode");
             console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
             console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
-            var html = "<div>" + ostContextEntity + "</div>";
+            html = "<div>" + ostContextEntity + "</div>";
+            document.getElementById("flow_status").innerHTML = "Flow Complete";
             document.getElementById("flow-complete-json").innerHTML = html;
-            $("#flow-complete-json").jsonViewer( ostContextEntity, jsonViewerSettings);
-            $("#flow-complete-string").html( JSON.stringify(ostContextEntity, null, 2) );
+            let output = {"Flow Complete": ostContextEntity}
+            $("#flow-complete-json").jsonViewer( output, jsonViewerSettings);
+            $("#flow-complete-string").html( JSON.stringify(output, null, 2) );
         };
 
         mappyCallback.flowInterrupt = function (ostWorkflowContext, ostError) {
             console.log(LOG_TAG, "getQRCode");
             console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
             console.log(LOG_TAG, "ostError :: ", ostError);
-            var html = "<div>" + ostError + "</div>";
+            let output = {"Flow Interrupted": ostError}
+            var html = "<div>" + output + "</div>";
+            document.getElementById("flow_status").innerHTML = "Flow Interrupt";
             document.getElementById("flow-complete-json").innerHTML = html;
-            $("#flow-interrupt-json").jsonViewer( ostError, jsonViewerSettings);
-            $("#flow-interrupt-string").html( JSON.stringify(ostError, null, 2) );
+            $("#flow-complete-json").jsonViewer( output, jsonViewerSettings);
+            $("#flow-complete-string").html( JSON.stringify(output, null, 2) );
         };
 
         let workflowId = OstWalletSdk.createSession(
