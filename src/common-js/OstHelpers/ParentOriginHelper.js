@@ -1,6 +1,6 @@
 
 export default {
-  getParentOrigin : (_window, _location) => {
+  getParentOrigin : (_window, _location, LOG_TAG) => {
     const parentWindow = _window.parent;
   let _origin = null;
   let _resolve, _reject;
@@ -8,30 +8,30 @@ export default {
 
   // 1 - > Receive Message.
   const messageReceiver = (event) => {
-    console.log("|||", "getParentOrigin", "messageReceiver event", event);
+    console.log("|||", LOG_TAG, "getParentOrigin", "messageReceiver event", event);
     if ( _origin ) {
       // We have already set _origin. Ignore the message.
       return;
     }
     if (!event.isTrusted) {
-      console.log("|||", "getParentOrigin", "c1 failed");
+      console.log("|||", LOG_TAG, "getParentOrigin", "c1 failed");
       return;
     }
 
     const eventData = event.data;
     if (!eventData) {
-      console.log("|||", "getParentOrigin", "c2 failed");
+      console.log("|||", LOG_TAG, "getParentOrigin", "c2 failed");
       return;
     }
 
     if ( !eventData.ost_message ) {
-      console.log("|||", "getParentOrigin", "c3 failed");
+      console.log("|||", LOG_TAG, "getParentOrigin", "c3 failed");
       return;
     }
 
     // Verify the event source.
     if ( event.source != parentWindow) {
-      console.log("|||", "getParentOrigin", "c4 failed");
+      console.log("|||", LOG_TAG, "getParentOrigin", "c4 failed");
       return;
     }
 
@@ -43,7 +43,7 @@ export default {
     // Our job is done.
     _window.removeEventListener("message", messageReceiver);
     
-    console.log("|||", "getParentOrigin", "ALL PASSED. _origin", _origin);
+    console.log("|||", LOG_TAG, "getParentOrigin", "ALL PASSED. _origin", _origin);
     // Resolve the promise.
     _resolve(event.origin);
   };
@@ -62,7 +62,7 @@ export default {
   
   let targetOrigin = "*";
   parentWindow.postMessage(messageData, targetOrigin);
-  console.log("|||", "getParentOrigin", "parent origin requested", event);
+  console.log("|||", LOG_TAG, "getParentOrigin", "parent origin requested", event);
 
   //3 - > Wait for not more than 1 sec.
   setTimeout(() => {

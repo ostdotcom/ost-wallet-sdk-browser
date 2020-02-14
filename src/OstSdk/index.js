@@ -16,7 +16,7 @@ function destroySelf() {
     return destroySelf();
   }
 
-  OstParentOriginHelper.getParentOrigin(_window, _location).then((parentOrigin) => {
+  OstParentOriginHelper.getParentOrigin(_window, _location, LOG_TAG).then((parentOrigin) => {
     console.log("||| Initializing OstSdk with parentOrigin", parentOrigin);
     const ostSdkObj = new OstSdk(_window, parentOrigin);
     const urlParams = ostSdkObj.getUrlParams();

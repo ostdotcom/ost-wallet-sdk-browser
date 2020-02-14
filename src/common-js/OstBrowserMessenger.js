@@ -98,7 +98,6 @@ class OstBrowserMessenger {
     }
 
     if ( !eventData.ost_message ) {
-      console.error("!eventData.ost_message", eventData);
       return;
     }
 

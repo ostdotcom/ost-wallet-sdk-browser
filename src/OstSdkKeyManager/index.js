@@ -15,8 +15,8 @@ const LOG_TAG = 'KM';
     return destroySelf();
   }
 
-  OstParentOriginHelper.getParentOrigin(_window, _location).then((parentOrigin) => {
-    let sdkKmManager = new OstSdkKeyManager(window, window.location.ancestorOrigins[0]);
+  OstParentOriginHelper.getParentOrigin(_window, _location, LOG_TAG).then((parentOrigin) => {
+    let sdkKmManager = new OstSdkKeyManager(window, parentOrigin);
     sdkKmManager.perform();
   })
     .catch(() => {
