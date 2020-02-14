@@ -151,7 +151,7 @@ class PageInitializer {
     let sdkDelegate =  new OstSetupDeviceDelegate();
     // Define register device.
     sdkDelegate.registerDevice = function( apiParams ) {
-      console.log(LOG_TAG, "registerDevice")
+      console.log(LOG_TAG, "registerDevice");
       return oThis.registerDevice(apiParams);
     };
 

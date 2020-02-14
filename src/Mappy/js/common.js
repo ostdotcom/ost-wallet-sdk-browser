@@ -9,7 +9,7 @@ export class OstSetup {
       },
       crossDomain: true
     });
-  
+
     $.ajaxSetup({
       type: "GET",
       xhrFields: {
@@ -32,7 +32,7 @@ export class OstSetup {
       },
       crossDomain: true
     });
-  
+
     $.ajaxSetup({
       type: "GET",
       xhrFields: {
@@ -91,7 +91,7 @@ export class OstSetup {
       let sdkDelegate =  new OstSetupDeviceDelegate();
       // Define register device.
       sdkDelegate.registerDevice = function( apiParams ) {
-        console.log(LOG_TAG, "registerDevice")
+        console.log(LOG_TAG, "registerDevice");
         return registerDevice(apiParams);
       };
 
@@ -135,7 +135,7 @@ export class OstSetup {
 
 
     // return new Promise((resolve, reject) => {
-      
+
     //     .then((currentUser) => {
 
     //       console.log("user_id =======> ",currentUser.user_id);

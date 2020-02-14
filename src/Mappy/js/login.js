@@ -15,7 +15,7 @@ export class LoginSetup {
 
   getLoginStatus( successCallback, failuerCallback ) {
     var baseUrl = ostSetup.getBaseUrl();
-    console.log("base url --------->>>>>",baseUrl)
+    console.log("base url --------->>>>>",baseUrl);
       $.ajax({
           type: 'GET',
           url: baseUrl+'/users',

@@ -498,14 +498,14 @@ class OstBaseSdk {
     if ( !this.isValidHttpsUrl(finalConfig.api_endpoint) ) {
       let error = new OstError("obsdk_setSdkConfig_1", EC.INVALID_INITIALIZATION_CONFIGURATION, {
         "api_endpoint": finalConfig.api_endpoint
-      })
+      });
       return Promise.reject( error );
     }
 
     if ( !this.isValidHttpsUrl(finalConfig.sdk_endpoint) ) {
       let error = new OstError("obsdk_setSdkConfig_2", EC.INVALID_INITIALIZATION_CONFIGURATION, {
         "sdk_endpoint": finalConfig.sdk_endpoint
-      })
+      });
       return Promise.reject( error );
     }
 

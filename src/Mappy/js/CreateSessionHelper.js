@@ -22,7 +22,7 @@ class CreateSessionHelper {
         for (var k = 1; k < 30; k++) {
             $('#j-duration').append(`<option value="${k}"> ${k} </option>`);
         }
-        
+
         $('#j-create-session-btn').click(() => {
            $("#flow-complete-json").html("");
            $("#flow-complete-string").html("");
@@ -50,7 +50,7 @@ class CreateSessionHelper {
                 console.log("spending limit", limit);
                 $("#spending-limit-label-lower").text(oThis.spendingLimit);
                 $("#spending-limit-label-higher").text(value);
-                
+
                 //var html = $("div.changeSession").html();
                 //$('#modal-body').html(html);
                 //$('#j-create-session-btn').hide();
@@ -89,7 +89,7 @@ class CreateSessionHelper {
             const entityType = ostContextEntity.entity_type,
                 entity = ostContextEntity[entityType];
             oThis.makeCode(entity);
-        }
+        };
 
         mappyCallback.flowComplete = function (ostWorkflowContext, ostContextEntity) {
             console.log(LOG_TAG, "getQRCode");

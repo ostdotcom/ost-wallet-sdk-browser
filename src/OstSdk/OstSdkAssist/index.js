@@ -249,7 +249,7 @@ class OstSdkAssist {
 			, subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getToken()
       .then((response) => {
         if (!response) {
@@ -272,7 +272,7 @@ class OstSdkAssist {
 			, subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getTransactions()
       .then((response) => {
         if (!response) {
@@ -295,7 +295,7 @@ class OstSdkAssist {
 			, subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getTokenHolder()
       .then((response) => {
         if (!response) {
@@ -318,7 +318,7 @@ class OstSdkAssist {
 			, subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getRules()
       .then((response) => {
         if (!response) {
@@ -600,7 +600,7 @@ class OstSdkAssist {
   ;
 
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId))
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getDeviceList()
       .then((response) => {
         if (!response) {
