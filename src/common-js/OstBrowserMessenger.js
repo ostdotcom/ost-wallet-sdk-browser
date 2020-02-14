@@ -85,6 +85,9 @@ class OstBrowserMessenger {
   }
 
   onMessageReceived(event) {
+    if (!event.isTrusted) {
+      return;
+    }
 
     let oThis = this;
 
