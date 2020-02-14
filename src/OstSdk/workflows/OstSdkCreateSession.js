@@ -1,9 +1,7 @@
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes from  '../../common-js/OstErrorCodes'
+import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
 import OstWorkflowContext from "./OstWorkflowContext";
 

@@ -1,5 +1,3 @@
-import OstError from "../../common-js/OstError";
-import OstErrorCode from '../../common-js/OstErrorCodes'
 import OstConstants from '../OstConstants'
 import OstApiClient from "../../Api/OstApiClient";
 

@@ -9,7 +9,6 @@
 import OstError from "./OstError";
 
 import OstHelpers from "./OstHelpers";
-import OstErrorCodes from "./OstErrorCodes";
 import EventEmitter from 'eventemitter3';
 import OstVerifier from "./OstVerifier";
 import OstMessage from "./OstMessage";
@@ -185,8 +184,8 @@ class OstBrowserMessenger {
   }
 
   //Setter
-  
-  //TODO: To be Deprecated. 
+
+  //TODO: To be Deprecated.
   //@Deprecated
   setUpStreamOrigin( upStreamOrigin ) {
     this.upStreamOrigin = upStreamOrigin;
