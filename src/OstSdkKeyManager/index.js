@@ -106,15 +106,9 @@ const LOG_TAG = 'KM';
     }
   }
 
-
   let sdkKmManager = new OstSdkKeyManager(window);
-  sdkKmManager.perform()
-    .then(() => {
+  sdkKmManager.perform();
 
-    })
-    .catch((err) => {
-
-    })
 })(window);
 
 
