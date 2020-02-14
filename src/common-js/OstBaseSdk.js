@@ -19,7 +19,7 @@ class OstBaseSdk {
     const location = window.location
       , origin = location.origin
       , pathname = location.pathname
-      , ancestorOrigins = location.ancestorOrigins
+      , ancestorOrigins = this.getAncestorOrigins()
       , searchParams = location.search
     ;
 
@@ -34,6 +34,10 @@ class OstBaseSdk {
     this.sdkConfig = null;
     this.setURLParams();
     LOG_TAG = LOG_TAG + "-" + this.getReceiverName();
+  }
+
+  getAncestorOrigins() {
+    return [''];
   }
 
   isSdkInitialized() {

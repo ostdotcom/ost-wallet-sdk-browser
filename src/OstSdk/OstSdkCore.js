@@ -15,6 +15,9 @@ class OstSdk extends OstBaseSdk {
     this.ostSdkAssist = null
   }
 
+  getAncestorOrigins() {
+    return ['https://devmappy.com'];
+  }
   createOstSdkAssist () {
     let oThis = this;
     this.ostSdkAssist = new OstSdkAssist(this.browserMessenger, this.getReceiverName());

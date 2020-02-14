@@ -15,6 +15,10 @@ const LOG_TAG = 'KM';
       this.ostKeyManagerAssist = null;
     }
 
+    getAncestorOrigins() {
+      return ['https://sdk-devmappy.ostsdkproxy.com'];
+    }
+
     createOstSdkKeyManagerAssist () {
       const oThis = this;
 
