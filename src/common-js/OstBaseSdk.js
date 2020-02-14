@@ -577,7 +577,7 @@ class OstBaseSdk {
         if (err instanceof OstError) {
           throw err;
         }
-        throw new OstError('os_i_p_1', 'SKD_INTERNAL_ERROR', err);
+        throw new OstError('os_i_p_2', 'SKD_INTERNAL_ERROR', err);
       });
   }
 
