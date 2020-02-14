@@ -10,7 +10,7 @@ const sdkConfig = {
 
 const LOG_TAG = "PageInitializer";
 class PageInitializer {
-  constructor() {
+  constructor( autoPerform = true) {
     const oThis = this;
 
     oThis.currentUserInfo = null;
@@ -20,7 +20,9 @@ class PageInitializer {
     $(() => {
       ajaxUtils.setupAjax();
       oThis.bindEvents();
-      oThis.perform();
+      if ( autoPerform ) {
+        oThis.perform();  
+      }
     })
   }
   perform() {
