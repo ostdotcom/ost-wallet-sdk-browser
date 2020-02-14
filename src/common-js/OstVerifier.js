@@ -89,8 +89,10 @@ class OstVerifier {
 
   isValidSignature(signature, payloadToSign, publicKey) {
 
-    return crypto.subtle.verify(
-      'RSASSA-PKCS1-v1_5',
+    return crypto.subtle.verify({
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256"
+      },
       publicKey,
       OstHelpers.hexToByteArray( signature ),
       OstHelpers.getDataToSign( payloadToSign )
