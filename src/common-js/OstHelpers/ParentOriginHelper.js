@@ -64,12 +64,12 @@ export default {
   parentWindow.postMessage(messageData, targetOrigin);
   console.log("|||", "getParentOrigin", "parent origin requested", event);
 
-  // 3 - > Wait for not more than 1 sec.
-  // setTimeout(() => {
-  //   if ( !_origin ) {
-  //     _reject();
-  //   }
-  // }, 2000)
+  //3 - > Wait for not more than 1 sec.
+  setTimeout(() => {
+    if ( !_origin ) {
+      _reject();
+    }
+  }, 2000);
 
   return new Promise((resolve, reject) => {
       _resolve = resolve;
