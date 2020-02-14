@@ -358,11 +358,21 @@ class OstBrowserMessenger {
   }
 
   getSignature(payload) {
-    return crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.signer.privateKey, OstHelpers.getDataToSign(payload));
+    return crypto.subtle.sign({
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
+      },
+      this.signer.privateKey,
+      OstHelpers.getDataToSign(payload));
   }
 
   verifyIframeInit(url, signature) {
-    return crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.upstreamPublicKey, OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
+    return crypto.subtle.verify({
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
+      },
+      this.upstreamPublicKey,
+      OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
   }
 
   //
