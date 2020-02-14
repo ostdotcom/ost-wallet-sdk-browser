@@ -13,16 +13,18 @@ let downstreamIframe = null;
 let LOG_TAG = "OstBaseSdk";
 
 class OstBaseSdk {
-  constructor(window){
+  constructor(window, parentOrigin){
     this.defineImmutableProperty("_window", window);
 
     const location = window.location
       , origin = location.origin
       , pathname = location.pathname
-      , ancestorOrigins = this.getAncestorOrigins()
+      , ancestorOrigins = [parentOrigin]
       , searchParams = location.search
       , parentWindow = window.parent
     ;
+
+
 
     this.defineImmutableProperty("_location", location);
     this.defineImmutableProperty("origin", origin);
@@ -36,10 +38,6 @@ class OstBaseSdk {
     this.sdkConfig = null;
     this.setURLParams();
     LOG_TAG = LOG_TAG + "-" + this.getReceiverName();
-  }
-
-  getAncestorOrigins() {
-    return [''];
   }
 
   isSdkInitialized() {
@@ -293,14 +291,23 @@ class OstBaseSdk {
         // Set down-stream contentWindow.
         oThis.setDownStreamWindow( downstreamIframe.contentWindow );
         // Set down-stream url.
-        let downstreamEndpoint = oThis.getDownstreamEndpoint();
-        if (downstreamEndpoint) {
-          let url = new URL(downstreamEndpoint);
-          oThis.setDownStreamOrigin( url.origin );
+        let downstreamOrigin = oThis.getDownstreamOrigin();
+        if (downstreamOrigin) {
+          oThis.setDownStreamOrigin( downstreamOrigin );
         }
 
         return oThis.waitForIframeLoad(signedUrl);
       })
+  }
+
+  getDownstreamOrigin() {
+    const oThis = this;
+    let downstreamEndpoint = oThis.getDownstreamEndpoint();
+    if ( !downstreamEndpoint ) {
+      return null;
+    }
+    let url = new URL(downstreamEndpoint);
+    return url.origin;
   }
 
   waitForIframeLoad(signedUrl) {
@@ -436,6 +443,7 @@ class OstBaseSdk {
         // Create Downstream Iframe
         .then( () => {
           console.log(LOG_TAG, ":: init :: calling createDownstreamIframe");
+          oThis.addChildIframeListner();
           return oThis.createDownstreamIframe();
         })
 
@@ -477,6 +485,62 @@ class OstBaseSdk {
 
   initDBInstance() {
     return Promise.resolve();
+  }
+
+  addChildIframeListner () {
+    const oThis = this
+        , ancestorOrigins = oThis._location.ancestorOrigins
+    ;
+
+    //TODO: Uncomment.
+    // if ( ancestorOrigins ) {
+    //   // Browser supports ancestorOrigins.
+    //   // No need for listner.
+    //   return;
+    // }
+
+    const messageReceiver = (event) => {
+      console.log("|||", "addChildIframeListner", "messageReceiver event", event);
+      // Verify Event Trust
+      if (!event.isTrusted) {
+        return;
+      }
+
+      // Verify Origin
+      if ( event.origin != oThis.getDownstreamOrigin() ) {
+        return;
+      }
+
+      // Verify Source
+      if ( event.source != downstreamIframe.contentWindow ) {
+        return;
+      }
+
+      // Verify data presence.
+      const eventData = event.data;
+      if (!eventData) {
+        return;
+      }
+
+      // Verify the type of message.
+      if ( !eventData.ost_parent_verifier_request ) {
+        return;
+      }
+
+      // Our job is done.
+       oThis._window.removeEventListener("message", messageReceiver);
+      // Resolve the promise.
+      let message = new OstMessage()
+      message.setReceiverName("OstSdk");
+      message.setArgs({
+        "ost_parent_verifier_response" : true
+      })
+      oThis.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
+      console.log("|||", "addChildIframeListner", "request responded", event);
+    }
+
+    oThis._window.addEventListener('message', messageReceiver);
+    console.log("|||", "addChildIframeListner", "messageReceiver added");
   }
 
   hasUpstream() {

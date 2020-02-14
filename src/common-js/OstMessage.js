@@ -157,7 +157,9 @@ class OstMessage {
       method_details: {
         name: this.getMethodName(),
         args: this.getArgs()
-      }
+      },
+
+      ost_verifiable_message: true
     }
   }
 
@@ -268,6 +270,7 @@ export default OstMessage
 /*
 - Sample OstMessage Structure
 {
+  "ost_varifiable_message": true,
 	"signature": "0x",
 	"ost_message": {
 		timestamp: 123123123,

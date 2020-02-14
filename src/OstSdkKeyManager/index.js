@@ -10,13 +10,9 @@ const LOG_TAG = 'KM';
 (function(window) {
 
   class OstSdkKeyManager extends OstBaseSdk {
-    constructor(window){
-      super(window);
+    constructor(window, parentOrigin){
+      super(window, parentOrigin);
       this.ostKeyManagerAssist = null;
-    }
-
-    getAncestorOrigins() {
-      return ['https://sdk-devmappy.ostsdkproxy.com'];
     }
 
     createOstSdkKeyManagerAssist () {
@@ -106,7 +102,8 @@ const LOG_TAG = 'KM';
     }
   }
 
-  let sdkKmManager = new OstSdkKeyManager(window);
+
+  let sdkKmManager = new OstSdkKeyManager(window, window.location.ancestorOrigins[0]);
   sdkKmManager.perform();
 
 })(window);

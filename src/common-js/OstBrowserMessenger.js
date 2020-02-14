@@ -97,6 +97,11 @@ class OstBrowserMessenger {
       return;
     }
 
+    if ( !eventData.ost_message ) {
+      console.error("!eventData.ost_message", eventData);
+      return;
+    }
+
     const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj(), event );
 
     if ( !ostMessage ) {

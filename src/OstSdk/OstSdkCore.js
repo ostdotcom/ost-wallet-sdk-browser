@@ -10,14 +10,11 @@ import OstError from "../common-js/OstError";
 const LOG_TAG = "OstSdk :: index :: ";
 
 class OstSdk extends OstBaseSdk {
-  constructor(window, origin, pathname, ancestorOrigins, searchParams){
-    super(window, origin, pathname, ancestorOrigins, searchParams);
+  constructor(window, parentOrigin){
+    super(window, parentOrigin);
     this.ostSdkAssist = null
   }
 
-  getAncestorOrigins() {
-    return ['https://devmappy.com'];
-  }
   createOstSdkAssist () {
     let oThis = this;
     this.ostSdkAssist = new OstSdkAssist(this.browserMessenger, this.getReceiverName());
