@@ -322,18 +322,16 @@ class IKM {
 		let seedPassword = "";
 		if (SHOULD_USE_SEED_PWD) {
 			seedPassword = this.buildSeedPassword(keyType);
-			console.info(LOG_TAG, "Seed pwd being used:", seedPassword);
 		}
 
 		const seed = bip39.mnemonicToSeedSync(mnemonics, seedPassword).toString('hex');
-		console.info(LOG_TAG, "Generated Hex seed ", seed);
 
 		const hdMasterKey = hdKey.fromMasterSeed(seed);
 
 		const derivedKey =  hdMasterKey.derivePath(HD_DERIVATION_PATH_FIRST_CHILD);
 
 		const ethWallet = derivedKey.getWallet();
-		console.info(LOG_TAG, "hdWallet public address", ethWallet.getChecksumAddressString());
+		console.log(LOG_TAG, "hdWallet public address", ethWallet.getChecksumAddressString());
 
 		return ethWallet;
 	}

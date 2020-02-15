@@ -2,7 +2,7 @@
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
 
-const LOG_TAG = 'OstJsonApiProxy :: '
+const LOG_TAG = 'OstJsonApiProxy :: ';
 
 class OstJsonApiProxy {
     constructor(messengerObj){

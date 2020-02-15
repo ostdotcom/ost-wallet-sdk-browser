@@ -13,21 +13,25 @@ let downstreamIframe = null;
 let LOG_TAG = "OstBaseSdk";
 
 class OstBaseSdk {
-  constructor(window){
+  constructor(window, parentOrigin){
     this.defineImmutableProperty("_window", window);
 
     const location = window.location
       , origin = location.origin
       , pathname = location.pathname
-      , ancestorOrigins = location.ancestorOrigins
+      , ancestorOrigins = [parentOrigin]
       , searchParams = location.search
+      , parentWindow = window.parent
     ;
+
+
 
     this.defineImmutableProperty("_location", location);
     this.defineImmutableProperty("origin", origin);
     this.defineImmutableProperty("pathname", pathname);
     this.defineImmutableProperty("ancestorOrigins", ancestorOrigins);
     this.defineImmutableProperty("searchParams", searchParams);
+    this.defineImmutableProperty("parentWindow", parentWindow);
 
     this.urlParams = null;
     this.browserMessenger = null;
@@ -280,63 +284,109 @@ class OstBaseSdk {
 
     return oThis.getDownstreamIframeUrl()
       .then( ( signedUrl ) => {
+
         downstreamIframe = document.createElement('iframe');
         downstreamIframe.setAttribute('src', signedUrl);
         downstreamIframe.className = iframeCssClassName;
+        
+        // Append to body
         oThis.getDocument().body.appendChild( downstreamIframe );
+        console.log("|||", oThis.getReceiverName(), "createDownstreamIframe appendChild downstreamIframe");
+
         // Set down-stream contentWindow.
         oThis.setDownStreamWindow( downstreamIframe.contentWindow );
+        
         // Set down-stream url.
-        let downstreamEndpoint = oThis.getDownstreamEndpoint();
-        if (downstreamEndpoint) {
-          let url = new URL(downstreamEndpoint);
-          oThis.setDownStreamOrigin( url.origin );
+        let downstreamOrigin = oThis.getDownstreamOrigin();
+        if (downstreamOrigin) {
+          oThis.setDownStreamOrigin( downstreamOrigin );
         }
-
-        return oThis.waitForIframeLoad(signedUrl);
-      })
+      });
   }
 
-  waitForIframeLoad(signedUrl) {
+  getDownstreamOrigin() {
     const oThis = this;
+    let downstreamEndpoint = oThis.getDownstreamEndpoint();
+    if ( !downstreamEndpoint ) {
+      return null;
+    }
+    let url = new URL(downstreamEndpoint);
+    return url.origin;
+  }
 
-    // Create a promise.
-    let _resolve  = null;
-    let _reject   = null;
-    let iframeLoadPromise = new Promise((resolve, reject) => {
-      _resolve  = resolve;
-      _reject   = reject;
-    });
-
+  /**
+   * waitForOriginTrustHandshake - Waits for a message from downstream 
+   * iframe and responses with a simple OstMessage. 
+   * 
+   * The downstream iframe sends the message using ParentOriginHelper.
+   * The message from the downstream signifies that downstream iframe has been loaded.
+   *
+   * The downstream Iframe receives the message and and determines the origin
+   * of the current window (this instance's window) by looking at event.origin.
+   * 
+   * @return {Promise} 
+   */
+  waitForOriginTrustHandshake () {
+    const oThis = this
+        , ancestorOrigins = oThis._location.ancestorOrigins
+    ;
+    let _resolve, _reject;
     let _isIframeLoaded = false;
     let _isIframeTimedout = false;
-    const iframeLoadEventListener = (event) => {
-      try {
-        console.log(LOG_TAG, oThis.getReceiverName(), " :: Downstream Iframe loaded! :: ", _isIframeLoaded);
-        if ( _isIframeLoaded ) {
-          // Already received load event. Something is not right.
-          console.warn("Unexpectedly received load event more than once from downstream iframe. Destroying the iframe. The sdk shall not work any more");
-          oThis.destroySelfIfRequired();
-          return;
-        }
 
-        if ( _isIframeTimedout ) {
-          // We have already declared init as failed.
-          // ignore it.
-          return;
-        }
-
-        // Mark as loaded.
-        _isIframeLoaded = true;
-        _resolve( true );
-      } catch( e ) {
-        // Unexpected Error.
-        let ostError = OstError.sdkError(e, "obsdk_wfifl_ilel_1");
-        _reject( ostError );
+    const messageReceiver = (event) => {
+      console.log("|||", LOG_TAG, "waitForOriginTrustHandshake", "messageReceiver event", event);
+      // Verify Event Trust
+      if (!event.isTrusted) {
+        return;
       }
-    };
 
-    downstreamIframe.addEventListener('load', iframeLoadEventListener);
+      // Verify Origin
+      if ( event.origin != oThis.getDownstreamOrigin() ) {
+        return;
+      }
+
+      // Verify Source
+      if ( event.source != downstreamIframe.contentWindow ) {
+        return;
+      }
+
+      // Verify data presence.
+      const eventData = event.data;
+      if (!eventData) {
+        return;
+      }
+
+      // Verify the type of message.
+      if ( !eventData.ost_parent_verifier_request ) {
+        return;
+      }
+
+      if ( _isIframeTimedout ) {
+        console.warn(LOG_TAG, "received origin message after timeout");
+        return;
+      }
+
+
+      // Send a message to establish trust on origin.
+      let message = new OstMessage()
+      message.setReceiverName("OstSdk");
+      message.setArgs({
+        "ost_parent_verifier_response" : true
+      })
+      oThis.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
+
+      // Resolve the promise. Our job is done.
+      _isIframeLoaded = true;
+       oThis._window.removeEventListener("message", messageReceiver);
+       console.log("|||", LOG_TAG, "waitForOriginTrustHandshake", "messageReceiver is resoling the promise");
+      _resolve();
+    }
+
+    // Add the event listner.
+    console.log("|||", LOG_TAG, "waitForOriginTrustHandshake", "messageReceiver added");
+    oThis._window.addEventListener('message', messageReceiver);
+
 
     setTimeout(() => {
       if ( _isIframeLoaded ) {
@@ -358,11 +408,11 @@ class OstBaseSdk {
       _reject( error );
 
     }, oThis.getDownstreamIframeLoadTimeout());
-    return iframeLoadPromise;
-  }
 
-  waitForIframeHandshake(_resolve, _reject) {
-    _resolve();
+    return new Promise((resolve, reject) => {
+      _resolve = resolve;
+      _reject = reject;
+    });
   }
   //endregion
 
@@ -433,6 +483,12 @@ class OstBaseSdk {
           return oThis.createDownstreamIframe();
         })
 
+        // Establish origin trust.
+        .then(() => {
+          console.log(LOG_TAG, ":: init :: calling waitForOriginTrustHandshake");
+          return oThis.waitForOriginTrustHandshake();
+        })
+
         // Wait for Downstream Iframe Initialization.
         .then( () => {
           console.log(LOG_TAG, ":: init :: calling waitForDownstreamInitialization");
@@ -492,14 +548,14 @@ class OstBaseSdk {
     if ( !this.isValidHttpsUrl(finalConfig.api_endpoint) ) {
       let error = new OstError("obsdk_setSdkConfig_1", EC.INVALID_INITIALIZATION_CONFIGURATION, {
         "api_endpoint": finalConfig.api_endpoint
-      })
+      });
       return Promise.reject( error );
     }
 
     if ( !this.isValidHttpsUrl(finalConfig.sdk_endpoint) ) {
       let error = new OstError("obsdk_setSdkConfig_2", EC.INVALID_INITIALIZATION_CONFIGURATION, {
         "sdk_endpoint": finalConfig.sdk_endpoint
-      })
+      });
       return Promise.reject( error );
     }
 
@@ -522,7 +578,7 @@ class OstBaseSdk {
    * @return {Promise} - resolves if browser initialization is successfull.
    */
   createBrowserMessengerObject () {
-    const messenger = new OstBrowserMessenger( this.getReceiverName(), this.getUpstreamOrigin() );
+    const messenger = new OstBrowserMessenger( this.getReceiverName(), this.getUpstreamOrigin(), this.parentWindow );
     this.defineImmutableProperty("browserMessenger", messenger);
     return this.browserMessenger.perform();
   }
@@ -571,7 +627,7 @@ class OstBaseSdk {
         if (err instanceof OstError) {
           throw err;
         }
-        throw new OstError('os_i_p_1', 'SKD_INTERNAL_ERROR', err);
+        throw new OstError('os_i_p_2', 'SKD_INTERNAL_ERROR', err);
       });
   }
 

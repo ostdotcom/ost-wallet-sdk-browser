@@ -37,7 +37,7 @@ const produtionHtmlPlugins = [
     },
 
     /* http://devmappy.com/login.html  */
-    {   
+    {
         title: "Login - Demo Mappy Web UI",
         template: "./src/Mappy/html/login.html",
         inject: true,
@@ -88,8 +88,7 @@ while(len--) {
 
   // Add it.
   devHtmlPlugins.push( conf )
-};
-
+}
 const webpackDefinations = {
     "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": JSON.stringify(process.env.OST_BROWSER_SDK_PLATFORM_API_ENDPOINT),
     "OST_BROWSER_SDK_IFRAME_URL": JSON.stringify(OstSdkIframeUrl),
@@ -102,7 +101,7 @@ module.exports = {
     "htmlPlugins": produtionHtmlPlugins,
     "webpackDefinations": webpackDefinations
   },
-  
+
   "dev": {
     "entry": entry,
     "htmlPlugins": devHtmlPlugins,

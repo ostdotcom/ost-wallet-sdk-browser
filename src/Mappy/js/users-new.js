@@ -72,7 +72,6 @@ class UserPage {
         let balance = 0;
         let jOutputEl;
         let outputHtml;
-        oThis.htmlwork;
         let token_holder_address;
 
         for (var i = 0; i < 10; i++) {
@@ -111,8 +110,8 @@ class UserPage {
             $('#user-row-div').append(outputHtml);
             jOutputEl = $(outputHtml);
 
-            let sendDT = $('#' + oThis.templateData.user_row).find("#" + oThis.templateData.sendDT)
-            let sendCent = $('#' + oThis.templateData.user_row).find("#" + oThis.templateData.sendCent)
+            let sendDT = $('#' + oThis.templateData.user_row).find("#" + oThis.templateData.sendDT);
+            let sendCent = $('#' + oThis.templateData.user_row).find("#" + oThis.templateData.sendCent);
             let sendModal = $('#user_row_modal_body_id_0').find("#user_row_sendModal_0").css("color", "#17A2B8");
 
             oThis.bindingButtonEvents(sendDT, sendCent, sendModal, oThis.templateData.Token_Holder_Address);
@@ -127,7 +126,7 @@ class UserPage {
     }
 
     sendCent(event) {
-        $("#transaction-json").html('')
+        $("#transaction-json").html('');
         $("#transaction-string").html( '');
         sendTokens(event.data.token_holder_address, "executePayTransaction", '1');
     }
@@ -222,7 +221,7 @@ class UserPage {
             directTransfer = amountBN.multipliedBy(multiplier);
             return Promise.resolve(directTransfer.toString());
         })
-        .catch( (err) => { 
+        .catch( (err) => {
             console.error(err);
             return Promise.resolve('0');
         });
@@ -231,9 +230,9 @@ class UserPage {
 var userPage = new UserPage();
 
 function sendTokens(tokenHolderAddress, transactionType, amount) {
-    
+
     $('#transaction-output-modal').modal('show');
-    
+
     const currentUser = userPage.getCurrentUser();
     let mappyCallback = new OstWorkflowDelegate();
     var html =  '<div class="text-center"> <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
@@ -284,7 +283,7 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
                         amounts: [amountBN],
                     },
                     mappyCallback);
-            })
+            });
             break;
         case "executePayTransaction":
             const amountBN = userPage.convertCentToWei(amount);

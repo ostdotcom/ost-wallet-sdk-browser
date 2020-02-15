@@ -9,4 +9,4 @@ export OST_BROWSER_SDK_IFRAME_ORIGIN="https://sdk-devmappy.ostsdkproxy.com/"
 
 export DEMO_MAPPY_UI_ORIGIN="https://devmappy.com/";
 
-export DEMO_MAPPY_UI_API_ENDPOINT='https://demo-mappy.stagingost.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/'
+export DEMO_MAPPY_UI_API_ENDPOINT='https://demo-devmappy.devmappy.com/'

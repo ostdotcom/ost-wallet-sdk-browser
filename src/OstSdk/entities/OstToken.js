@@ -1,6 +1,4 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
-import OstDevice from "./OstDevice";
-import OstUser from "./OstUser";
 
 class OstToken extends OstBaseEntity {
 

@@ -25,12 +25,14 @@ class OstIndexedDB {
 	createDatabase() {
 		const oThis = this;
 
-		if (!this.indexedDB) {
-			alert("indexed Db not supported");
+		if (!oThis.indexedDB) {
+			let err = new Error("indexed Db not supported");
+			return Promise.reject( err );
 		}
+		
 		return new Promise(function (resolve, reject) {
 
-			const request = window.indexedDB.open(oThis.dbName, oThis.version);
+			const request = oThis.indexedDB.open(oThis.dbName, oThis.version);
 
 			request.onsuccess = (event) => {
 				console.log(LOG_TAG, oThis.dbName, "version", oThis.version, "DB got created ", event);
