@@ -22,8 +22,7 @@ const entry = {
   'mappy-js/users'          : './src/Mappy/js/users-new.js',
   'mappy-js/login'          : './src/Mappy/js/login.js',
   'mappy-js/json-api'       : './src/Mappy/js/json-api-new.js',
-  'mappy-js/sdk-getters'    : './src/Mappy/js/sdk-getter-new.js',
-  'mappy-js/workflow'       : './src/Mappy/js/workflow.js'
+  'mappy-js/sdk-getters'    : './src/Mappy/js/sdk-getter-new.js'
 };
 
 const produtionHtmlPlugins = [
