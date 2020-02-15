@@ -9,7 +9,6 @@
 import OstError from "./OstError";
 
 import OstHelpers from "./OstHelpers";
-import OstErrorCodes from "./OstErrorCodes";
 import EventEmitter from 'eventemitter3';
 import OstVerifier from "./OstVerifier";
 import OstMessage from "./OstMessage";
@@ -23,9 +22,10 @@ const SOURCE = {
 let LOG_TAG = "OstMessenger";
 class OstBrowserMessenger {
 
-  constructor( receiverName, upStreamOrigin ) {
+  constructor( receiverName, upStreamOrigin, windowParent ) {
 
     this.defineImmutableProperty("receiverName", receiverName);
+    this.defineImmutableProperty("parentWindow", windowParent);
     if ( upStreamOrigin ) {
       this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
     }
@@ -85,6 +85,9 @@ class OstBrowserMessenger {
   }
 
   onMessageReceived(event) {
+    if (!event.isTrusted) {
+      return;
+    }
 
     let oThis = this;
 
@@ -94,7 +97,11 @@ class OstBrowserMessenger {
       return;
     }
 
-    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj() );
+    if ( !eventData.ost_message ) {
+      return;
+    }
+
+    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj(), event );
 
     if ( !ostMessage ) {
       return;
@@ -131,6 +138,8 @@ class OstBrowserMessenger {
     ostVerifierObj.setDownStreamOrigin( this.downStreamOrigin );
 
     ostVerifierObj.setReceiverName ( this.receiverName );
+
+    ostVerifierObj.setParent(this.parentWindow);
 
     return ostVerifierObj
   }
@@ -179,8 +188,8 @@ class OstBrowserMessenger {
   }
 
   //Setter
-  
-  //TODO: To be Deprecated. 
+
+  //TODO: To be Deprecated.
   //@Deprecated
   setUpStreamOrigin( upStreamOrigin ) {
     this.upStreamOrigin = upStreamOrigin;
@@ -352,11 +361,21 @@ class OstBrowserMessenger {
   }
 
   getSignature(payload) {
-    return crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.signer.privateKey, OstHelpers.getDataToSign(payload));
+    return crypto.subtle.sign({
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
+      },
+      this.signer.privateKey,
+      OstHelpers.getDataToSign(payload));
   }
 
   verifyIframeInit(url, signature) {
-    return crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.upstreamPublicKey, OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
+    return crypto.subtle.verify({
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
+      },
+      this.upstreamPublicKey,
+      OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
   }
 
   //

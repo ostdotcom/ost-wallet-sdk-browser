@@ -10,8 +10,8 @@ import OstError from "../common-js/OstError";
 const LOG_TAG = "OstSdk :: index :: ";
 
 class OstSdk extends OstBaseSdk {
-  constructor(window, origin, pathname, ancestorOrigins, searchParams){
-    super(window, origin, pathname, ancestorOrigins, searchParams);
+  constructor(window, parentOrigin){
+    super(window, parentOrigin);
     this.ostSdkAssist = null
   }
 

@@ -29,8 +29,7 @@ For development environment, 3 domains are needed. Add following hosts:
 127.0.0.1 devmappy.com
 127.0.0.1 sdk-devmappy.ostsdkproxy.com
 127.0.0.1 km-devmappy.ostsdkproxy.com
-127.0.0.1 demo-devmappy.stagingostproxy.com
-127.0.0.1 api.stagingostproxy.com
+127.0.0.1 demo-devmappy.devmappy.com
 ```
 > As webpack in breaks when routing through nginx in dev-environment, we shall server JS directly from webpack
 > We shall use localhost:9090 for all Ost Hosted Scripts and localhost:9000 for Mappy JS Script.
@@ -107,20 +106,20 @@ http {
         listen       443 ssl;
         server_name  devmappy.com;
 
-        add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.stagingostproxy.com' always;
+        add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.devmappy.com' always;
         add_header 'Access-Control-Allow-Credentials' 'true' always;
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
 
         location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/mappy/;
+            proxy_pass https://localhost:9090/v-dev/mappy/;
         }
 
         #Loading HTML and other static resources from webpack server.
         location / {
 
             if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.stagingostproxy.com' always;
+                add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.devmappy.com' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
                 add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
@@ -129,15 +128,15 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9090/mappy/;
-            #proxy_pass http://localhost:9090/v-dev/mappy/;
+            proxy_pass https://localhost:9090/mappy/;
+            #proxy_pass https://localhost:9090/v-dev/mappy/;
         }
     }
 
     # Mappy Api Server Reverse Proxy
     server {
         listen       443 ssl;
-        server_name  demo-devmappy.stagingostproxy.com;
+        server_name  demo-devmappy.devmappy.com;
 
         add_header 'Access-Control-Allow-Origin' 'https://devmappy.com' always;
         add_header 'Access-Control-Allow-Credentials' 'true' always;
@@ -159,7 +158,7 @@ http {
                 return 204;
             }
 
-            proxy_cookie_domain demo-mappy.stagingost.com demo-devmappy.stagingostproxy.com;
+            proxy_cookie_domain demo-mappy.stagingost.com demo-devmappy.devmappy.com;
             proxy_pass https://demo-mappy.stagingost.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/;
         }
     }
@@ -178,7 +177,7 @@ http {
 
         #Loading HTML and other static resources from webpack server.
         location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/ost-sdk/;
+            proxy_pass https://localhost:9090/v-dev/ost-sdk/;
         }
 
         location / {
@@ -194,7 +193,7 @@ http {
                 add_header 'Content-Length' 0;
                 return 204;
             }
-            proxy_pass http://localhost:9090/ost-sdk/;
+            proxy_pass https://localhost:9090/ost-sdk/;
         }
     }
 
@@ -203,60 +202,9 @@ http {
         listen       443 ssl;
         server_name  km-devmappy.ostsdkproxy.com;
 
-        add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-        location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/ost-sdk-key-manager/;
-        }
-
         #Loading HTML and other static resources from webpack server.
         location / {
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-            proxy_pass http://localhost:9090/ost-sdk-key-manager/;
-        }
-    }
-
-
-    # Ost Platform Api Server Reverse Proxy
-    server {
-        listen       443 ssl;
-        server_name  api.stagingostproxy.com;
-
-        add_header 'Access-Control-Allow-Origin' 'https://sdk-devmappy.ostsdkproxy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-        #Loading HTML and other static resources from webpack server.
-        location / {
-
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://sdk-devmappy.ostsdkproxy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-
-            proxy_cookie_domain api.stagingost.com api.stagingostproxy.com;
-            proxy_pass https://api.stagingost.com/;
+            proxy_pass https://localhost:9090/ost-sdk-key-manager/;
         }
     }
 }
@@ -293,9 +241,10 @@ Open the follwoing links in browser and grant permission
 > Click on `Proceed to...` On Chrome
 >
 > Click on `Accept Risk and Continue` on Firefox
+* [https://localhost:9090](https://localhost:9090)
 * [https://km-devmappy.ostsdkproxy.com/](https://km-devmappy.ostsdkproxy.com/)
 * [https://sdk-devmappy.ostsdkproxy.com/](https://sdk-devmappy.ostsdkproxy.com/)
-* [https://demo-devmappy.stagingostproxy.com](https://demo-devmappy.stagingostproxy.com)
+* [https://demo-devmappy.devmappy.com](https://demo-devmappy.devmappy.com)
 * [https://devmappy.com](https://devmappy.com)
 
 ### Testing

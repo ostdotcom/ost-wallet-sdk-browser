@@ -1,6 +1,4 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
-import OstDevice from "./OstDevice";
-import BigNumber from "bignumber.js/bignumber";
 
 class OstSession extends OstBaseEntity {
 

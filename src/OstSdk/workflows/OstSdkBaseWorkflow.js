@@ -76,7 +76,6 @@ export default class OstSdkBaseWorkflow {
           .catch((err) => {
             throw OstError.sdkError(err, 'sk_w_osbw_pr_1');
           });
-        break;
       case states.DEVICE_VALIDATED:
         this.onDeviceValidated();
         break;

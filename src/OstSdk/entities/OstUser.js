@@ -1,7 +1,6 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
 import OstDevice from "./OstDevice";
 import OstError from "../../common-js/OstError";
-import OstToken from "./OstToken";
 
 const LOG_TAG = "OstUser";
 class OstUser extends OstBaseEntity {

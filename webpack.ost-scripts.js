@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SriPlugin = require('webpack-subresource-integrity');
 const webpack = require('webpack');
+const fs = require('fs');
 
 String.prototype.trimRight = function(charlist) {
   if (charlist === undefined)
@@ -80,6 +81,11 @@ const devConfig = {
     mode: "development",
     devtool: "inline-source-map",
     devServer: {
+        http2: true,
+        https: {
+            key: fs.readFileSync('/usr/local/etc/nginx/dev-proxy-https-certificates/dev-proxy-https.key'),
+            cert: fs.readFileSync('/usr/local/etc/nginx/dev-proxy-https-certificates/dev-proxy-https.crt')
+        },
         contentBase: "./dist",
         port: 9090,
         liveReload: false,
