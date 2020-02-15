@@ -30,10 +30,10 @@ class CreateSessionHelper {
         //    $("#flow-interrupt-string").html("");
         });
         $('#j-create-btn').click(() => {
-            oThis.create();
+            oThis.perform();
         });
     }
-    create() {
+    perform() {
         const oThis = this;
         var value = $('#j-spending-limit').val();
         oThis.higherUnitSpending = value;
@@ -55,7 +55,7 @@ class CreateSessionHelper {
                 //$('#modal-body').html(html);
                 //$('#j-create-session-btn').hide();
                 $('#afterSession').modal('toggle');
-                oThis.getQRCode();
+                oThis.createSession();
             })
             .catch((error) => {
                 oThis.spendingLimit = 0;
@@ -81,7 +81,7 @@ class CreateSessionHelper {
             correctLevel: QRCode.CorrectLevel.H
         });
     }
-    getQRCode() {
+    createSession() {
         const oThis = this;
         let mappyCallback = new OstWorkflowDelegate();
         var html =  '<div class="text-center"> <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
@@ -96,7 +96,7 @@ class CreateSessionHelper {
         };
 
         mappyCallback.flowComplete = function (ostWorkflowContext, ostContextEntity) {
-            console.log(LOG_TAG, "getQRCode");
+            console.log(LOG_TAG, "createSession");
             console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
             console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
             html = "<div>" + ostContextEntity + "</div>";
@@ -108,7 +108,7 @@ class CreateSessionHelper {
         };
 
         mappyCallback.flowInterrupt = function (ostWorkflowContext, ostError) {
-            console.log(LOG_TAG, "getQRCode");
+            console.log(LOG_TAG, "createSession");
             console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
             console.log(LOG_TAG, "ostError :: ", ostError);
             let output = {"Flow Interrupted": ostError}
@@ -119,10 +119,11 @@ class CreateSessionHelper {
             $("#flow-complete-string").html( JSON.stringify(output, null, 2) );
         };
 
+        console.log("Initiating OstWalletSdk.createSession with spendingLimit", oThis.spendingLimit, ". The higherUnitSpendingLimit is", oThis.higherUnitSpending);
         let workflowId = OstWalletSdk.createSession(
             oThis.currentUser.user_id,
             parseInt(oThis.expiryTime.getTime()/1000),
-            oThis.higherUnitSpending,
+            oThis.spendingLimit,
             mappyCallback);
 
     }
