@@ -111,10 +111,6 @@ http {
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
 
-        location /v-dev/ {
-            proxy_pass https://localhost:9090/v-dev/mappy/;
-        }
-
         #Loading HTML and other static resources from webpack server.
         location / {
 
@@ -129,7 +125,6 @@ http {
                 return 204;
             }
             proxy_pass https://localhost:9090/mappy/;
-            #proxy_pass https://localhost:9090/v-dev/mappy/;
         }
     }
 
@@ -138,27 +133,10 @@ http {
         listen       443 ssl;
         server_name  demo-devmappy.devmappy.com;
 
-        add_header 'Access-Control-Allow-Origin' 'https://devmappy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-
         #Loading HTML and other static resources from webpack server.
         location / {
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://devmappy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-
-            proxy_cookie_domain demo-mappy.stagingost.com demo-devmappy.devmappy.com;
+            proxy_cookie_domain stagingost.com devmappy.com;
+            
             proxy_pass https://demo-mappy.stagingost.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/;
         }
     }
@@ -169,30 +147,7 @@ http {
         listen       443 ssl;
         server_name  sdk-devmappy.ostsdkproxy.com;
 
-        add_header 'Access-Control-Allow-Origin' 'https://api.stagingost.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-
-        #Loading HTML and other static resources from webpack server.
-        location /v-dev/ {
-            proxy_pass https://localhost:9090/v-dev/ost-sdk/;
-        }
-
         location / {
-
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://api.stagingost.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
             proxy_pass https://localhost:9090/ost-sdk/;
         }
     }
