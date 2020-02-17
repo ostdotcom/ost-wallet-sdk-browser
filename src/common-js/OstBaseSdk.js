@@ -427,6 +427,7 @@ class OstBaseSdk {
    */
   static getDefaultConfig() {
     return {
+      "token_id"            : null,
       "api_endpoint"        : null,
       "sdk_endpoint"        : null,
       "debug"               : false
@@ -555,6 +556,13 @@ class OstBaseSdk {
     if ( !this.isValidHttpsUrl(finalConfig.sdk_endpoint) ) {
       let error = new OstError("obsdk_setSdkConfig_2", EC.INVALID_INITIALIZATION_CONFIGURATION, {
         "sdk_endpoint": finalConfig.sdk_endpoint
+      });
+      return Promise.reject( error );
+    }
+
+    if ( !finalConfig.token_id || !parseInt(finalConfig.token_id) ) {
+      let error = new OstError("obsdk_setSdkConfig_3", EC.INVALID_INITIALIZATION_CONFIGURATION, {
+        "token_id": finalConfig.token_id
       });
       return Promise.reject( error );
     }

@@ -25,6 +25,10 @@ if ( !process.env.OST_BROWSER_SDK_IFRAME_ORIGIN ) {
     throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_IFRAME_ORIGIN is not set.\n" + "||| BUILD FAILED!!! |||\n";
 }
 
+if ( !process.env.TOKEN_ID ) {
+  throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable TOKEN_ID is not set.\n" + "||| BUILD FAILED!!! |||\n";
+}
+
 if ( !process.env.DEMO_MAPPY_UI_ORIGIN ) {
     throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable DEMO_MAPPY_UI_ORIGIN is not set.\n" + "||| BUILD FAILED!!! |||\n";
 }
