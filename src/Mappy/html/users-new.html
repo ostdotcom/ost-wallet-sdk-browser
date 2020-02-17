@@ -382,7 +382,7 @@
 
 
   <!----transaction output modal-->
-  <div class="modal fade" id="transaction-output-modal" style="overflow-y: auto; max-height: 800px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal fade" id="transaction-output-modal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -394,7 +394,7 @@
             <div class="modal-body mx-3" id="modal-body">
               
               
-              <div class="row clearfix" style="display: flex;overflow-y: auto; max-height: 600px;">
+              <div class="row">
                 <div class="col-md-12 col-sm-12">
                   <label data-error="wrong" data-success="right" style="font-weight: bold;">Type: </label>
                   <label data-error="wrong" data-success="right"  id="type-label"></label></br>
@@ -402,7 +402,7 @@
                   <label data-error="wrong" data-success="right"  id="amount-label"></label></br>
                   <label data-error="wrong" data-success="right" style="font-weight: bold;">Token Holder Address: </label>
                   <label data-error="wrong" data-success="right" id="address-label"></label></br>
-                  <div class="card" style="height:100%">
+                  <div class="card">
                     <div class="card-header">
                       <ul class="nav nav-tabs card-header-tabs">
                         <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
@@ -422,8 +422,10 @@
                     </div>
                     </div>
                   </div>
+                </br>
+                </br>
 
-                  <div class="card" style="height:100%">
+                  <div class="card">
                     <div class="card-header">
                       <ul class="nav nav-tabs card-header-tabs">
                         <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
@@ -452,6 +454,39 @@
         </div>
     </div>
   </div>
+  <!--workflow log modal-->
+  <div class="modal fade" id="createSession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Create Session</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3" id="modal-body">
+              <div id="beforeChange" class="beforeChange">
+                <div class="md-form mb-5">
+                  <label data-error="wrong" data-success="right" for="transaction-amount">Spending Limit in Higher Unit</label>
+                  <input type="number" id="j-spending-limit" class="form-control validate"></div>
+              <div class="md-form mb-4">
+                  <div class="form-group">
+                    <label for="sel1">Duration(in days):</label>
+                    <select class="form-control" id="j-duration">
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center" id="modal-footer">
+              <button class="btn btn-default" id="j-create-btn">Create</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <script id="j-workflow-log-template" type="text/x-handlebars-template">
+  </script>
 
 </body>
 
