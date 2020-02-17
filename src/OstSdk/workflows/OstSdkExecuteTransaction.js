@@ -71,12 +71,42 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 			})
   }
 
+	calFiatMultiplier(ppOstToUsd, ppDecimalExponent, conversionFactorOstToBT, tokenDecimalExponent) {
+		// weiDecimal = OstToUsd * 10^decimalExponent
+		const bigDecimal = new BigNumber(String(ppOstToUsd));
+		const toWeiMultiplier = new BigNumber(10).pow(new BigNumber(ppDecimalExponent));
+		const usdWeiDecimalDenominator = bigDecimal.multipliedBy(toWeiMultiplier);
+
+		// toBtWeiMultiplier = 10^btDecimal
+		const toBtWeiMultiplier = new BigNumber(10).pow(new BigNumber(tokenDecimalExponent));
+
+		// btInWeiNumerator = conversionFactorOstToPin * toBtWeiMultiplier
+		const conversionFactorOstToPin = new BigNumber(String(conversionFactorOstToBT));
+		const btInWeiNumerator = conversionFactorOstToPin.multipliedBy(toBtWeiMultiplier);
+
+		let precision = ppDecimalExponent - tokenDecimalExponent;
+		if (precision < 1) precision = 2;
+
+		// multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
+		const multiplierForFiat = btInWeiNumerator.dividedBy(usdWeiDecimalDenominator);
+
+		return multiplierForFiat;
+	}
+
 	getTotalAmount (){
   	const oThis = this;
+		let fiatMultiplier = oThis.fiatMultiplier;
+
+		if ('Direct Transfer' == oThis.ruleName || !oThis.fiatMultiplier) {
+			fiatMultiplier = new BigNumber(1);
+		}
 
   	let total = new BigNumber(0);
   	for (let i = 0;i< this.amounts.length;i++) {
-  		total = total.plus(new BigNumber(oThis.amounts[i]));
+  		total = total.plus(
+  			new BigNumber(oThis.amounts[i])
+					.multipliedBy(fiatMultiplier)
+			);
 		}
 		return total.toString();
 	}
@@ -128,7 +158,29 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   onDeviceValidated() {
     const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
-    Promise.all([oThis.getAuthorizedSession(), oThis.getRule(oThis.ruleName), oThis.getPricePoint()])
+		oThis.getPricePoint()
+			.then((pricePoint) => {
+				if (!pricePoint) {
+					console.error(LOG_TAG, "Price point fetch failed");
+					return Promise.reject("Price point fetch failed");
+				}
+
+				let currencyCode = oThis.options.currency_code || 'USD';
+				const pricePointOSTtoUSD = pricePoint[currencyCode];
+				const ppDecimalExpo = pricePoint.decimals;
+
+				oThis.fiatMultiplier = oThis.calFiatMultiplier(pricePointOSTtoUSD,
+					ppDecimalExpo,
+					oThis.token.getConversionFactor(),
+					oThis.token.getDecimals()
+				);
+				console.log(LOG_TAG, "Fiat Multiplier", oThis.fiatMultiplier);
+				oThis.pricePoint =  pricePoint;
+				return oThis.pricePoint;
+			})
+			.then(() => {
+				return Promise.all([oThis.getAuthorizedSession(), oThis.getRule(oThis.ruleName)]);
+			})
 			.then((resp) => {
 				if (!resp[0]) {
 					console.error(LOG_TAG, "Session fetch failed");
@@ -147,19 +199,13 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 				}
 				const rule = resp[1];
 
-				if (!resp[2]) {
-					console.error(LOG_TAG, "Price point fetch failed");
-					return Promise.reject("Price point fetch failed");
-				}
-				const pricePointOfBaseToken = resp[2];
-
 				return oThis.keyManagerProxy.signTransaction(session,
 					oThis.user.getTokenHolderAddress(),
 					oThis.token_holder_addresses,
 					oThis.amounts,
 					rule,
 					oThis.ruleMethod,
-					pricePointOfBaseToken,
+					oThis.pricePoint,
 					oThis.options);
 			})
 			.then((response) => {
