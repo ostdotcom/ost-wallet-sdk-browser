@@ -51,7 +51,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 		return OstSession.getActiveSessions(oThis.userId)
 			.then((sessionArray) => {
 				if (!oThis.expectedSpendAmount) {
-					oThis.expectedSpendAmount = oThis.getTotalAmount();
+					oThis.expectedSpendAmount = oThis.getTotalExpectedAmount();
 				}
 				const expectedSpendingAmount = new BigNumber(oThis.expectedSpendAmount);
 				for (let i=0; i < sessionArray.length; i++) {
@@ -71,29 +71,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 			})
   }
 
-	calFiatMultiplier(ppOstToUsd, ppDecimalExponent, conversionFactorOstToBT, tokenDecimalExponent) {
-		// weiDecimal = OstToUsd * 10^decimalExponent
-		const bigDecimal = new BigNumber(String(ppOstToUsd));
-		const toWeiMultiplier = new BigNumber(10).pow(new BigNumber(ppDecimalExponent));
-		const usdWeiDecimalDenominator = bigDecimal.multipliedBy(toWeiMultiplier);
-
-		// toBtWeiMultiplier = 10^btDecimal
-		const toBtWeiMultiplier = new BigNumber(10).pow(new BigNumber(tokenDecimalExponent));
-
-		// btInWeiNumerator = conversionFactorOstToPin * toBtWeiMultiplier
-		const conversionFactorOstToPin = new BigNumber(String(conversionFactorOstToBT));
-		const btInWeiNumerator = conversionFactorOstToPin.multipliedBy(toBtWeiMultiplier);
-
-		let precision = ppDecimalExponent - tokenDecimalExponent;
-		if (precision < 1) precision = 2;
-
-		// multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
-		const multiplierForFiat = btInWeiNumerator.dividedBy(usdWeiDecimalDenominator);
-
-		return multiplierForFiat;
-	}
-
-	getTotalAmount (){
+	getTotalExpectedAmount (){
   	const oThis = this;
 		let fiatMultiplier = oThis.fiatMultiplier;
 
@@ -165,16 +143,16 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					return Promise.reject("Price point fetch failed");
 				}
 
-				let currencyCode = oThis.options.currency_code || 'USD';
+				const currencyCode = oThis.options.currency_code || 'USD';
 				const pricePointOSTtoUSD = pricePoint[currencyCode];
-				const ppDecimalExpo = pricePoint.decimals;
+				const pricePointDecimalExpo = pricePoint.decimals;
 
 				oThis.fiatMultiplier = oThis.calFiatMultiplier(pricePointOSTtoUSD,
-					ppDecimalExpo,
+					pricePointDecimalExpo,
 					oThis.token.getConversionFactor(),
 					oThis.token.getDecimals()
 				);
-				console.log(LOG_TAG, "Fiat Multiplier", oThis.fiatMultiplier);
+
 				oThis.pricePoint =  pricePoint;
 				return oThis.pricePoint;
 			})
@@ -255,6 +233,28 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       	 return this.apiClient.getSession(this.session.getId());
       })
   }
+
+	calFiatMultiplier(ppOstToUsd, ppDecimalExponent, conversionFactorOstToBT, tokenDecimalExponent) {
+		// weiDecimal = ppOstToUsd * 10^ppDecimalExponent
+		const bigDecimal = new BigNumber(String(ppOstToUsd));
+		const toWeiMultiplier = new BigNumber(10).pow(new BigNumber(ppDecimalExponent));
+		const usdWeiDecimalDenominator = bigDecimal.multipliedBy(toWeiMultiplier);
+
+		// toBtWeiMultiplier = 10^tokenDecimalExponent
+		const toBtWeiMultiplier = new BigNumber(10).pow(new BigNumber(tokenDecimalExponent));
+
+		// btInWeiNumerator = conversionFactorOstToBT * toBtWeiMultiplier
+		const conversionFactorOstToPin = new BigNumber(String(conversionFactorOstToBT));
+		const btInWeiNumerator = conversionFactorOstToPin.multipliedBy(toBtWeiMultiplier);
+
+		let precision = ppDecimalExponent - tokenDecimalExponent;
+		if (precision < 1) precision = 2;
+
+		// multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
+		const multiplierForFiat = btInWeiNumerator.dividedBy(usdWeiDecimalDenominator);
+
+		return multiplierForFiat;
+	}
 
   getWorkflowName () {
 		return OstWorkflowContext.WORKFLOW_TYPE.EXECUTE_TRANSACTION;
