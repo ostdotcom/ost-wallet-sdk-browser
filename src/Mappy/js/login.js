@@ -2,7 +2,6 @@ import '../css/login.css';
 import PageInitializer from "./PageInitializer";
 import ajaxUtils from "./ajaxUtils";
 
-
 export class LoginSetup {
   constructor() {
     const oThis = this;
