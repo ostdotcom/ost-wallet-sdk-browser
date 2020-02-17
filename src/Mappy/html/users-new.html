@@ -35,6 +35,9 @@
         </li>
       </ul>
       <div class="form-inline mr-2">
+        <button id="j-workflow-log-btn" data-target="#workflow-log"  data-toggle="modal" class="btn btn-outline-light my-2 my-sm-0">Workflow</button>
+      </div>
+      <div class="form-inline mr-2">
         <button id="j-create-session-btn" data-target="#createSession"  data-toggle="modal" class="btn btn-outline-light my-2 my-sm-0">Create Session</button>
       </div>
       <div class="form-inline mr-2">
@@ -70,6 +73,7 @@
         <div class="col-md-3 col-md-offset-3">Balance</div>
         <div class="col-md-4 col-md-offset-4">Pay User</div>
       </div>
+      <!--template to load users-->
       <script id="user-method-template" type="text/x-handlebars-template">
 
         <div class="row data-table-row" id="{{user_row}}">
@@ -125,6 +129,7 @@
         </div>
 
       </script>
+      <!--load users template ended-->
       <div id="user-row-div">
       </div>
       <div class="row">
@@ -137,7 +142,7 @@
       </div>
     </div>
   </section>
-
+<!--delete session -->
 <div id="j-delete-session-modal" class="modal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -153,6 +158,7 @@
     </div>
   </div>
 </div>
+<!--display code and output response template-->
 <script id="j-method-template" type="text/x-handlebars-template">
   <div class="row" style="display: flex; margin-top:50px;">
     <div class="col-12"><h4>OstWalletSdk.{{methodName}}()</h4></div>
@@ -190,6 +196,7 @@
     </div>
   </div>
 </script>
+<!--json api template-->
 <script id="j-json-api-template" type="text/x-handlebars-template">
   <div class="row" style="display: flex; margin-top:50px;">
     <div class="col-12"><h4>OstJsonApi.{{methodName}}()</h4></div>
@@ -228,6 +235,8 @@
   </div>
 </script>
 
+<!--create session-->
+
   <div class="modal fade" id="createSession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -257,6 +266,8 @@
         </div>
     </div>
   </div>
+
+<!---after Session-->
 
   <div class="modal fade" id="afterSession" style="overflow: auto;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog  modal-xl" role="document">
@@ -364,15 +375,14 @@
               </div>
             </div>
             <div class="modal-footer d-flex justify-content-center" id="modal-footer">
-
-            </div>
+          </div>
         </div>
     </div>
   </div>
 
 
   <!----transaction output modal-->
-  <div class="modal fade" id="transaction-output-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal fade" id="transaction-output-modal" style="overflow-y: auto; max-height: 800px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -382,7 +392,9 @@
                 </button>
             </div>
             <div class="modal-body mx-3" id="modal-body">
-              <div class="row clearfix" style="display: flex;margin-bottom: 200px;">
+              
+              
+              <div class="row clearfix" style="display: flex;overflow-y: auto; max-height: 600px;">
                 <div class="col-md-12 col-sm-12">
                   <label data-error="wrong" data-success="right" style="font-weight: bold;">Type: </label>
                   <label data-error="wrong" data-success="right"  id="type-label"></label></br>
@@ -390,6 +402,27 @@
                   <label data-error="wrong" data-success="right"  id="amount-label"></label></br>
                   <label data-error="wrong" data-success="right" style="font-weight: bold;">Token Holder Address: </label>
                   <label data-error="wrong" data-success="right" id="address-label"></label></br>
+                  <div class="card" style="height:100%">
+                    <div class="card-header">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
+                        <li class="nav-item">
+                          <a class="nav-link active" data-toggle="tab" role="tab" href="#transaction-req-json">JSON</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" role="tab" href="#transaction-req-string">String</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="tab-content">
+                    <div id="transaction-req-json" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
+                   </div>
+                    <div id="transaction-req-string" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
+                      <code class="language-json"></code>
+                    </div>
+                    </div>
+                  </div>
+
                   <div class="card" style="height:100%">
                     <div class="card-header">
                       <ul class="nav nav-tabs card-header-tabs">
@@ -404,12 +437,13 @@
                     </div>
                     <div class="tab-content">
                     <div id="transaction-json" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
-                    </div>
+                     </div>
                     <div id="transaction-string" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
                       <code class="language-json"></code>
                     </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>

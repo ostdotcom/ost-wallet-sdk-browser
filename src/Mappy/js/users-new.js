@@ -128,12 +128,16 @@ class UserPage {
     sendCent(event) {
         $("#transaction-json").html('');
         $("#transaction-string").html( '');
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html( '');
         sendTokens(event.data.token_holder_address, "executePayTransaction", '1');
     }
 
     sendModal(event) {
         $("#transaction-json").html( '');
         $("#transaction-string").html('' );
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html( '');
         var index = document.getElementById("transaction-type");
         var value = index.options[index.selectedIndex].value;
         var amount = document.getElementById("transaction-amount").value;
@@ -147,6 +151,8 @@ class UserPage {
     sendDT(event) {
         $("#transaction-json").html('');
         $("#transaction-string").html( '' );
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html( '');
         console.log(event.data.token_holder_address);
         sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction", '1');
     }
@@ -237,6 +243,8 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
     let mappyCallback = new OstWorkflowDelegate();
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
         alert("Transaction Acknowledged");
+        $("#transaction-req-json").jsonViewer( ostContextEntity, jsonViewerSettings);
+        $("#transaction-req-string").html( JSON.stringify(ostContextEntity, null, 2) );
     };
 
     mappyCallback.flowInterrupt = function(ostWorkflowContext, ostError) {
