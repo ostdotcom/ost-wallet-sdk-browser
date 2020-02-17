@@ -11,4 +11,4 @@ export DEMO_MAPPY_UI_ORIGIN="https://devmappy.com/";
 
 export DEMO_MAPPY_UI_API_ENDPOINT='https://demo-devmappy.devmappy.com/'
 
-export TOKEN_ID="1129"
+export TOKEN_ID=""
