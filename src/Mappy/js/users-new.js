@@ -242,7 +242,7 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
     const currentUser = userPage.getCurrentUser();
     let mappyCallback = new OstWorkflowDelegate();
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
-        alert("Transaction Acknowledged");
+        //alert("Transaction Acknowledged");
         $("#transaction-req-json").jsonViewer( ostContextEntity, jsonViewerSettings);
         $("#transaction-req-string").html( JSON.stringify(ostContextEntity, null, 2) );
     };
