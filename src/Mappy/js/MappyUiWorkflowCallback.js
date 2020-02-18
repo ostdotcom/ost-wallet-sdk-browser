@@ -1,12 +1,20 @@
 
-//store response of each workflow according to workflow id.
 class MappyUiWorkflowCallback {
  setWorkflowId(id){
   const oThis = this;
+  oThis.id = id;
 
  }
- requestAcknowledgement(id){
+ setFlowComplete(ostWorkflowContext , ostContextEntity){
    const oThis = this;
+   var response = {
+     "ostWorkflowContext" : ostWorkflowContext,
+     "ostContextEntity" : ostContextEntity
+   }
+   oThis.length =  oThis.responseArr.push(response);
+ }
+ getResponses(){
+   return oThis.responseArr;
  }
 }
-export default MappyUiWorkflowCallback;
+export default new MappyUiWorkflowCallback();

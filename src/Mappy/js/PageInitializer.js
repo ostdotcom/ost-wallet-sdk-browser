@@ -2,6 +2,7 @@ import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
+import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
 const sdkConfig = {
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
@@ -160,6 +161,7 @@ class PageInitializer {
     //Define flowComplete
     sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+      
       _resolve( ostContextEntity );
     };
 
