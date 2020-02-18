@@ -465,17 +465,8 @@
                 </button>
             </div>
             <div class="modal-body mx-3" id="modal-body">
-              <div id="beforeChange" class="beforeChange">
-                <div class="md-form mb-5">
-                  <label data-error="wrong" data-success="right" for="transaction-amount">Spending Limit in Higher Unit</label>
-                  <input type="number" id="j-spending-limit" class="form-control validate"></div>
-              <div class="md-form mb-4">
-                  <div class="form-group">
-                    <label for="sel1">Duration(in days):</label>
-                    <select class="form-control" id="j-duration">
-                    </select>
-                  </div>
-                </div>
+              <div id="j-workflow-data-content">
+
               </div>
             </div>
             <div class="modal-footer d-flex justify-content-center" id="modal-footer">
@@ -486,6 +477,44 @@
   </div>
 
   <script id="j-workflow-log-template" type="text/x-handlebars-template">
+    <div id="accordion">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#{{collapseOne}}" aria-expanded="true" aria-controls="collapseOne">
+              Workflow {{id}}
+            </button>
+          </h5>
+        </div>
+    
+        <div id="{{collapseOne}}" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+            <div class="row" style="display: flex;">
+              <div class="col-md-6 col-sm-12">
+                <div class="card" >
+                  <div class="card-header">
+                    <b>OstWorkflowContext</b>
+                  </div>
+                  <div class="card-body" style="max-height: 250px; overflow: auto;">
+                      <div id="{{contextCodeViewId}}">{{contextCode}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-12">
+                <div class="card" >
+                  <div class="card-header">
+                    <b>OstWorkflowEntity</b>
+                  </div>
+                  <div class="card-body" style="max-height: 250px; overflow: auto;" >
+                    <div id="{{enityCodeViewId}}">{{entityCode}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </script>
 
 </body>
