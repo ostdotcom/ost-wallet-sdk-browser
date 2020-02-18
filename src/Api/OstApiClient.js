@@ -179,7 +179,7 @@ export default class OstApiClient {
 				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
 			})
       .catch((error) => {
-        throw OstApiErrorParser.parse( error );
+        throw OstApiErrorParser.parse( error, params );
       })
 			.then((response) => {
 				return OstEntityParser.parse(response.data);
