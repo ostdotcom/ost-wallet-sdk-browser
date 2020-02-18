@@ -17,6 +17,7 @@ export default class OstSdkBaseWorkflow {
   constructor(args, browserMessenger) {
     this.userId = args.user_id.toString();
     this.subscriberId = args.subscriber_id.toString();
+    this.workflowId = args.workflow_id.toString();
 
     this.browserMessenger = browserMessenger;
 
@@ -204,11 +205,10 @@ export default class OstSdkBaseWorkflow {
 
   onWorkflowComplete() {
     const workflowContext = this.getWorkflowContext();
-
   }
 
   getWorkflowContext() {
-    let workflowContext = new OstWorkflowContext(this.getWorkflowName());
+    let workflowContext = new OstWorkflowContext(this.getWorkflowName(), this.workflowId);
     return workflowContext
   }
 
