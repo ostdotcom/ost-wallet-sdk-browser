@@ -166,7 +166,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 				}
 				const sessionArray = resp[0];
 				if (!sessionArray.length) {
-					throw new OstError('o_w_rt_odv_1', 'SESSION_NOT_FOUND');
+					throw new OstError('o_w_rt_odv_1', OstErrorCodes.SESSION_NOT_FOUND);
 				}
 
 				const session = oThis.getLeastUsedSession(sessionArray);
@@ -214,13 +214,30 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					});
 			})
       .then((entity) => {
-        this.postFlowComplete(entity);
+        oThis.postFlowComplete(entity);
       })
       .catch((err) => {
       	console.error(LOG_TAG, "Workflow failed" ,err);
-        this.postError(err);
+
+      	//Sync session: Session nonce could be out of sync Or Session got unauthorized
+				oThis.handleSessionSync();
+				//Close workflow with error
+				return oThis.postError(err);
       })
   }
+
+  handleSessionSync() {
+  	//If no session assigned, then return
+  	if (!this.session) return Promise.resolve();
+
+		return this.apiClient.getSession(this.session.getId())
+			.then(()=> {
+				//No need to handle;
+			})
+			.catch(() => {
+				//No need to handle
+			});
+	}
 
 	getLeastUsedSession(sessionArray = []) {
   	// Sort session based on updated timestamp
@@ -241,7 +258,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       })
       .catch((err) => {
       	console.error(LOG_TAG, "Transaction Failed.. Decrementing nonce", err);
-      	 return this.apiClient.getSession(this.session.getId());
+      	throw OstError.sdkError(err, 'os_w_oset_pft_1', OstErrorCodes.SKD_INTERNAL_ERROR);
       })
   }
 

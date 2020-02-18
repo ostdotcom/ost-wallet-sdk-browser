@@ -2,6 +2,7 @@ import OstUser from "../OstSdk/entities/OstUser";
 import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
+import OstSession from "../OstSdk/entities/OstSession";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -66,7 +67,20 @@ export default class OstApiClient {
   }
 
   getSession(sessionAddress) {
-    return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`);
+    return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`)
+      .then((response) => {
+        return response;
+      })
+      .catch((err) => {
+        console.error(LOG_TAG, 'getSession', err.response);
+
+        const errorResponse = err.response;
+        //Wipe session from local db if it is NOT FOUND in backend
+        if ( 404 === parseInt(errorResponse.status) ) {
+          OstSession.deleteById(sessionAddress);
+        }
+        throw err;
+      });
   }
 
   getTransaction(transactionId) {
