@@ -101,16 +101,29 @@ export default class OstApiClient {
   }
 
   executeTransaction(params) {
-		return this.post(`/users/${this.userId}/transactions/`, params);
+    return this.post(`/users/${this.userId}/transactions/`, params);
   }
 
   getRules() {
     return this.get("/rules/");
   }
 
+  validateDomain(tokenId, domain) {
+    const resource = `/tokens/${tokenId}/validate-domain`
+      ,   params = {domain: domain}
+      ;
+    return this.apiClient.get(resource, {params: params})
+      .then((res) => {
+        const data = res.data
+        ;
+
+        return data.success || false
+      })
+  }
+
   get(resource, params) {
     console.log("resource ------",resource);
-    var lastChar = resource.charAt( resource.length - 1 );
+    const lastChar = resource.charAt( resource.length - 1 );
     if(lastChar!=='/'){
       resource += '/';
     }

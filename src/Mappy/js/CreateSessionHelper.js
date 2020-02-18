@@ -119,11 +119,11 @@ class CreateSessionHelper {
             $("#flow-complete-string").html( JSON.stringify(output, null, 2) );
         };
 
-        console.log("Initiating OstWalletSdk.createSession with spendingLimit", oThis.spendingLimit, ". The higherUnitSpendingLimit is", oThis.higherUnitSpending);
+        console.log("Initiating OstWalletSdk.createSession with spendingLimit", oThis.higherUnitSpending, ". The higherUnitSpendingLimit is", oThis.higherUnitSpending);
         let workflowId = OstWalletSdk.createSession(
             oThis.currentUser.user_id,
             parseInt(oThis.expiryTime.getTime()/1000),
-            oThis.spendingLimit,
+            oThis.higherUnitSpending,
             mappyCallback);
 
     }

@@ -91,7 +91,8 @@ while(len--) {
 const webpackDefinations = {
     "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": JSON.stringify(process.env.OST_BROWSER_SDK_PLATFORM_API_ENDPOINT),
     "OST_BROWSER_SDK_IFRAME_URL": JSON.stringify(OstSdkIframeUrl),
-    "DEMO_MAPPY_UI_API_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_API_ENDPOINT)
+    "DEMO_MAPPY_UI_API_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_API_ENDPOINT),
+    "OST_TOKEN_ID": process.env.TOKEN_ID
 };
 
 module.exports = {

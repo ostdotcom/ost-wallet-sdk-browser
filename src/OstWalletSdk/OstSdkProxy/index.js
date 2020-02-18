@@ -17,12 +17,7 @@ class OstSdkProxy {
 
         return oThis.getFromOstSdk('getUser', functionParams)
             .then((response) => {
-              const resData = response.data;
-              if (!resData) {
-                return {}
-              }
-
-              const user = resData.user;
+              const user = response.user;
               if (!user) {
                 return {}
               }
@@ -51,12 +46,7 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getToken', functionParams)
                 .then((response) => {
-                  const resData = response.data;
-                  if (!resData) {
-                    return {}
-                  }
-
-                  const token = resData.token;
+                  const token = response.token;
                   if (!token) {
                     return {}
                   }
@@ -85,12 +75,7 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getDevice', functionParams)
                 .then((response) => {
-                  const resData = response.data;
-                  if (!resData) {
-                    return {}
-                  }
-
-                  const device = resData.device;
+                 const device = response.device;
                   if (!device) {
                     return {}
                   }
@@ -120,12 +105,7 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getActiveSessions', functionParams)
                 .then((response) => {
-                  const resData = response.data;
-                  if (!resData) {
-                    return []
-                  }
-
-                  const activeSessions = resData.activeSessions;
+                  const activeSessions = response.activeSessions;
                   if (!activeSessions) {
                     return []
                   }
@@ -189,11 +169,11 @@ const ResponseHandler = function (success, error){
 	const oThis = this;
 
 	oThis.onSuccess = function(args) {
-			return success(args);
+			return success(args.data);
 	};
 
 	oThis.onError = function(args) {
-		return error(args);
+		return error(args.err);
 	};
 
 };
