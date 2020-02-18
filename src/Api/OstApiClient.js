@@ -3,6 +3,7 @@ import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
 import OstSession from "../OstSdk/entities/OstSession";
+import OstApiErrorParser from "./OstApiErrorParser";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -133,7 +134,6 @@ export default class OstApiClient {
   }
 
   get(resource, params) {
-    console.log("resource ------",resource);
     const lastChar = resource.charAt( resource.length - 1 );
     if(lastChar!=='/'){
       resource += '/';
@@ -149,13 +149,18 @@ export default class OstApiClient {
       })
       .then((response) => {
         const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
-        console.log(LOG_TAG, "params to be sent", paramsMap);
-        return oThis.apiClient.get(resource, {
-          params: paramsMap
-        });
+        return oThis.apiClient.get(resource, {params: paramsMap })
+      })
+      .catch((error) => {
+        throw OstApiErrorParser.parse( error, params );
       })
       .then((response) => {
-        return OstEntityParser.parse(response.data);
+        return OstEntityParser.parse(response.data)
+          .then(() => {
+            // Always return the response.
+            // Do not return parsed entity.
+            return response;
+          });
       });
   }
 
@@ -178,8 +183,16 @@ export default class OstApiClient {
 				console.log(LOG_TAG, "params to be sent", paramsMap);
 				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
 			})
+      .catch((error) => {
+        throw OstApiErrorParser.parse( error );
+      })
 			.then((response) => {
-				return OstEntityParser.parse(response.data);
+				return OstEntityParser.parse(response.data)
+          .then(() => {
+            // Always return the response.
+            // Do not return parsed entity.
+            return response;
+          });
 			});
 	}
 

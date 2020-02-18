@@ -19,53 +19,63 @@ const RULES = "rules";
 const DEVICE = "device";
 
 const RESULT_TYPE = "result_type";
-export default class OstEntityParser {
-	static parse(response) {
+class OstEntityParser {
+	parse(response) {
 		if (!response || !response[RESPONSE_SUCCESS]) {
-			throw "Invalid response";
+			let ostError = OstError.sdkError(null, "oep_parse_1");
+			return Promise.reject( ostError );
 		}
 		const dataObj = response[RESPONSE_DATA];
-
-		console.log(LOG_TAG, "parsing response", dataObj);
+		const allPromises = [];
 
 		if (dataObj[USER]) {
-			OstUser.parse(dataObj[USER]);
+			let parsePromise = OstUser.parse(dataObj[USER]);
+			allPromises.push( parsePromise );
 		}
 
 		if (dataObj[TOKEN]) {
-			OstToken.parse(dataObj[TOKEN]);
+			let parsePromise = OstToken.parse(dataObj[TOKEN]);
+			allPromises.push( parsePromise );
 		}
 
 		if (dataObj[DEVICE]) {
-			OstDevice.parse(dataObj[DEVICE]);
+			let parsePromise = OstDevice.parse(dataObj[DEVICE]);
+			allPromises.push( parsePromise );
 		}
 
 		if (dataObj[SESSION]) {
-			OstSession.parse(dataObj[SESSION]);
+			let parsePromise = OstSession.parse(dataObj[SESSION]);
+			allPromises.push( parsePromise );
 		}
 
 		if (dataObj[RULE]) {
-			OstRule.parse(dataObj[RULE]);
+			let parsePromise = OstRule.parse(dataObj[RULE]);
+			allPromises.push( parsePromise );
 		}
 
 		if (dataObj[RULES]) {
 			const jsonArray = dataObj[RULES];
 			for (let i = 0; i < jsonArray.length; i++) {
-				OstRule.parse(jsonArray[i]);
+				let parsePromise = OstRule.parse(jsonArray[i]);
+				allPromises.push( parsePromise );
 			}
 		}
 
 		if (dataObj[SESSIONS]) {
 			const sessionArray = dataObj[SESSIONS];
 			for (let i = 0; i < sessionArray.length; i++) {
-				OstSession.parse(sessionArray[i]);
+				let parsePromise = OstSession.parse(sessionArray[i]);
+				allPromises.push( parsePromise );
 			}
 		}
 
 		if (dataObj[TRANSACTION]) {
-			OstTransaction.parse(dataObj[TRANSACTION]);
+			let parsePromise = OstTransaction.parse(dataObj[TRANSACTION]);
+			allPromises.push( parsePromise );
 		}
 
-		return dataObj;
+		return Promise.all( allPromises );
 	}
 }
+
+export default new OstEntityParser();
