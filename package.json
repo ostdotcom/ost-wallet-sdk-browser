@@ -1,5 +1,5 @@
 {
-  "name": "ost-wallet-sdk-browser",
+  "name": "@ostdotcom/ost-wallet-sdk-browser",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
