@@ -23,7 +23,7 @@
   "INVALID_UPSTREAM_ORIGIN": "Invalid upstream origin",
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
   "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
-  "SKD_INTERNAL_ERROR": "Something expected happen.",
+  "SKD_INTERNAL_ERROR": "Something unexpected happen.",
   "SDK_RESPONSE_ERROR": "SDK returned error",
   "SDK_API_ERROR": "Sdk Api returned error response",
   "BROWSER_VALIDATION_FAILED": "Browser prerequisites needed to run sdk are missing ",
