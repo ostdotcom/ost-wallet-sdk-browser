@@ -9,7 +9,7 @@ import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 class CodeTesterBase {
-  constructor(jqsContainer = ".container", jqsTemplate = "#j-method-template") {
+  constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template") {
     const oThis = this;
     // Create Page Initializer
     oThis.jqsContainer = jqsContainer;

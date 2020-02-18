@@ -1,7 +1,7 @@
 import PageInitializer from "./PageInitializer";
 import CodeTesterBase from "./CodeTesterBase";
 class CodeTesterPageBase extends CodeTesterBase {
-  constructor(jqsContainer = ".container", jqsTemplate = "#j-method-template") {
+  constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template") {
     super(jqsContainer, jqsTemplate);
 
     const oThis = this;

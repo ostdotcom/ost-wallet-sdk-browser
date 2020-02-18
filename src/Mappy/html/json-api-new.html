@@ -30,13 +30,21 @@
         <li class="nav-item">
           <a class="nav-link" href="./users.html">Users</a>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+          </a>
+          <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+            <a id="j-create-session-btn" data-target="#createSession"  data-toggle="modal"
+              class="dropdown-item" href="#">Create Session</a>
+            <div class="dropdown-divider"></div>  
+            <a id="j-delsession-btn" 
+              class="dropdown-item" href="#">Delete Local Sessions</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </li>
       </ul>
-      <div class="form-inline mr-2">
-        <button id="j-create-session-btn" data-target="#createSession"  data-toggle="modal" class="btn btn-outline-light my-2 my-sm-0">Create Session</button>
-      </div>
-      <div class="form-inline mr-2">
-        <button id="j-delsession-btn" class="btn btn-outline-light my-2 my-sm-0 d-none">Delete Local Sessions</button>
-      </div>
       <div class="form-inline">
         <button id="j-logout-btn" data-redirect-url="./login.html" class="btn btn-outline-light my-2 my-sm-0">Logout</button>
       </div>
@@ -54,7 +62,7 @@
     <div class="loader-section section-right"></div>
   </div>
 
-  <div class="container bg-light" style="margin-top:60px; margin-bottom:60px;">
+  <div id="page-container" class="container bg-light">
     <!-- PAGE CONTENT BEGINS HERE -->
   </div><!-- container -->
 
@@ -76,7 +84,7 @@
 </div>
 <script id="j-method-template" type="text/x-handlebars-template">
   <div class="row" style="display: flex; margin-top:50px;">
-    <div class="col-12"><h4>OstWalletSdk.{{methodName}}()</h4></div>
+    <div class="col-12"><h6>OstWalletSdk.{{methodName}}()</h4></div>
     <div class="col-md-6 col-sm-12">
       <div class="card" style="height:100%">
         <div class="card-header">
@@ -113,7 +121,7 @@
 </script>
 <script id="j-json-api-template" type="text/x-handlebars-template">
   <div class="row" style="display: flex; margin-top:50px;">
-    <div class="col-12"><h4>OstJsonApi.{{methodName}}()</h4></div>
+    <div class="col-12"><h6>OstJsonApi.{{methodName}}()</h4></div>
     <div class="col-md-6 col-sm-12">
       <div class="card" style="height:100%">
         <div class="card-header">
@@ -154,7 +162,7 @@
   <div class="modal-dialog" role="document">
       <div class="modal-content">
           <div class="modal-header text-center">
-              <h4 class="modal-title w-100 font-weight-bold">Create Session</h4>
+              <h6 class="modal-title w-100 font-weight-bold">Create Session</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -184,7 +192,7 @@
   <div class="modal-dialog  modal-xl" role="document">
       <div class="modal-content">
           <div class="modal-header text-center">
-              <h4 class="modal-title w-100 font-weight-bold">Session Details</h4>
+              <h6 class="modal-title w-100 font-weight-bold">Session Details</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -237,7 +245,7 @@
               <div class="row" style="display: flex; margin-top:50px;">
 
                 <div class="col-md-6 col-sm-12">
-                  <div class="col-12"><h4>Flow Complete</h4></div>
+                  <div class="col-12"><h6>Flow Complete</h4></div>
                   <div class="card" style="height:100%">
                     <div class="card-header">
                       <ul class="nav nav-tabs card-header-tabs">
@@ -260,7 +268,7 @@
                   </div>
                 </div>
                 <div class="col-md-6 col-sm-12">
-                  <div class="col-12"><h4>Flow Interrupted</h4></div>
+                  <div class="col-12"><h6>Flow Interrupted</h4></div>
                   <div class="card" style="height:100%">
                     <div class="card-header">
                       <ul class="nav nav-tabs card-header-tabs">

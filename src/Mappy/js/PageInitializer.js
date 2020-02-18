@@ -1,5 +1,6 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
+import '../css/logged-in.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
 import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
@@ -78,13 +79,16 @@ class PageInitializer {
       .catch( (error) => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>⚠️ Failed</span>");
-        $("#loader").remove();
+        oThis.hidePageLoader();
         throw error;
       })
   }
 
   hidePageLoader() {
     $('body').addClass('loaded');
+    setTimeout(() => {
+      $("#loader-wrapper").remove();
+    }, 10000);
   }
 
   validatePage() {
