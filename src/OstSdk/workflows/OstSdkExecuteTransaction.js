@@ -54,16 +54,16 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 					oThis.expectedSpendAmount = oThis.getTotalExpectedAmount();
 				}
 				const expectedSpendingAmount = new BigNumber(oThis.expectedSpendAmount);
+				const sessionFilteredArray = [];
 				for (let i=0; i < sessionArray.length; i++) {
 					const session = sessionArray[i];
 					if (session.status === OstSession.STATUS.AUTHORIZED &&
 						new BigNumber(session.spending_limit).isGreaterThanOrEqualTo(expectedSpendingAmount)
 					) {
-						return [session];
+						sessionFilteredArray.push(session);
 					}
 				}
-				console.warn(LOG_TAG, "Session not found");
-				return [];
+				return sessionFilteredArray;
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Error while fetching authorized session" ,err);
@@ -168,7 +168,9 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 				if (!sessionArray.length) {
 					throw new OstError('o_w_rt_odv_1', 'SESSION_NOT_FOUND');
 				}
-				const session = sessionArray[0];
+
+				const session = oThis.getLeastUsedSession(sessionArray);
+
 				this.session = new OstSession(session);
 
 				if (!resp[1]) {
@@ -220,6 +222,16 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
         this.postError(err);
       })
   }
+
+	getLeastUsedSession(sessionArray = []) {
+  	// Sort session based on updated timestamp
+  	sessionArray = sessionArray.sort((sessionFirst, sessionSecond) => {
+  			return parseInt(sessionFirst.updated_timestamp) - parseInt(sessionSecond.updated_timestamp);
+		});
+
+  	//return the last used session based on updated timestamp
+  	return sessionArray[0];
+	}
 
   pollingForTransaction(transactionId) {
     this.transactionPollingClass = new OstTransactionPolling(this.userId, transactionId, this.keyManagerProxy);

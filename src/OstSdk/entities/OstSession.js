@@ -124,11 +124,13 @@ class OstSession extends OstBaseEntity {
 
   addNonce() {
     this.data.nonce = parseInt(this.data.nonce) + 1;
+    this.data.updated_timestamp = parseInt(Date.now() / 1000);
 		return this.forceCommit();
   }
 
 	subNonce() {
 		this.data.nonce = parseInt(this.data.nonce) - 1;
+		this.data.updated_timestamp = parseInt(Date.now() / 1000);
 		return this.forceCommit();
 	}
 
