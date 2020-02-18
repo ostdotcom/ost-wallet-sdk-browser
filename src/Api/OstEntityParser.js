@@ -22,7 +22,7 @@ const RESULT_TYPE = "result_type";
 export default class OstEntityParser {
 	static parse(response) {
 		if (!response || !response[RESPONSE_SUCCESS]) {
-			throw "Invalid response";
+			throw new OstApiError(response);
 		}
 		const dataObj = response[RESPONSE_DATA];
 

@@ -3,6 +3,9 @@ import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
 
+import OstApiError from '../common-js/OstApiError';
+import OstErrorCodes from '../common-js/OstErrorCodes';
+
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
 
@@ -120,8 +123,8 @@ export default class OstApiClient {
 
         return oThis.keyManagerProxy.signApiParams(resource, paramMap);
       })
-      .then((response) => {
-        const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
+      .then((response) => {                           
+        const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});   //response.signature
         console.log(LOG_TAG, "params to be sent", paramsMap);
         return oThis.apiClient.get(resource, {
           params: paramsMap
@@ -129,6 +132,9 @@ export default class OstApiClient {
       })
       .then((response) => {
         return OstEntityParser.parse(response.data);
+      })
+      .catch((err) => {
+        throw new OstApiError(err, 's_a_oac_g_1', OstErrorCodes.SDK_API_ERROR);
       });
   }
 
@@ -153,7 +159,10 @@ export default class OstApiClient {
 			})
 			.then((response) => {
 				return OstEntityParser.parse(response.data);
-			});
+      })
+      .catch((err) => {
+        throw new OstApiError(err, 's_a_oac_g_1', OstErrorCodes.SDK_API_ERROR);
+      });
 	}
 
 }

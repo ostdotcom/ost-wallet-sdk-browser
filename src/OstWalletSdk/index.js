@@ -52,7 +52,6 @@ export {
     getToken: "getTokenFromServer",
     getTransactions: "getTransactionsFromServer",
     getRules: "getRulesFromServer",
-    //getPendingRecovery: "getPendingRecoveryFromServer",
     getDeviceList: "getDeviceListFromServer",
     getTokenHolder: "getTokenHolderFromServer"
   };

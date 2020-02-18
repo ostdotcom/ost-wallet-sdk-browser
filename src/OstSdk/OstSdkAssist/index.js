@@ -260,9 +260,8 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gtfs_2',OstErrorCodes.SDK_API_ERROR);
-        console.error(ostError);
-        return oThis.onError(ostError, subscriberId);
+          let ostError = OstError.apiResponseError(err, 'os_osa_i_gtfs_2', OstErrorCodes.SDK_API_ERROR);
+          return oThis.onError(ostError, subscriberId);
       });
   }
 
@@ -405,7 +404,7 @@ class OstSdkAssist {
         const balanceResponse = response;
 
         if (!balanceResponse || balanceResponse.err) {
-          const ostError = OstError.sdkError(balanceResponse.err, 'os_osa_i_gppfs_1', OstErrorCodes.SDK_API_ERROR);
+          const ostError = OstError.sdkError(balanceResponse.err, 'os_osa_i_gbfs_1', OstErrorCodes.SDK_API_ERROR);
           return oThis.onError(ostError, subscriberId);
         }
 
@@ -459,8 +458,10 @@ class OstSdkAssist {
 				return Promise.resolve(response);
 			})
 			.catch((err)=> {
-				console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
-				return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gbfop_1'));
+        const ostError = OstError.sdkError(err, 'os_osa_i_gbfop_1', OstErrorCodes.SDK_API_ERROR);
+          return this.onError(ostError, args.subscriber_id);
+				// console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
+				// return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gbfop_1'));
 			});
 	}
 
@@ -489,8 +490,10 @@ class OstSdkAssist {
 
 			})
 			.catch((err) => {
-				console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
-				return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gppfop_1'));
+        const ostError = OstError.sdkError(err, 'os_osa_i_gppfop_1', OstErrorCodes.SDK_API_ERROR);
+        return this.onError(ostError, args.subscriber_id);
+				// console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
+				// return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gppfop_1'));
 			});
 
 	}
@@ -582,8 +585,10 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gprfs_2', OstErrorCodes.SDK_API_ERROR);
-        return oThis.onError(ostError, subscriberId);
+        //let ostError = new OstApiErrors(err);
+        //let ostError = OstApiErrors.jsonApiError(err, 'os_osa_i_gprfs_2',null);
+        //console.error(Promise.resolve(err));
+        //return oThis.onError(ostError, subscriberId);
       });
   }
 

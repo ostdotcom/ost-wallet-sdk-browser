@@ -7,6 +7,15 @@ class OstError {
     this.internalErrorCode = internalErrorCode;
     this.errorCode = errorCode;
     this.extraInfo = extraInfo;
+    this.isApiError = false;
+  }
+
+  IsApiError() {
+    return this.isApiError;
+  }
+
+  setApiError(apiError) {
+    this.isApiError = apiError;
   }
 
   //Getters
@@ -45,6 +54,26 @@ class OstError {
     error = new OstError(internalErrorCode, errorCode, errorInfo);
 
     return error;
+  }
+
+  static apiResponseError(apiResponse, internalErrorCode, errorCode) {
+    if ( apiResponse instanceof OstError ) {
+      return apiResponse;
+    }
+    const errorInfo = {};
+    errorInfo['error_obj'] = apiResponse.response;
+
+    if (!internalErrorCode) {
+      internalErrorCode = 'c-e-apierror';
+    }
+
+    if (!errorCode) {
+      errorCode = OstErrorCodes.SDK_API_ERROR;
+    }
+
+    apiResponse = new OstError(internalErrorCode, errorCode, errorInfo);
+
+    return apiResponse;
   }
 
   getJSONObject() {

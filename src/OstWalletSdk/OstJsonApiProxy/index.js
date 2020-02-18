@@ -59,14 +59,14 @@ class OstJsonApiProxy {
 
 	// getPendingRecoveryFromServer( userId ) {
 	// 	let oThis = this;
-   //      let functionParams = {
-   //          user_id: userId,
-   //      };
-	//
-   //      return oThis.getFromOstSdk('getPendingRecoveryFromServer', functionParams)
-   //          .then((response) => {
-   //              return response;
-   //          });
+    //     let functionParams = {
+    //         user_id: userId,
+    //     };
+	
+    //     return oThis.getFromOstSdk('getPendingRecoveryFromServer', functionParams)
+    //         .then((response) => {
+    //             return response;
+    //         });
 	// }
 
 	getUserFromServer( userId ) {
