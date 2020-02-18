@@ -301,6 +301,7 @@ class OstBaseSdk {
         if (downstreamOrigin) {
           oThis.setDownStreamOrigin( downstreamOrigin );
         }
+        return signedUrl;
       });
   }
 
@@ -326,7 +327,7 @@ class OstBaseSdk {
    * 
    * @return {Promise} 
    */
-  waitForOriginTrustHandshake () {
+  waitForOriginTrustHandshake (signedUrl) {
     const oThis = this
         , ancestorOrigins = oThis._location.ancestorOrigins
     ;
@@ -485,9 +486,9 @@ class OstBaseSdk {
         })
 
         // Establish origin trust.
-        .then(() => {
+        .then((signedUrl) => {
           console.log(LOG_TAG, ":: init :: calling waitForOriginTrustHandshake");
-          return oThis.waitForOriginTrustHandshake();
+          return oThis.waitForOriginTrustHandshake(signedUrl);
         })
 
         // Wait for Downstream Iframe Initialization.

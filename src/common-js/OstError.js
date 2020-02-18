@@ -35,11 +35,28 @@ class OstError {
     return this.extraInfo;
   }
 
+  setInternalErrorCode(internal_code) {
+    this.internalErrorCode = internal_code;
+  }
+
+  setErrorCode(error_code) {
+    this.errorCode = error_code;
+  }
+
   static sdkError(error, internalErrorCode, errorCode) {
     if ( error instanceof OstError ) {
       //The error is already an OST error.
+      if (internalErrorCode) {
+        error.setInternalErrorCode(internalErrorCode);
+      }
+
+      if (errorCode) {
+        error.setErrorCode(errorCode);
+      }
+     
       return error;
     }
+    
     const errorInfo = {};
     errorInfo['error_obj'] = error;
 
@@ -54,26 +71,6 @@ class OstError {
     error = new OstError(internalErrorCode, errorCode, errorInfo);
 
     return error;
-  }
-
-  static apiResponseError(apiResponse, internalErrorCode, errorCode) {
-    if ( apiResponse instanceof OstError ) {
-      return apiResponse;
-    }
-    const errorInfo = {};
-    errorInfo['error_obj'] = apiResponse.response;
-
-    if (!internalErrorCode) {
-      internalErrorCode = 'c-e-apierror';
-    }
-
-    if (!errorCode) {
-      errorCode = OstErrorCodes.SDK_API_ERROR;
-    }
-
-    apiResponse = new OstError(internalErrorCode, errorCode, errorInfo);
-
-    return apiResponse;
   }
 
   getJSONObject() {

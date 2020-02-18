@@ -260,7 +260,7 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-          let ostError = OstError.apiResponseError(err, 'os_osa_i_gtfs_2', OstErrorCodes.SDK_API_ERROR);
+          let ostError = OstError.sdkError(err, 'os_osa_i_gtfs_2', OstErrorCodes.SDK_API_ERROR);
           return oThis.onError(ostError, subscriberId);
       });
   }

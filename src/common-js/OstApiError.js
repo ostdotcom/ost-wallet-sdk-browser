@@ -17,12 +17,13 @@ const ErrorCodes = {
   
 
 class OstApiError extends OstError {
-    constructor(apiResponse,internalErrorCode, errorCode){
-        super(internalErrorCode, errorCode);
+    constructor(internalErrorCode, errorCode, apiResponse){
+        super(internalErrorCode,errorCode);
         super.setApiError(true);
         if(apiResponse){
-            this.apiResponse = apiResponse.response;
+            this.apiResponse = apiResponse;
             this.jsonApiError = this.apiResponse.data.err;
+            super(internalErrorCode, errorCode, this.jsonApiError);
         }
     }
 
@@ -82,15 +83,6 @@ class OstApiError extends OstError {
         return false ;
     }
 
-    //override
-    getJSONObject() {
-        return {
-          internal_code: this.getApiInternalId(),
-          error_code: this.getApiErrorCode(),
-          error_message: this.getApiErrorMessage(),
-          extra_info: this.getApiErrorData()
-        }
-      }
 }
 
 export default OstApiError;

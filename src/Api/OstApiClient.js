@@ -137,7 +137,7 @@ export default class OstApiClient {
         return oThis.keyManagerProxy.signApiParams(resource, paramMap);
       })
       .then((response) => {                           
-        const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});   //response.signature
+        const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
         console.log(LOG_TAG, "params to be sent", paramsMap);
         return oThis.apiClient.get(resource, {
           params: paramsMap
@@ -147,7 +147,7 @@ export default class OstApiClient {
         return OstEntityParser.parse(response.data);
       })
       .catch((err) => {
-        throw new OstApiError(err, 's_a_oac_g_1', OstErrorCodes.SDK_API_ERROR);
+        throw new OstApiError('s_a_oac_g_1', OstErrorCodes.SDK_API_ERROR, err.response);
       });
   }
 
@@ -174,7 +174,7 @@ export default class OstApiClient {
 				return OstEntityParser.parse(response.data);
       })
       .catch((err) => {
-        throw new OstApiError(err, 's_a_oac_g_1', OstErrorCodes.SDK_API_ERROR);
+        throw new OstApiError( 's_a_oac_p_1', OstErrorCodes.SDK_API_ERROR, err);
       });
 	}
 
