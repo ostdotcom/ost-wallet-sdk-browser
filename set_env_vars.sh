@@ -10,3 +10,5 @@ export OST_BROWSER_SDK_IFRAME_ORIGIN="https://sdk-devmappy.ostsdkproxy.com/"
 export DEMO_MAPPY_UI_ORIGIN="https://devmappy.com/";
 
 export DEMO_MAPPY_UI_API_ENDPOINT='https://demo-devmappy.devmappy.com/'
+
+export TOKEN_ID="1129"

@@ -58,5 +58,9 @@ class OstToken extends OstBaseEntity {
   getBaseToken() {
     return String(this.getData().base_token);
   }
+
+  getConversionFactor() {
+    return String(this.getData().conversion_factor);
+  }
 }
 export default OstToken;

@@ -173,11 +173,11 @@ const ResponseHandler = function (success, error){
 	const oThis = this;
 
 	oThis.onSuccess = function(args) {
-		return success(args);
+		return success(args.data);
 	};
 
 	oThis.onError = function(args) {
-		return error(args);
+		return error(args.err);
 	};
 
 };

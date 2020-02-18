@@ -2,6 +2,7 @@ import OstUser from "../OstSdk/entities/OstUser";
 import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
+import OstSession from "../OstSdk/entities/OstSession";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -66,7 +67,20 @@ export default class OstApiClient {
   }
 
   getSession(sessionAddress) {
-    return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`);
+    return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`)
+      .then((response) => {
+        return response;
+      })
+      .catch((err) => {
+        console.error(LOG_TAG, 'getSession', err.response);
+
+        const errorResponse = err.response;
+        //Wipe session from local db if it is NOT FOUND in backend
+        if ( 404 === parseInt(errorResponse.status) ) {
+          OstSession.deleteById(sessionAddress);
+        }
+        throw err;
+      });
   }
 
   getTransaction(transactionId) {
@@ -98,16 +112,29 @@ export default class OstApiClient {
   }
 
   executeTransaction(params) {
-		return this.post(`/users/${this.userId}/transactions/`, params);
+    return this.post(`/users/${this.userId}/transactions/`, params);
   }
 
   getRules() {
     return this.get("/rules/");
   }
 
+  validateDomain(tokenId, domain) {
+    const resource = `/tokens/${tokenId}/validate-domain`
+      ,   params = {domain: domain}
+      ;
+    return this.apiClient.get(resource, {params: params})
+      .then((res) => {
+        const data = res.data
+        ;
+
+        return data.success || false
+      })
+  }
+
   get(resource, params) {
     console.log("resource ------",resource);
-    var lastChar = resource.charAt( resource.length - 1 );
+    const lastChar = resource.charAt( resource.length - 1 );
     if(lastChar!=='/'){
       resource += '/';
     }

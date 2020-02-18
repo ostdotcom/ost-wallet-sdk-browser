@@ -66,6 +66,7 @@ class IKM {
 				}
 			}).catch((err) => {
 				console.error(LOG_TAG, "IKM initialization failed", err);
+				throw OstError.sdkError(err, "okm_e_ikm_i_1");
 			});
 	}
 
@@ -116,7 +117,7 @@ class IKM {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Error while building meta", err);
-				throw "Meta Struct building failed";
+				throw OstError.sdkError(err, "okm_e_ikm_bkms_1");
 			})
 	}
 
@@ -398,9 +399,6 @@ const getInstance = (userId, avoidKMBuilding) => {
           ostKeyManager = okm;
           ostKeyManagerUserId = uid;
 		  return ostKeyManager;
-		})
-		.catch((err) => {
-			console.error(LOG_TAG, "getInstance failed", err);
 		})
 };
 

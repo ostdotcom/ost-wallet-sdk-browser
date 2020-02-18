@@ -6,13 +6,15 @@ export default class OstWorkflowContext {
 		EXECUTE_TRANSACTION: 'EXECUTE_TRANSACTION'
   };
 
-  constructor(workflowName) {
+  constructor(workflowName, workflowId) {
     this.workflowName = workflowName;
+    this.workflowId = workflowId;
   }
 
   getJSONObject() {
     return {
-      workflow_name: this.workflowName
+      workflow_name: this.workflowName,
+      workflow_id: this.workflowId
     }
   }
 }
