@@ -74,7 +74,10 @@ class OstEntityParser {
 			allPromises.push( parsePromise );
 		}
 
-		return Promise.all( allPromises );
+		return Promise.all( allPromises )
+			.then(() => {
+				return dataObj;
+			});
 	}
 }
 

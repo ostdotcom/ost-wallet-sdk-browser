@@ -2,6 +2,7 @@ import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
+import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
 const sdkConfig = {
   "token_id": OST_TOKEN_ID,
@@ -161,6 +162,7 @@ class PageInitializer {
     //Define flowComplete
     sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+      
       _resolve( ostContextEntity );
     };
 

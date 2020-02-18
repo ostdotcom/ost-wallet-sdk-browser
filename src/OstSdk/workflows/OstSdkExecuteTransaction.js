@@ -208,6 +208,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
         return oThis.apiClient.executeTransaction(params);
       })
 			.then((dataObject) => {
+				this.postRequestAcknowledged(dataObject);
 				return oThis.session.addNonce()
 					.then(() => {
 						return oThis.pollingForTransaction(dataObject['transaction'].id);

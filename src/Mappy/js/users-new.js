@@ -92,7 +92,7 @@ class UserPage {
             }
 
             oThis.templateData = {
-                Username: app_user_id,
+                Username: jsonData.users[i].username,
                 balance_in_lower_unit: balance,
                 sendDT: viewId + "_sendDT_" + i,
                 sendCent: viewId + "_sendCent_" + i,
@@ -116,6 +116,17 @@ class UserPage {
 
             oThis.bindingButtonEvents(sendDT, sendCent, sendModal, oThis.templateData.Token_Holder_Address);
         }
+        $( "#transaction-type" ).change(function() {
+            var index = document.getElementById("transaction-type");
+            var value = index.options[index.selectedIndex].value;
+            if (value === "Pay") {
+                $("#select-currency-label").removeClass("d-none");
+                $("#transaction-currency-type").removeClass("d-none");
+            } else{
+                $("#select-currency-label").addClass("d-none");
+                $("#transaction-currency-type").addClass("d-none");
+            }
+          });
     }
 
     bindingButtonEvents(sendDT, sendCent, sendModal, token_holder_address) {
@@ -123,32 +134,44 @@ class UserPage {
         sendDT.off().on('click', { token_holder_address: token_holder_address }, oThis.sendDT);
         sendCent.off().on('click', { token_holder_address: token_holder_address }, oThis.sendCent);
         sendModal.off().on('click', { token_holder_address: token_holder_address }, oThis.sendModal);
+       
+         
     }
 
     sendCent(event) {
         $("#transaction-json").html('');
         $("#transaction-string").html( '');
-        sendTokens(event.data.token_holder_address, "executePayTransaction", '1');
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html( '');
+        sendTokens(event.data.token_holder_address, "executePayTransaction", '1','USD');
     }
 
     sendModal(event) {
         $("#transaction-json").html( '');
         $("#transaction-string").html('' );
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html( '');
         var index = document.getElementById("transaction-type");
         var value = index.options[index.selectedIndex].value;
+
+        var index1 = document.getElementById("transaction-currency-type");
+        var value1 = index1.options[index1.selectedIndex].value;
+        console.log("currency type",value1);
         var amount = document.getElementById("transaction-amount").value;
         if (value === "Direct Transfer") {
-            sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction",amount);
+            sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction",amount, value1);
         } else {
-            sendTokens(event.data.token_holder_address, "executePayTransaction",amount);
+            sendTokens(event.data.token_holder_address, "executePayTransaction",amount, value1);
         }
     }
 
     sendDT(event) {
         $("#transaction-json").html('');
         $("#transaction-string").html( '' );
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html( '');
         console.log(event.data.token_holder_address);
-        sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction", '1');
+        sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction", '1' ,'USD');
     }
 
     compileTemplates() {
@@ -159,7 +182,7 @@ class UserPage {
 
     bindEvents() {
         const oThis = this;
-
+        
         $(function() {
             $("#previous").disabled = true;
             $("#next").click(function() {
@@ -229,14 +252,17 @@ class UserPage {
 }
 var userPage = new UserPage();
 
-function sendTokens(tokenHolderAddress, transactionType, amount) {
+function sendTokens(tokenHolderAddress, transactionType, amount, currency_type) {
 
     $('#transaction-output-modal').modal('show');
 
     const currentUser = userPage.getCurrentUser();
     let mappyCallback = new OstWorkflowDelegate();
     mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
-        alert("Transaction Acknowledged");
+        //alert("Transaction Acknowledged");
+        $("#transaction-req-json").jsonViewer( ostContextEntity, jsonViewerSettings);
+        $("#transaction-req-string").html( JSON.stringify(ostContextEntity, null, 2) );
+        $("#req-ack-output-label").text("Request Acknowledgement:");
     };
 
     mappyCallback.flowInterrupt = function(ostWorkflowContext, ostError) {
@@ -244,6 +270,7 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
         //alert("Transaction Interruped");
         $("#transaction-json").jsonViewer( ostError, jsonViewerSettings);
         $("#transaction-string").html( JSON.stringify(ostError, null, 2) );
+        $("#flow-transaction-output-label").text("Flow Interrupt:");
     };
 
 
@@ -255,6 +282,7 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
         //alert("Transaction Completed");
         $("#transaction-json").jsonViewer( ostContextEntity, jsonViewerSettings);
         $("#transaction-string").html( JSON.stringify(ostContextEntity, null, 2) );
+        $("#flow-transaction-output-label").text("Flow Complete:");
     };
     let workflowId;
     switch (transactionType) {
@@ -268,6 +296,7 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
                 let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
                         token_holder_addresses: [tokenHolderAddress],
                         amounts: [amountBN],
+                        
                     },
                     mappyCallback);
             });
@@ -280,6 +309,9 @@ function sendTokens(tokenHolderAddress, transactionType, amount) {
             workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
                     token_holder_addresses: [tokenHolderAddress],
                     amounts: [amountBN],
+                    options: {
+                        currency_code: currency_type
+                    }
                 },
                 mappyCallback);
             break;
