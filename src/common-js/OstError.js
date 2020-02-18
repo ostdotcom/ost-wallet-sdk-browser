@@ -6,7 +6,15 @@ class OstError {
   constructor(internalErrorCode, errorCode, extraInfo) {
     this.internalErrorCode = internalErrorCode;
     this.errorCode = errorCode;
-    this.extraInfo = extraInfo;
+    this.extraInfo = extraInfo || {};
+  }
+
+  isApiError() {
+    return false;
+  }
+
+  setApiError(apiError) {
+    this._isApiError = apiError;
   }
 
   //Getters
@@ -26,13 +34,30 @@ class OstError {
     return this.extraInfo;
   }
 
+  setInternalErrorCode(internal_code) {
+    this.internalErrorCode = internal_code;
+  }
+
+  setErrorCode(error_code) {
+    this.errorCode = error_code;
+  }
+
   static sdkError(error, internalErrorCode, errorCode) {
     if ( error instanceof OstError ) {
-      //The error is already an OST error.
       return error;
     }
-    const errorInfo = {};
-    errorInfo['error_obj'] = error;
+    if ( typeof error !== 'object') {
+      error = new Error( error );
+    }
+
+    const errorInfo = error;
+    if ( error instanceof Error) {
+      errorInfo['error_obj'] = {
+        "is_js_error": true,
+        "message": error.message,
+        "name": error.name
+      };
+    }
 
     if (!internalErrorCode) {
       internalErrorCode = 'c-e-sdkerror';
@@ -42,18 +67,26 @@ class OstError {
       errorCode = OstErrorCodes.SKD_INTERNAL_ERROR;
     }
 
-    error = new OstError(internalErrorCode, errorCode, errorInfo);
+    return new OstError(internalErrorCode, errorCode, errorInfo);
+  }
 
-    return error;
+  static fromErrorPayload( errorPayload ) {
+    return new OstError(
+        errorPayload.internal_error_code, 
+        errorPayload.error_code,
+        errorPayload.extra_info
+      );
   }
 
   getJSONObject() {
     return {
-      internal_code: this.getInternalErrorCode(),
+      is_ost_error_payload: true,
+      internal_error_code: this.getInternalErrorCode(),
       error_code: this.getErrorCode(),
       error_message: this.getErrorMessage(),
-      extra_info: this.getExtraInfo()
-    }
+      extra_info: this.getExtraInfo(),
+      is_ost_api_error_payload: this.isApiError()
+    };
   }
 }
 

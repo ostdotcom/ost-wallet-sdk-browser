@@ -126,14 +126,7 @@ export default class OstSdkBaseWorkflow {
       })
       .then(() => {
         return this.canDeviceMakeApiCall()
-      })
-      .then(() => {
-
-        //return this.syncCurrentDevice()
-      })
-      .then(() => {
-
-      })
+      });
   }
 
   getUserFromDB() {
@@ -149,10 +142,13 @@ export default class OstSdkBaseWorkflow {
   getCurrentDeviceFromDB() {
     return this.user.createOrGetDevice(this.keyManagerProxy)
       .then((deviceEntity) => {
+        console.log(LOG_TAG, "|*|", "this.user.createOrGetDevice deviceEntity:", deviceEntity);
         this.currentDevice = deviceEntity;
         if (!deviceEntity) {
           throw new OstError('os_w_osbw_eac_2', OstErrorCodes.DEVICE_NOT_SETUP)
         }
+
+        return deviceEntity;
       })
   }
 
