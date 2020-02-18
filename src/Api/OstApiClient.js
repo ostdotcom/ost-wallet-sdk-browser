@@ -155,12 +155,7 @@ export default class OstApiClient {
         throw OstApiErrorParser.parse( error, params );
       })
       .then((response) => {
-        return OstEntityParser.parse(response.data)
-          .then(() => {
-            // Always return the response.
-            // Do not return parsed entity.
-            return response;
-          });
+        return OstEntityParser.parse(response.data);
       });
   }
 
@@ -187,12 +182,7 @@ export default class OstApiClient {
         throw OstApiErrorParser.parse( error );
       })
 			.then((response) => {
-				return OstEntityParser.parse(response.data)
-          .then(() => {
-            // Always return the response.
-            // Do not return parsed entity.
-            return response;
-          });
+				return OstEntityParser.parse(response.data);
 			});
 	}
 
