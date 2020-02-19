@@ -50,7 +50,7 @@ class OstError {
       error = new Error( error );
     }
 
-    const errorInfo = error;
+    const errorInfo = {};
     if ( error instanceof Error) {
       errorInfo['error_obj'] = {
         "is_js_error": true,
