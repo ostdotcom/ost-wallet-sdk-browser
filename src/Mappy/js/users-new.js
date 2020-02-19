@@ -134,8 +134,8 @@ class UserPage {
         sendDT.off().on('click', { token_holder_address: token_holder_address }, oThis.sendDT);
         sendCent.off().on('click', { token_holder_address: token_holder_address }, oThis.sendCent);
         sendModal.off().on('click', { token_holder_address: token_holder_address }, oThis.sendModal);
-       
-         
+
+
     }
 
     sendCent(event) {
@@ -182,7 +182,7 @@ class UserPage {
 
     bindEvents() {
         const oThis = this;
-        
+
         $(function() {
             $("#previous").disabled = true;
             $("#next").click(function() {
@@ -237,7 +237,7 @@ class UserPage {
                 console.error("Token not found");
                 return Promise.resolve('0');
             }
-            let decimals = data.data.token.decimals;
+            let decimals = data.token.decimals;
             let decimalBN = new BigNumber(decimals);
             let multiplier = new BigNumber(10).pow(decimalBN);
             let amountBN = new BigNumber(amount);
@@ -296,7 +296,7 @@ function sendTokens(tokenHolderAddress, transactionType, amount, currency_type) 
                 let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
                         token_holder_addresses: [tokenHolderAddress],
                         amounts: [amountBN],
-                        
+
                     },
                     mappyCallback);
             });
