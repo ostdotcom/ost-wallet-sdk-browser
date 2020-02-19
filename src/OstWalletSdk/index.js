@@ -1,5 +1,6 @@
 import OstWalletSdkCore from "./OstWalletSdkCore";
 import OstError from "../common-js/OstError";
+import OstApiError from "../common-js/OstApiError";
 
 import OstMappyCallbacks from "./OstMappyCallbacks";
 import OstWalletWorkFlowCallback from "./OstWalletCallback/OstWorkflowCallbacks";
@@ -15,7 +16,8 @@ export {
   OstJsonApi,
   OstSetupDeviceDelegate,
   OstWorkflowDelegate,
-  OstError
+  OstError,
+  OstApiError
 };
 
 /**
