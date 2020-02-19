@@ -1,6 +1,7 @@
 
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstApiError from "../../common-js/OstApiError";
 
 const LOG_TAG = 'OstJsonApiProxy :: ';
 
@@ -154,7 +155,7 @@ class OstJsonApiProxy {
 				function ( args ) {
 					console.log(LOG_TAG, `${functionName} error`, args);
 					oThis.messengerObj.unsubscribe(subId);
-					reject(args);
+					reject(OstApiError.fromApiErrorPayload(args));
 				}
 			));
 

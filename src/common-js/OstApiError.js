@@ -37,7 +37,7 @@ class OstApiError extends OstError {
 
   getResponseStatusCode() {
     let apiErrorInfo = this.getApiErrorInfo();
-    if ( !extraInfo ) {
+    if ( !apiErrorInfo ) {
       return null;
     }
     return apiErrorInfo.status;
@@ -45,7 +45,7 @@ class OstApiError extends OstError {
 
   getRequestUrl() {
     let apiErrorInfo = this.getApiErrorInfo();
-    if ( !extraInfo ) {
+    if ( !apiErrorInfo ) {
       return null;
     }
     return apiErrorInfo.url;
@@ -116,7 +116,7 @@ class OstApiError extends OstError {
         return new OstApiError(
             errorPayload.internal_error_code, 
             errorPayload.error_code,
-            errorPayload.extra_info
+            errorPayload.extra_info.api_error_info
           );        
     }
     return OstError.fromErrorPayload( errorPayload );

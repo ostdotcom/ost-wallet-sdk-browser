@@ -85,7 +85,7 @@ class CodeTesterBase {
         let dataToPrint = error;
 
         if (error instanceof OstError) {
-          dataToPrint = error.getJSONObject()
+          dataToPrint = error.getJSONObject();
         }
 
         jsonEl.jsonViewer( dataToPrint, jsonViewerSettings);
