@@ -4,6 +4,7 @@ import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
 import OstSession from "../OstSdk/entities/OstSession";
 import OstApiErrorParser from "./OstApiErrorParser";
+import OstApiError from "../common-js/OstApiError";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -73,13 +74,15 @@ export default class OstApiClient {
         return response;
       })
       .catch((err) => {
-        console.error(LOG_TAG, 'getSession', err.response);
+				if (err instanceof OstApiError) {
+				  const apiError = err;
+					console.error(LOG_TAG, 'getSession return api error code', apiError.getApiErrorCode());
 
-        const errorResponse = err.response;
-        //Wipe session from local db if it is NOT FOUND in backend
-        if ( 404 === parseInt(errorResponse.status) ) {
-          OstSession.deleteById(sessionAddress);
-        }
+					//Wipe session from local db if it is NOT FOUND in backend
+					if (apiError.isNotFound()) {
+						OstSession.deleteById(sessionAddress);
+					}
+				}
         throw err;
       });
   }
