@@ -101,9 +101,6 @@ class UserPage {
             $('#user-row-div').append(outputHtml);
             jOutputEl = $(outputHtml);
 
-            let sendModal = $('#user_row_modal_body_id_0').find("#user_row_sendModal_0").css("color", "#17A2B8");
-
-            // oThis.bindingButtonEvents();
         }
         $( "#transaction-type" ).change(function() {
             var index = document.getElementById("transaction-type");
@@ -118,50 +115,14 @@ class UserPage {
           });
     }
 
-    bindingButtonEvents(sendDT, sendCent, sendModal, token_holder_address) {
-        const oThis = this;        
-        // sendModal.off().on('click', { token_holder_address: token_holder_address }, oThis.sendModal);
-    }
-
-
-
-
-
-    sendModal(event) {
-        const oThis = this;
-        oThis.prepareTxModal();
-
-        var index = document.getElementById("transaction-type");
-        var value = index.options[index.selectedIndex].value;
-
-        var index1 = document.getElementById("transaction-currency-type");
-        var value1 = index1.options[index1.selectedIndex].value;
-        console.log("currency type",value1);
-        var amount = document.getElementById("transaction-amount").value;
-        if (value === "Direct Transfer") {
-            sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction",amount, value1);
-        } else {
-            sendTokens(event.data.token_holder_address, "executePayTransaction",amount, value1);
-        }
-    }
-
     sendOneBT(token_holder_address) {
         const oThis = this;
-        oThis.prepareTxModal();
         oThis.sendTokens(token_holder_address, "executeDirectTransferTransaction", '1' ,'USD');
     }
 
     sendOneCent( token_holder_address ) {
         const oThis = this;
-        oThis.prepareTxModal();
         oThis.sendTokens(token_holder_address, "executePayTransaction", '1','USD');
-    }
-
-    prepareTxModal() {
-        $("#transaction-json").html('');
-        $("#transaction-string").html( '');
-        $("#transaction-req-json").html('');
-        $("#transaction-req-string").html('');        
     }
 
     compileTemplates() {
@@ -265,7 +226,7 @@ class UserPage {
         // Hide the modal
         jTxModal.modal('hide');
 
-        console.log(txTokenHolder, txType, txAmount, txCurrency);
+        
         // tokenHolderAddress, transactionType, amount, currency_type        
         oThis.sendTokens(txTokenHolder, txType, txAmount, txCurrency);
     }
@@ -336,7 +297,17 @@ class UserPage {
         });
     }
 
+    prepareTxModal() {
+        $("#transaction-json").html('');
+        $("#transaction-string").html( '');
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html('');        
+    }
+
     sendTokens(tokenHolderAddress, transactionType, amount, currency_type) {
+
+        const oThis = this;
+        oThis.prepareTxModal();
 
         $('#transaction-output-modal').modal('show');
 
