@@ -327,18 +327,6 @@ export default class OstSdkBaseWorkflow {
       });
   }
 
-	syncRules() {
-		let oThis = this;
-
-		return oThis.apiClient.getRules()
-			.then((res) => {
-				return res;
-			})
-			.catch((err) => {
-              throw OstError.sdkError(err, 'os_w_osbw__sr_1', OstErrorCodes.SDK_API_ERROR);
-			});
-  }
-
   cancelFlow() {
     const err = new OstError("os_osdw_cf_1", OstErrorCodes.WORKFLOW_CANCELLED);
     this.postError(err)

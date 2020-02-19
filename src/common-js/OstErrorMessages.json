@@ -24,6 +24,7 @@
   "INVALID_UPSTREAM_ORIGIN": "Invalid upstream origin",
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
   "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
+  "RULE_NOT_FOUND": "Transaction Rule Not found for the provided rule name",
   "SKD_INTERNAL_ERROR": "Something unexpected happen.",
   "SDK_RESPONSE_ERROR": "SDK returned error",
   "SDK_API_ERROR": "Sdk Api returned error response",
