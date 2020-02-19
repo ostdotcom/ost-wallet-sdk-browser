@@ -66,8 +66,12 @@ export default class OstSdkBaseWorkflow {
     let states = OstStateManager.state;
     switch (this.stateManager.getCurrentState()) {
       case states.INITIAL:
-        this.validateParams();
-        this.onParamsValidated();
+        try {
+          this.validateParams();
+          this.onParamsValidated();
+        }catch (err) {
+          throw  OstError.sdkError(err, 'sk_w_osbw_p_vp_1');
+        }
         break;
       case states.PARAMS_VALIDATED:
         return this.performUserDeviceValidation()
@@ -75,7 +79,7 @@ export default class OstSdkBaseWorkflow {
             this.onUserDeviceValidated();
           })
           .catch((err) => {
-            throw OstError.sdkError(err, 'sk_w_osbw_pr_1');
+            throw OstError.sdkError(err, 'sk_w_osbw_p_pudv_1');
           });
       case states.DEVICE_VALIDATED:
         this.onDeviceValidated();
