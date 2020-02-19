@@ -4,6 +4,7 @@ import CodeHighlightJSLanguageSupport from "highlight.js/lib/languages/javascrip
 import "highlight.js/styles/vs.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer";
+import OstError from "../../common-js/OstError";
 
 
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
@@ -81,9 +82,15 @@ class CodeTesterBase {
         strEl.html( JSON.stringify(response, null, 2) );
       })
       .catch( (error) => {
-        jsonEl.jsonViewer( error, jsonViewerSettings);
+        let dataToPrint = error;
+
+        if (error instanceof OstError) {
+          dataToPrint = error.getJSONObject()
+        }
+
+        jsonEl.jsonViewer( dataToPrint, jsonViewerSettings);
         jsonEl.addClass("alert alert-warning");
-        strEl.html( JSON.stringify(error, null, 2) );
+        strEl.html( JSON.stringify(dataToPrint, null, 2) );
         strEl.addClass("alert alert-warning");
       })
 

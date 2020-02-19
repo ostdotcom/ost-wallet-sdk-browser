@@ -1,6 +1,7 @@
 
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstError from "../../common-js/OstError";
 
 const LOG_TAG = 'OstSdkProxy :: ';
 
@@ -29,13 +30,6 @@ class OstSdkProxy {
 
               return userData;
             })
-            .catch((err) => {
-              const error = err.err;
-              if (!err) {
-                throw err;
-              }
-              throw error;
-            })
     }
 
     getToken( token_id) {
@@ -58,13 +52,6 @@ class OstSdkProxy {
 
                   return tokenData;
                 })
-              .catch((err) => {
-                const error = err.err;
-                if (!err) {
-                  throw err;
-                }
-                throw error;
-              });
     }
 
     getDevice(userId) {
@@ -87,13 +74,6 @@ class OstSdkProxy {
 
                   return deviceData;
                 })
-              .catch((err) => {
-                const error = err.err;
-                if (!err) {
-                  throw err;
-                }
-                throw error;
-              });
     }
 
     getActiveSessions(userId, spendingLimit) {
@@ -112,14 +92,7 @@ class OstSdkProxy {
 
                   return activeSessions
                 })
-              .catch((err) => {
-                const error = err.err;
-                if (!err) {
-                  throw err;
-                }
-                throw error;
-              })  ;
-            }
+    }
 
   deleteLocalSessions(userId) {
       let oThis = this;
@@ -150,7 +123,7 @@ class OstSdkProxy {
 				function ( args ) {
 					console.log(LOG_TAG, `${functionName} error`, args);
 					oThis.messengerObj.unsubscribe(subId);
-					reject(args);
+					reject(OstError.fromErrorPayload(args));
 				}
 			));
 
