@@ -4,7 +4,6 @@ import CodeHighlightJSLanguageSupport from "highlight.js/lib/languages/javascrip
 import "highlight.js/styles/vs.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer";
-import OstError from "../../common-js/OstError";
 
 
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
