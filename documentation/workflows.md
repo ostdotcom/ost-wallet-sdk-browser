@@ -101,5 +101,97 @@ let spendingLimit = SPENDING_LIMIT_IN_HIGHER_UNIT;
 OstWalletSdk.setupDevice(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
 ```
 
+## Execute Transaction Workflow
+
+A transaction where tokens are transferred from a user to another actor within are signed using sessionKey if there is an active session. In the absence of an active session, a new session is authorized. Follow the these steps to perform Execute Transaction workflow.
+
+### Create an object of create session workflow delegate
+```
+    let sdkDelegate =  new OstWorkflowDelegate();
+```
+### Define requestAcknowledged method
+
+```
+  //Define requestAcknowledged
+  sdkDelegate.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
+    console.log("ExecuteTransactionWorkflow :: sdkDelegate.requestAcknowledged called");
+    //  Main communication between the wallet SDK and Ost Platform server is complete.
+  };
+```
+
+### Define flowComplete method
+```
+    //Define flowComplete
+    sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+      console.log("ExecuteTransactionWorkflow :: sdkDelegate.flowComplete called");
+      // Execute Transaction is successfully executed.
+    };
+```
+
+### Define flowInterupt method
+```
+    //Define flowInterrupt
+    sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {
+      console.log("ExecuteTransactionWorkflow :: sdkDelegate.flowInterrupt called");
+      // Execute Transaction failed.
+    };
+```
+
+### Invoke the workflow
+There are two types of method available for invoking execute transaction.
+- Direct Transfer
+- Execute Pay
+
+#### Direct Transfer
+It is direct token to token transfer.
+To invoke the Direct Transfer you will need three things:
+- 'ost_user_id' - User Id of the logged-in user. 
+- 'token_holder_addresses' - Token Holder Address of the receiver.
+- 'amounts' - Amount needed to be send.
+
+```
+let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
+let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
+let amount = "CONVERTED USER ENTERED TOKEN AMOUNT TO WEI ";
+
+OstWalletSdk.executeDirectTransferTransaction(user_id, {
+                    token_holder_addresses : [token_holder_address],
+                    amounts: [amount] 
+                  },
+                  sdkDelegate);
+```
+
+#### Execute Pay 
+It accepts amount in cent and then internally converts it into token and send resultant amount to the receiver.
+To invoke the Execute Pay you will need three things:
+- 'ost_user_id' - User Id of the logged-in user. 
+- 'token_holder_addresses' - Token Holder Address of the receiver.
+- 'amounts' - Amount needed to be send.
+- options parameter in which currency_code is passed. Currency_code determines currency type.
+
+There are three currency type - 
+- USD
+- GBP
+- EUR
+
+```
+let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
+let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
+let amount = "CONVERTED USER ENTERED CENT AMOUNT TO WEI ";
+let currency_type = "CURRENCY CODE SELECTED BY USER";
+
+OstWalletSdk.executePayTransaction(currentUser.user_id, {
+                    token_holder_addresses: [tokenHolderAddress],
+                    amounts: [amount],
+                    options: {
+                        currency_code: currency_type
+                    }
+                },
+                sdkDelegate);
+```
+
+
+
+
 
 
