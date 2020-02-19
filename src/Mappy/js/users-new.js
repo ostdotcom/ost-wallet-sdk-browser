@@ -47,6 +47,15 @@ class UserPage {
                 this.processData(response, template);
             })
     }
+    toggleTxCurrencyOptionDisplay(){
+        let jTxType = $("#custom_tx_type");
+        let tx_type = jTxType.val();
+        if (tx_type === "executePayTransaction") {
+            $("#custom_tx_currency_wrap").removeClass("d-none");
+        } else{
+            $("#custom_tx_currency_wrap").addClass("d-none");
+        }
+    }
 
     processData(jsonData, template) {
         const oThis = this;
@@ -160,6 +169,7 @@ class UserPage {
         let methodTemplateHtml = $("#user-method-template").html();
         oThis.methodTemplate = Handlebars.compile(methodTemplateHtml);
     }
+    
 
     bindEvents() {
         const oThis = this;
@@ -198,21 +208,22 @@ class UserPage {
             });
 
             $("#custom_tx_type").change(function() {
+                
                 let jEl = $( this );
                 let val = jEl.val();
-                if (val === "executePayTransaction") {
-                    $("#custom_tx_currency_wrap").removeClass("d-none");
-                } else{
-                    $("#custom_tx_currency_wrap").addClass("d-none");
-                }
+                
+                oThis.toggleTxCurrencyOptionDisplay();
+
             });
             $("#custom_tx_perform").click(function () {
                 oThis.performCustomTx();
             });
         })
     }
+    
 
     openCustomTxModal( token_holder_address ) {
+        const oThis =this;
         let jTxModal = $("#custom_tx_modal");
         let jTxType = $("#custom_tx_type");
         let jTxCurrency = $("#custom_tx_currency");
@@ -224,6 +235,8 @@ class UserPage {
 
         // Set default tx type.
         jTxType.val( "executeDirectTransferTransaction" );
+
+        oThis.toggleTxCurrencyOptionDisplay();
 
         // Set default tx currency.
         jTxCurrency.val("USD");
