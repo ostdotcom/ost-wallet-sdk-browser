@@ -274,7 +274,7 @@ export default class OstSdkBaseWorkflow {
         return oThis.getCurrentDeviceFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'syncCurrentDevice :: catch', err);
+        throw OstError.sdkError(err, 'os_w_osbw__scd_1', OstErrorCodes.SDK_API_ERROR);
       });
   }
 
@@ -286,7 +286,7 @@ export default class OstSdkBaseWorkflow {
         return oThis.getUserFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'syncUser :: catch', err);
+        throw OstError.sdkError(err, 'os_w_osbw__su_1', OstErrorCodes.SDK_API_ERROR);
       });
   }
 
@@ -319,7 +319,7 @@ export default class OstSdkBaseWorkflow {
         return oThis.getTokenFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'sync Token :: catch', err);
+        throw OstError.sdkError(err, 'os_w_osbw__st_1', OstErrorCodes.SDK_API_ERROR);
       });
   }
 
@@ -331,7 +331,7 @@ export default class OstSdkBaseWorkflow {
 				return res;
 			})
 			.catch((err) => {
-				console.log(LOG_TAG, 'sync Rules :: catch', err);
+              throw OstError.sdkError(err, 'os_w_osbw__sr_1', OstErrorCodes.SDK_API_ERROR);
 			});
   }
 
