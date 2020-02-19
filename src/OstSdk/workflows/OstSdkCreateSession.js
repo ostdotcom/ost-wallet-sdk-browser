@@ -39,8 +39,9 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
     }
 
-    if (!this.spendingLimit || !Number(this.spendingLimit)) {
-      throw new OstError('os_w_oscs_vp_2', OstErrorCodes.INVALID_SESSION_SPENDING_LIMIT, {spendingLimit: this.spendingLimit})
+    const num = Number(this.spendingLimit);
+    if (!this.spendingLimit || isNaN(num)) {
+      throw new OstError('os_w_oscs_vp_2', OstErrorCodes.INVALID_SESSION_SPENDING_LIMIT, {spending_limit: this.spendingLimit})
     }
   }
 
