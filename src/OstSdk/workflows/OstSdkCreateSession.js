@@ -39,7 +39,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
     }
 
-    if (!this.spendingLimit || !OstHelpers.isNumber(this.spendingLimit)) {
+    if (!this.spendingLimit) {
       throw new OstError('os_w_oscs_vp_2', OstErrorCodes.INVALID_SESSION_SPENDING_LIMIT, {spendingLimit: this.spendingLimit})
     }
   }

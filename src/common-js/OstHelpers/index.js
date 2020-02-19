@@ -58,12 +58,6 @@ class OstHelpers {
 	static arrayBufferToString(buf) {
 		return String.fromCharCode.apply(null, new Uint16Array(buf));
 	}
-
-	static isNumber( num ) {
-      let bigNumVal = new BigNumber( num );
-      console.log("bigNumVal :: ", bigNumVal.description);
-      return !!bigNumVal.description
-    }
 }
 
 export default OstHelpers
