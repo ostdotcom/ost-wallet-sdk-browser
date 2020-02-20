@@ -84,8 +84,8 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
     } else if ( "pricer" === oThis.ruleName ) {
       // Lets compute for pricer rule.
       return oThis.computePricerExpectedSpendAmount();
-    } 
-    
+    }
+
     // Must be direct transfer;
     let amountToBtMultiplier = new BigNumber(1);
     oThis.expectedSpendAmount = oThis.getTotalExpectedAmount( amountToBtMultiplier );
@@ -94,7 +94,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 
   computePricerExpectedSpendAmount() {
     const oThis = this;
-      
+
     // Get price points
     return oThis.getPricePoint()
 
@@ -140,9 +140,9 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   computeFiatMultiplier( pricePoint ) {
     const oThis = this;
     pricePoint = pricePoint || oThis.pricePoint;
-    
+
     // @Dev: Is it ok to default currency_code to USD?
-    // Should we validate it instead? 
+    // Should we validate it instead?
     const currencyCode = oThis.options.currency_code || 'USD';
 
     const ppOstToUsd = pricePoint[currencyCode];
@@ -176,8 +176,14 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 
     return OstSession.getActiveSessions(oThis.userId, expectedSpendAmount)
       .then(( activeSessions ) => {
+				if ( !activeSessions || activeSessions.length < 1 ) {
+					throw new OstError('ostsdk_oset_gas_1', OstErrorCodes.SESSION_NOT_FOUND);
+				}
+				return oThis.keyManagerProxy.filterLocalSessions(activeSessions);
+      })
+			.then(( activeSessions) => {
         if ( !activeSessions || activeSessions.length < 1 ) {
-          throw new OstError('ostsdk_oset_gas_1', OstErrorCodes.SESSION_NOT_FOUND);  
+          throw new OstError('ostsdk_oset_gas_2', OstErrorCodes.SESSION_NOT_FOUND);
         }
         const session = oThis.getLeastUsedSession(activeSessions);
         oThis.session = new OstSession(session);
@@ -188,17 +194,17 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   onDeviceValidated() {
     const oThis = this;
 
-    
+
     // - Get the rule
     console.log(LOG_TAG, "onDeviceValidated : calling getRule");
     let p1 = oThis.getRule(oThis.ruleName);
-    
+
     // - Compute Expected Spend Amount If Needed.
     console.log(LOG_TAG, "onDeviceValidated : calling computeExpectedSpendAmount");
     let p2 = oThis.computeExpectedSpendAmount();
 
-    
-      
+
+
     Promise.all([p1, p2])
       // - Determine if we have authorized session to do this transaction.
 			.then(() => {

@@ -73,7 +73,7 @@ class OstSession extends OstBaseEntity {
             return false;
           }
           return true;
-        })
+        });
         return filterSessions;
       })
       .catch((err) => {

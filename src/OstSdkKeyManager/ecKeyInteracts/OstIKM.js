@@ -307,6 +307,38 @@ class IKM {
 		return bip39.entropyToMnemonic(randBytes);
 	}
 
+	filterValidSessions(sessions) {
+		const oThis = this
+			, promiseList = []
+			, filteredSessionList = []
+		;
+
+		sessions.forEach((sessionData) => {
+			let fetchPromise = oThis.filterDataForSession(sessionData, filteredSessionList);
+			promiseList.push(fetchPromise);
+		});
+
+		return Promise.all(promiseList)
+			.then(() => {
+				return filteredSessionList;
+			});
+	}
+
+	filterDataForSession(sessionData, filteredList) {
+		const oThis = this
+		;
+		let ethKeyMetaId = oThis.createEthKeyMetaId(sessionData.address);
+		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, ethKeyMetaId)
+			.then((data) => {
+				if (data) {
+					filteredList.push(sessionData);
+				}
+			})
+			.catch(() => {
+				// suppressed so as to not hamper promise.all
+			});
+	}
+
 	generateECKeyPair(keyType) {
 		const mnemonics = this.generateMnemonics();
 		return this.generateECWalletWithMnemonics(mnemonics, keyType)

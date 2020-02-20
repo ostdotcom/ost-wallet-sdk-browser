@@ -1,5 +1,4 @@
-import  {TextEncoder , TextDecoder} from "text-encoding"
-import BigNumber from 'bignumber.js';
+import {TextDecoder, TextEncoder} from "text-encoding"
 
 class OstHelpers {
 
