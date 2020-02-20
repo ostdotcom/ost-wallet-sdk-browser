@@ -314,7 +314,10 @@ class IKM {
 		;
 
 		sessions.forEach((sessionData) => {
-			let fetchPromise = oThis.filterDataForSession(sessionData, filteredSessionList);
+			let fetchPromise = oThis.filterDataForSession(sessionData)
+				.then(( isValid ) => {
+					isValid && filteredSessionList.push(sessionData);
+				});
 			promiseList.push(fetchPromise);
 		});
 
@@ -324,18 +327,20 @@ class IKM {
 			});
 	}
 
-	filterDataForSession(sessionData, filteredList) {
+	filterDataForSession(sessionData) {
 		const oThis = this
 		;
 		let ethKeyMetaId = oThis.createEthKeyMetaId(sessionData.address);
 		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, ethKeyMetaId)
 			.then((data) => {
-				if (data && oThis.userId === sessionData.user_id) {
-					filteredList.push(sessionData);
+				if (data) {
+					return true;
 				}
+				return false;
 			})
 			.catch(() => {
 				// suppressed so as to not hamper promise.all
+				return false;
 			});
 	}
 
