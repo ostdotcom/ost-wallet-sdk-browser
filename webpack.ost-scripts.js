@@ -234,17 +234,21 @@ module.exports = (env) => {
 
     AddHtmlPlugins(sdkConf.htmlPlugins, pluginsArray);
 
-    // Add webpackDefinations
-    let webpackDefinations = {};
-    let mappyWebpackDefinations = getMappyConfig("webpackDefinations", mappyEnv);
-    if ( mappyWebpackDefinations ) {
-        Object.assign(webpackDefinations, mappyWebpackDefinations);
-    }
-    if ( sdkConf.webpackDefinations ) {
-        Object.assign(webpackDefinations, sdkConf.webpackDefinations);
-    }
-    const webpackDefinePlugin = new webpack.DefinePlugin( webpackDefinations );
-    pluginsArray.push( webpackDefinePlugin );
+    // DO NOT USE webpackDefinations without discussion.
+    // Currently, mappy js is compatable with multiple mappy html clients.
+    // 
+    // // Add webpackDefinations - 
+    // 
+    // let webpackDefinations = {};
+    // let mappyWebpackDefinations = getMappyConfig("webpackDefinations", mappyEnv);
+    // if ( mappyWebpackDefinations ) {
+    //     Object.assign(webpackDefinations, mappyWebpackDefinations);
+    // }
+    // if ( sdkConf.webpackDefinations ) {
+    //     Object.assign(webpackDefinations, sdkConf.webpackDefinations);
+    // }
+    // const webpackDefinePlugin = new webpack.DefinePlugin( webpackDefinations );
+    // pluginsArray.push( webpackDefinePlugin );
     
     return {
         ...commonConfig,

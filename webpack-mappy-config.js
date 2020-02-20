@@ -27,12 +27,17 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
 
   // Entity
   const entry = {};
-
+  /**
+   *  The below code is enables you to host independent js
+   *  files for different token-ids. Just change to:
+   *  const JS_MIDFIX = "-/" + OST_TOKEN_ID;
+   */
+  const JS_MIDFIX="";
   const eMap = {
-    "users": "mappy-js-" + OST_TOKEN_ID + "/users",
-    "login": "mappy-js-" + OST_TOKEN_ID + "/login",
-    "json_api": "mappy-js-" + OST_TOKEN_ID + "/json_api",
-    "sdk_getters": "mappy-js-" + OST_TOKEN_ID + "/sdk_getters",
+    "users": "mappy-js" + JS_MIDFIX + "/users",
+    "login": "mappy-js" + JS_MIDFIX + "/login",
+    "json_api": "mappy-js" + JS_MIDFIX + "/json_api",
+    "sdk_getters": "mappy-js" + JS_MIDFIX + "/sdk_getters",
   }
 
   entry[ eMap.users ]       = './src/Mappy/js/users-new.js';
@@ -116,14 +121,12 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
   return {
     "prod": {
       "entry": entry,
-      "htmlPlugins": produtionHtmlPlugins,
-      "webpackDefinations": webpackDefinations
+      "htmlPlugins": produtionHtmlPlugins
     },
 
     "dev": {
       "entry": entry,
-      "htmlPlugins": devHtmlPlugins,
-      "webpackDefinations": webpackDefinations
+      "htmlPlugins": devHtmlPlugins
     }
   };
 
