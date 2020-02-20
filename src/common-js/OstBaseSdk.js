@@ -4,7 +4,6 @@ import OstError from "./OstError";
 import EC from "./OstErrorCodes";
 import {OstBrowserMessenger, SOURCE} from "./OstBrowserMessenger";
 import OstMessage from './OstMessage';
-import '../common-css/sdk-stylesheet.css';
 
 let hasBeenInitialized = false;
 let hasDownstreamBeenInitialized = false;

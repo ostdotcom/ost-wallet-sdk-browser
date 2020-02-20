@@ -6,6 +6,7 @@ import OstSdkProxy from './OstSdkProxy'
 import OstJsonApiProxy from "./OstJsonApiProxy";
 import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 import EC from "../common-js/OstErrorCodes";
+import './sdk-stylesheet.css';
 
 class OstWalletSdkCore extends OstBaseSdk {
   constructor( window, parentOrigin ) {
