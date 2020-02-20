@@ -2,8 +2,7 @@
 
 ## Installation
 ### Using script tag
-Add the follwoing script tag to your html page insde the head or body tag.
-Ideally, the tag should be included *before* your application scripts.
+Add the follwoing script tag to your html page inside the head or body tag.
 
 ```
 <!doctype html>
@@ -48,7 +47,3 @@ const sdkConfig = {
 };
 let OstWalletSdk.init( sdkConfig );
 ```
-
-
-
-
