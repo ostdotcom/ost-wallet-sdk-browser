@@ -330,7 +330,7 @@ class IKM {
 		let ethKeyMetaId = oThis.createEthKeyMetaId(sessionData.address);
 		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, ethKeyMetaId)
 			.then((data) => {
-				if (data) {
+				if (data && oThis.userId === sessionData.user_id) {
 					filteredList.push(sessionData);
 				}
 			})
