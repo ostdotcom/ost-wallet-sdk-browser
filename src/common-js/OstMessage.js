@@ -15,7 +15,7 @@ class OstMessage {
     return ostMessage
   }
 
-  constructor( messagePayload = null, expectedSigner = null ) {
+  constructor( messagePayload = null, ostVerifier = null ) {
 
     this.messagePayload = messagePayload || {}; //first preference
     this.ostVerifier = ostVerifier;
@@ -29,7 +29,6 @@ class OstMessage {
     this.name = null;
     this.args = null;
 
-    this.expectedSigner = expectedSigner
   }
 
   //Setter
@@ -205,11 +204,7 @@ class OstMessage {
           return reject( new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_DOWNSTREAM_PUBLIC_KEY) );
         }
 
-        if ( !oThis.ostVerifier.isDownstreamOrigin( oThis.getOrigin() ) ) {
-          return reject( new OstError('cj_om_ivm_2', OstErrorCodes.INVALID_DOWNSTREAM_ORIGIN) );
-        }
-
-        return oThis.ostVerifier.isValidSignature(
+        return oThis.isValidSignature(
           oThis.getSignature(),
           oThis.buildPayloadToSign(),
           oThis.ostVerifier.downstreamPublicKey
@@ -236,7 +231,7 @@ class OstMessage {
           return reject( new OstError('cj_om_ivm_4', OstErrorCodes.INVALID_UPSTREAM_PUBLIC_KEY) );
         }
 
-        return oThis.ostVerifier.isValidSignature(
+        return oThis.isValidSignature(
           oThis.getSignature(),
           oThis.buildPayloadToSign(),
           oThis.ostVerifier.upstreamPublicKey
@@ -259,6 +254,18 @@ class OstMessage {
       return reject(OstError.sdkError(null, 'cj_om_ivm_7'));
 
     });
+  }
+
+  isValidSignature(signature, payloadToSign, publicKey) {
+
+    return crypto.subtle.verify({
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256"
+      },
+      publicKey,
+      OstHelpers.hexToByteArray( signature ),
+      OstHelpers.getDataToSign( payloadToSign )
+    );
   }
 }
 
