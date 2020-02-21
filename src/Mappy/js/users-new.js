@@ -17,18 +17,14 @@ class UserPage {
             console.log("currentUser", currentUser);
             oThis.onPageInitialized();
         });
+        oThis.pageData = {};
+
         oThis.nextPagePayload = 1;
         oThis.previousPage = 1;
         oThis.bindEvents();
     }
     getCurrentUser() {
         return this.currentUser;
-    }
-    init() {
-        console.log("userpage:init");
-        const oThis = this;
-        this.validatePage();
-        this.setupSdkHelper.perform();
     }
     onPageInitialized() {
         const oThis = this;
@@ -46,21 +42,19 @@ class UserPage {
                 console.log("error in get request of users");
             })
             .then((response) => {
-                oThis.templateData = {
-                    Username: "a",
-                    balance_in_lower_unit: 0,
-                    sendDT: 1,
-                    sendCent: 1,
-                    send: 1,
-                    tokenHolderAddress: 1,
-                    Token_Holder_Address: 1,
-                    sendModal: 1,
-                    user_row: "user_row"
-                };
                 var source = document.getElementById("user-method-template").innerHTML;
                 let template = Handlebars.compile(source);
                 this.processData(response, template);
             })
+    }
+    toggleTxCurrencyOptionDisplay(){
+        let jTxType = $("#custom_tx_type");
+        let tx_type = jTxType.val();
+        if (tx_type === "executePayTransaction") {
+            $("#custom_tx_currency_wrap").removeClass("d-none");
+        } else{
+            $("#custom_tx_currency_wrap").addClass("d-none");
+        }
     }
 
     processData(jsonData, template) {
@@ -75,7 +69,9 @@ class UserPage {
         let token_holder_address;
 
         for (var i = 0; i < 10; i++) {
+            let userInfo = jsonData.users[i];
             let app_user_id = jsonData.users[i].app_user_id;
+            let userBalanceInfo = jsonData.balances[app_user_id] || {};
             if (jsonData.balances.hasOwnProperty(app_user_id)) {
                 //if balance is available for the app_user_id then show respective available_balance.
                 balance = BigNumber(jsonData.balances[app_user_id].available_balance).toString(10);
@@ -91,64 +87,42 @@ class UserPage {
                 token_holder_address = jsonData.users[i].token_holder_address;
             }
 
-            oThis.templateData = {
-                Username: app_user_id,
-                balance_in_lower_unit: balance,
-                sendDT: viewId + "_sendDT_" + i,
-                sendCent: viewId + "_sendCent_" + i,
-                send: viewId + "_send_" + i,
-                token_holder_address: viewId + "_tokenHolderAddress_" + i,
-                Token_Holder_Address: token_holder_address,
-                sendModal: viewId + "_sendModal_" + i,
-                user_row: viewId + i,
-                modal_body_id: viewId + "_modal_body_id_" + i
+            let templateData = {
+                "row_id": "user-" + userInfo.app_user_id,
+                ...userBalanceInfo,
+                ...userInfo
             };
+            oThis.pageData[ userInfo.app_user_id ] = templateData;
+            
 
-            outputHtml = template(oThis.templateData);
+            outputHtml = template(templateData);
             oThis.htmlwork += outputHtml;
 
             $('#user-row-div').append(outputHtml);
             jOutputEl = $(outputHtml);
 
-            let sendDT = $('#' + oThis.templateData.user_row).find("#" + oThis.templateData.sendDT);
-            let sendCent = $('#' + oThis.templateData.user_row).find("#" + oThis.templateData.sendCent);
-            let sendModal = $('#user_row_modal_body_id_0').find("#user_row_sendModal_0").css("color", "#17A2B8");
-
-            oThis.bindingButtonEvents(sendDT, sendCent, sendModal, oThis.templateData.Token_Holder_Address);
         }
+        $( "#transaction-type" ).change(function() {
+            var index = document.getElementById("transaction-type");
+            var value = index.options[index.selectedIndex].value;
+            if (value === "Pay") {
+                $("#select-currency-label").removeClass("d-none");
+                $("#transaction-currency-type").removeClass("d-none");
+            } else{
+                $("#select-currency-label").addClass("d-none");
+                $("#transaction-currency-type").addClass("d-none");
+            }
+          });
     }
 
-    bindingButtonEvents(sendDT, sendCent, sendModal, token_holder_address) {
+    sendOneBT(token_holder_address) {
         const oThis = this;
-        sendDT.off().on('click', { token_holder_address: token_holder_address }, oThis.sendDT);
-        sendCent.off().on('click', { token_holder_address: token_holder_address }, oThis.sendCent);
-        sendModal.off().on('click', { token_holder_address: token_holder_address }, oThis.sendModal);
+        oThis.sendTokens(token_holder_address, "executeDirectTransferTransaction", '1' ,'USD');
     }
 
-    sendCent(event) {
-        $("#transaction-json").html('');
-        $("#transaction-string").html( '');
-        sendTokens(event.data.token_holder_address, "executePayTransaction", '1');
-    }
-
-    sendModal(event) {
-        $("#transaction-json").html( '');
-        $("#transaction-string").html('' );
-        var index = document.getElementById("transaction-type");
-        var value = index.options[index.selectedIndex].value;
-        var amount = document.getElementById("transaction-amount").value;
-        if (value === "Direct Transfer") {
-            sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction",amount);
-        } else {
-            sendTokens(event.data.token_holder_address, "executePayTransaction",amount);
-        }
-    }
-
-    sendDT(event) {
-        $("#transaction-json").html('');
-        $("#transaction-string").html( '' );
-        console.log(event.data.token_holder_address);
-        sendTokens(event.data.token_holder_address, "executeDirectTransferTransaction", '1');
+    sendOneCent( token_holder_address ) {
+        const oThis = this;
+        oThis.sendTokens(token_holder_address, "executePayTransaction", '1','USD');
     }
 
     compileTemplates() {
@@ -156,6 +130,7 @@ class UserPage {
         let methodTemplateHtml = $("#user-method-template").html();
         oThis.methodTemplate = Handlebars.compile(methodTemplateHtml);
     }
+    
 
     bindEvents() {
         const oThis = this;
@@ -168,7 +143,92 @@ class UserPage {
             $("#previous").click(function() {
                 oThis.prevPageload();
             });
+
+            $("body").on('click', ".j-send-1-bt", function(event) {
+                let jEl = $(this);
+                let data = jEl.data();
+                let appUserId = data.appUserId;
+                let userData = oThis.pageData[ appUserId ];
+                oThis.sendOneBT( userData.token_holder_address );
+            });
+
+            $("body").on('click', ".j-send-1-cent", function(event) {
+                let jEl = $(this);
+                let data = jEl.data();
+                let appUserId = data.appUserId;
+                let userData = oThis.pageData[ appUserId ];
+                oThis.sendOneCent( userData.token_holder_address );
+            });
+
+            $("body").on('click', ".j-send-custom", function(event) {
+                let jEl = $(this);
+                let data = jEl.data();
+                let appUserId = data.appUserId;
+                let userData = oThis.pageData[ appUserId ];
+                oThis.openCustomTxModal( userData.token_holder_address );
+            });
+
+            $("#custom_tx_type").change(function() {
+                
+                let jEl = $( this );
+                let val = jEl.val();
+                
+                oThis.toggleTxCurrencyOptionDisplay();
+
+            });
+            $("#custom_tx_perform").click(function () {
+                oThis.performCustomTx();
+            });
         })
+    }
+    
+
+    openCustomTxModal( token_holder_address ) {
+        const oThis =this;
+        let jTxModal = $("#custom_tx_modal");
+        let jTxType = $("#custom_tx_type");
+        let jTxCurrency = $("#custom_tx_currency");
+        let jTxAmount = $("#custom_tx_amount");
+        let jTxTokenHolder = $("#custom_tx_token_holder");
+
+        // Set token holder address.
+        jTxTokenHolder.val( token_holder_address );
+
+        // Set default tx type.
+        jTxType.val( "executeDirectTransferTransaction" );
+
+        oThis.toggleTxCurrencyOptionDisplay();
+
+        // Set default tx currency.
+        jTxCurrency.val("USD");
+
+        // Set default 
+        jTxAmount.val("0.01");
+
+        // Show the modal
+        jTxModal.modal('show');
+    }
+
+    performCustomTx() {
+        const oThis = this;
+        let jTxModal = $("#custom_tx_modal");
+        let jTxType = $("#custom_tx_type");
+        let jTxCurrency = $("#custom_tx_currency");
+        let jTxAmount = $("#custom_tx_amount");
+        let jTxTokenHolder = $("#custom_tx_token_holder");
+
+        let txType = jTxType.val();
+
+        let txCurrency = jTxCurrency.val();
+        let txAmount = jTxAmount.val();
+        let txTokenHolder = jTxTokenHolder.val();
+
+        // Hide the modal
+        jTxModal.modal('hide');
+
+        
+        // tokenHolderAddress, transactionType, amount, currency_type        
+        oThis.sendTokens(txTokenHolder, txType, txAmount, txCurrency);
     }
 
     nextPageload() {
@@ -206,87 +266,117 @@ class UserPage {
 
     convertBtToWei(amount){
         console.log("currentUser :: function", this.getCurrentUser());
-        const ostUserId = this.getCurrentUser().user_id;
+        const currentUser = this.getCurrentUser();
+        const tokenId = currentUser.token_id;
         let directTransfer = new BigNumber(0);
-        return OstJsonApi.getToken( ostUserId )
-        .then((data)=>{
-            if(!data){
+        return OstWalletSdk.getToken( tokenId )
+        .then((token) => {
+            if(!token){
                 console.error("Token not found");
-                return Promise.resolve('0');
+                throw new Error("Invalid reponse from OstJsonApi.getToken");
             }
-            let decimals = data.data.token.decimals;
+
+            console.log("||*","token", token);
+            let decimals = token.decimals;
+            console.log("||*","decimals", decimals);
+
             let decimalBN = new BigNumber(decimals);
+            console.log("||*","decimalBN", decimalBN);
             let multiplier = new BigNumber(10).pow(decimalBN);
+            console.log("||*","multiplier", multiplier);
             let amountBN = new BigNumber(amount);
+            console.log("||*","amountBN", amountBN);
             directTransfer = amountBN.multipliedBy(multiplier);
-            return Promise.resolve(directTransfer.toString());
+            console.log("||*","directTransfer", directTransfer);
+            console.log("||*","directTransfer.toString()", directTransfer.toString());
+            return Promise.resolve(directTransfer.toString( 10 ));
         })
         .catch( (err) => {
-            console.error(err);
-            return Promise.resolve('0');
+            console.log("||*", err);
+            throw err;
         });
+    }
+
+    prepareTxModal() {
+        $("#transaction-json").html('');
+        $("#transaction-string").html( '');
+        $("#transaction-req-json").html('');
+        $("#transaction-req-string").html('');        
+    }
+
+    sendTokens(tokenHolderAddress, transactionType, amount, currency_type) {
+
+        const oThis = this;
+        oThis.prepareTxModal();
+
+        $('#transaction-output-modal').modal('show');
+
+        const currentUser = userPage.getCurrentUser();
+        let mappyCallback = new OstWorkflowDelegate();
+        mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
+            //alert("Transaction Acknowledged");
+            $("#transaction-req-json").jsonViewer( ostContextEntity, jsonViewerSettings);
+            $("#transaction-req-string").html( JSON.stringify(ostContextEntity, null, 2) );
+            $("#req-ack-output-label").text("Request Acknowledgement:");
+        };
+
+        mappyCallback.flowInterrupt = function(ostWorkflowContext, ostError) {
+            console.log(ostError);
+            //alert("Transaction Interruped");
+            $("#transaction-json").jsonViewer( ostError, jsonViewerSettings);
+            $("#transaction-string").html( JSON.stringify(ostError, null, 2) );
+            $("#flow-transaction-output-label").text("Flow Interrupt:");
+        };
+
+
+        mappyCallback.flowComplete = function(ostWorkflowContext, ostContextEntity) {
+
+            console.log("getQRCode");
+            console.log("ostWorkflowContext :: ", ostWorkflowContext);
+            console.log("ostContextEntity :: ", ostContextEntity);
+            //alert("Transaction Completed");
+            $("#transaction-json").jsonViewer( ostContextEntity, jsonViewerSettings);
+            $("#transaction-string").html( JSON.stringify(ostContextEntity, null, 2) );
+            $("#flow-transaction-output-label").text("Flow Complete:");
+        };
+        let workflowId;
+        switch (transactionType) {
+            case "executeDirectTransferTransaction":
+                $('#type-label').text("Direct Transfer");
+                $('#amount-label').text(amount + " BT");
+                $('#address-label').text(tokenHolderAddress);
+                userPage.convertBtToWei(amount)
+                .then((value) => {
+                    const amountBN = value;
+                    let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
+                            token_holder_addresses: [tokenHolderAddress],
+                            amounts: [amountBN],
+
+                        },
+                        mappyCallback);
+                });
+                break;
+            case "executePayTransaction":
+                const amountBN = userPage.convertCentToWei(amount);
+                $('#type-label').text("Execute Pay");
+                $('#amount-label').text(amount);
+                $('#address-label').text(tokenHolderAddress);
+                workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
+                        token_holder_addresses: [tokenHolderAddress],
+                        amounts: [amountBN],
+                        options: {
+                            currency_code: currency_type
+                        }
+                    },
+                    mappyCallback);
+                break;
+            default:
+                console.log("Not any transaction type");
+        }
     }
 }
 var userPage = new UserPage();
 
-function sendTokens(tokenHolderAddress, transactionType, amount) {
 
-    $('#transaction-output-modal').modal('show');
-
-    const currentUser = userPage.getCurrentUser();
-    let mappyCallback = new OstWorkflowDelegate();
-    mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
-        alert("Transaction Acknowledged");
-    };
-
-    mappyCallback.flowInterrupt = function(ostWorkflowContext, ostError) {
-        console.log(ostError);
-        //alert("Transaction Interruped");
-        $("#transaction-json").jsonViewer( ostError, jsonViewerSettings);
-        $("#transaction-string").html( JSON.stringify(ostError, null, 2) );
-    };
-
-
-    mappyCallback.flowComplete = function(ostWorkflowContext, ostContextEntity) {
-
-        console.log("getQRCode");
-        console.log("ostWorkflowContext :: ", ostWorkflowContext);
-        console.log("ostContextEntity :: ", ostContextEntity);
-        //alert("Transaction Completed");
-        $("#transaction-json").jsonViewer( ostContextEntity, jsonViewerSettings);
-        $("#transaction-string").html( JSON.stringify(ostContextEntity, null, 2) );
-    };
-    let workflowId;
-    switch (transactionType) {
-        case "executeDirectTransferTransaction":
-            $('#type-label').text("Direct Transfer");
-            $('#amount-label').text(amount);
-            $('#address-label').text(tokenHolderAddress);
-            userPage.convertBtToWei(amount)
-            .then((value)=>{
-                const amountBN = value;
-                let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
-                        token_holder_addresses: [tokenHolderAddress],
-                        amounts: [amountBN],
-                    },
-                    mappyCallback);
-            });
-            break;
-        case "executePayTransaction":
-            const amountBN = userPage.convertCentToWei(amount);
-            $('#type-label').text("Execute Pay");
-            $('#amount-label').text(amount);
-            $('#address-label').text(tokenHolderAddress);
-            workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
-                    token_holder_addresses: [tokenHolderAddress],
-                    amounts: [amountBN],
-                },
-                mappyCallback);
-            break;
-        default:
-            console.log("Not any transaction type");
-    }
-
-}
 
 export default UserPage;

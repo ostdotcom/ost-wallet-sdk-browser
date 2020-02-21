@@ -8,7 +8,7 @@ import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
 import OstWorkflowContext from "./OstWorkflowContext";
 
-const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
+const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: |*| ";
 
 export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
@@ -85,9 +85,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       })
       .then((deviceEntity) => {
         oThis.currentDevice = deviceEntity;
-
+        console.log(LOG_TAG, "Created Device entity", deviceEntity);
         if (deviceEntity.isStatusCreated()) {
-          console.log(LOG_TAG, "Created Device entity", deviceEntity);
           return oThis.registerDevice(deviceEntity);
 
         } else {
@@ -110,7 +109,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return OstToken.init(oThis.tokenId);
       })
       .catch((err) => {
-        console.log(LOG_TAG, "error while init user => ", err);
+        console.log(LOG_TAG, "error while init user --> ", err);
         return OstToken.init(oThis.tokenId);
       })
   }
@@ -125,7 +124,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return OstUser.init(oThis.userId, oThis.tokenId);
       })
       .catch((err) => {
-        console.log(LOG_TAG, "error while init user => ", err);
+        console.log(LOG_TAG, "error while init user --> ", err);
         return OstUser.init(oThis.userId, oThis.tokenId);
       })
 
@@ -184,14 +183,18 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   verifyDeviceRegistered() {
     const oThis = this;
-
-    return oThis.syncCurrentDevice()
-      .then((deviceEntity) => {
-        if (deviceEntity && deviceEntity.hasOwnProperty(canMakeApiCall)) {
-          if (!deviceEntity.canMakeApiCall()) {
-            throw OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP)
-          }
+    const deviceAddress = this.currentDevice.getId();
+    return oThis.apiClient.getDevice( deviceAddress )
+      .then((response) => {
+        console.log(LOG_TAG, "get device api response", response);
+        return oThis.getCurrentDeviceFromDB()
+      })
+      .then((deviceEntity) => { 
+        console.log(LOG_TAG, "getCurrentDeviceFromDB deviceEntity", deviceEntity);
+        if (deviceEntity && deviceEntity.canMakeApiCall() ) {
+          return true;
         }
+        throw new OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP);
       });
   }
 

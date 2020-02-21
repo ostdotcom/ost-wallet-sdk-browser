@@ -40,11 +40,10 @@ class CreateSessionHelper {
         var index = document.getElementById("j-duration");
         var duration = index.options[index.selectedIndex].value;
         oThis.getDate(duration);
-        var spendingLimit = parseInt(value, 10);
         $('#createSession').modal('toggle');
         $("#expiry-label").text(oThis.expiry);
 
-        oThis.convertSessionLimit(spendingLimit)
+        oThis.convertSessionLimit(value)
             .then((limit) => {
                 oThis.spendingLimit = limit;
                 console.log("spending limit", limit);
@@ -111,11 +110,11 @@ class CreateSessionHelper {
             $("#flow-interrupt-string").html( JSON.stringify(ostError, null, 2) );
         };
 
-        console.log("Initiating OstWalletSdk.createSession with spendingLimit", oThis.spendingLimit, ". The higherUnitSpendingLimit is", oThis.higherUnitSpending);
+        console.log("Initiating OstWalletSdk.createSession with spendingLimit", oThis.higherUnitSpending, ". The higherUnitSpendingLimit is", oThis.higherUnitSpending);
         let workflowId = OstWalletSdk.createSession(
             oThis.currentUser.user_id,
             parseInt(oThis.expiryTime.getTime()/1000),
-            oThis.spendingLimit,
+            oThis.higherUnitSpending,
             mappyCallback);
 
     }
@@ -139,7 +138,7 @@ class CreateSessionHelper {
                     console.error("Token not found");
                     return Promise.resolve('0');
                 }
-                let decimals = data.data.token.decimals;
+                let decimals = data.token.decimals;
                 let decimalBN = new BigNumber(decimals);
                 let multiplier = new BigNumber(10).pow(decimalBN);
                 let amountBN = new BigNumber(amount);

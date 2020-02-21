@@ -1,6 +1,7 @@
 
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
+import OstError from "../../common-js/OstError";
 
 const LOG_TAG = 'OstSdkProxy :: ';
 
@@ -17,12 +18,7 @@ class OstSdkProxy {
 
         return oThis.getFromOstSdk('getUser', functionParams)
             .then((response) => {
-              const resData = response.data;
-              if (!resData) {
-                return {}
-              }
-
-              const user = resData.user;
+              const user = response.user;
               if (!user) {
                 return {}
               }
@@ -34,13 +30,6 @@ class OstSdkProxy {
 
               return userData;
             })
-            .catch((err) => {
-              const error = err.err;
-              if (!err) {
-                throw err;
-              }
-              throw error;
-            })
     }
 
     getToken( token_id) {
@@ -51,12 +40,7 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getToken', functionParams)
                 .then((response) => {
-                  const resData = response.data;
-                  if (!resData) {
-                    return {}
-                  }
-
-                  const token = resData.token;
+                  const token = response.token;
                   if (!token) {
                     return {}
                   }
@@ -68,13 +52,6 @@ class OstSdkProxy {
 
                   return tokenData;
                 })
-              .catch((err) => {
-                const error = err.err;
-                if (!err) {
-                  throw err;
-                }
-                throw error;
-              });
     }
 
     getDevice(userId) {
@@ -85,12 +62,7 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getDevice', functionParams)
                 .then((response) => {
-                  const resData = response.data;
-                  if (!resData) {
-                    return {}
-                  }
-
-                  const device = resData.device;
+                 const device = response.device;
                   if (!device) {
                     return {}
                   }
@@ -102,13 +74,6 @@ class OstSdkProxy {
 
                   return deviceData;
                 })
-              .catch((err) => {
-                const error = err.err;
-                if (!err) {
-                  throw err;
-                }
-                throw error;
-              });
     }
 
     getActiveSessions(userId, spendingLimit) {
@@ -120,26 +85,14 @@ class OstSdkProxy {
 
             return oThis.getFromOstSdk('getActiveSessions', functionParams)
                 .then((response) => {
-                  const resData = response.data;
-                  if (!resData) {
-                    return []
-                  }
-
-                  const activeSessions = resData.activeSessions;
+                  const activeSessions = response.activeSessions;
                   if (!activeSessions) {
                     return []
                   }
 
                   return activeSessions
                 })
-              .catch((err) => {
-                const error = err.err;
-                if (!err) {
-                  throw err;
-                }
-                throw error;
-              })  ;
-            }
+    }
 
   deleteLocalSessions(userId) {
       let oThis = this;
@@ -170,7 +123,7 @@ class OstSdkProxy {
 				function ( args ) {
 					console.log(LOG_TAG, `${functionName} error`, args);
 					oThis.messengerObj.unsubscribe(subId);
-					reject(args);
+					reject(OstError.fromErrorPayload(args));
 				}
 			));
 
@@ -189,11 +142,11 @@ const ResponseHandler = function (success, error){
 	const oThis = this;
 
 	oThis.onSuccess = function(args) {
-			return success(args);
+			return success(args.data);
 	};
 
 	oThis.onError = function(args) {
-		return error(args);
+		return error(args.err);
 	};
 
 };

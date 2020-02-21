@@ -3,7 +3,7 @@ import CodeTesterPageBase from "./CodeTesterPageBase";
 class SdkGettersPage extends CodeTesterPageBase {
   
   constructor() {
-    super(".container", "#j-method-template");
+    super("#page-container", "#j-method-template");
   }
 
   addTesterConfigs() {

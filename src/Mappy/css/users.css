@@ -6,9 +6,9 @@
 }
 
 .data-table-row.row {
-    border-bottom: 1px solid black;
-    width: 100%;
-    position: relative;
+    border-left: 1px solid #888;
+    border-right: 1px solid #888;
+    border-bottom: 1px solid #888;
 }
 
 .btn-group {

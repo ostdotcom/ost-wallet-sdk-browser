@@ -1,4 +1,6 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
+import BigNumber from 'bignumber.js';
+import OstError from '../../common-js/OstError';
 
 class OstSession extends OstBaseEntity {
 
@@ -33,30 +35,49 @@ class OstSession extends OstBaseEntity {
     return ostSession.getAll();
   }
 
-  static getActiveSessions(userId) {
+  static getActiveSessions(userId, minSpendingLimitInLowerUnit = 0) {
     if (!userId) {
-      return [];
+      return Promise.resolve([]);
     }
 
-    let _resolve;
+    let minSpendingLimit = new BigNumber( minSpendingLimitInLowerUnit );
+    let minBufferTime = 5 * 60 * 1000; //5 minutes
+    let minExpirationTimeInMiliSeconds = Date.now() + minBufferTime;
 
-    OstSession.getAllSessions()
+    return OstSession.getAllSessions()
       .then((sessionArray) => {
         if (!sessionArray) sessionArray = [];
 
-        let filterSessions = sessionArray.filter(function (x) {
-          return x.user_id === userId
-            && x.status === OstSession.STATUS.AUTHORIZED
+        let filterSessions = sessionArray.filter(function (sessionData) {
+          // Check userId
+          if ( userId !== sessionData.user_id ) {
+            return false;
+          }
+
+          // Check if session is authorized.
+          if ( OstSession.STATUS.AUTHORIZED !== sessionData.status ) {
+            return false;
+          }
+
+          // Check if session has expired.
+          let sessionExpirationTime = sessionData.approx_expiration_timestamp;
+          // Convert into miliseconds
+          let sessionExpirationTimeInMiliSeconds = sessionExpirationTime * 1000;
+          if ( minExpirationTimeInMiliSeconds > sessionExpirationTimeInMiliSeconds ) {
+            return false;
+          }
+
+          // Check spending limit.
+          let sessionSpendingLimit = new BigNumber( sessionData.spending_limit );
+          if ( minSpendingLimit.isGreaterThan( sessionSpendingLimit ) ) {
+            return false;
+          }
+          return true;
         });
-
-        _resolve(filterSessions)
+        return filterSessions;
       })
-      .catch(() => {
-        _resolve([])
-      });
-
-      return new Promise((resolve) => {
-        _resolve = resolve;
+      .catch((err) => {
+        throw OstError.sdkError(err, "ostsdk_ostsession_1");
       });
   }
 
@@ -124,11 +145,13 @@ class OstSession extends OstBaseEntity {
 
   addNonce() {
     this.data.nonce = parseInt(this.data.nonce) + 1;
+    this.data.updated_timestamp = parseInt(Date.now() / 1000);
 		return this.forceCommit();
   }
 
 	subNonce() {
 		this.data.nonce = parseInt(this.data.nonce) - 1;
+		this.data.updated_timestamp = parseInt(Date.now() / 1000);
 		return this.forceCommit();
 	}
 

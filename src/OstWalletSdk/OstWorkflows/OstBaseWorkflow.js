@@ -30,20 +30,18 @@ class OstBaseWorkflow {
   }
 
   flowInterrupt( args )  {
-    console.error(LOG_TAG, "flowInterrupt", args.ost_error);
-
+    console.error(LOG_TAG, "flowInterrupt", args);
     this.ostWorkflowCallbacks.flowInterrupt(args.ost_workflow_context, args.ost_error);
   }
 
   startWorkflow(functionName, params) {
-    this.browserMessenger.subscribe(this, this.ostWorkflowCallbacks.uuid);
+    this.browserMessenger.subscribe(this, this.workflowId);
 
+    params["workflow_id"] = this.workflowId;
     let message = new OstMessage();
     message.setReceiverName('OstSdk');
     message.setFunctionName(functionName);
-    message.setArgs(params, this.ostWorkflowCallbacks.uuid);
-
-    this.ostWorkflowCallbacks.workflowId = this.workflowId;
+    message.setArgs(params, this.workflowId);
 
     this.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
 

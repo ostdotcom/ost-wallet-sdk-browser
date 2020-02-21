@@ -17,6 +17,7 @@ export default class OstSdkBaseWorkflow {
   constructor(args, browserMessenger) {
     this.userId = args.user_id.toString();
     this.subscriberId = args.subscriber_id.toString();
+    this.workflowId = args.workflow_id.toString();
 
     this.browserMessenger = browserMessenger;
 
@@ -65,8 +66,12 @@ export default class OstSdkBaseWorkflow {
     let states = OstStateManager.state;
     switch (this.stateManager.getCurrentState()) {
       case states.INITIAL:
-        this.validateParams();
-        this.onParamsValidated();
+        try {
+          this.validateParams();
+          this.onParamsValidated();
+        }catch (err) {
+          throw  OstError.sdkError(err, 'sk_w_osbw_p_vp_1');
+        }
         break;
       case states.PARAMS_VALIDATED:
         return this.performUserDeviceValidation()
@@ -74,7 +79,7 @@ export default class OstSdkBaseWorkflow {
             this.onUserDeviceValidated();
           })
           .catch((err) => {
-            throw OstError.sdkError(err, 'sk_w_osbw_pr_1');
+            throw OstError.sdkError(err, 'sk_w_osbw_p_pudv_1');
           });
       case states.DEVICE_VALIDATED:
         this.onDeviceValidated();
@@ -125,14 +130,7 @@ export default class OstSdkBaseWorkflow {
       })
       .then(() => {
         return this.canDeviceMakeApiCall()
-      })
-      .then(() => {
-
-        //return this.syncCurrentDevice()
-      })
-      .then(() => {
-
-      })
+      });
   }
 
   getUserFromDB() {
@@ -148,10 +146,13 @@ export default class OstSdkBaseWorkflow {
   getCurrentDeviceFromDB() {
     return this.user.createOrGetDevice(this.keyManagerProxy)
       .then((deviceEntity) => {
+        console.log(LOG_TAG, "|*|", "this.user.createOrGetDevice deviceEntity:", deviceEntity);
         this.currentDevice = deviceEntity;
         if (!deviceEntity) {
           throw new OstError('os_w_osbw_eac_2', OstErrorCodes.DEVICE_NOT_SETUP)
         }
+
+        return deviceEntity;
       })
   }
 
@@ -204,11 +205,10 @@ export default class OstSdkBaseWorkflow {
 
   onWorkflowComplete() {
     const workflowContext = this.getWorkflowContext();
-
   }
 
   getWorkflowContext() {
-    let workflowContext = new OstWorkflowContext(this.getWorkflowName());
+    let workflowContext = new OstWorkflowContext(this.getWorkflowName(), this.workflowId);
     return workflowContext
   }
 
@@ -278,7 +278,7 @@ export default class OstSdkBaseWorkflow {
         return oThis.getCurrentDeviceFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'syncCurrentDevice :: catch', err);
+        throw OstError.sdkError(err, 'os_w_osbw__scd_1', OstErrorCodes.SDK_API_ERROR);
       });
   }
 
@@ -290,7 +290,7 @@ export default class OstSdkBaseWorkflow {
         return oThis.getUserFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'syncUser :: catch', err);
+        throw OstError.sdkError(err, 'os_w_osbw__su_1', OstErrorCodes.SDK_API_ERROR);
       });
   }
 
@@ -323,20 +323,8 @@ export default class OstSdkBaseWorkflow {
         return oThis.getTokenFromDB()
       })
       .catch((err) => {
-        console.log(LOG_TAG, 'sync Token :: catch', err);
+        throw OstError.sdkError(err, 'os_w_osbw__st_1', OstErrorCodes.SDK_API_ERROR);
       });
-  }
-
-	syncRules() {
-		let oThis = this;
-
-		return oThis.apiClient.getRules()
-			.then((res) => {
-				return res;
-			})
-			.catch((err) => {
-				console.log(LOG_TAG, 'sync Rules :: catch', err);
-			});
   }
 
   cancelFlow() {

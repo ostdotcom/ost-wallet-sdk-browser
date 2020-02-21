@@ -6,6 +6,7 @@ import OstSdkProxy from './OstSdkProxy'
 import OstJsonApiProxy from "./OstJsonApiProxy";
 import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 import EC from "../common-js/OstErrorCodes";
+import './sdk-stylesheet.css';
 
 class OstWalletSdkCore extends OstBaseSdk {
   constructor( window, parentOrigin ) {
@@ -75,16 +76,16 @@ class OstWalletSdkCore extends OstBaseSdk {
   executePayTransaction(userId, transactionData, ostWorkflowDelegate) {
     transactionData.rule_name = 'pricer';
     transactionData.rule_method = 'pay';
-    transactionData.meta = {};
-    transactionData.options = {};
+    transactionData.meta = transactionData.meta || {};
+    transactionData.options = transactionData.options || {};
     return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
   }
 
   executeDirectTransferTransaction(userId, transactionData, ostWorkflowDelegate) {
     transactionData.rule_name = 'Direct Transfer';
     transactionData.rule_method = 'directTransfers';
-    transactionData.meta = {};
-    transactionData.options = {};
+    transactionData.meta = transactionData.meta || {};
+    transactionData.options = transactionData.options || {};
     return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
   }
   //endregion

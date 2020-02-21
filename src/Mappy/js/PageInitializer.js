@@ -1,9 +1,12 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
+import '../css/logged-in.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
+import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
 const sdkConfig = {
+  "token_id": window.OST_TOKEN_ID,
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
@@ -76,13 +79,16 @@ class PageInitializer {
       .catch( (error) => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>⚠️ Failed</span>");
-        $("#loader").remove();
+        oThis.hidePageLoader();
         throw error;
       })
   }
 
   hidePageLoader() {
     $('body').addClass('loaded');
+    setTimeout(() => {
+      $("#loader-wrapper").remove();
+    }, 10000);
   }
 
   validatePage() {
@@ -100,7 +106,7 @@ class PageInitializer {
   }
 
   getApiBaseUrl() {
-    return DEMO_MAPPY_UI_API_ENDPOINT;
+    return window.DEMO_MAPPY_UI_API_ENDPOINT;
   }
 
   getCurrentUser() {
@@ -160,6 +166,7 @@ class PageInitializer {
     //Define flowComplete
     sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+      
       _resolve( ostContextEntity );
     };
 

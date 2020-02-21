@@ -1,4 +1,4 @@
-import  {TextEncoder , TextDecoder} from "text-encoding"
+import {TextDecoder, TextEncoder} from "text-encoding"
 
 class OstHelpers {
 

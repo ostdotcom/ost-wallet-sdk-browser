@@ -278,7 +278,7 @@ export default OstMessage
 			signer: "",
 			origin: "",
 		},
-		"messgae_sent_to": "UP/DOWN",
+		"message_sent_to": "UP/DOWN",
 
 		to: {
 			"receiver_name": "OstSdk"

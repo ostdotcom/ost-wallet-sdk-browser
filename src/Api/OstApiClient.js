@@ -2,6 +2,9 @@ import OstUser from "../OstSdk/entities/OstUser";
 import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
+import OstSession from "../OstSdk/entities/OstSession";
+import OstApiErrorParser from "./OstApiErrorParser";
+import OstApiError from "../common-js/OstApiError";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -66,7 +69,22 @@ export default class OstApiClient {
   }
 
   getSession(sessionAddress) {
-    return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`);
+    return this.get(`/users/${this.userId}/sessions/${sessionAddress}/`)
+      .then((response) => {
+        return response;
+      })
+      .catch((err) => {
+				if (err instanceof OstApiError) {
+				  const apiError = err;
+					console.error(LOG_TAG, 'getSession return api error code', apiError.getApiErrorCode());
+
+					//Wipe session from local db if it is NOT FOUND in backend
+					if (apiError.isNotFound()) {
+						OstSession.deleteById(sessionAddress);
+					}
+				}
+        throw err;
+      });
   }
 
   getTransaction(transactionId) {
@@ -98,16 +116,28 @@ export default class OstApiClient {
   }
 
   executeTransaction(params) {
-		return this.post(`/users/${this.userId}/transactions/`, params);
+    return this.post(`/users/${this.userId}/transactions/`, params);
   }
 
   getRules() {
     return this.get("/rules/");
   }
 
+  validateDomain(tokenId, domain) {
+    const resource = `/tokens/${tokenId}/validate-domain`
+      ,   params = {domain: domain}
+      ;
+    return this.apiClient.get(resource, {params: params})
+      .then((res) => {
+        const data = res.data
+        ;
+
+        return data.success || false
+      })
+  }
+
   get(resource, params) {
-    console.log("resource ------",resource);
-    var lastChar = resource.charAt( resource.length - 1 );
+    const lastChar = resource.charAt( resource.length - 1 );
     if(lastChar!=='/'){
       resource += '/';
     }
@@ -122,10 +152,10 @@ export default class OstApiClient {
       })
       .then((response) => {
         const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
-        console.log(LOG_TAG, "params to be sent", paramsMap);
-        return oThis.apiClient.get(resource, {
-          params: paramsMap
-        });
+        return oThis.apiClient.get(resource, {params: paramsMap })
+      })
+      .catch((error) => {
+        throw OstApiErrorParser.parse( error, params );
       })
       .then((response) => {
         return OstEntityParser.parse(response.data);
@@ -151,6 +181,9 @@ export default class OstApiClient {
 				console.log(LOG_TAG, "params to be sent", paramsMap);
 				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
 			})
+      .catch((error) => {
+        throw OstApiErrorParser.parse( error, params );
+      })
 			.then((response) => {
 				return OstEntityParser.parse(response.data);
 			});

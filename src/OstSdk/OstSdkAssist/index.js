@@ -156,30 +156,9 @@ class OstSdkAssist {
     ;
 
 		console.log(LOG_TAG, "getActiveSessions :: ", args);
-		OstSession.getAllSessions()
+		OstSession.getActiveSessions(userId, spendingLimit)
 			.then((sessionArray) => {
-				console.log(LOG_TAG, "sessions ==== ", sessionArray);
-
-        if (!sessionArray) sessionArray = [];
-
-        if (!sessionArray.length) {
-          return oThis.onSuccess({activeSessions: []}, subscriberId);
-        }
-
-        let spendingLimitBN = new BigNumber(0);
-        if (spendingLimit) {
-          spendingLimitBN = new BigNumber(spendingLimit);
-        }
-
-				console.log(LOG_TAG, "spending limit-----", spendingLimitBN.toString());
-				let filterSessions = sessionArray.filter(function (x) {
-					return x.user_id === userId
-						&& x.status === 'AUTHORIZED'
-						&& new BigNumber(x.spending_limit).isGreaterThanOrEqualTo(spendingLimitBN);
-				});
-
-        console.log(LOG_TAG, "filtered =====", filterSessions);
-        return oThis.onSuccess({activeSessions: filterSessions}, subscriberId);
+        return oThis.onSuccess({activeSessions: sessionArray}, subscriberId);
       })
       .catch((err) => {
         err = OstError.sdkError(err, 'os_osa_i_gas_1', OstErrorCodes.SKD_INTERNAL_ERROR);

@@ -66,6 +66,7 @@ class IKM {
 				}
 			}).catch((err) => {
 				console.error(LOG_TAG, "IKM initialization failed", err);
+				throw OstError.sdkError(err, "okm_e_ikm_i_1");
 			});
 	}
 
@@ -116,7 +117,7 @@ class IKM {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Error while building meta", err);
-				throw "Meta Struct building failed";
+				throw OstError.sdkError(err, "okm_e_ikm_bkms_1");
 			})
 	}
 
@@ -306,6 +307,43 @@ class IKM {
 		return bip39.entropyToMnemonic(randBytes);
 	}
 
+	filterValidSessions(sessions) {
+		const oThis = this
+			, promiseList = []
+			, filteredSessionList = []
+		;
+
+		sessions.forEach((sessionData) => {
+			let fetchPromise = oThis.filterDataForSession(sessionData)
+				.then(( isValid ) => {
+					isValid && filteredSessionList.push(sessionData);
+				});
+			promiseList.push(fetchPromise);
+		});
+
+		return Promise.all(promiseList)
+			.then(() => {
+				return filteredSessionList;
+			});
+	}
+
+	filterDataForSession(sessionData) {
+		const oThis = this
+		;
+		let ethKeyMetaId = oThis.createEthKeyMetaId(sessionData.address);
+		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, ethKeyMetaId)
+			.then((data) => {
+				if (data) {
+					return true;
+				}
+				return false;
+			})
+			.catch(() => {
+				// suppressed so as to not hamper promise.all
+				return false;
+			});
+	}
+
 	generateECKeyPair(keyType) {
 		const mnemonics = this.generateMnemonics();
 		return this.generateECWalletWithMnemonics(mnemonics, keyType)
@@ -398,9 +436,6 @@ const getInstance = (userId, avoidKMBuilding) => {
           ostKeyManager = okm;
           ostKeyManagerUserId = uid;
 		  return ostKeyManager;
-		})
-		.catch((err) => {
-			console.error(LOG_TAG, "getInstance failed", err);
 		})
 };
 
