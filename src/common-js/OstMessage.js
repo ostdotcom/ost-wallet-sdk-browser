@@ -4,21 +4,17 @@ import OstErrorCodes from './OstErrorCodes'
 import OstHelpers from "./OstHelpers";
 
 class OstMessage {
-  static ostMessageFromReceivedMessage( message, ostVerifier, event ) {
+  static ostMessageFromReceivedMessage( message) {
     if (!message.signature || !message.ost_message) {
       return null;
     }
 
-    let ostMessage = new OstMessage(message, ostVerifier);
-
-    ostMessage.event = event;
-    return ostMessage
+    return new OstMessage(message);
   }
 
-  constructor( messagePayload = null, ostVerifier = null ) {
+  constructor( messagePayload = null) {
 
     this.messagePayload = messagePayload || {}; //first preference
-    this.ostVerifier = ostVerifier;
 
     this.signature = null;
     this.timestamp = null;
@@ -170,99 +166,51 @@ class OstMessage {
     }
   }
 
-  //
-  isReceivedFromUpstream() {
-    return SOURCE.DOWNSTREAM === this.getMessageSendToDirection()
+  //verifier
+  isValidReceiver(receiverName) {
+    if ( this.getSubscriberId() ) {
+      return true;
+    }
+
+    let name = this.getReceiverName();
+    console.log("OstMessage :: ostVerifier receiver name : ", name);
+    return receiverName === name;
   }
 
-  isReceivedFromDownstream() {
-    return SOURCE.UPSTREAM === this.getMessageSendToDirection()
+  verifySignature( expectedSigner ) {
+    const oThis = this;
+
+    return oThis.isValidSignature(
+      oThis.getSignature(),
+      oThis.buildPayloadToSign(),
+      expectedSigner
+    )
+      .then ((isVerified) => {
+        console.log("then :: isVerifiedMessage :: ", isVerified);
+        if (isVerified) {
+          return isVerified
+        }
+
+        throw new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_SIGNATURE);
+      })
+      .catch((err) => {
+        console.log("catch :: isVerifiedMessage :: ", err);
+
+        throw OstError.sdkError(err, 'cj_om_ivm_2');
+      });
   }
 
-  //Verify
-  isVerifiedMessage ( ) {
-    let oThis = this;
+  isValidSignature(signature, payloadToSign, expectedSigner) {
 
-    return new Promise((resolve, reject) => {
-
-      if ( !oThis.getSubscriberId() ) {
-        console.log("OstMessage :: isVerifiedMessage :: SubscriberId not persent");
-        let receiverName = oThis.getReceiverName();
-
-        console.log("OstMessage :: ostVerifier receiver name : ", oThis.ostVerifier.receiverName);
-        if ( !oThis.ostVerifier.isValidReceiver( receiverName ) ) {
-          console.log("OstMessage :: isVerifiedMessage :: invalid receiverName name :: ", receiverName);
-          return reject();
-        }
-        console.log("OstMessage :: isVerifiedMessage :: valid receiverName name :: ", receiverName);
-      }
-
-      if ( oThis.isReceivedFromDownstream() )  {
-        console.log("Message received from down stream");
-
-        if ( !oThis.ostVerifier.isDownstreamSigner( oThis.getSigner() ) ) {
-          return reject( new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_DOWNSTREAM_PUBLIC_KEY) );
-        }
-
-        return oThis.isValidSignature(
-          oThis.getSignature(),
-          oThis.buildPayloadToSign(),
-          oThis.ostVerifier.downstreamPublicKey
-        )
-          .then ((isVerified) => {
-            console.log("then :: isVerifiedMessage :: ", isVerified);
-            if (isVerified) {
-              return resolve(isVerified)
-            }
-
-            return reject()
-          })
-          .catch((err) => {
-            console.log("catch :: isVerifiedMessage :: ", err);
-
-            throw OstError.sdkError(err, 'cj_om_ivm_3');
-          })
-      }
-
-      if ( oThis.isReceivedFromUpstream() ) {
-        console.log("Message received from up stream");
-
-        if ( !oThis.ostVerifier.isUpstreamSigner( oThis.getSigner() ) ) {
-          return reject( new OstError('cj_om_ivm_4', OstErrorCodes.INVALID_UPSTREAM_PUBLIC_KEY) );
-        }
-
-        return oThis.isValidSignature(
-          oThis.getSignature(),
-          oThis.buildPayloadToSign(),
-          oThis.ostVerifier.upstreamPublicKey
-        )
-          .then ((isVerified) => {
-            console.log("then :: isVerifiedMessage :: ", isVerified);
-            if (isVerified) {
-              return resolve(isVerified)
-            }
-
-            return reject()
-          })
-          .catch((err) => {
-            console.log("catch :: isVerifiedMessage :: ", err);
-
-            throw OstError.sdkError(err, 'cj_om_ivm_6');
-          })
-      }
-
-      return reject(OstError.sdkError(null, 'cj_om_ivm_7'));
-
-    });
-  }
-
-  isValidSignature(signature, payloadToSign, publicKey) {
+    if (!(expectedSigner instanceof CryptoKey)) {
+      return Promise.reject(new OstError('cj_om_ivs_1', OstErrorCodes.SDK_RESPONSE_ERROR))
+    }
 
     return crypto.subtle.verify({
         name: "RSASSA-PKCS1-v1_5",
         hash: "SHA-256"
       },
-      publicKey,
+      expectedSigner,
       OstHelpers.hexToByteArray( signature ),
       OstHelpers.getDataToSign( payloadToSign )
     );

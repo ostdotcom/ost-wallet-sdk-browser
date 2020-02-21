@@ -10,7 +10,6 @@ import OstError from "./OstError";
 
 import OstHelpers from "./OstHelpers";
 import EventEmitter from 'eventemitter3';
-import OstVerifier from "./OstVerifier";
 import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
 
@@ -92,14 +91,18 @@ class OstBrowserMessenger {
     // Validate Source.
     let expected_origin = null;
     let expected_message_sent_to = null;
+    let expected_signer = null;
+
     if ( event.source === this.parentWindow ) {
       // Parent sent the message downstream to us.
       expected_message_sent_to = SOURCE.DOWNSTREAM;
       expected_origin = this.upStreamOrigin;
+      expected_signer = this.upstreamPublicKey;
     } else if ( event.source === this.downStreamWindow ) {
       // Child sent messgae to us.
       expected_message_sent_to = SOURCE.UPSTREAM;
       expected_origin = this.downStreamOrigin;
+      expected_signer = this.downstreamPublicKey;
     } else {
       //Not a valid sender. Ignore the message.
       return;
@@ -130,48 +133,31 @@ class OstBrowserMessenger {
       return;
     }
 
-
-    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj(), event );
+    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData );
 
     if ( !ostMessage ) {
       return;
     }
 
+    if (!ostMessage.isValidReceiver(this.receiverName)) {
+      return;
+    }
+
     console.log(LOG_TAG, ":: onMessageReceived :: message object formed: ", ostMessage);
 
-    ostMessage.isVerifiedMessage( )
-      .then ((isVerified) => {
-        console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
-        if (isVerified) {
-          oThis.onValidMessageReceived(ostMessage);
-        }else {
-          oThis.onOtherMessageReceived(ostMessage, null);
-        }
-      })
-      .catch ((err) => {
-        console.error(LOG_TAG, "onMessageReceived :: catch of isVerifiedMessage : ", err);
-        oThis.onOtherMessageReceived(ostMessage, err);
-      });
-
-  }
-
-  getOstVerifierObj ( ) {
-    let ostVerifierObj = new OstVerifier();
-
-    ostVerifierObj.setUpstreamPublicKey( this.upstreamPublicKey );
-    ostVerifierObj.setDownstreamPublicKey( this.downstreamPublicKey );
-
-    ostVerifierObj.setUpstreamPublicKeyHex( this.upstreamPublicKeyHex );
-    ostVerifierObj.setDownstreamPublicKeyHex( this.downstreamPublicKeyHex );
-
-    ostVerifierObj.setUpStreamOrigin( this.upStreamOrigin );
-    ostVerifierObj.setDownStreamOrigin( this.downStreamOrigin );
-
-    ostVerifierObj.setReceiverName ( this.receiverName );
-
-    ostVerifierObj.setParent(this.parentWindow);
-
-    return ostVerifierObj
+      ostMessage.verifySignature(expected_signer)
+        .then ((isVerified) => {
+          console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
+          if (isVerified) {
+            oThis.onValidMessageReceived(ostMessage);
+          }else {
+            oThis.onOtherMessageReceived(ostMessage, null);
+          }
+        })
+        .catch ((err) => {
+          console.error(LOG_TAG, "onMessageReceived :: catch of isVerifiedMessage : ", err);
+          oThis.onOtherMessageReceived(ostMessage, err);
+        });
   }
 
   onValidMessageReceived(ostMessage) {
