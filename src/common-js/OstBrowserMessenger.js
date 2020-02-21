@@ -90,17 +90,14 @@ class OstBrowserMessenger {
 
     // Validate Source.
     let expected_origin = null;
-    let expected_message_sent_to = null;
     let expected_signer = null;
 
     if ( event.source === this.parentWindow ) {
       // Parent sent the message downstream to us.
-      expected_message_sent_to = SOURCE.DOWNSTREAM;
       expected_origin = this.upStreamOrigin;
       expected_signer = this.upstreamPublicKey;
     } else if ( event.source === this.downStreamWindow ) {
       // Child sent messgae to us.
-      expected_message_sent_to = SOURCE.UPSTREAM;
       expected_origin = this.downStreamOrigin;
       expected_signer = this.downstreamPublicKey;
     } else {
@@ -126,13 +123,6 @@ class OstBrowserMessenger {
       return;
     }
 
-    // Validate expected_message_sent_to
-    let message_sent_to = eventData.ost_message.message_sent_to;
-    if (expected_message_sent_to !== message_sent_to) {
-      // console.error("|||*** Not a valid expected message_sent_to.", expected_message_sent_to, message_sent_to);
-      return;
-    }
-
     const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData );
 
     if ( !ostMessage ) {
@@ -155,7 +145,6 @@ class OstBrowserMessenger {
           }
         })
         .catch ((err) => {
-          console.error(LOG_TAG, "onMessageReceived :: catch of isVerifiedMessage : ", err);
           oThis.onOtherMessageReceived(ostMessage, err);
         });
   }
@@ -190,7 +179,7 @@ class OstBrowserMessenger {
   }
 
   onOtherMessageReceived( ostMessage, err) {
-    console.log(LOG_TAG, "ostMessage.getMethodName() :: ", ostMessage.getMethodName());
+    console.log(LOG_TAG, "onOtherMessageReceived :: ostMessage.getMethodName() :: ", ostMessage.getMethodName());
     if (['onSetupComplete'].includes(ostMessage.getMethodName())) {
       this.onValidMessageReceived(ostMessage);
     }
@@ -354,7 +343,6 @@ class OstBrowserMessenger {
       targetOrigin = this.getUpStreamOrigin();
     }
 
-    ostMessage.setMessageSendToDirection( receiverStream );
     ostMessage.setSigner( this.getPublicKeyHex() );
 
     const dataToSign = ostMessage.buildPayloadToSign();

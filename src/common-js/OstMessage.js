@@ -19,7 +19,6 @@ class OstMessage {
     this.signature = null;
     this.timestamp = null;
     this.signer = null;
-    this.messageSendTo = null;
     this.receiverName = null;
     this.subscriberId = null;
     this.name = null;
@@ -38,10 +37,6 @@ class OstMessage {
 
   setSigner ( signer ) {
     this.signer = signer;
-  }
-
-  setMessageSendToDirection ( direction ) {
-    this.messageSendTo = direction
   }
 
   setReceiverName ( receiverName ) {
@@ -113,10 +108,6 @@ class OstMessage {
     return this.getFrom().origin || window.origin
   }
 
-  getMessageSendToDirection ( ) {
-    return this.getOstMessage().message_sent_to || this.messageSendTo;
-  }
-
   getReceiverName ( ) {
     return this.getTo().receiver_name || this.receiverName;
   }
@@ -142,8 +133,6 @@ class OstMessage {
         signer: this.getSigner(),
         origin: this.getOrigin(),
       },
-
-      message_sent_to: this.getMessageSendToDirection(),
 
       to: {
         receiver_name: this.getReceiverName(),
@@ -230,7 +219,6 @@ export default OstMessage
 			signer: "",
 			origin: "",
 		},
-		"message_sent_to": "UP/DOWN",
 
 		to: {
 			"receiver_name": "OstSdk"
