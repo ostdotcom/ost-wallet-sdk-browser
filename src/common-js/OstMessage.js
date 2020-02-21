@@ -1,6 +1,7 @@
 import {SOURCE} from "./OstBrowserMessenger";
 import OstError from "./OstError";
 import OstErrorCodes from './OstErrorCodes'
+import OstHelpers from "./OstHelpers";
 
 class OstMessage {
   static ostMessageFromReceivedMessage( message, ostVerifier, event ) {
@@ -14,7 +15,7 @@ class OstMessage {
     return ostMessage
   }
 
-  constructor( messagePayload = null, ostVerifier = null ) {
+  constructor( messagePayload = null, expectedSigner = null ) {
 
     this.messagePayload = messagePayload || {}; //first preference
     this.ostVerifier = ostVerifier;
@@ -28,7 +29,7 @@ class OstMessage {
     this.name = null;
     this.args = null;
 
-    this.event = null;
+    this.expectedSigner = expectedSigner
   }
 
   //Setter
@@ -233,10 +234,6 @@ class OstMessage {
 
         if ( !oThis.ostVerifier.isUpstreamSigner( oThis.getSigner() ) ) {
           return reject( new OstError('cj_om_ivm_4', OstErrorCodes.INVALID_UPSTREAM_PUBLIC_KEY) );
-        }
-
-        if ( !oThis.ostVerifier.isUpstreamEvent( this.event ) ) {
-          return reject( new OstError('cj_om_ivm_5', OstErrorCodes.INVALID_UPSTREAM_ORIGIN) );
         }
 
         return oThis.ostVerifier.isValidSignature(

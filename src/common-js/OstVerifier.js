@@ -54,33 +54,12 @@ class OstVerifier {
     return this.downstreamPublicKeyHex === signer;
   }
 
-  isDownstreamOrigin ( origin ) {
-    console.log("downstreamOrigin", this.downstreamOrigin);
-    console.log("origin", origin);
-    console.log("this.downstreamOrigin === signer", (this.downstreamOrigin === origin) );
-
-    let expectedOrigin = origin;
-    if ( expectedOrigin && !expectedOrigin.endsWith("/") ) {
-      expectedOrigin = expectedOrigin + "/";
-    }
-
-    let registeredOrigin = this.downstreamOrigin;
-    if ( registeredOrigin && !registeredOrigin.endsWith("/") ) {
-      registeredOrigin = registeredOrigin + "/";
-    }
-    return registeredOrigin === expectedOrigin;
-  }
-
   isUpstreamSigner ( signer ) {
     return this.upstreamPublicKeyHex === signer;
   }
 
   isUpstreamOrigin ( origin ) {
     return this.upstreamOrigin === origin;
-  }
-
-  isUpstreamEvent ( event ) {
-    return this.parent === event.source;
   }
 
   isValidReceiver ( name ) {
