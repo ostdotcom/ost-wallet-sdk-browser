@@ -89,6 +89,28 @@ class OstBrowserMessenger {
       return;
     }
 
+    // Validate Source.
+    let expected_origin = null;
+    let expected_message_sent_to = null;
+    if ( event.source === this.parentWindow ) {
+      // Parent sent the message downstream to us.
+      expected_message_sent_to = SOURCE.DOWNSTREAM;
+      expected_origin = this.upStreamOrigin;
+    } else if ( event.source === this.downStreamWindow ) {
+      // Child sent messgae to us.
+      expected_message_sent_to = SOURCE.UPSTREAM;
+      expected_origin = this.downStreamOrigin;
+    } else {
+      //Not a valid sender. Ignore the message.
+      return;
+    }
+
+    // Validate Origin
+    if ( event.origin !==  expected_origin) {
+      // console.error("|||*** Not a valid expected origin.", event.origin, expected_origin);
+      return;
+    }
+
     let oThis = this;
 
     const eventData = event.data;
@@ -100,6 +122,14 @@ class OstBrowserMessenger {
     if ( !eventData.ost_message ) {
       return;
     }
+
+    // Validate expected_message_sent_to
+    let message_sent_to = eventData.ost_message.message_sent_to;
+    if (expected_message_sent_to !== message_sent_to) {
+      // console.error("|||*** Not a valid expected message_sent_to.", expected_message_sent_to, message_sent_to);
+      return;
+    }
+
 
     const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData, this.getOstVerifierObj(), event );
 
