@@ -1,3 +1,4 @@
+import {TextDecoder, TextEncoder} from "text-encoding"
 
 class OstHelpers {
 

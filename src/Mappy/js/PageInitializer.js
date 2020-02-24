@@ -1,18 +1,19 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
+import '../css/logged-in.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
+import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
 const sdkConfig = {
+  "token_id": window.OST_TOKEN_ID,
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
-const MAPPY_BASE_URL = DEMO_MAPPY_UI_BASE_URL;
-
 const LOG_TAG = "PageInitializer";
 class PageInitializer {
-  constructor() {
+  constructor( autoPerform = true) {
     const oThis = this;
 
     oThis.currentUserInfo = null;
@@ -22,7 +23,9 @@ class PageInitializer {
     $(() => {
       ajaxUtils.setupAjax();
       oThis.bindEvents();
-      oThis.perform();
+      if ( autoPerform ) {
+        oThis.perform();  
+      }
     })
   }
   perform() {
@@ -76,13 +79,16 @@ class PageInitializer {
       .catch( (error) => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>⚠️ Failed</span>");
-        $("#loader").remove();
+        oThis.hidePageLoader();
         throw error;
       })
   }
 
   hidePageLoader() {
     $('body').addClass('loaded');
+    setTimeout(() => {
+      $("#loader-wrapper").remove();
+    }, 10000);
   }
 
   validatePage() {
@@ -100,11 +106,7 @@ class PageInitializer {
   }
 
   getApiBaseUrl() {
-    return DEMO_MAPPY_UI_API_ENDPOINT;
-  }
-
-  getBaseUrl() {
-    return MAPPY_BASE_URL;
+    return window.DEMO_MAPPY_UI_API_ENDPOINT;
   }
 
   getCurrentUser() {
@@ -157,13 +159,14 @@ class PageInitializer {
     let sdkDelegate =  new OstSetupDeviceDelegate();
     // Define register device.
     sdkDelegate.registerDevice = function( apiParams ) {
-      console.log(LOG_TAG, "registerDevice")
+      console.log(LOG_TAG, "registerDevice");
       return oThis.registerDevice(apiParams);
     };
 
     //Define flowComplete
     sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+      
       _resolve( ostContextEntity );
     };
 

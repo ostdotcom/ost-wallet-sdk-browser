@@ -124,14 +124,27 @@ export default class OstKeyManagerProxy {
 		return oThis.getFromKM('signTransaction', functionParams);
 	}
 
-  deleteLocalSessions(address) {
+  deleteLocalSessions(sessionAddresses) {
       const oThis = this
 		  , functionParams = {
           		user_id: this.userId,
-				session_addresses: address
+				session_addresses: sessionAddresses
 	  		}
 	  ;
       return oThis.getFromKM('deleteLocalSessions', functionParams);
+	}
+
+	filterLocalSessions(sessions) {
+  	const oThis = this
+			, functionParams = {
+				user_id: this.userId,
+				sessions: sessions
+			}
+		;
+  	return oThis.getFromKM('filterLocalSessions', functionParams)
+			.then((response) => {
+				return response.filtered_sessions;
+			});
 	}
 
 	getFromKM(functionName, functionParams) {

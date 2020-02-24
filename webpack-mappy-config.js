@@ -5,119 +5,131 @@ String.prototype.trimRight = function(charlist) {
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
 
-const sdkVersion = process.env.OST_BROWSER_SDK_VERSION || "";
+const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK_PLATFORM_API_ENDPOINT, OST_BROWSER_SDK_IFRAME_ORIGIN) => {
+  const sdkVersion = process.env.OST_BROWSER_SDK_VERSION || "";
 
-let OstSdkIframeUrl = process.env.OST_BROWSER_SDK_IFRAME_ORIGIN;
-OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
+  let OstSdkIframeUrl = OST_BROWSER_SDK_IFRAME_ORIGIN;
+  OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
 
-let MappyAppPath = process.env.DEMO_MAPPY_UI_APP_ROOT_PATH || "";
-MappyAppPath = MappyAppPath.trimRight("/");
+  if ( sdkVersion && sdkVersion.length ) {
+      OstSdkIframeUrl = OstSdkIframeUrl + "/" + sdkVersion;
+  }
+  OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
+  OstSdkIframeUrl = OstSdkIframeUrl + "/index.html";
+
+  // Global Vars
+  let GC_VARS = {
+    "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
+    "OST_TOKEN_ID": OST_TOKEN_ID,
+    "DEMO_MAPPY_UI_API_ENDPOINT": DEMO_MAPPY_UI_API_ENDPOINT,
+    "OST_BROWSER_SDK_IFRAME_URL": OstSdkIframeUrl
+  };
+
+  // Entity
+  const entry = {};
+  /**
+   *  The below code is enables you to host independent js
+   *  files for different token-ids. Just change to:
+   *  const JS_MIDFIX = "-/" + OST_TOKEN_ID;
+   */
+  const JS_MIDFIX="";
+  const eMap = {
+    "users": "mappy-js" + JS_MIDFIX + "/users",
+    "login": "mappy-js" + JS_MIDFIX + "/login",
+    "json_api": "mappy-js" + JS_MIDFIX + "/json_api",
+    "sdk_getters": "mappy-js" + JS_MIDFIX + "/sdk_getters",
+  }
+
+  entry[ eMap.users ]       = './src/Mappy/js/users-new.js';
+  entry[ eMap.login ]       = './src/Mappy/js/login.js';
+  entry[ eMap.json_api ]    = './src/Mappy/js/json-api-new.js';
+  entry[ eMap.sdk_getters ] = './src/Mappy/js/sdk-getter-new.js';
 
 
-let MappyBaseUrl = process.env.DEMO_MAPPY_UI_ORIGIN + "/" + MappyAppPath;
-MappyBaseUrl = MappyBaseUrl.trimRight("/");
+  const htmlPrefix = "../mappy-" + OST_TOKEN_ID;
+  const produtionHtmlPlugins = [
+      /* http://devmappy.com/index.html  */
+      {
+          GC_VARS: JSON.stringify(GC_VARS),
+          title: "Login - Demo Mappy Web UI",
+          template: "./src/Mappy/html/login.html",
+          inject: true,
+          filename: htmlPrefix + "/index.html",
+          chunks: [eMap.login, 'OstWalletSdk']
+      },
 
-if ( sdkVersion && sdkVersion.length ) {
-    OstSdkIframeUrl = OstSdkIframeUrl + "/" + sdkVersion + "/";
-    MappyBaseUrl    = MappyBaseUrl    + "/" + sdkVersion;
+      /* http://devmappy.com/login.html  */
+      {
+          GC_VARS: JSON.stringify(GC_VARS),
+          title: "Login - Demo Mappy Web UI",
+          template: "./src/Mappy/html/login.html",
+          inject: true,
+          filename: htmlPrefix + "/login.html",
+          chunks: ['OstWalletSdk', eMap.login]
+      },
+
+      /* http://devmappy.com/users.html  */
+      {
+          GC_VARS: JSON.stringify(GC_VARS),
+          title: "Users List - Demo Mappy Web UI",
+          template: "./src/Mappy/html/users-new.html",
+          inject: true,
+          filename: htmlPrefix + "/users.html",
+          chunks: [eMap.users, 'OstWalletSdk']
+      },
+
+      /* http://devmappy.com/sdk-getters.html  */
+      {
+          GC_VARS: JSON.stringify(GC_VARS),
+          title: "Sdk Getter Methods - Demo Mappy Web UI",
+          template: "./src/Mappy/html/sdk-getters-new.html",
+          inject: true,
+          filename: htmlPrefix + "/sdk-getters.html",
+          chunks: [eMap.sdk_getters, 'OstWalletSdk']
+      },
+
+      /* http://devmappy.com/json-api.html  */
+      {
+          GC_VARS: JSON.stringify(GC_VARS),
+          title: "JSON API Methods - Demo Mappy Web UI",
+          template: "./src/Mappy/html/json-api-new.html",
+          inject: true,
+          filename: htmlPrefix + "/json-api.html",
+          chunks: [eMap.json_api, 'OstWalletSdk']
+      }
+  ];
+
+  let devHtmlPlugins = [];
+  // Copy and modify prod config.
+  let len = produtionHtmlPlugins.length;
+  while(len--) {
+    let conf = produtionHtmlPlugins[ len ];
+    // Clone it.
+    conf = Object.assign({}, conf);
+
+    // Process it.
+    if ( conf.filename && conf.filename.startsWith( htmlPrefix ) ) {
+      let newFileName = conf.filename.replace(htmlPrefix, "mappy");
+      conf.filename = newFileName;
+    }
+
+    // Add it.
+    devHtmlPlugins.push( conf )
+  }
+  const webpackDefinations = null;
+
+  return {
+    "prod": {
+      "entry": entry,
+      "htmlPlugins": produtionHtmlPlugins
+    },
+
+    "dev": {
+      "entry": entry,
+      "htmlPlugins": devHtmlPlugins
+    }
+  };
+
 }
 
-
-
-const entry = {
-  'mappy-js/users'          : './src/Mappy/js/users-new.js',
-  'mappy-js/login'          : './src/Mappy/js/login.js',
-  'mappy-js/json-api'       : './src/Mappy/js/json-api-new.js',
-  'mappy-js/sdk-getters'    : './src/Mappy/js/sdk-getter-new.js',
-  'mappy-js/workflow'       : './src/Mappy/js/workflow.js'
-};
-
-const produtionHtmlPlugins = [
-    /* http://devmappy.com/index.html  */
-    {
-        title: "Login - Demo Mappy Web UI",
-        template: "./src/Mappy/html/login.html",
-        inject: true,
-        MappyBaseUrl: MappyBaseUrl,
-        filename: "../mappy/index.html",
-        chunks: ['OstWalletSdk', 'mappy-js/login']
-    },
-
-    /* http://devmappy.com/login.html  */
-    {   
-        title: "Login - Demo Mappy Web UI",
-        template: "./src/Mappy/html/login.html",
-        inject: true,
-        MappyBaseUrl: MappyBaseUrl,
-        filename: "../mappy/login.html",
-        chunks: ['OstWalletSdk', 'mappy-js/login']
-    },
-
-    /* http://devmappy.com/users.html  */
-    {
-        title: "Users List - Demo Mappy Web UI",
-        template: "./src/Mappy/html/users-new.html",
-        inject: true,
-        MappyBaseUrl: MappyBaseUrl,
-        filename: "../mappy/users.html",
-        chunks: ['OstWalletSdk', 'mappy-js/users']
-    },
-
-    /* http://devmappy.com/sdk-getters.html  */
-    {
-        title: "Sdk Getter Methods - Demo Mappy Web UI",
-        template: "./src/Mappy/html/sdk-getters-new.html",
-        inject: true,
-        MappyBaseUrl: MappyBaseUrl,
-        filename: "../mappy/sdk-getters.html",
-        chunks: ['OstWalletSdk', 'mappy-js/sdk-getters']
-    },
-
-    /* http://devmappy.com/json-api.html  */
-    {
-        title: "JSON API Methods - Demo Mappy Web UI",
-        template: "./src/Mappy/html/json-api-new.html",
-        inject: true,
-        MappyBaseUrl: MappyBaseUrl,
-        filename: "../mappy/json-api.html",
-        chunks: ['OstWalletSdk', 'mappy-js/json-api']
-    }
-];
-
-let devHtmlPlugins = [];
-// Copy and modify prod config.
-let len = produtionHtmlPlugins.length;
-while(len--) {
-  let conf = produtionHtmlPlugins[ len ];
-  // Clone it.
-  conf = Object.assign({}, conf);
-
-  // Process it.
-  if ( conf.filename && conf.filename.startsWith("../") ) {
-    conf.filename = conf.filename.replace("../", "");
-  }
-
-  // Add it.
-  devHtmlPlugins.push( conf )
-};
-
-const webpackDefinations = {
-    "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": JSON.stringify(process.env.OST_BROWSER_SDK_PLATFORM_API_ENDPOINT),
-    "OST_BROWSER_SDK_IFRAME_URL": JSON.stringify(OstSdkIframeUrl),
-    "DEMO_MAPPY_UI_BASE_URL": JSON.stringify(MappyBaseUrl),
-    "DEMO_MAPPY_UI_API_ENDPOINT": JSON.stringify(process.env.DEMO_MAPPY_UI_API_ENDPOINT)
-};
-
-module.exports = {
-  "prod": {
-    "entry": entry,
-    "htmlPlugins": produtionHtmlPlugins,
-    "webpackDefinations": webpackDefinations
-  },
-  
-  "dev": {
-    "entry": entry,
-    "htmlPlugins": devHtmlPlugins,
-    "webpackDefinations": webpackDefinations
-  }
-};
+module.exports = configBuilder;

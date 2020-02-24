@@ -1,5 +1,6 @@
 import OstWalletSdkCore from "./OstWalletSdkCore";
 import OstError from "../common-js/OstError";
+import OstApiError from "../common-js/OstApiError";
 
 import OstMappyCallbacks from "./OstMappyCallbacks";
 import OstWalletWorkFlowCallback from "./OstWalletCallback/OstWorkflowCallbacks";
@@ -15,7 +16,8 @@ export {
   OstJsonApi,
   OstSetupDeviceDelegate,
   OstWorkflowDelegate,
-  OstError
+  OstError,
+  OstApiError
 };
 
 /**
@@ -73,7 +75,7 @@ export {
       let errorInfo = {
         "methodName": methodName,
         "reason": "Sdk must be initialized before using this method."
-      }
+      };
       throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
     }
   };
@@ -87,7 +89,7 @@ export {
       let errorInfo = {
         "methodName": methodName,
         "reason": "Sdk must be initialized before using this method."
-      }
+      };
       throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
     }
   };
@@ -102,7 +104,7 @@ export {
       let errorInfo = {
         "methodName": externalMethodName,
         "reason": "Sdk must be initialized before using this method."
-      }
+      };
       throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
     }
   };

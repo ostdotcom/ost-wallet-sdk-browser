@@ -66,3 +66,7 @@ typings/
 
 # dist folder.
 dist/*
+builds/*
+build_set_env_vars.sh
+build-test-setup.md
+post_build.sh

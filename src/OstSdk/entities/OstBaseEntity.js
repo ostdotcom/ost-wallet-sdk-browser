@@ -129,7 +129,7 @@ class OstBaseEntity {
             return dbInstance;
           })
           .catch((err) => {
-            console.err(LOG_TAG, "Error while creating db for Entities", err);
+            console.error(LOG_TAG, "Error while creating db for Entities", err);
           });
       }
 	}

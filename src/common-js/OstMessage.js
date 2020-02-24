@@ -3,13 +3,14 @@ import OstError from "./OstError";
 import OstErrorCodes from './OstErrorCodes'
 
 class OstMessage {
-  static ostMessageFromReceivedMessage( message, ostVerifier ) {
+  static ostMessageFromReceivedMessage( message, ostVerifier, event ) {
     if (!message.signature || !message.ost_message) {
       return null;
     }
 
     let ostMessage = new OstMessage(message, ostVerifier);
 
+    ostMessage.event = event;
     return ostMessage
   }
 
@@ -26,6 +27,8 @@ class OstMessage {
     this.subscriberId = null;
     this.name = null;
     this.args = null;
+
+    this.event = null;
   }
 
   //Setter
@@ -154,7 +157,9 @@ class OstMessage {
       method_details: {
         name: this.getMethodName(),
         args: this.getArgs()
-      }
+      },
+
+      ost_verifiable_message: true
     }
   }
 
@@ -230,7 +235,7 @@ class OstMessage {
           return reject( new OstError('cj_om_ivm_4', OstErrorCodes.INVALID_UPSTREAM_PUBLIC_KEY) );
         }
 
-        if ( !oThis.ostVerifier.isUpstreamOrigin( oThis.getOrigin() ) ) {
+        if ( !oThis.ostVerifier.isUpstreamEvent( this.event ) ) {
           return reject( new OstError('cj_om_ivm_5', OstErrorCodes.INVALID_UPSTREAM_ORIGIN) );
         }
 
@@ -265,6 +270,7 @@ export default OstMessage
 /*
 - Sample OstMessage Structure
 {
+  "ost_varifiable_message": true,
 	"signature": "0x",
 	"ost_message": {
 		timestamp: 123123123,
@@ -272,7 +278,7 @@ export default OstMessage
 			signer: "",
 			origin: "",
 		},
-		"messgae_sent_to": "UP/DOWN",
+		"message_sent_to": "UP/DOWN",
 
 		to: {
 			"receiver_name": "OstSdk"

@@ -13,7 +13,7 @@ class OstUrlHelper {
 
     let connector = '';
     if (!url.endsWith('/')) {
-      connector = '/';
+      // connector = '/';
     }
 
     return url+connector+"?"+stringifiedParams;
@@ -34,7 +34,7 @@ class OstUrlHelper {
 
     let connector = '';
     if (!url.endsWith('/')) {
-      connector = '/';
+      // connector = '/';
     }
 
     return url+connector+"?"+stringifiedParams;

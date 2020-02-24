@@ -1,11 +1,10 @@
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes from  '../../common-js/OstErrorCodes'
+import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
 import OstWorkflowContext from "./OstWorkflowContext";
+import OstHelpers from "../../common-js/OstHelpers";
 
 const LOG_TAG = "OstSdk :: OstSdkCreateSession :: ";
 
@@ -38,6 +37,11 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
     if (currentTimeStamp > this.expirationTime) {
       throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
+    }
+
+    const num = Number(this.spendingLimit);
+    if (!this.spendingLimit || isNaN(num)) {
+      throw new OstError('os_w_oscs_vp_2', OstErrorCodes.INVALID_SESSION_SPENDING_LIMIT, {spending_limit: this.spendingLimit})
     }
   }
 

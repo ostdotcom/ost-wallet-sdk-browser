@@ -1,4 +1,3 @@
-import codeHighlighter from "highlight.js";
 import Handlebars from "handlebars";
 import CodeHighlight from "highlight.js";
 import CodeHighlightJSLanguageSupport from "highlight.js/lib/languages/javascript";
@@ -10,7 +9,7 @@ import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 class CodeTesterBase {
-  constructor(jqsContainer = ".container", jqsTemplate = "#j-method-template") {
+  constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template") {
     const oThis = this;
     // Create Page Initializer
     oThis.jqsContainer = jqsContainer;
@@ -33,8 +32,8 @@ class CodeTesterBase {
       let methodName = methodData.selfMethodName;
       let displayCode = methodData.displayCode + oThis.getMethodDisplayAppendText();
       let displayCodeTemplate = Handlebars.compile( displayCode );
-      
-      
+
+
       let viewId = "method-" + methodName + "-" + cnt;
       let templateData = {
         methodName: methodName,
@@ -82,9 +81,15 @@ class CodeTesterBase {
         strEl.html( JSON.stringify(response, null, 2) );
       })
       .catch( (error) => {
-        jsonEl.jsonViewer( error, jsonViewerSettings);
+        let dataToPrint = error;
+
+        if (error instanceof OstError) {
+          dataToPrint = error.getJSONObject();
+        }
+
+        jsonEl.jsonViewer( dataToPrint, jsonViewerSettings);
         jsonEl.addClass("alert alert-warning");
-        strEl.html( JSON.stringify(error, null, 2) );
+        strEl.html( JSON.stringify(dataToPrint, null, 2) );
         strEl.addClass("alert alert-warning");
       })
 
@@ -100,7 +105,7 @@ class CodeTesterBase {
     return '.then( (result) => { console.log( result ); }).catch( (err) => { console.log(err); });';
   }
 
-  addTesterConfigs() { 
+  addTesterConfigs() {
     const oThis = this;
     throw new Error("Derived classes Must implement addTesterConfigs");
   }

@@ -141,6 +141,30 @@ export default class OstKeyManagerAssist {
 			});
 	}
 
+	filterLocalSessions(args) {
+		const oThis = this
+			, userId = args.user_id
+			, sessions = args.sessions
+			, subscriberId = args.subscriber_id
+		;
+		if (!userId) {
+			return oThis.onError({msg: "userId not found"}, subscriberId);
+		}
+
+		return IKM.getKeyManager(userId)
+			.then((ikm) => {
+				return ikm.filterValidSessions(sessions);
+			})
+			.then((filteredSessions) => {
+				const response = Object.assign({}, args, {filtered_sessions: filteredSessions});
+				return oThis.onSuccess(response, subscriberId)
+			})
+			.catch((err) => {
+				return oThis.onError({err: err}, subscriberId);
+			});
+	}
+
+
 	setTrustable(args) {
 		const oThis = this;
 		const userId = args.user_id;

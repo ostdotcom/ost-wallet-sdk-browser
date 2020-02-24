@@ -1,6 +1,4 @@
 import {OstBaseEntity, STORES} from "./OstBaseEntity";
-import OstDevice from "./OstDevice";
-import OstUser from "./OstUser";
 
 class OstToken extends OstBaseEntity {
 
@@ -59,6 +57,10 @@ class OstToken extends OstBaseEntity {
 
   getBaseToken() {
     return String(this.getData().base_token);
+  }
+
+  getConversionFactor() {
+    return String(this.getData().conversion_factor);
   }
 }
 export default OstToken;

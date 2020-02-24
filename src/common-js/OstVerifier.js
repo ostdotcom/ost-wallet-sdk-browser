@@ -12,6 +12,8 @@ class OstVerifier {
     this.downstreamOrigin = null;
 
     this.receiverName = null;
+
+    this.parent = null;
   }
 
   //Setter
@@ -35,7 +37,6 @@ class OstVerifier {
     this.downstreamPublicKeyHex = hex;
   }
 
-
   setDownStreamOrigin ( origin ) {
     this.downstreamOrigin = origin;
   }
@@ -44,6 +45,9 @@ class OstVerifier {
     this.receiverName = name;
   }
 
+  setParent( parent ) {
+    this.parent = parent;
+  }
 
   //Validate
   isDownstreamSigner ( signer ) {
@@ -75,14 +79,20 @@ class OstVerifier {
     return this.upstreamOrigin === origin;
   }
 
+  isUpstreamEvent ( event ) {
+    return this.parent === event.source;
+  }
+
   isValidReceiver ( name ) {
     return this.receiverName === name;
   }
 
   isValidSignature(signature, payloadToSign, publicKey) {
 
-    return crypto.subtle.verify(
-      'RSASSA-PKCS1-v1_5',
+    return crypto.subtle.verify({
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256"
+      },
       publicKey,
       OstHelpers.hexToByteArray( signature ),
       OstHelpers.getDataToSign( payloadToSign )
