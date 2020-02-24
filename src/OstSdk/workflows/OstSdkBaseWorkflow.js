@@ -208,7 +208,7 @@ export default class OstSdkBaseWorkflow {
   }
 
   getWorkflowContext() {
-    let workflowContext = new OstWorkflowContext(this.getWorkflowName(), this.workflowId);
+    let workflowContext = OstWorkflowContext.newInstanceFromParams(this.getWorkflowName(), this.workflowId);
     return workflowContext
   }
 
