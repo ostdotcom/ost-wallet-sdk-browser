@@ -1,4 +1,4 @@
-import {OstBaseEntity, STORES} from "../../entities/OstBaseEntity";
+import {OstBaseEntity, STORES} from "../entities/OstBaseEntity";
 
 class OstWorkflowContext extends OstBaseEntity {
 
