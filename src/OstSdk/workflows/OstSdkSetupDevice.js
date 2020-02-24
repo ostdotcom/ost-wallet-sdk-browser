@@ -156,6 +156,18 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.performState( OstStateManager.state.REGISTERED, args);
   }
 
+  //override
+  postFlowComplete(entity) {
+    const oThis = this;
+    console.log(LOG_TAG, "post flow complete ===>");
+
+    // Todo:: getPendingWorkflows() 
+    // filter workflows that have req ack status. 
+    // create OstSdkPendingWorkflow object
+    // forEach call pollingForWorkflow()
+    // super.postFlowComplete(entity); should be called??
+    }
+
   syncEntities() {
     const oThis = this;
 
