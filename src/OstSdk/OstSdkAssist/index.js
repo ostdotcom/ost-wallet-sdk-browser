@@ -9,10 +9,9 @@ import OstSession from "../entities/OstSession";
 import OstApiClient from "../../Api/OstApiClient";
 import OstConstants from "../OstConstants";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes  from '../../common-js/OstErrorCodes'
+import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSdkExecuteTransaction from "../workflows/OstSdkExecuteTransaction";
-
-import OstSdkBaseWorkflow from "../workflows/OstSdkBaseWorkflow";
+import OstWorkflowContext from "../workflows/OstWorkflowContext";
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -71,38 +70,33 @@ class OstSdkAssist {
     this.executeTransaction(args);
   }
 
-  //workflowInfoMethods
-  //TO DO 
-  //Fetch workflow context from DB
-  getWorkflowInfo( args ) {
-    const oThis = this;
+	getWorkflowInfo(args) {
+		const oThis = this
+			, userId = args.user_id
+			, workflowId = args.workflow_id
+			, subscriberId = args.subscriber_id
+		;
 
-    console.log(LOG_TAG, "getWorkflowInfo :: ", args);
-    const userId = args.user_id;
-    const workflowId = args.workflow_id;
-    const subscriberId =  args.subscriber_id;
+		console.log(LOG_TAG, "getWorkflowInfo :: ", args);
 
-    let setupDevice = new OstSdkSetupDevice( args, this.browserMessenger );
+		const ostWorkflowContext = OstWorkflowContext.newInstanceFromParams(OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE, 'uuid');
+		// Todo:: Return workflow Context
 
-    const entity = setupDevice.getWorkflowContext();
-    const obj = {                             
-      id: "<String>",            
-      name: entity.workflowName,          
-      user_id: "<String>",       
-      args: ["<Array of args>"], 
-      status: "<String>",        
-      created_at: 1582241391726, 
-      updated_at: 1582241499722  
-  }   
-    return oThis.onSuccess(obj, subscriberId);
-  }
+		return oThis.onSuccess(ostWorkflowContext, subscriberId);
+	}
 
   getPendingWorkflows( args ) {
-    const oThis = this;
+		const oThis = this
+			, userId = args.user_id
+			, subscriberId = args.subscriber_id
+		;
 
-    console.log(LOG_TAG, "getPendingWorkflows :: ", args);
-    const userId = args.user_id;
-    const subscriberId =  args.subscriber_id;
+		console.log(LOG_TAG, "getPendingWorkflows :: ", args);
+
+		const ostWorkflowContext = OstWorkflowContext.newInstanceFromParams(OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE, 'uuid');
+		const objArray = [ostWorkflowContext];
+		// Todo:: Return pending Workflow Context
+		return oThis.onSuccess(objArray, subscriberId);
   }
 
   //Getter Methods

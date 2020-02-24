@@ -109,13 +109,18 @@ class OstSdkProxy {
         });
     }
 
-    //workflowInfoMethods
+	/**
+	 * To get info data of the workflow
+	 * @param userId userId
+	 * @param workflowId workflowId
+	 * @returns {Promise<T>} Workflow Context
+	 */
     getWorkflowInfo(userId, workflowId) {
-      let oThis = this;
-      const functionParams = {
-        user_id: userId,
-        workflow_id: workflowId
-      }
+			const oThis = this
+				, functionParams = {
+				user_id: userId,
+				workflow_id: workflowId
+			};
 
       return oThis.getFromOstSdk('getWorkflowInfo', functionParams)
         .then((response) => {
@@ -126,6 +131,11 @@ class OstSdkProxy {
         });
     }
 
+	/**
+	 * To get list of pending workflow info
+	 * @param userId userId
+	 * @returns {Promise<T>} Workflow Context Array
+	 */
     getPendingWorkflows(userId) {
       let oThis = this;
       const functionParams = {

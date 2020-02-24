@@ -8,7 +8,18 @@ class OstWorkflowContext extends OstBaseEntity {
 		EXECUTE_TRANSACTION: 'EXECUTE_TRANSACTION'
   };
 
-  constructor(workflowObject) {
+	static STATUS = {
+		INITIATED: 0,
+		ACKNOWLEDGED: 1,
+		CANCELLED_BY_NAVIGATION: 2,
+		COMPLETED: 3,
+		INTERRUPTED: 4
+	};
+
+	//Todo:: auto-generate it.
+	static STATUS_LOOKUP = ['INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED'];
+
+	constructor(workflowObject) {
     super(workflowObject);
 
 		this.workflowName = workflowObject.name;
@@ -25,6 +36,36 @@ class OstWorkflowContext extends OstBaseEntity {
 		this.created_at = workflowObject.created_at || currentTimeStamp;
 		this.updated_at = workflowObject.updated_at || currentTimeStamp;
   }
+
+	static getById(workflowId) {
+		const ostWorkflowContext = new OstWorkflowContext(
+			{id: workflowId}
+		);
+		return ostWorkflowContext.sync();
+	}
+
+  getName() {
+  	return this.data.name;
+	}
+
+	setContextEntityId(id) {
+		this.data.context_entity_id = id;
+		return this;
+	}
+
+	setWorkflowStatus(workflowStatus) {
+		this.data.status = workflowStatus;
+		return this;
+	}
+
+	setArgs(args) {
+		this.data.args = args;
+		return this;
+	}
+
+	getWorkflowStatus() {
+  	return this.STATUS_LOOKUP[this.data.status];
+	}
 
   getIdKey() {
     return 'id';
@@ -65,5 +106,7 @@ export default {
     return oThis.newInstanceFromObject(jsonDbObject);
   },
 
-	WORKFLOW_TYPE: OstWorkflowContext.WORKFLOW_TYPE
+	getById: OstWorkflowContext.getById,
+	WORKFLOW_TYPE: OstWorkflowContext.WORKFLOW_TYPE,
+	STATUS: OstWorkflowContext.STATUS
 }
