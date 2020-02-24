@@ -53,6 +53,7 @@ export default class OstSdkBaseWorkflow {
 
   perform() {
     try {
+      this.postFlowInitiated();
       this.process();
     }catch (err) {
 
@@ -225,6 +226,18 @@ export default class OstSdkBaseWorkflow {
     this.stateManager.setNextState(obj);
     this.process();
   }
+
+  postFlowInitiated() {
+    let message = new OstMessage();
+    message.setSubscriberId(this.subscriberId);
+    message.setFunctionName('flowInitiated');
+    message.setArgs({
+      ost_workflow_context: this.getWorkflowContext().getJSONObject()
+    });
+
+    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+  }
+
 
   postRequestAcknowledged(entityData) {
     let message = new OstMessage();

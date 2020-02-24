@@ -1,4 +1,5 @@
 const EventNames = {
+  "flowInitiated": "flowInitiated",
   "requestAcknowledged": "requestAcknowledged",
   "flowCompleted": "flowCompleted",
   "flowInterrupted": "flowInterrupted"
@@ -75,6 +76,11 @@ class OstWorkflowEvents {
 
 
   //region post event
+  postFlowInitiatedEvent(ostWorkflowContext, ostContextEntity) {
+    const eventName = EventNames.flowInitiated;
+    this.postEvent(eventName, ostWorkflowContext, ostContextEntity)
+  }
+
   postRequestAcknowledgedEvent(ostWorkflowContext, ostContextEntity) {
     const eventName = EventNames.requestAcknowledged;
     this.postEvent(eventName, ostWorkflowContext, ostContextEntity)

@@ -19,6 +19,13 @@ class OstBaseWorkflow {
     console.log(LOG_TAG, "perform :: workflowId ::", this.workflowId);
   }
 
+  flowInitiated( args ) {
+    console.log(LOG_TAG, "flowInitiated", args);
+    this.ostWorkflowCallbacks.flowInitiated(args.ost_workflow_context);
+
+    this.workflowEvents.postFlowInitiatedEvent(args.ost_workflow_context);
+  }
+
   requestAcknowledged( args ) {
     console.log(LOG_TAG, "requestAcknowledged", args);
     this.ostWorkflowCallbacks.requestAcknowledged(args.ost_workflow_context, args.ost_context_entity);
