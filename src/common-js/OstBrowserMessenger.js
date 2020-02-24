@@ -130,12 +130,6 @@ class OstBrowserMessenger {
       return;
     }
 
-    if (!ostMessage.getSubscriberId()) {
-      if (this.receiverName !== ostMessage.getReceiverName()) {
-        return;
-      }
-    }
-
     oThis.verifySignature(expected_signer, ostMessage)
         .then ((isVerified) => {
           console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
