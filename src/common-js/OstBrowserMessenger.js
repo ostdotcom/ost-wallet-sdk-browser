@@ -343,8 +343,6 @@ class OstBrowserMessenger {
       targetOrigin = this.getUpStreamOrigin();
     }
 
-    ostMessage.setSigner( this.getPublicKeyHex() );
-
     const dataToSign = ostMessage.buildPayloadToSign();
 
     return this.getSignature(dataToSign)

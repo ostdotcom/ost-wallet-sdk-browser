@@ -18,7 +18,6 @@ class OstMessage {
 
     this.signature = null;
     this.timestamp = null;
-    this.signer = null;
     this.receiverName = null;
     this.subscriberId = null;
     this.name = null;
@@ -33,10 +32,6 @@ class OstMessage {
 
   setTimestamp ( timestamp ) {
     this.timestamp = timestamp;
-  }
-
-  setSigner ( signer ) {
-    this.signer = signer;
   }
 
   setReceiverName ( receiverName ) {
@@ -73,12 +68,6 @@ class OstMessage {
     return this.messagePayload.ost_message || {};
   }
 
-  getFrom ( ) {
-    const message = this.getOstMessage();
-
-    return message.from || {};
-  }
-
   getTo ( ) {
     const message = this.getOstMessage();
 
@@ -98,14 +87,6 @@ class OstMessage {
       timestamp  = this.timestamp;
     }
     return timestamp
-  }
-
-  getSigner ( ) {
-    return this.getFrom().signer || this.signer;
-  }
-
-  getOrigin ( ) {
-    return this.getFrom().origin || window.origin
   }
 
   getReceiverName ( ) {
@@ -128,12 +109,6 @@ class OstMessage {
   buildPayloadToSign ( ) {
     return {
       timestamp: this.getTimestamp(),
-
-      from: {
-        signer: this.getSigner(),
-        origin: this.getOrigin(),
-      },
-
       to: {
         receiver_name: this.getReceiverName(),
         subscriber_id: this.getSubscriberId()
@@ -215,11 +190,6 @@ export default OstMessage
 	"signature": "0x",
 	"ost_message": {
 		timestamp: 123123123,
-		from: {
-			signer: "",
-			origin: "",
-		},
-
 		to: {
 			"receiver_name": "OstSdk"
 		},
