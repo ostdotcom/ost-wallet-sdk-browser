@@ -253,10 +253,12 @@ class OstBrowserMessenger {
   }
 
   setUpstreamPublicKeyHex(hex) {
-    this.upstreamPublicKeyHex = hex;
-    return this.importPublicKey(this.upstreamPublicKeyHex)
+    const oThis = this;
+    
+    return oThis.importPublicKey(oThis.upstreamPublicKeyHex)
       .then((cryptoKey) => {
-        this.upstreamPublicKey = cryptoKey;
+        oThis.defineImmutableProperty("upstreamPublicKey", cryptoKey);
+        oThis.defineImmutableProperty("upstreamPublicKeyHex", hex);
       })
       .catch((err) => {
         if (err instanceof OstError) {
@@ -280,11 +282,18 @@ class OstBrowserMessenger {
       return Promise.reject( ostError );
     }
 
-    oThis.defineImmutableProperty("downstreamPublicKeyHex", hex);
-
     return oThis.importPublicKey(oThis.downstreamPublicKeyHex)
       .then((cryptoKey) => {
+        /**
+         * The downstream public keys are not immutable by design.
+         * Making them immutable will enfore that only one downstream can be initiated.
+         * This limitation will be blocking if the dowstream has been created, but,
+         * somehow the setup fails.
+         *
+         * Making it immutable gives application an option to retry initialization of sdk.
+         */
         oThis.downstreamPublicKey = cryptoKey;
+        oThis.downstreamPublicKeyHex = hex;
       })
       .catch((err) => {
         if (err instanceof OstError) {
@@ -292,11 +301,6 @@ class OstBrowserMessenger {
         }
         throw new OstError('cj_obm_scpkh_1', 'SKD_INTERNAL_ERROR', err);
       });
-  }
-
-  removeUpstreamPublicKey() {
-    this.upstreamPublicKey = null;
-    this.upstreamPublicKeyHex = null;
   }
 
   removeDownstreamPublicKey() {
