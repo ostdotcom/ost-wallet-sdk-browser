@@ -9,7 +9,6 @@
 import OstError from "./OstError";
 
 import OstHelpers from "./OstHelpers";
-import EventEmitter from 'eventemitter3';
 import OstVerifier from "./OstVerifier";
 import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
@@ -30,7 +29,6 @@ class OstBrowserMessenger {
       this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
     }
 
-
     this.signer = null;
     this.downStreamOrigin = null;
 
@@ -41,9 +39,6 @@ class OstBrowserMessenger {
 
     this.downstreamPublicKeyHex = null;
     this.downstreamPublicKey = null;
-
-
-    this.eventEmitter = new EventEmitter();
 
     this.defineImmutableProperty("idMap", {});
 
@@ -406,19 +401,6 @@ class OstBrowserMessenger {
       },
       this.upstreamPublicKey,
       OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
-  }
-
-  //
-  registerOnce(type, callback) {
-    this.eventEmitter.once(type, callback);
-  }
-
-  register(type, callback) {
-    this.eventEmitter.on(type, callback);
-  }
-
-  unRegister(type, callback) {
-    this.eventEmitter.removeListener(type, callback);
   }
 
   subscribe(obj, name) {
