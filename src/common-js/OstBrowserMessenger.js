@@ -12,6 +12,7 @@ import OstHelpers from "./OstHelpers";
 import EventEmitter from 'eventemitter3';
 import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
+import OstErrorCodes  from './OstErrorMessages'
 
 const SOURCE = {
   UPSTREAM: "UPSTREAM",
@@ -129,13 +130,13 @@ class OstBrowserMessenger {
       return;
     }
 
-    if (!ostMessage.isValidReceiver(this.receiverName)) {
-      return;
+    if (!ostMessage.getSubscriberId()) {
+      if (this.receiverName !== ostMessage.getReceiverName()) {
+        return;
+      }
     }
 
-    console.log(LOG_TAG, ":: onMessageReceived :: message object formed: ", ostMessage);
-
-      ostMessage.verifySignature(expected_signer)
+    oThis.verifySignature(expected_signer, ostMessage)
         .then ((isVerified) => {
           console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
           if (isVerified) {
@@ -147,6 +148,45 @@ class OstBrowserMessenger {
         .catch ((err) => {
           oThis.onOtherMessageReceived(ostMessage, err);
         });
+  }
+
+  verifySignature( expectedSigner, ostMessage ) {
+    const oThis = this;
+
+    return oThis.isValidSignature(
+      ostMessage.getSignature(),
+      ostMessage.buildPayloadToSign(),
+      expectedSigner
+    )
+      .then ((isVerified) => {
+        console.log("then :: isVerifiedMessage :: ", isVerified);
+        if (isVerified) {
+          return isVerified
+        }
+
+        throw new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_SIGNATURE);
+      })
+      .catch((err) => {
+        console.log("catch :: isVerifiedMessage :: ", err);
+
+        throw OstError.sdkError(err, 'cj_om_ivm_2');
+      });
+  }
+
+  isValidSignature(signature, payloadToSign, expectedSigner) {
+
+    if (!(expectedSigner instanceof CryptoKey)) {
+      return Promise.reject(new OstError('cj_om_ivs_1', OstErrorCodes.SDK_RESPONSE_ERROR))
+    }
+
+    return crypto.subtle.verify({
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256"
+      },
+      expectedSigner,
+      OstHelpers.hexToByteArray( signature ),
+      OstHelpers.getDataToSign( payloadToSign )
+    );
   }
 
   onValidMessageReceived(ostMessage) {

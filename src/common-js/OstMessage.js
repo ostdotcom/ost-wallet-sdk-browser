@@ -1,7 +1,3 @@
-import {SOURCE} from "./OstBrowserMessenger";
-import OstError from "./OstError";
-import OstErrorCodes from './OstErrorCodes'
-import OstHelpers from "./OstHelpers";
 
 class OstMessage {
   static ostMessageFromReceivedMessage( message) {
@@ -130,55 +126,6 @@ class OstMessage {
     }
   }
 
-  //verifier
-  isValidReceiver(receiverName) {
-    if ( this.getSubscriberId() ) {
-      return true;
-    }
-
-    let name = this.getReceiverName();
-    console.log("OstMessage :: ostVerifier receiver name : ", name);
-    return receiverName === name;
-  }
-
-  verifySignature( expectedSigner ) {
-    const oThis = this;
-
-    return oThis.isValidSignature(
-      oThis.getSignature(),
-      oThis.buildPayloadToSign(),
-      expectedSigner
-    )
-      .then ((isVerified) => {
-        console.log("then :: isVerifiedMessage :: ", isVerified);
-        if (isVerified) {
-          return isVerified
-        }
-
-        throw new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_SIGNATURE);
-      })
-      .catch((err) => {
-        console.log("catch :: isVerifiedMessage :: ", err);
-
-        throw OstError.sdkError(err, 'cj_om_ivm_2');
-      });
-  }
-
-  isValidSignature(signature, payloadToSign, expectedSigner) {
-
-    if (!(expectedSigner instanceof CryptoKey)) {
-      return Promise.reject(new OstError('cj_om_ivs_1', OstErrorCodes.SDK_RESPONSE_ERROR))
-    }
-
-    return crypto.subtle.verify({
-        name: "RSASSA-PKCS1-v1_5",
-        hash: "SHA-256"
-      },
-      expectedSigner,
-      OstHelpers.hexToByteArray( signature ),
-      OstHelpers.getDataToSign( payloadToSign )
-    );
-  }
 }
 
 export default OstMessage
