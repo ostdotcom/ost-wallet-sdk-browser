@@ -109,6 +109,39 @@ class OstSdkProxy {
         });
     }
 
+    //workflowInfoMethods
+    getWorkflowInfo(userId, workflowId) {
+      let oThis = this;
+      const functionParams = {
+        user_id: userId,
+        workflow_id: workflowId
+      }
+
+      return oThis.getFromOstSdk('getWorkflowInfo', functionParams)
+        .then((response) => {
+          return response;
+        })
+        .catch((err) => {
+          return err;
+        });
+    }
+
+    getPendingWorkflows(userId) {
+      let oThis = this;
+      const functionParams = {
+        user_id: userId
+      };
+
+      return oThis.getFromOstSdk('getPendingWorkflows', functionParams)
+        .then((response) => {
+          const pendingWorkflows = response.pendingWorkflows;
+                  if (!pendingWorkflows) {
+                    return []
+                  }
+
+                  return pendingWorkflows
+        });
+    }
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;

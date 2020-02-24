@@ -60,6 +60,27 @@ export {
   };
   const jsonApiMethods = Object.keys( jsonApiMethodsMap );
 
+  //Methods exposing Workflow details
+  const workflowInfoMethods = [
+    "getWorkflowInfo",
+    "getPendingWorkflows"
+  ];
+
+  //function generator for workflowInfoMethods
+  const workflowInfoFunctionGenerator = (fromObj, methodName) => {
+    return(...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.proxy[methodName](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "workflowInfoFunctionGenerator", methodName].join("_");
+      let errorInfo = {
+        "methodName": methodName,
+        "reason": "Sdk must be initialized before using this method."
+      };
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  }
+
   const simpleFunctionGenerator = (fromObj, methodName) => {
     return (...args) => {
       return fromObj[methodName](...args);
@@ -147,6 +168,8 @@ export {
   addMethods(sdkCore, OstWalletSdk, simpleFunctionGenerator, simpleMethods);
   addMethods(sdkCore, OstWalletSdk, workflowFunctionGenerator, workflowMethods);
   addMethods(sdkCore, OstWalletSdk, getterFunctionGenerator, getterMethods);
+
+  addMethods(sdkCore, OstWalletSdk, workflowInfoFunctionGenerator, workflowInfoMethods);
 
   // Add wrapper methods to OstJsonApi
   addMethods(sdkCore, OstJsonApi, jsonApiFunctionGenerator, jsonApiMethods);

@@ -11,7 +11,8 @@ import OstConstants from "../OstConstants";
 import OstError from "../../common-js/OstError";
 import OstErrorCodes  from '../../common-js/OstErrorCodes'
 import OstSdkExecuteTransaction from "../workflows/OstSdkExecuteTransaction";
-import BigNumber from 'bignumber.js';
+
+import OstSdkBaseWorkflow from "../workflows/OstSdkBaseWorkflow";
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -69,6 +70,42 @@ class OstSdkAssist {
 
     this.executeTransaction(args);
   }
+
+  //workflowInfoMethods
+  //TO DO 
+  //Fetch workflow context from DB
+  getWorkflowInfo( args ) {
+    const oThis = this;
+
+    console.log(LOG_TAG, "getWorkflowInfo :: ", args);
+    const userId = args.user_id;
+    const workflowId = args.workflow_id;
+    const subscriberId =  args.subscriber_id;
+
+    let setupDevice = new OstSdkSetupDevice( args, this.browserMessenger );
+
+    const entity = setupDevice.getWorkflowContext();
+    const obj = {                             
+      id: "<String>",            
+      name: entity.workflowName,          
+      user_id: "<String>",       
+      args: ["<Array of args>"], 
+      status: "<String>",        
+      created_at: 1582241391726, 
+      updated_at: 1582241499722  
+  }   
+    return oThis.onSuccess(obj, subscriberId);
+  }
+
+  getPendingWorkflows( args ) {
+    const oThis = this;
+
+    console.log(LOG_TAG, "getPendingWorkflows :: ", args);
+    const userId = args.user_id;
+    const subscriberId =  args.subscriber_id;
+  }
+
+  //Getter Methods
 
   getUser ( args ) {
     const oThis = this
