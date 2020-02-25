@@ -5,67 +5,61 @@ class OstWorkflowContext extends OstBaseEntity {
   static WORKFLOW_TYPE = {
     SETUP_DEVICE: 'SETUP_DEVICE',
     CREATE_SESSION: 'CREATE_SESSION',
-		EXECUTE_TRANSACTION: 'EXECUTE_TRANSACTION'
+    EXECUTE_TRANSACTION: 'EXECUTE_TRANSACTION'
   };
 
-	static STATUS = {
-		INITIATED: 0,
-		ACKNOWLEDGED: 1,
-		CANCELLED_BY_NAVIGATION: 2,
-		COMPLETED: 3,
-		INTERRUPTED: 4
-	};
+  static STATUS = {
+    CREATED: 0,
+    INITIATED: 1,
+    ACKNOWLEDGED: 2,
+    CANCELLED_BY_NAVIGATION: 3,
+    COMPLETED: 4,
+    INTERRUPTED: 5
+  };
 
-	//Todo:: auto-generate it.
-	static STATUS_LOOKUP = ['INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED'];
+  //Todo:: auto-generate it.
+  static STATUS_LOOKUP = ['CREATED', 'INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED'];
 
-	constructor(workflowObject) {
+  constructor(workflowObject) {
+    //Current time stamp in seconds.
+    const currentTimeStamp = parseInt(Date.now() / 1000);
+
+    workflowObject.created_at = workflowObject.created_at || currentTimeStamp;
+    workflowObject.updated_at = workflowObject.updated_at || currentTimeStamp;
+
     super(workflowObject);
 
-		this.workflowName = workflowObject.name;
-		this.workflowId = workflowObject.id;
-		this.userId = workflowObject.user_id;
-		this.status = workflowObject.status;
-		this.args = workflowObject.args;
-    this.contextEntityId = workflowObject.context_entity_id;
-		this.contextEntityType = workflowObject.context_entity_type;
-
-		//Current time stamp in seconds.
-		const currentTimeStamp = parseInt(Date.now()/1000);
-
-		this.created_at = workflowObject.created_at || currentTimeStamp;
-		this.updated_at = workflowObject.updated_at || currentTimeStamp;
   }
 
-	static getById(workflowId) {
-		const ostWorkflowContext = new OstWorkflowContext(
-			{id: workflowId}
-		);
-		return ostWorkflowContext.sync();
-	}
+  static getById(workflowId) {
+    const ostWorkflowContext = new OstWorkflowContext(
+      {id: workflowId}
+    );
+    return ostWorkflowContext.sync();
+  }
 
   getName() {
-  	return this.data.name;
-	}
+    return this.data.name;
+  }
 
-	setContextEntityId(id) {
-		this.data.context_entity_id = id;
-		return this;
-	}
+  setContextEntityId(id) {
+    this.data.context_entity_id = id;
+    return this;
+  }
 
-	setWorkflowStatus(workflowStatus) {
-		this.data.status = workflowStatus;
-		return this;
-	}
+  setContextEntityType(type) {
+    this.data.context_entity_type = type;
+    return this;
+  }
 
-	setArgs(args) {
-		this.data.args = args;
-		return this;
-	}
+  setWorkflowStatus(workflowStatus) {
+    this.data.status = workflowStatus;
+    return this;
+  }
 
-	getWorkflowStatus() {
-  	return this.STATUS_LOOKUP[this.data.status];
-	}
+  getWorkflowStatus() {
+    return this.STATUS_LOOKUP[this.data.status];
+  }
 
   getIdKey() {
     return 'id';
@@ -77,36 +71,38 @@ class OstWorkflowContext extends OstBaseEntity {
 
   getJSONObject() {
     return {
-      name: this.workflowName,
-      id: this.workflowId,
-      user_id: this.userId,
-      status: this.status,
-      args: this.args,
-      context_entity_id: this.contextEntityId,
-      context_entity_type: this.contextEntityType,
-      created_at: this.created_at,
-      updated_at: this.updated_at
+      name: this.data.name,
+      id: this.data.id,
+      user_id: this.data.user_id,
+      status: this.data.status,
+      args: this.data.args,
+      context_entity_id: this.data.context_entity_id,
+      context_entity_type: this.data.context_entity_type,
+      created_at: this.data.created_at,
+      updated_at: this.data.updated_at
     }
   }
 }
 
 export default {
   newInstanceFromObject: function(jsonDbObject) {
-      return new OstWorkflowContext(jsonDbObject);
+    return new OstWorkflowContext(jsonDbObject);
   },
 
+  //@Deprecated
+  //use newInstanceFromObject method to create instance of OstWorkflowContext
   newInstanceFromParams: function(workflowName, workflowId) {
     const oThis = this
       , jsonDbObject = {
-				name: workflowName,
-				id: workflowId
-			}
+        name: workflowName,
+        id: workflowId
+      }
     ;
 
     return oThis.newInstanceFromObject(jsonDbObject);
   },
 
-	getById: OstWorkflowContext.getById,
-	WORKFLOW_TYPE: OstWorkflowContext.WORKFLOW_TYPE,
-	STATUS: OstWorkflowContext.STATUS
+  getById: OstWorkflowContext.getById,
+  WORKFLOW_TYPE: OstWorkflowContext.WORKFLOW_TYPE,
+  STATUS: OstWorkflowContext.STATUS
 }
