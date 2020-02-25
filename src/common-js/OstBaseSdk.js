@@ -155,24 +155,9 @@ class OstBaseSdk {
   }
 
 
-  //Register listener
-  registerOnce(type, callback) {
-    this.browserMessenger.registerOnce(type, callback);
-  }
-
-  register(type, callback) {
-    this.browserMessenger.register(type, callback);
-  }
-
-  unRegister(type, callback) {
-    this.browserMessenger.unRegister(type, callback);
-  }
-
   getDocument() {
     return document;
   }
-
-  //endregion
 
 
   /** -------------------------------------- NEW CODE ------------------------------- */

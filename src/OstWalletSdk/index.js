@@ -29,16 +29,19 @@ export {
 
   // Core Sdk methods to expose.
   const simpleMethods = ["init"];
+
   const workflowMethods = ["setupDevice",
     "createSession",
     "executeTransaction",
     "executePayTransaction",
     "executeDirectTransferTransaction"];
+
   const getterMethods = ["getUser",
     "getToken",
     "getDevice",
     "getActiveSessions",
   "deleteLocalSessions"];
+
   /**
    * jsonApiMethodsMap - is a map of sdkCore.jsonApiProxy methods names
    * key - names of methods exposed to the api consumer.
@@ -59,6 +62,9 @@ export {
     getTokenHolder: "getTokenHolderFromServer"
   };
   const jsonApiMethods = Object.keys( jsonApiMethodsMap );
+
+
+  const subscribeMethods = ["subscribe", "subscribeAll"];
 
   //Methods exposing Workflow details
   const workflowInfoMethods = [
@@ -130,6 +136,21 @@ export {
     }
   };
 
+  const subscriberFunctionGenerator = (fromObj, methodName) => {
+    return (...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.workflowEvents[methodName](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "getterFunctionGenerator", methodName].join("_");
+      let errorInfo = {
+        "methodName": methodName,
+        "reason": "Sdk must be initialized before using this method."
+      };
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  };
+
+
   const addMethods = (fromObj, toObj, functionGenerator, methodsToAdd) => {
     if ( !fromObj ) {
       throw new Error("addMethods: fromObj is null");
@@ -168,6 +189,7 @@ export {
   addMethods(sdkCore, OstWalletSdk, simpleFunctionGenerator, simpleMethods);
   addMethods(sdkCore, OstWalletSdk, workflowFunctionGenerator, workflowMethods);
   addMethods(sdkCore, OstWalletSdk, getterFunctionGenerator, getterMethods);
+  addMethods(sdkCore, OstWalletSdk, subscriberFunctionGenerator, subscribeMethods);
 
   addMethods(sdkCore, OstWalletSdk, workflowInfoFunctionGenerator, workflowInfoMethods);
 
