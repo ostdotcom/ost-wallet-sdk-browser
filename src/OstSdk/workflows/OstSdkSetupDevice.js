@@ -156,6 +156,17 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.performState( OstStateManager.state.REGISTERED, args);
   }
 
+	// postFlowComplete(entity) {
+	// 	const oThis = this;
+	// 	console.log(LOG_TAG, "post flow complete ===>");
+	//
+	// 	// Todo:: getPendingWorkflows()
+	// 	// filter workflows that have req ack status.
+	// 	// create OstSdkPendingWorkflow object
+	// 	// forEach call pollingForWorkflow()
+	// 	super.postFlowComplete(entity);
+	// }
+
   syncEntities() {
     const oThis = this;
 
@@ -189,7 +200,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         console.log(LOG_TAG, "get device api response", response);
         return oThis.getCurrentDeviceFromDB()
       })
-      .then((deviceEntity) => { 
+      .then((deviceEntity) => {
         console.log(LOG_TAG, "getCurrentDeviceFromDB deviceEntity", deviceEntity);
         if (deviceEntity && deviceEntity.canMakeApiCall() ) {
           return true;
@@ -209,4 +220,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 				return isTrustable;
 			});
 	}
+
+	shouldNotSaveWorkflowContext() {
+    return true;
+  }
 }

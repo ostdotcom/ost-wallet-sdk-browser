@@ -9,9 +9,9 @@ import OstSession from "../entities/OstSession";
 import OstApiClient from "../../Api/OstApiClient";
 import OstConstants from "../OstConstants";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes  from '../../common-js/OstErrorCodes'
+import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSdkExecuteTransaction from "../workflows/OstSdkExecuteTransaction";
-import BigNumber from 'bignumber.js';
+import OstWorkflowContext from "../workflows/OstWorkflowContext";
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -69,6 +69,37 @@ class OstSdkAssist {
 
     this.executeTransaction(args);
   }
+
+	getWorkflowInfo(args) {
+		const oThis = this
+			, userId = args.user_id
+			, workflowId = args.workflow_id
+			, subscriberId = args.subscriber_id
+		;
+
+		console.log(LOG_TAG, "getWorkflowInfo :: ", args);
+
+		const ostWorkflowContext = OstWorkflowContext.newInstanceFromParams(OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE, 'uuid');
+		// Todo:: Return workflow Context
+
+		return oThis.onSuccess(ostWorkflowContext, subscriberId);
+	}
+
+  getPendingWorkflows( args ) {
+		const oThis = this
+			, userId = args.user_id
+			, subscriberId = args.subscriber_id
+		;
+
+		console.log(LOG_TAG, "getPendingWorkflows :: ", args);
+
+		const ostWorkflowContext = OstWorkflowContext.newInstanceFromParams(OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE, 'uuid');
+		const objArray = [ostWorkflowContext];
+		// Todo:: Return pending Workflow Context
+		return oThis.onSuccess(objArray, subscriberId);
+  }
+
+  //Getter Methods
 
   getUser ( args ) {
     const oThis = this

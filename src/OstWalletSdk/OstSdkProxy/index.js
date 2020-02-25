@@ -109,6 +109,49 @@ class OstSdkProxy {
         });
     }
 
+	/**
+	 * To get info data of the workflow
+	 * @param userId userId
+	 * @param workflowId workflowId
+	 * @returns {Promise<T>} Workflow Context
+	 */
+    getWorkflowInfo(userId, workflowId) {
+			const oThis = this
+				, functionParams = {
+				user_id: userId,
+				workflow_id: workflowId
+			};
+
+      return oThis.getFromOstSdk('getWorkflowInfo', functionParams)
+        .then((response) => {
+          return response;
+        })
+        .catch((err) => {
+          return err;
+        });
+    }
+
+	/**
+	 * To get list of pending workflow info
+	 * @param userId userId
+	 * @returns {Promise<T>} Workflow Context Array
+	 */
+    getPendingWorkflows(userId) {
+      let oThis = this;
+      const functionParams = {
+        user_id: userId
+      };
+
+      return oThis.getFromOstSdk('getPendingWorkflows', functionParams)
+        .then((response) => {
+          const pendingWorkflows = response.pendingWorkflows;
+                  if (!pendingWorkflows) {
+                    return []
+                  }
+
+                  return pendingWorkflows
+        });
+    }
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;

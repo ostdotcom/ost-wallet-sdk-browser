@@ -69,8 +69,11 @@ export default class OstSdkBaseWorkflow {
       case states.INITIAL:
         try {
           this.validateParams();
-          this.onParamsValidated();
-        }catch (err) {
+					this.onWorkflowInitiated()
+            .then(() => {
+							this.onParamsValidated();
+            });
+        } catch (err) {
           throw  OstError.sdkError(err, 'sk_w_osbw_p_vp_1');
         }
         break;
@@ -204,14 +207,102 @@ export default class OstSdkBaseWorkflow {
     this.processNext();
   }
 
-  onWorkflowComplete() {
-    const workflowContext = this.getWorkflowContext();
-  }
-
   getWorkflowContext() {
-    let workflowContext = new OstWorkflowContext(this.getWorkflowName(), this.workflowId);
+    let workflowContext = OstWorkflowContext.newInstanceFromParams(this.getWorkflowName(), this.workflowId);
     return workflowContext
   }
+
+  onWorkflowInitiated() {
+		const oThis = this
+			, workflowContext = OstWorkflowContext.newInstanceFromParams(oThis.getWorkflowName(), oThis.workflowId)
+		;
+
+		//return if workflow context is not allowed by the sub-class
+		if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
+
+    workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INITIATED);
+    workflowContext.setArgs(oThis.getWorkFlowArgs());
+    return workflowContext.forceCommit()
+			.catch((err) => {
+				console.error(LOG_TAG, "onWorkflowInitiated", err);
+			});
+  }
+
+	onWorkflowAcknowledged(entityData) {
+		const oThis = this
+		;
+
+		//return if workflow context is not allowed by the sub-class
+		if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
+
+		return OstWorkflowContext.getById(oThis.workflowId)
+      .then((workflowContext) => {
+        if (!workflowContext) {
+          throw "Not expected";
+        }
+        return OstWorkflowContext.newInstanceFromObject(workflowContext.getData());
+      })
+      .then((workflowContext) => {
+				workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.ACKNOWLEDGED);
+				workflowContext.setContextEntityId(entityData.id);
+				//Todo:: setContextType
+				return workflowContext.forceCommit();
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "onWorkflowAcknowledged", err);
+			});
+  }
+
+	onWorkflowComplete() {
+		const oThis = this
+		;
+
+		//return if workflow context is not allowed by the sub-class
+		if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
+
+		return OstWorkflowContext.getById(oThis.workflowId)
+			.then((workflowContext) => {
+				if (!workflowContext) {
+					throw "Not expected";
+				}
+				return OstWorkflowContext.newInstanceFromObject(workflowContext.getData());
+			})
+			.then((workflowContext) => {
+				workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.COMPLETED);
+				return workflowContext.forceCommit();
+			})
+      .catch((err) => {
+				console.error(LOG_TAG, "onWorkflowComplete", err);
+			});
+	}
+
+  onWorkflowFailed() {
+		const oThis = this
+		;
+
+		//return if workflow context is not allowed by the sub-class
+		if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
+
+		return OstWorkflowContext.getById(oThis.workflowId)
+			.then((workflowContext) => {
+				if (!workflowContext) {
+					throw "Not expected";
+				}
+				return OstWorkflowContext.newInstanceFromObject(workflowContext.getData());
+			})
+			.then((workflowContext) => {
+				workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INTERRUPTED);
+				return workflowContext.forceCommit();
+			})
+      .catch((err) => {
+        console.error(LOG_TAG, "onWorkflowFailed", err);
+      });
+  }
+
+	shouldNotSaveWorkflowContext() {
+		// Save workflow context for every workflow unless specified
+		return false;
+	}
 
   getWorkflowName() {
 
@@ -240,19 +331,27 @@ export default class OstSdkBaseWorkflow {
 
 
   postRequestAcknowledged(entityData) {
-    let message = new OstMessage();
+    const oThis = this
+      , message = new OstMessage()
+    ;
+
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('requestAcknowledged');
     message.setArgs({
       ost_context_entity: entityData,
       ost_workflow_context: this.getWorkflowContext().getJSONObject()
     });
-
-    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+		oThis.onWorkflowAcknowledged(entityData)
+      .then(() => {
+				oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+      });
   }
 
   postFlowComplete(entity) {
-    let message = new OstMessage();
+		const oThis = this
+			, message = new OstMessage()
+		;
+
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('flowComplete');
 
@@ -264,13 +363,18 @@ export default class OstSdkBaseWorkflow {
       ost_workflow_context: this.getWorkflowContext().getJSONObject()
     });
 
-    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+		return oThis.onWorkflowComplete()
+			.then(() => {
+				oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+			});
   }
 
   postError(error) {
-    error = OstError.sdkError(error, 'os_w_osbw_pe_1');
+		const oThis = this
+			, message = new OstMessage()
+		;
 
-    let message = new OstMessage();
+    error = OstError.sdkError(error, 'os_w_osbw_pe_1');
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('flowInterrupt');
     message.setArgs({
@@ -278,9 +382,17 @@ export default class OstSdkBaseWorkflow {
       ost_workflow_context: this.getWorkflowContext().getJSONObject()
     });
 
-    this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+		return oThis.onWorkflowFailed()
+			.then(() => {
+				oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
+			});
   }
 
+	getWorkFlowArgs() {
+    const oThis = this
+    ;
+    return [oThis.userId, oThis.workflowId, oThis.subscriberId];
+  }
   //Sync
 
   syncCurrentDevice() {
