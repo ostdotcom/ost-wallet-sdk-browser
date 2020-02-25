@@ -156,16 +156,39 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.performState( OstStateManager.state.REGISTERED, args);
   }
 
-	// postFlowComplete(entity) {
-	// 	const oThis = this;
-	// 	console.log(LOG_TAG, "post flow complete ===>");
-	//
-	// 	// Todo:: getPendingWorkflows()
-	// 	// filter workflows that have req ack status.
-	// 	// create OstSdkPendingWorkflow object
-	// 	// forEach call pollingForWorkflow()
-	// 	super.postFlowComplete(entity);
-	// }
+	postFlowComplete(entity) {
+		const oThis = this;
+		console.log(LOG_TAG, "post flow complete ===>");
+
+		oThis.handlePendingWorkflows();
+		// Todo:: getPendingWorkflows()
+		// filter workflows that have req ack status.
+		// create OstSdkPendingWorkflow object
+		// forEach call pollingForWorkflow()
+		super.postFlowComplete(entity);
+	}
+
+	handlePendingWorkflows() {
+    const oThis = this
+    ;
+
+		return OstWorkflowContext.getPendingWorkflows(oThis.userId)
+			.then((workflowContextArray) => {
+				console.log(LOG_TAG, "handlePendingWorkflows :: pendingWorkflowsArray", workflowContextArray);
+        return workflowContextArray.filter((workflowEntity) => {
+          if (workflowEntity.getStatus() !== OstWorkflowContext.STATUS.ACKNOWLEDGED){
+            workflowEntity.setWorkflowStatus(OstWorkflowContext.STATUS.CANCELLED_BY_NAVIGATION);
+						workflowEntity.forceCommit();
+            return false;
+          }
+          return true;
+        })
+			})
+      .then((acknowledgedWorkflowsArray) => {
+        console.log(LOG_TAG, "handlePendingWorkflows :: acknowledgedWorkflowsArray", acknowledgedWorkflowsArray);
+      	//Todo:: handle pending workflows
+      });
+  }
 
   syncEntities() {
     const oThis = this;
