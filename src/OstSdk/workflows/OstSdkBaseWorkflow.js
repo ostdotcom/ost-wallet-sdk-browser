@@ -350,22 +350,30 @@ export default class OstSdkBaseWorkflow {
   }
 
 
-  postRequestAcknowledged(entityData) {
+  postRequestAcknowledged(entity) {
     const oThis = this
       , message = new OstMessage()
     ;
 
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('requestAcknowledged');
+    let contextEntity = oThis.getRequestAckContextEntity(entity);
     message.setArgs({
-      ost_context_entity: entityData,
+      ost_context_entity: contextEntity,
       ost_workflow_context: this.getWorkflowContext().getJSONObject()
     });
 
-    return oThis.onWorkflowAcknowledged(entityData)
+    return oThis.onWorkflowAcknowledged(entity)
       .then(() => {
         return oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
+  }
+
+  getRequestAckContextEntity(entity) {
+    return {
+      entity_type: entity.getType(),
+      entity: entity.getData()
+    }
   }
 
   postFlowComplete(entity) {
@@ -376,8 +384,7 @@ export default class OstSdkBaseWorkflow {
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('flowComplete');
 
-    const contextEntity = {entity_type: entity.getType()};
-    contextEntity[entity.getType()] = entity.getData();
+    const contextEntity = {entity_type: entity.getType(), entity: entity.getData()};
 
     message.setArgs({
       ost_context_entity: contextEntity,

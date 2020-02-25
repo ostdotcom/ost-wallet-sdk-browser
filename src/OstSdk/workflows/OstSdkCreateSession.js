@@ -71,7 +71,8 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
           )
       })
       .then((data) => {
-        this.postShowQRData(data.qr_data);
+        this.qr_data = data.qr_data;
+        this.postShowQRData();
         return this.pollingForSessionAddress()
       })
       .then((entity) => {
@@ -87,13 +88,13 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   postShowQRData( qrData ) {
+    this.postRequestAcknowledged(this.session)
+  }
 
-    let params = {
-        entity_type: "qr_data",
-        qr_data : qrData
-    };
-
-    this.postRequestAcknowledged(params)
+  getRequestAckContextEntity(entity) {
+    let contextEntity = super.getRequestAckContextEntity(entity);
+    contextEntity['qr_data'] = this.qr_data;
+    return contextEntity;
   }
 
   pollingForSessionAddress() {
