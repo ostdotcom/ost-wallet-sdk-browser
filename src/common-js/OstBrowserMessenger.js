@@ -135,7 +135,7 @@ class OstBrowserMessenger {
 
     oThis.verifySignature(expected_signer, ostMessage)
         .then ((isVerified) => {
-          console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
+          console.log(":: onMessageReceived :: then of verifySignature  :: ", isVerified);
           if (isVerified) {
             oThis.onValidMessageReceived(ostMessage);
           }
@@ -154,7 +154,7 @@ class OstBrowserMessenger {
       expectedSigner
     )
       .then ((isVerified) => {
-        console.log("then :: isVerifiedMessage :: ", isVerified);
+        console.log("verifySignature :: then of isValidSignature :: ", isVerified);
         if (isVerified) {
           return isVerified
         }
@@ -162,7 +162,7 @@ class OstBrowserMessenger {
         throw new OstError('cj_om_ivm_1', OstErrorCodes.INVALID_SIGNATURE);
       })
       .catch((err) => {
-        console.log("catch :: isVerifiedMessage :: ", err);
+        console.log("verifySignature :: catch of isValidSignature ::  ", err);
 
         throw OstError.sdkError(err, 'cj_om_ivm_2');
       });
