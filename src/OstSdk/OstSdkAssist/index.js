@@ -70,33 +70,47 @@ class OstSdkAssist {
     this.executeTransaction(args);
   }
 
-	getWorkflowInfo(args) {
-		const oThis = this
-			, userId = args.user_id
-			, workflowId = args.workflow_id
-			, subscriberId = args.subscriber_id
-		;
+  getWorkflowInfo(args) {
+    const oThis = this
+      , userId = args.user_id
+      , workflowId = args.workflow_id
+      , subscriberId = args.subscriber_id
+    ;
 
-		console.log(LOG_TAG, "getWorkflowInfo :: ", args);
+    return OstWorkflowContext.getById(workflowId)
+      .then((workflowInfo) => {
 
-		const ostWorkflowContext = OstWorkflowContext.newInstanceFromParams(OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE, 'uuid');
-		// Todo:: Return workflow Context
-
-		return oThis.onSuccess(ostWorkflowContext, subscriberId);
-	}
+        let workflowUserId = workflowInfo.getUserId();
+        if (userId != workflowUserId) {
+            throw new OstError("os_osa_gwi_1", OstErrorCodes.INVALID_USER_ID)
+        }
+        return oThis.onSuccess(workflowInfo.getJSONObject(), subscriberId);
+      })
+      .catch((err) => {
+        let error = OstError.sdkError(err, 'os_osa_gwi_2');
+        return oThis.onError(error, subscriberId);
+      });
+  }
 
   getPendingWorkflows( args ) {
-		const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
-		;
+    const oThis = this
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
+    ;
 
-		console.log(LOG_TAG, "getPendingWorkflows :: ", args);
+    return OstWorkflowContext.getPendingWorkflows(userId)
+      .then((pendingWorkflows) => {
+        const filteredArray = [];
+        pendingWorkflows.forEach((workflowContext) => {
+          filteredArray.push(workflowContext.getJSONObject());
+        });
 
-		const ostWorkflowContext = OstWorkflowContext.newInstanceFromParams(OstWorkflowContext.WORKFLOW_TYPE.SETUP_DEVICE, 'uuid');
-		const objArray = [ostWorkflowContext];
-		// Todo:: Return pending Workflow Context
-		return oThis.onSuccess(objArray, subscriberId);
+        return oThis.onSuccess(filteredArray, subscriberId);
+      })
+      .catch((err) => {
+        let error = OstError.sdkError(err, 'os_osa_gpw_1');
+        return oThis.onError(error, subscriberId);
+      })
   }
 
   //Getter Methods
@@ -150,34 +164,34 @@ class OstSdkAssist {
 
   //get current device Getter Method
   getDevice ( args ) {
-		const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
-		;
+    const oThis = this
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
+    ;
 
-		console.log(LOG_TAG, "getDevice :: ", args);
-		OstUser.getById(userId)
-			.then((user) => {
-				if (!user) {
-					let err = new OstError('os_osa_i_gd_1', OstErrorCodes.INVALID_USER_ID);
-					return oThis.onError(err, subscriberId);
-				}
-				return user.getCurrentDevice(this.getKeyManagerProxy(userId))
-					.then((deviceData) => {
-						console.log("device ====", deviceData);
-						if (deviceData) {
-							return oThis.onSuccess({device: deviceData}, subscriberId);
-						} else {
-							let err = new OstError('os_osa_i_gd_2', OstErrorCodes.DEVICE_NOT_SETUP);
-							return oThis.onError(err, subscriberId);
-						}
-					})
-			})
-			.catch((err) => {
-				err = OstError.sdkError(err, 'os_osa_i_gd_3', OstErrorCodes.INVALID_USER_ID);
-				return oThis.onError(err, subscriberId);
-			});
-	}
+    console.log(LOG_TAG, "getDevice :: ", args);
+    OstUser.getById(userId)
+      .then((user) => {
+        if (!user) {
+          let err = new OstError('os_osa_i_gd_1', OstErrorCodes.INVALID_USER_ID);
+          return oThis.onError(err, subscriberId);
+        }
+        return user.getCurrentDevice(this.getKeyManagerProxy(userId))
+          .then((deviceData) => {
+            console.log("device ====", deviceData);
+            if (deviceData) {
+              return oThis.onSuccess({device: deviceData}, subscriberId);
+            } else {
+              let err = new OstError('os_osa_i_gd_2', OstErrorCodes.DEVICE_NOT_SETUP);
+              return oThis.onError(err, subscriberId);
+            }
+          })
+      })
+      .catch((err) => {
+        err = OstError.sdkError(err, 'os_osa_i_gd_3', OstErrorCodes.INVALID_USER_ID);
+        return oThis.onError(err, subscriberId);
+      });
+  }
 
   getActiveSessions( args ) {
     const oThis = this
@@ -186,9 +200,9 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-		console.log(LOG_TAG, "getActiveSessions :: ", args);
-		OstSession.getActiveSessions(userId, spendingLimit)
-			.then((sessionArray) => {
+    console.log(LOG_TAG, "getActiveSessions :: ", args);
+    OstSession.getActiveSessions(userId, spendingLimit)
+      .then((sessionArray) => {
         return oThis.onSuccess({activeSessions: sessionArray}, subscriberId);
       })
       .catch((err) => {
@@ -233,19 +247,19 @@ class OstSdkAssist {
 
   getUserFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getUser()
       .then(( response ) => {
-          if (!response) {
-            let ostError = OstError.sdkError(null, 'os_osa_i_gufs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
-            return oThis.onError(ostError, subscriberId);
-          }
+        if (!response) {
+          let ostError = OstError.sdkError(null, 'os_osa_i_gufs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
+          return oThis.onError(ostError, subscriberId);
+        }
 
-          return oThis.onSuccess(response, subscriberId);
+        return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
         let ostError = OstError.sdkError(err, 'os_osa_i_gufs_2',OstErrorCodes.SDK_API_ERROR);
@@ -255,8 +269,8 @@ class OstSdkAssist {
 
   getTokenFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
@@ -278,8 +292,8 @@ class OstSdkAssist {
 
   getTransactionsFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
@@ -301,8 +315,8 @@ class OstSdkAssist {
 
   getTokenHolderFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
@@ -324,8 +338,8 @@ class OstSdkAssist {
 
   getRulesFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
@@ -355,8 +369,8 @@ class OstSdkAssist {
   getCurrentDeviceFromServer( args ) {
 
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     let address = null;
@@ -404,8 +418,8 @@ class OstSdkAssist {
    */
   getBalanceFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     const balance = oThis.getBalanceFromOstPlatform( args );
@@ -434,8 +448,8 @@ class OstSdkAssist {
    */
   getPricePointFromServer( args ) {
     const oThis = this
-			, userId = args.user_id
-			, subscriberId = args.subscriber_id
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
     ;
 
     const pricePoint = oThis.getPricePointFromOstPlatform( args );
@@ -459,51 +473,51 @@ class OstSdkAssist {
   }
 
 
-	getBalanceFromOstPlatform(args) {
-		const userId = args.user_id
-		;
+  getBalanceFromOstPlatform(args) {
+    const userId = args.user_id
+    ;
 
-		let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
-		return apiClient.getBalance()
-			.then((response) => {
-				return Promise.resolve(response);
-			})
-			.catch((err)=> {
-				console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
-				return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gbfop_1'));
-			});
-	}
+    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    return apiClient.getBalance()
+      .then((response) => {
+        return Promise.resolve(response);
+      })
+      .catch((err)=> {
+        console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
+        return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gbfop_1'));
+      });
+  }
 
-	getPricePointFromOstPlatform(args) {
-		const userId = args.user_id
-		;
+  getPricePointFromOstPlatform(args) {
+    const userId = args.user_id
+    ;
 
-		return OstUser.getById(userId)
-			.then((user) => {
-				const tokenId = user.getTokenId();
-				console.log(" token id", tokenId);
-				return OstToken.getById(tokenId)
-					.then((token) => {
-						const chainId = token.getAuxiliaryChainId();
-						if (!chainId) {
-						 	console.error(LOG_TAG, 'chainId not found');
-						 	return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR)});
-						}
-						console.log("auxiliary chain id", chainId);
-						let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
-						return apiClient.getPricePoints(chainId)
-							.then((pricePoint) => {
-								return Promise.resolve(pricePoint);
-							})
-					})
+    return OstUser.getById(userId)
+      .then((user) => {
+        const tokenId = user.getTokenId();
+        console.log(" token id", tokenId);
+        return OstToken.getById(tokenId)
+          .then((token) => {
+            const chainId = token.getAuxiliaryChainId();
+            if (!chainId) {
+              console.error(LOG_TAG, 'chainId not found');
+              return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR)});
+            }
+            console.log("auxiliary chain id", chainId);
+            let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+            return apiClient.getPricePoints(chainId)
+              .then((pricePoint) => {
+                return Promise.resolve(pricePoint);
+              })
+          })
 
-			})
-			.catch((err) => {
-				console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
-				return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gppfop_1'));
-			});
+      })
+      .catch((err) => {
+        console.error(LOG_TAG, 'getPricePointFromOstPlatform', err);
+        return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gppfop_1'));
+      });
 
-	}
+  }
 
 
   /**
@@ -553,33 +567,33 @@ class OstSdkAssist {
   }
 
 
-	onSuccess(args, subscriberId) {
-		const ostMsg = new OstMessage();
-		ostMsg.setSubscriberId(subscriberId);
-		ostMsg.setFunctionName('onSuccess');
+  onSuccess(args, subscriberId) {
+    const ostMsg = new OstMessage();
+    ostMsg.setSubscriberId(subscriberId);
+    ostMsg.setFunctionName('onSuccess');
     ostMsg.setArgs({data: args});
     console.log(LOG_TAG,"onSuccess");
-		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
-	}
+    this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+  }
 
-	onError(errMsgObj, subscriberId) {
-		const ostMsg = new OstMessage();
-		ostMsg.setSubscriberId(subscriberId);
+  onError(errMsgObj, subscriberId) {
+    const ostMsg = new OstMessage();
+    ostMsg.setSubscriberId(subscriberId);
     ostMsg.setFunctionName('onError');
     console.log(LOG_TAG,"onError");
-		ostMsg.setArgs({err: errMsgObj.getJSONObject()});
-		this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
-	}
+    ostMsg.setArgs({err: errMsgObj.getJSONObject()});
+    this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
+  }
 
-	/**
-	 * Api to get user balance
-	 * @param args
-	 */
+  /**
+   * Api to get user balance
+   * @param args
+   */
   getPendingRecoveryFromServer( args ) {
     const oThis = this
-    , userId = args.user_id
-    , subscriberId = args.subscriber_id
-  ;
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
+    ;
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getPendingRecovery()
@@ -605,9 +619,9 @@ class OstSdkAssist {
   getDeviceListFromServer( args ) {
     //const nextPagePayload = args.next_page_payload;
     const oThis = this
-    , userId = args.user_id
-    , subscriberId = args.subscriber_id
-  ;
+      , userId = args.user_id
+      , subscriberId = args.subscriber_id
+    ;
 
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));

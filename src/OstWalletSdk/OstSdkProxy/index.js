@@ -122,13 +122,7 @@ class OstSdkProxy {
 				workflow_id: workflowId
 			};
 
-      return oThis.getFromOstSdk('getWorkflowInfo', functionParams)
-        .then((response) => {
-          return response;
-        })
-        .catch((err) => {
-          return err;
-        });
+      return oThis.getFromOstSdk('getWorkflowInfo', functionParams);
     }
 
 	/**
@@ -143,13 +137,12 @@ class OstSdkProxy {
       };
 
       return oThis.getFromOstSdk('getPendingWorkflows', functionParams)
-        .then((response) => {
-          const pendingWorkflows = response.pendingWorkflows;
-                  if (!pendingWorkflows) {
-                    return []
-                  }
+        .then((pendingWorkflows) => {
+          if (!pendingWorkflows) {
+            return []
+          }
 
-                  return pendingWorkflows
+          return pendingWorkflows
         });
     }
 

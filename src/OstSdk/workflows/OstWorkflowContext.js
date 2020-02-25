@@ -70,6 +70,10 @@ class OstWorkflowContext extends OstBaseEntity {
 		return STORES.OST_WORKFLOW_CONTEXT;
 	}
 
+	getUserId() {
+		return this.getData().user_id;
+	}
+
 	getJSONObject() {
 		return {
 			name: this.data.name,
