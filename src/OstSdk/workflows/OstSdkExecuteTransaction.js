@@ -11,8 +11,8 @@ import OstTransaction from "../entities/OstTransaction";
 const LOG_TAG = "OstSdk :: OstSdkExecuteTransaction :: ";
 
 class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
-  constructor(args, browserMessenger) {
-    super(args, browserMessenger);
+  constructor(args, browserMessenger, workflowContext) {
+    super(args, browserMessenger, workflowContext);
     console.log(LOG_TAG, "constructor :: ", args);
 
     this.transactionData = args.transaction_data;

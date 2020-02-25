@@ -7,6 +7,7 @@ import OstStateManager from "./OstStateManager";
 import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
 import OstWorkflowContext from "./OstWorkflowContext";
+import OstSdkWorkflowFactory from "./OstSdkWorkflowFactory";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: |*| ";
 
@@ -184,10 +185,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
           return true;
         })
 			})
-      .then((acknowledgedWorkflowsArray) => {
-        console.log(LOG_TAG, "handlePendingWorkflows :: acknowledgedWorkflowsArray", acknowledgedWorkflowsArray);
-      	//Todo:: handle pending workflows
-      });
+			.then((ackWorkflowContextArray) => {
+				console.log(LOG_TAG, "handlePendingWorkflows :: acknowledgedWorkflowsArray", ackWorkflowContextArray);
+				ackWorkflowContextArray.forEach((workflowContext) => {
+          new OstSdkWorkflowFactory(workflowContext, this.browserMessenger).perform();
+				});
+			});
   }
 
   syncEntities() {

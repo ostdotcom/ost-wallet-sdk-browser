@@ -14,7 +14,7 @@ const LOG_TAG = 'OstSdkBaseWorkflow :: ';
 
 export default class OstSdkBaseWorkflow {
 
-  constructor(args, browserMessenger) {
+  constructor(args, browserMessenger, workflowContext) {
     this.args = args;
     this.userId = args.user_id.toString();
     this.subscriberId = args.subscriber_id.toString();
@@ -22,14 +22,26 @@ export default class OstSdkBaseWorkflow {
 
     this.browserMessenger = browserMessenger;
 
+    this.workflowContext = workflowContext;
+
     let orderedStates = this.getOrderedStates();
     this.stateManager = new OstStateManager(orderedStates);
-
 
     this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
     this.apiClient = new OstApiClient(this.userId, OstConstants.getBaseURL(), this.keyManagerProxy);
 
     this.initParams();
+
+    this.determineState();
+  }
+
+	determineState() {
+    const oThis = this
+    ;
+
+    if (OstWorkflowContext.STATUS.ACKNOWLEDGED === oThis.workflowContext.getStatus()) {
+			oThis.stateManager.setState(OstStateManager.state.POLLING);
+		}
   }
 
   initParams() {
@@ -50,6 +62,8 @@ export default class OstSdkBaseWorkflow {
         status: OstWorkflowContext.STATUS.CREATED
       }
     ;
+
+		if (oThis.workflowContext) return;
 
     oThis.workflowContext = OstWorkflowContext.newInstanceFromObject(workflowObj);
   }

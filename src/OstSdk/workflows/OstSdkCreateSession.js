@@ -9,8 +9,8 @@ import OstHelpers from "../../common-js/OstHelpers";
 const LOG_TAG = "OstSdk :: OstSdkCreateSession :: ";
 
 class OstSdkCreateSession extends OstSdkBaseWorkflow {
-  constructor(args, browserMessenger) {
-    super(args, browserMessenger);
+  constructor(args, browserMessenger, workflowContext) {
+    super(args, browserMessenger, workflowContext);
     console.log(LOG_TAG, "constructor :: ", args);
 
     this.user_id = args.user_id;
