@@ -55,15 +55,15 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   onDeviceValidated() {
-
+    const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
 
-    this.keyManagerProxy.createSessionKey()
+    oThis.keyManagerProxy.createSessionKey()
       .then((sessionAddress) => {
-        return this.createSessionEntity( sessionAddress.session_address )
+        return oThis.createSessionEntity( sessionAddress.session_address )
       })
       .then((sessionEntity) => {
-        this.session = sessionEntity;
+        oThis.session = sessionEntity;
         return this.keyManagerProxy.signQRSessionData(
           sessionEntity.getId(),
           sessionEntity.getSpendingLimit().toString(),
@@ -71,15 +71,12 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
           )
       })
       .then((data) => {
-        this.qr_data = data.qr_data;
-        this.postShowQRData();
-        return this.pollingForSessionAddress()
-      })
-      .then((entity) => {
-        this.postFlowComplete(entity);
+        oThis.qr_data = data.qr_data;
+        oThis.postShowQRData();
+        return oThis.processNext();
       })
       .catch((err) => {
-        this.postError(err);
+        oThis.postError(err);
       })
   }
 
@@ -97,8 +94,21 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     return contextEntity;
   }
 
-  pollingForSessionAddress() {
-    this.sessionPollingClass = new OstSessionPolling(this.userId, this.session.getId(), this.keyManagerProxy);
+  onPolling() {
+    const oThis = this;
+    let sessionAddress =  oThis.workflowContext.getData().context_entity_id;
+
+    return oThis.pollingForSessionAddress(sessionAddress)
+      .then((entity) => {
+        oThis.postFlowComplete(entity);
+      })
+      .catch((err) => {
+        oThis.postError(err);
+      })
+  }
+
+  pollingForSessionAddress(sessionAddress) {
+    this.sessionPollingClass = new OstSessionPolling(this.userId, sessionAddress, this.keyManagerProxy);
     return this.sessionPollingClass.perform()
       .then((sessionEntity) => {
         console.log(sessionEntity);

@@ -61,6 +61,7 @@ export default class OstSdkBaseWorkflow {
     orderedStates.push(states.INITIAL);
     orderedStates.push(states.PARAMS_VALIDATED);
     orderedStates.push(states.DEVICE_VALIDATED);
+    orderedStates.push(states.POLLING);
 
     orderedStates.push(states.COMPLETED);
     orderedStates.push(states.CANCELLED);
@@ -93,6 +94,7 @@ export default class OstSdkBaseWorkflow {
           throw  OstError.sdkError(err, 'sk_w_osbw_p_vp_1');
         }
         break;
+
       case states.PARAMS_VALIDATED:
         return this.performUserDeviceValidation()
           .then(() => {
@@ -101,9 +103,15 @@ export default class OstSdkBaseWorkflow {
           .catch((err) => {
             throw OstError.sdkError(err, 'sk_w_osbw_p_pudv_1');
           });
-      case states.DEVICE_VALIDATED:
+
+        case states.DEVICE_VALIDATED:
         this.onDeviceValidated();
         break;
+
+      case states.POLLING:
+        this.onPolling();
+        break;
+
       case states.COMPLETED:
         break;
       case states.CANCELLED:
@@ -220,6 +228,10 @@ export default class OstSdkBaseWorkflow {
   }
 
   onDeviceValidated() {
+    this.processNext();
+  }
+
+  onPolling() {
     this.processNext();
   }
 
