@@ -92,15 +92,18 @@ class OstBrowserMessenger {
     // Validate Source.
     let expected_origin = null;
     let expected_signer = null;
+    let message_source  = null;
 
     if ( event.source === this.parentWindow ) {
       // Parent sent the message downstream to us.
       expected_origin = this.upStreamOrigin;
       expected_signer = this.upstreamPublicKey;
+      message_source  = SOURCE.UPSTREAM;
     } else if ( event.source === this.downStreamWindow ) {
       // Child sent messgae to us.
       expected_origin = this.downStreamOrigin;
       expected_signer = this.downstreamPublicKey;
+      message_source  = SOURCE.DOWNSTREAM;
     } else {
       //Not a valid sender. Ignore the message.
       return;
@@ -135,12 +138,10 @@ class OstBrowserMessenger {
           console.log(":: onMessageReceived :: then of isVerifiedMessage  :: ", isVerified);
           if (isVerified) {
             oThis.onValidMessageReceived(ostMessage);
-          }else {
-            oThis.onOtherMessageReceived(ostMessage, null);
           }
         })
         .catch ((err) => {
-          oThis.onOtherMessageReceived(ostMessage, err);
+          oThis.onOtherMessageReceived(ostMessage, message_source, err);
         });
   }
 
@@ -212,11 +213,16 @@ class OstBrowserMessenger {
     }
   }
 
-  onOtherMessageReceived( ostMessage, err) {
+  onOtherMessageReceived( ostMessage, message_source, err) {
     console.log(LOG_TAG, "onOtherMessageReceived :: ostMessage.getMethodName() :: ", ostMessage.getMethodName());
-    if (['onSetupComplete'].includes(ostMessage.getMethodName())) {
-      this.onValidMessageReceived(ostMessage);
+    if ( message_source === SOURCE.DOWNSTREAM && null === this.downstreamPublicKey ) {
+      if (this.receiverName === ostMessage.getReceiverName() ) {
+        if ( 'onSetupComplete' === ostMessage.getMethodName() ) {
+          return this.onValidMessageReceived(ostMessage);  
+        }
+      }
     }
+    throw err;
   }
 
   exportPublicKey() {
