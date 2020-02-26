@@ -1,4 +1,4 @@
-import OstHelpers from "./OstHelpers";
+import OstHelpers from "./OstHelpers/OstHelpers";
 import OstURLHelpers from "./OstHelpers/OstUrlHelper";
 import OstError from "./OstError";
 import EC from "./OstErrorCodes";

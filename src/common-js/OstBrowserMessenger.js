@@ -8,7 +8,7 @@
 
 import OstError from "./OstError";
 
-import OstHelpers from "./OstHelpers";
+import OstHelpers from "./OstHelpers/OstHelpers";
 import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
 import OstErrorCodes  from './OstErrorMessages'
@@ -250,7 +250,7 @@ class OstBrowserMessenger {
   setUpstreamPublicKeyHex(hex) {
     const oThis = this;
     
-    return oThis.importPublicKey(oThis.upstreamPublicKeyHex)
+    return oThis.importPublicKey(hex)
       .then((cryptoKey) => {
         oThis.defineImmutableProperty("upstreamPublicKey", cryptoKey);
         oThis.defineImmutableProperty("upstreamPublicKeyHex", hex);
@@ -277,7 +277,7 @@ class OstBrowserMessenger {
       return Promise.reject( ostError );
     }
 
-    return oThis.importPublicKey(oThis.downstreamPublicKeyHex)
+    return oThis.importPublicKey(hex)
       .then((cryptoKey) => {
         /**
          * The downstream public keys are not immutable by design.
