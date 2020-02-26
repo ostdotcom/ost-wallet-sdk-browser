@@ -4,6 +4,7 @@
 
 let workflowMapping = {}
 
+const LOG_TAG = "WorkflowSubscriberService :: "
 class WorkflowSubscriberService {
 
     subscribeToEvents() {
@@ -24,13 +25,12 @@ class WorkflowSubscriberService {
                 if(detail["ost_workflow_context"]){
                     const ost_workflow_context = detail["ost_workflow_context"];
                     const workflowId = ost_workflow_context.id;
-                    workflowMapping[workflowId]={};
                     workflowMapping[workflowId].isFlowInitiated = true
                     workflowMapping[workflowId].ostWorkflowContext = ost_workflow_context;
                 }
             }
         }
-        console.log("workflow subscriber service1",workflowMapping);
+        console.log(LOG_TAG, "workflow subscriber initiated :: ",workflowMapping);
     }
 
     requestAcknowledged(ostWorkflowContext) {
@@ -49,7 +49,7 @@ class WorkflowSubscriberService {
                 }
             }
         }
-        console.log("workflow subscriber service2",workflowMapping);
+        console.log(LOG_TAG, "workflow subscriber ack :: ",workflowMapping);
     }
 
     flowComplete(ostWorkflowContext) {
@@ -68,7 +68,7 @@ class WorkflowSubscriberService {
                 }
             }
         }
-        console.log("workflow subscriber service3",workflowMapping);
+        console.log(LOG_TAG, "workflow subscriber completed :: ",workflowMapping);
     }
     //not tested
     flowInterrupt(ostWorkflowContext) {
@@ -87,7 +87,7 @@ class WorkflowSubscriberService {
                 }
             }
         }
-        console.log("workflow subscriber service3",workflowMapping);
+        console.log(LOG_TAG, "workflow subscriber interrupted :: ",workflowMapping);
     }
 
     addWorkflow(workflowId) {
@@ -110,6 +110,8 @@ class WorkflowSubscriberService {
         OstWalletSdk.subscribe("requestAcknowledged", workflowId, this.requestAcknowledged);
         OstWalletSdk.subscribe("flowCompleted", workflowId, this.flowComplete);
         OstWalletSdk.subscribe("flowInterrupted", workflowId, this.flowInterrupt); 
+
+        console.log(LOG_TAG, "workflow subscriber added :: ", workflowMapping);
     }
 }
 

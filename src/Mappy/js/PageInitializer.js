@@ -186,7 +186,8 @@ class PageInitializer {
       _reject  = rej;
 
       // Invoke the workflow.
-      OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      let workflowId = OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      workflowSubscriberService.addWorkflow(workflowId);
     });
   }
 
