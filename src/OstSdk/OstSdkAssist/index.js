@@ -4,7 +4,7 @@ import OstUser from "../entities/OstUser";
 import OstToken from "../entities/OstToken";
 import OstMessage from '../../common-js/OstMessage';
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import KeyManagerProxy from "../OstKeyManagerProxy/index";
+import KeyManagerProxy from "../OstKeyManagerProxy";
 import OstSession from "../entities/OstSession";
 import OstApiClient from "../../Api/OstApiClient";
 import OstConstants from "../OstConstants";
