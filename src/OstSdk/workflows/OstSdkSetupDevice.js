@@ -162,10 +162,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 		console.log(LOG_TAG, "post flow complete ===>");
 
 		oThis.handlePendingWorkflows();
-		// Todo:: getPendingWorkflows()
-		// filter workflows that have req ack status.
-		// create OstSdkPendingWorkflow object
-		// forEach call pollingForWorkflow()
 		super.postFlowComplete(entity);
 	}
 

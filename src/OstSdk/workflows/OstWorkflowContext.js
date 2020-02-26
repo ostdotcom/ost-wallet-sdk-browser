@@ -78,6 +78,10 @@ class OstWorkflowContext extends OstBaseEntity {
 		return this.getData().args;
 	}
 
+	getCreatedAt() {
+		return this.getData().created_at;
+	}
+
 	getJSONObject() {
 		return {
 			name: this.data.name,

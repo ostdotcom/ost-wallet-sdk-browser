@@ -8,7 +8,8 @@ import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
-  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
+  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL,
+  "create_session_pi_timeout": CREATE_SESSION_PAGE_INITIALIZATION_TIMEOUT
 };
 
 const LOG_TAG = "PageInitializer";
@@ -24,7 +25,7 @@ class PageInitializer {
       ajaxUtils.setupAjax();
       oThis.bindEvents();
       if ( autoPerform ) {
-        oThis.perform();  
+        oThis.perform();
       }
     })
   }
@@ -166,7 +167,7 @@ class PageInitializer {
     //Define flowComplete
     sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
-      
+
       _resolve( ostContextEntity );
     };
 
