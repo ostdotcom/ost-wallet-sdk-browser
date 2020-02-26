@@ -1,5 +1,5 @@
 import OstConstants from '../OstConstants'
-import OstApiClient from "../../Api/OstApiClient";
+import OstApiClient from "../api/OstApiClient";
 
 const LOG_TAG = "OstBasePolling :: ";
 class OstBasePolling {

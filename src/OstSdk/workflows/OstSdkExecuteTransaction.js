@@ -304,6 +304,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
         oThis.postFlowComplete(entity);
       })
       .catch((err) => {
+        oThis.handleSessionSync();
         oThis.postError(err);
       })
   }

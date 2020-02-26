@@ -1,17 +1,17 @@
-import OstSdkSetupDevice from "../workflows/OstSdkSetupDevice";
-import OstSdkCreateSession from "../workflows/OstSdkCreateSession";
-import OstUser from "../entities/OstUser";
-import OstToken from "../entities/OstToken";
-import OstMessage from '../../common-js/OstMessage';
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import KeyManagerProxy from "../OstKeyManagerProxy/index";
-import OstSession from "../entities/OstSession";
-import OstApiClient from "../../Api/OstApiClient";
-import OstConstants from "../OstConstants";
-import OstError from "../../common-js/OstError";
-import OstErrorCodes from '../../common-js/OstErrorCodes'
-import OstSdkExecuteTransaction from "../workflows/OstSdkExecuteTransaction";
-import OstWorkflowContext from "../workflows/OstWorkflowContext";
+import OstSdkSetupDevice from "./workflows/OstSdkSetupDevice";
+import OstSdkCreateSession from "./workflows/OstSdkCreateSession";
+import OstUser from "./entities/OstUser";
+import OstToken from "./entities/OstToken";
+import OstMessage from '../common-js/OstMessage';
+import {SOURCE} from "../common-js/OstBrowserMessenger";
+import KeyManagerProxy from "./OstKeyManagerProxy";
+import OstSession from "./entities/OstSession";
+import OstApiClient from "./api/OstApiClient";
+import OstConstants from "./OstConstants";
+import OstError from "../common-js/OstError";
+import OstErrorCodes from '../common-js/OstErrorCodes'
+import OstSdkExecuteTransaction from "./workflows/OstSdkExecuteTransaction";
+import OstWorkflowContext from "./workflows/OstWorkflowContext";
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {

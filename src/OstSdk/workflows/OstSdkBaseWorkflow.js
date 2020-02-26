@@ -1,7 +1,7 @@
 import OstKeyManagerProxy from "../OstKeyManagerProxy";
 import OstError from "../../common-js/OstError";
 import OstStateManager from "./OstStateManager";
-import OstApiClient from "../../Api/OstApiClient";
+import OstApiClient from "../api/OstApiClient";
 import OstWorkflowContext from "./OstWorkflowContext";
 import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from "../../common-js/OstBrowserMessenger";
@@ -365,12 +365,12 @@ export default class OstSdkBaseWorkflow {
 
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('flowInitiated');
-    message.setArgs({
-      ost_workflow_context: this.getWorkflowContext().getJSONObject()
-    });
 
     return oThis.onWorkflowInitiated()
       .then(() => {
+				message.setArgs({
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         return oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -384,13 +384,13 @@ export default class OstSdkBaseWorkflow {
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('requestAcknowledged');
     let contextEntity = oThis.getRequestAckContextEntity(entity);
-    message.setArgs({
-      ost_context_entity: contextEntity,
-      ost_workflow_context: this.getWorkflowContext().getJSONObject()
-    });
 
     return oThis.onWorkflowAcknowledged(entity)
       .then(() => {
+				message.setArgs({
+					ost_context_entity: contextEntity,
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         return oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -412,13 +412,12 @@ export default class OstSdkBaseWorkflow {
 
     const contextEntity = {entity_type: entity.getType(), entity: entity.getData()};
 
-    message.setArgs({
-      ost_context_entity: contextEntity,
-      ost_workflow_context: this.getWorkflowContext().getJSONObject()
-    });
-
     return oThis.onWorkflowComplete()
       .then(() => {
+				message.setArgs({
+					ost_context_entity: contextEntity,
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -431,13 +430,13 @@ export default class OstSdkBaseWorkflow {
     error = OstError.sdkError(error, 'os_w_osbw_pe_1');
     message.setSubscriberId(this.subscriberId);
     message.setFunctionName('flowInterrupt');
-    message.setArgs({
-      ost_error: error.getJSONObject(),
-      ost_workflow_context: this.getWorkflowContext().getJSONObject()
-    });
 
     return oThis.onWorkflowFailed()
       .then(() => {
+				message.setArgs({
+					ost_error: error.getJSONObject(),
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }

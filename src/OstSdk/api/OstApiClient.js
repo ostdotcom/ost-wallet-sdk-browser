@@ -1,10 +1,10 @@
-import OstUser from "../OstSdk/entities/OstUser";
+import OstUser from "../entities/OstUser";
 import * as axios from "axios";
 import OstEntityParser from "./OstEntityParser";
 import * as qs from "qs";
-import OstSession from "../OstSdk/entities/OstSession";
+import OstSession from "../entities/OstSession";
 import OstApiErrorParser from "./OstApiErrorParser";
-import OstApiError from "../common-js/OstApiError";
+import OstApiError from "../../common-js/OstApiError";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {

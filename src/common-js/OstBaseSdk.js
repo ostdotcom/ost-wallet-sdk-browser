@@ -1,4 +1,4 @@
-import OstHelpers from "./OstHelpers";
+import OstHelpers from "./OstHelpers/OstHelpers";
 import OstURLHelpers from "./OstHelpers/OstUrlHelper";
 import OstError from "./OstError";
 import EC from "./OstErrorCodes";
@@ -614,8 +614,6 @@ class OstBaseSdk {
       // Remove the public key.
       .catch((err) => {
         console.error(LOG_TAG, ":: onBrowserMessengerCreated :: err", err);
-        console.log(LOG_TAG, ":: onBrowserMessengerCreated :: calling removeUpstreamPublicKey");
-        oThis.browserMessenger.removeUpstreamPublicKey();
 
         if (err instanceof OstError) {
           throw err;

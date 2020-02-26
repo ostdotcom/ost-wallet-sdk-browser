@@ -4,7 +4,6 @@ import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
 import OstWorkflowContext from "./OstWorkflowContext";
-import OstHelpers from "../../common-js/OstHelpers";
 
 const LOG_TAG = "OstSdk :: OstSdkCreateSession :: ";
 

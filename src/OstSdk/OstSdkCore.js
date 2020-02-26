@@ -3,7 +3,7 @@ import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'
 import {OstBaseEntity} from "./entities/OstBaseEntity";
-import OstApiClient from "../Api/OstApiClient";
+import OstApiClient from "./api/OstApiClient";
 import OstError from "../common-js/OstError";
 import EC from '../common-js/OstErrorCodes';
 
