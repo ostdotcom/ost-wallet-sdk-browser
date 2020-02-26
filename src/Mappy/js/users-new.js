@@ -5,6 +5,10 @@ import '../css/users.css';
 import BigNumber from 'bignumber.js';
 import "jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer";
+
+
+import workflowSubscriberService from "./WorkflowSubscriberService";
+
 //BigNumber.config({ EXPONENTIAL_AT: 2 })
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 class UserPage {
@@ -313,6 +317,7 @@ class UserPage {
 
         const currentUser = userPage.getCurrentUser();
         let mappyCallback = new OstWorkflowDelegate();
+        
         mappyCallback.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
             //alert("Transaction Acknowledged");
             $("#transaction-req-json").jsonViewer( ostContextEntity, jsonViewerSettings);
@@ -361,7 +366,7 @@ class UserPage {
                 $('#type-label').text("Execute Pay");
                 $('#amount-label').text(amount);
                 $('#address-label').text(tokenHolderAddress);
-                workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
+                let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
                         token_holder_addresses: [tokenHolderAddress],
                         amounts: [amountBN],
                         options: {
@@ -369,6 +374,7 @@ class UserPage {
                         }
                     },
                     mappyCallback);
+                    workflowSubscriberService.addWorkflow(workflowId);
                 break;
             default:
                 console.log("Not any transaction type");
