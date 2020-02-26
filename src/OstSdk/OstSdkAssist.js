@@ -6,7 +6,7 @@ import OstMessage from '../common-js/OstMessage';
 import {SOURCE} from "../common-js/OstBrowserMessenger";
 import KeyManagerProxy from "./OstKeyManagerProxy";
 import OstSession from "./entities/OstSession";
-import OstApiClient from "../Api/OstApiClient";
+import OstApiClient from "./api/OstApiClient";
 import OstConstants from "./OstConstants";
 import OstError from "../common-js/OstError";
 import OstErrorCodes from '../common-js/OstErrorCodes'
