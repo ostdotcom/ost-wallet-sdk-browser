@@ -85,8 +85,7 @@ class CreateSessionHelper {
         let mappyCallback = new OstWorkflowDelegate();
         mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
             console.log("request ack");
-            const entityType = ostContextEntity.entity_type,
-                entity = ostContextEntity[entityType];
+            const entity = ostContextEntity.qr_data;
             oThis.makeCode(entity);
         };
 
