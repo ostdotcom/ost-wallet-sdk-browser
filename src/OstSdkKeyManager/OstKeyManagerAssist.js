@@ -1,6 +1,6 @@
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import IKM from "../ecKeyInteracts/OstIKM";
-import OstMessage from "../../common-js/OstMessage";
+import {SOURCE} from "../common-js/OstBrowserMessenger";
+import IKM from "./ecKeyInteracts/OstIKM";
+import OstMessage from "../common-js/OstMessage";
 
 const LOG_TAG = 'IKM: OstKeyManagerAssist';
 const KEY_STORE = 'KEY_STORE';
