@@ -260,14 +260,14 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
+
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INITIATED);
+
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
-
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
-
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INITIATED);
 
     return oThis.workflowContext.forceCommit()
       .catch((err) => {
@@ -280,14 +280,14 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
+
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.ACKNOWLEDGED);
+
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
-
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
-
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.ACKNOWLEDGED);
 
     //Todo:: some of the workflow entity don't have ids please handle it.
     oThis.workflowContext.setContextEntityId(entity.getId());
@@ -304,14 +304,14 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
+
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.COMPLETED);
+
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
-
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
-
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.COMPLETED);
 
     return oThis.workflowContext.forceCommit()
       .catch((err) => {
@@ -324,14 +324,15 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
+
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INTERRUPTED);
+
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
 
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
-
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INTERRUPTED);
     return oThis.workflowContext.forceCommit()
       .catch((err) => {
         console.error(LOG_TAG, "onWorkflowFailed", err);
