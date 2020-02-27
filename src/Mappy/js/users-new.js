@@ -351,7 +351,6 @@ class UserPage {
 			$("#transaction-string").html(JSON.stringify(ostContextEntity, null, 2));
 			$("#flow-transaction-output-label").text("Flow Complete:");
 		};
-		let workflowId;
 		switch (transactionType) {
 			case "executeDirectTransferTransaction":
 				$('#type-label').text("Direct Transfer");
@@ -366,8 +365,8 @@ class UserPage {
 
 							},
 							mappyCallback);
+						workflowSubscriberService.addWorkflow(workflowId);
 					});
-				workflowSubscriberService.addWorkflow(workflowId);
 				break;
 			case "executePayTransaction":
 				const amountBN = userPage.convertCentToWei(amount);
