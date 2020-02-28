@@ -1,10 +1,8 @@
-/*
-    Not yet included anywhere. Should be included in OstSdkSetupDevice.
-*/
-
 import OstWorkflowContext from "./OstWorkflowContext";
 import OstSdkCreateSession from "./OstSdkCreateSession";
 import OstSdkExecuteTransaction from "./OstSdkExecuteTransaction";
+
+const LOG_TAG = 'OstSdkWorkflowFactory';
 
 class OstSdkWorkflowFactory {
 
@@ -34,6 +32,12 @@ class OstSdkWorkflowFactory {
 
 		if (OstWorkflowContext.WORKFLOW_TYPE.EXECUTE_TRANSACTION === workflowInfo.getName()) {
 			oThis.baseWorkflow = new OstSdkExecuteTransaction(workflowInfo.getArgs()[0], browserMessenger, workflowInfo);
+		}
+
+		//For unknown workflow type
+		if (!this.baseWorkflow) {
+			console.error(LOG_TAG, "perform :: Unknown workflow type", workflowInfo.getName());
+			return;
 		}
 
 		return this.baseWorkflow.perform();
