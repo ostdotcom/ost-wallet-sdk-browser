@@ -1,6 +1,6 @@
 {
   "SKD_PREFIX": "https://sdk-",
-  "KM_PREFIX": "https://km-",
+  "KM_PREFIX": "https://wallet-km.stagingpepocoin.com",
   "SDK_KM_MAIN_DOMAIN": "stagingpepocoin.com",
   "JS_ORIGIN": "https://stagingpepocoin.com/",
   "REDIRECT_URL": "about:blank",

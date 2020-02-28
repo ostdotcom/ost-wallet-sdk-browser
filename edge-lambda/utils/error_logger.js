@@ -1,6 +1,6 @@
 const config = require("../config.json");
 
-exports.default = (LOG_TAG, message, error) => {
+module.exports = (LOG_TAG, message, error) => {
     let errorStack = "unavailable";
     if ( error.stack ) {
       errorStack = String( error.stack );

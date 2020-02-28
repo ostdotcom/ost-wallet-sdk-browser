@@ -6,7 +6,7 @@ const bodyContent = `<script type="text/javascript">window.location="${redirectP
 const LOG_TAG = "BSL_RTB";
 const ALARM_LOG_TAG = config.ALARM_LOG_TAG;
 
-exports.default = (callback) => {
+module.exports = (callback) => {
   
   
   const response = {

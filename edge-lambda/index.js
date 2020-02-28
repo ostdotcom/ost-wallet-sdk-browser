@@ -59,15 +59,16 @@ const responseProcessor = (event, context, callback) => {
     //TODO: remove this log.
     console.log(LOG_TAG, "responseProcessor triggered. processing response.");
 
-    const requestInfo = event.Records[0].cf.request;
+    
     const response = event.Records[0].cf.response;
     if ( !response ) {
         console.error(ALARM_LOG_TAG, LOG_TAG, "rp_1",  "response is null");
         throw new Error(LOG_TAG +" :: Could not access response object");
     }
 
+    const requestInfo = event.Records[0].cf.request;
     if ( !requestInfo ) {
-      console.error(ALARM_LOG_TAG, LOG_TAG, "rp_2",  "response is null. Silently ignoring.");
+      console.error(ALARM_LOG_TAG, LOG_TAG, "rp_2",  "requestInfo is null. Silently ignoring.");
       callback(null, response);
       return;
     }
@@ -131,4 +132,5 @@ exports.handler = (event, context, callback) => {
   }
 };
 
+//TODO: Remove this log.
 console.log("config", config);

@@ -1,4 +1,5 @@
 const config = require("../config.json");
+const errorLogger = require("../utils/error_logger");
 
 /**
  * Key Manager Response Handler
@@ -11,6 +12,6 @@ const config = require("../config.json");
  * @param  {[type]}   requestPath   Path of the resource requested.
  * @return {null}                   Null.
  */
-exports.default = (callback, response, requestOrigin, requestPath ) => {
+module.exports = (callback, response, requestOrigin, requestPath ) => {
   callback(null, response);
 };
