@@ -6,6 +6,7 @@ import {OstBaseEntity} from "./entities/OstBaseEntity";
 import OstApiClient from "./api/OstApiClient";
 import OstError from "../common-js/OstError";
 import EC from '../common-js/OstErrorCodes';
+import OstSdkWorkflowFactory from "./workflows/OstSdkWorkflowFactory";
 
 const LOG_TAG = "OstSdk :: index :: ";
 
@@ -102,7 +103,15 @@ class OstSdk extends OstBaseSdk {
 
           throw new OstError('os_osc_iwlp_1', EC.INVALID_UPSTREAM_ORIGIN);
         })
-    }
+  }
+
+  init(...args) {
+    return super.init(...args)
+      .then((val) => {
+				OstSdkWorkflowFactory.setCreateSessionQRTimeout( this.sdkConfig.create_session_qr_timeout );
+				return val;
+      });
+  }
 }
 
 export default OstSdk;

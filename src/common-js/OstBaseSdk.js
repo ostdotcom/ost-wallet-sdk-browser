@@ -272,14 +272,14 @@ class OstBaseSdk {
         downstreamIframe = document.createElement('iframe');
         downstreamIframe.setAttribute('src', signedUrl);
         downstreamIframe.className = iframeCssClassName;
-        
+
         // Append to body
         oThis.getDocument().body.appendChild( downstreamIframe );
         console.log("|||", oThis.getReceiverName(), "createDownstreamIframe appendChild downstreamIframe");
 
         // Set down-stream contentWindow.
         oThis.setDownStreamWindow( downstreamIframe.contentWindow );
-        
+
         // Set down-stream url.
         let downstreamOrigin = oThis.getDownstreamOrigin();
         if (downstreamOrigin) {
@@ -300,16 +300,16 @@ class OstBaseSdk {
   }
 
   /**
-   * waitForOriginTrustHandshake - Waits for a message from downstream 
-   * iframe and responses with a simple OstMessage. 
-   * 
+   * waitForOriginTrustHandshake - Waits for a message from downstream
+   * iframe and responses with a simple OstMessage.
+   *
    * The downstream iframe sends the message using ParentOriginHelper.
    * The message from the downstream signifies that downstream iframe has been loaded.
    *
    * The downstream Iframe receives the message and and determines the origin
    * of the current window (this instance's window) by looking at event.origin.
-   * 
-   * @return {Promise} 
+   *
+   * @return {Promise}
    */
   waitForOriginTrustHandshake (signedUrl) {
     const oThis = this
@@ -550,6 +550,10 @@ class OstBaseSdk {
         "token_id": finalConfig.token_id
       });
       return Promise.reject( error );
+    }
+
+    if ( !finalConfig.create_session_qr_timeout ) {
+      finalConfig.create_session_qr_timeout = 3 * 60 * 60;
     }
 
     if ( "boolean" !== typeof finalConfig.debug ) {

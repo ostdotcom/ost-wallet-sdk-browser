@@ -10,8 +10,7 @@ import workflowSubscriberService from "./WorkflowSubscriberService";
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
-  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL,
-  "create_session_pi_timeout": CREATE_SESSION_PAGE_INITIALIZATION_TIMEOUT
+  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
 const LOG_TAG = "PageInitializer";
