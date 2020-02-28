@@ -6,26 +6,19 @@ const bodyContent = `<script type="text/javascript">window.location="${redirectP
 const LOG_TAG = "BSL_RTB";
 const ALARM_LOG_TAG = config.ALARM_LOG_TAG;
 
-module.exports = (callback) => {
-  
-  
-  const response = {
-    headers: {
-        'content-type': [{key:'Content-Type', value: 'text/html; charset=utf-8'}]
-     },
-    body: bodyContent,
-    status: '200',
-    statusDescription: "OK"
-  };
+module.exports = (callback, response, requestOrigin, requestPath) => {
+
+  response.headers = response.headers || {};
+  response.headers['content-type']: [{key:'Content-Type', value: 'text/html; charset=utf-8'}];
+  response.body = bodyContent;
 
   try {
     const zlib = require('zlib');
     const buffer = zlib.gzipSync(bodyContent);
     const base64EncodedBody = buffer.toString('base64');
-    response.body = base64EncodedBody;
     response.bodyEncoding = 'base64';
-    headers['content-encoding'] = [{key:'Content-Encoding', value: 'gzip'}];
-
+    response.headers['content-encoding'] = [{key:'Content-Encoding', value: 'gzip'}];
+    response.body = base64EncodedBody;
   } catch(error) {
     errorLogger(LOG_TAG, "could not gzip response.", error);
   }

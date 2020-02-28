@@ -83,7 +83,7 @@ const responseProcessor = (event, context, callback) => {
     // Invalid Url
     if (response.status >= 400 && response.status <= 599) { 
       console.log(LOG_TAG, "c4", "redirecting to blank page as response.status =", response.status);
-      redirectToBlank(callback);
+      redirectToBlank(callback, response, requestOrigin, requestPath);
       return;
     }
 
