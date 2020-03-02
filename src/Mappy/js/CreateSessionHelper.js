@@ -2,6 +2,8 @@ import BigNumber from 'bignumber.js';
 import "jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 
+import workflowSubscriberService from "./WorkflowSubscriberService";
+
 const LOG_TAG = "CreateSessionHelper :: ";
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 
@@ -83,10 +85,10 @@ class CreateSessionHelper {
     createSession() {
         const oThis = this;
         let mappyCallback = new OstWorkflowDelegate();
+
         mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
             console.log("request ack");
-            const entityType = ostContextEntity.entity_type,
-                entity = ostContextEntity[entityType];
+            const entity = ostContextEntity.qr_data;
             oThis.makeCode(entity);
         };
 
@@ -116,6 +118,8 @@ class CreateSessionHelper {
             parseInt(oThis.expiryTime.getTime()/1000),
             oThis.higherUnitSpending,
             mappyCallback);
+
+            workflowSubscriberService.addWorkflow(workflowId);
 
     }
     getDate(duration) {

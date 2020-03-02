@@ -3,9 +3,9 @@ import OstMessage from "../../common-js/OstMessage";
 import {SOURCE} from '../../common-js/OstBrowserMessenger';
 
 class OstSetupDevice extends OstBaseWorkflow {
-  constructor(userId, tokenId, ostWorkflowCallbacks, browserMessenger) {
+  constructor(userId, tokenId, ostWorkflowCallbacks, browserMessenger, workflowEvents) {
 
-    super(userId, ostWorkflowCallbacks, browserMessenger);
+    super(userId, ostWorkflowCallbacks, browserMessenger, workflowEvents);
 
     this.tokenId = tokenId
   }

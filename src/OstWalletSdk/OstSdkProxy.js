@@ -1,7 +1,7 @@
 
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import OstError from "../../common-js/OstError";
+import OstMessage from "../common-js/OstMessage";
+import {SOURCE} from "../common-js/OstBrowserMessenger";
+import OstError from "../common-js/OstError";
 
 const LOG_TAG = 'OstSdkProxy :: ';
 
@@ -109,6 +109,42 @@ class OstSdkProxy {
         });
     }
 
+	/**
+	 * To get info data of the workflow
+	 * @param userId userId
+	 * @param workflowId workflowId
+	 * @returns {Promise<T>} Workflow Context
+	 */
+    getWorkflowInfo(userId, workflowId) {
+			const oThis = this
+				, functionParams = {
+				user_id: userId,
+				workflow_id: workflowId
+			};
+
+      return oThis.getFromOstSdk('getWorkflowInfo', functionParams);
+    }
+
+	/**
+	 * To get list of pending workflow info
+	 * @param userId userId
+	 * @returns {Promise<T>} Workflow Context Array
+	 */
+    getPendingWorkflows(userId) {
+      let oThis = this;
+      const functionParams = {
+        user_id: userId
+      };
+
+      return oThis.getFromOstSdk('getPendingWorkflows', functionParams)
+        .then((pendingWorkflows) => {
+          if (!pendingWorkflows) {
+            return []
+          }
+
+          return pendingWorkflows
+        });
+    }
 
     getFromOstSdk(functionName, functionParams) {
         let oThis = this;

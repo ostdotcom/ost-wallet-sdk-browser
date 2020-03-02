@@ -8,8 +8,7 @@
 
 import OstError from "./OstError";
 
-import OstHelpers from "./OstHelpers";
-import EventEmitter from 'eventemitter3';
+import OstHelpers from "./OstHelpers/OstHelpers";
 import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
 import OstErrorCodes  from './OstErrorMessages'
@@ -30,7 +29,6 @@ class OstBrowserMessenger {
       this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
     }
 
-
     this.signer = null;
     this.downStreamOrigin = null;
 
@@ -41,9 +39,6 @@ class OstBrowserMessenger {
 
     this.downstreamPublicKeyHex = null;
     this.downstreamPublicKey = null;
-
-
-    this.eventEmitter = new EventEmitter();
 
     this.defineImmutableProperty("idMap", {});
 
@@ -255,7 +250,7 @@ class OstBrowserMessenger {
   setUpstreamPublicKeyHex(hex) {
     const oThis = this;
     
-    return oThis.importPublicKey(oThis.upstreamPublicKeyHex)
+    return oThis.importPublicKey(hex)
       .then((cryptoKey) => {
         oThis.defineImmutableProperty("upstreamPublicKey", cryptoKey);
         oThis.defineImmutableProperty("upstreamPublicKeyHex", hex);
@@ -282,7 +277,7 @@ class OstBrowserMessenger {
       return Promise.reject( ostError );
     }
 
-    return oThis.importPublicKey(oThis.downstreamPublicKeyHex)
+    return oThis.importPublicKey(hex)
       .then((cryptoKey) => {
         /**
          * The downstream public keys are not immutable by design.
@@ -422,19 +417,6 @@ class OstBrowserMessenger {
       },
       this.upstreamPublicKey,
       OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
-  }
-
-  //
-  registerOnce(type, callback) {
-    this.eventEmitter.once(type, callback);
-  }
-
-  register(type, callback) {
-    this.eventEmitter.on(type, callback);
-  }
-
-  unRegister(type, callback) {
-    this.eventEmitter.removeListener(type, callback);
   }
 
   subscribe(obj, name) {

@@ -7,6 +7,7 @@ import OstStateManager from "./OstStateManager";
 import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
 import OstWorkflowContext from "./OstWorkflowContext";
+import OstSdkWorkflowFactory from "./OstSdkWorkflowFactory";
 
 const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: |*| ";
 
@@ -156,6 +157,38 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
     this.performState( OstStateManager.state.REGISTERED, args);
   }
 
+	postFlowComplete(entity) {
+		const oThis = this;
+		console.log(LOG_TAG, "post flow complete ===>");
+
+		oThis.handlePendingWorkflows();
+		super.postFlowComplete(entity);
+	}
+
+	handlePendingWorkflows() {
+    const oThis = this
+    ;
+
+		return OstWorkflowContext.getPendingWorkflows(oThis.userId)
+			.then((workflowContextArray) => {
+				console.log(LOG_TAG, "handlePendingWorkflows :: pendingWorkflowsArray", workflowContextArray);
+        return workflowContextArray.filter((workflowEntity) => {
+          if (workflowEntity.getStatus() !== OstWorkflowContext.STATUS.ACKNOWLEDGED){
+            workflowEntity.setWorkflowStatus(OstWorkflowContext.STATUS.CANCELLED_BY_NAVIGATION);
+						workflowEntity.forceCommit();
+            return false;
+          }
+          return true;
+        })
+			})
+			.then((ackWorkflowContextArray) => {
+				console.log(LOG_TAG, "handlePendingWorkflows :: acknowledgedWorkflowsArray", ackWorkflowContextArray);
+				ackWorkflowContextArray.forEach((workflowContext) => {
+          new OstSdkWorkflowFactory(workflowContext, this.browserMessenger).perform();
+				});
+			});
+  }
+
   syncEntities() {
     const oThis = this;
 
@@ -189,7 +222,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         console.log(LOG_TAG, "get device api response", response);
         return oThis.getCurrentDeviceFromDB()
       })
-      .then((deviceEntity) => { 
+      .then((deviceEntity) => {
         console.log(LOG_TAG, "getCurrentDeviceFromDB deviceEntity", deviceEntity);
         if (deviceEntity && deviceEntity.canMakeApiCall() ) {
           return true;
@@ -209,4 +242,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 				return isTrustable;
 			});
 	}
+
+	shouldNotSaveWorkflowContext() {
+    return true;
+  }
 }

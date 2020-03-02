@@ -1,9 +1,9 @@
-import OstUser from "../OstSdk/entities/OstUser";
-import OstToken from "../OstSdk/entities/OstToken";
-import OstDevice from "../OstSdk/entities/OstDevice";
-import OstSession from "../OstSdk/entities/OstSession";
-import OstRule from "../OstSdk/entities/OstRule";
-import OstTransaction from "../OstSdk/entities/OstTransaction";
+import OstUser from "../entities/OstUser";
+import OstToken from "../entities/OstToken";
+import OstDevice from "../entities/OstDevice";
+import OstSession from "../entities/OstSession";
+import OstRule from "../entities/OstRule";
+import OstTransaction from "../entities/OstTransaction";
 
 const LOG_TAG = "OstEntityParser";
 const RESPONSE_SUCCESS = "success";

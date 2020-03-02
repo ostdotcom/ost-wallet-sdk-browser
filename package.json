@@ -26,7 +26,6 @@
     "ethereumjs-abi": "0.6.8",
     "ethereumjs-util": "6.2.0",
     "ethereumjs-wallet": "0.6.3",
-    "eventemitter3": "4.0.0",
     "form-data": "3.0.0",
     "glob": "^7.1.6",
     "localforage": "1.7.3",
