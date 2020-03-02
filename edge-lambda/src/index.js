@@ -17,8 +17,8 @@ const kmResponseHandler = require("./response_handlers/km");
 
 const LOG_TAG = "BSL_index";
 const ALARM_LOG_TAG = config.ALARM_LOG_TAG;
-const SKD_PREFIX = config.SKD_PREFIX;
-const KM_PREFIX  = config.KM_PREFIX;
+const SDK_S3_HOST = config.SDK_S3_HOST;
+const KM_S3_HOST  = config.KM_S3_HOST;
 
 /**
  * Method to determine request origin from the request object.
@@ -26,7 +26,7 @@ const KM_PREFIX  = config.KM_PREFIX;
  * @param  {[type]} requestInfo event.Records[0].cf.request
  * @return {String}             Determined requested url's origin.
  */
-const getRequestOrigin = ( requestInfo ) => {
+const getRequestHost = ( requestInfo ) => {
   const requestHeaders = requestInfo.headers;
   let requestHosts = null;
 
@@ -42,7 +42,7 @@ const getRequestOrigin = ( requestInfo ) => {
     if ( requestHosts.length > 1 ) {
       console.error(ALARM_LOG_TAG, LOG_TAG, "gro_1", "multiple hosts in request header. hosts = ", JSON.stringify(requestHosts) );
     }
-    return `https://${requestHosts[0].value}`;
+    return requestHosts[0].value;
   }
 
   return null;
@@ -87,10 +87,10 @@ const responseProcessor = (event, context, callback) => {
       return;
     }
 
-    const requestOrigin = getRequestOrigin( requestInfo );
-    if ( !requestOrigin ) {
-      //TODO: After ensuring requestOrigin is always present, - use redirectToBlank.
-      console.error(ALARM_LOG_TAG, LOG_TAG, "rp_4", "could not compute requestOrigin. Silently ignoring.");
+    const requestS3Host = getRequestHost( requestInfo );
+    if ( !requestS3Host ) {
+      //TODO: After ensuring requestS3Host is always present, - use redirectToBlank.
+      console.error(ALARM_LOG_TAG, LOG_TAG, "rp_4", "could not determine requestS3Host. Silently ignoring.");
       callback(null, response);
       return;
     }
@@ -100,27 +100,26 @@ const responseProcessor = (event, context, callback) => {
       requestPath = "/";
     }
 
-    if ( requestOrigin.startsWith(KM_PREFIX) ) {
-      console.log(LOG_TAG, "rp_5", "Key Manager Request Received for origin ", requestOrigin);
-      kmResponseHandler(callback, response, requestOrigin, requestPath);
+    console.log("requestS3Host", requestS3Host, "requestPath", requestPath);
+
+    if ( requestS3Host.startsWith(KM_S3_HOST) ) {
+      console.log(LOG_TAG, "rp_5", "Key Manager Request Received for requestS3Host ", requestS3Host);
+      kmResponseHandler(callback, response, requestS3Host, requestPath);
       return;
     }
 
-    if ( requestOrigin.startsWith(SKD_PREFIX) ) {
-      console.log(LOG_TAG, "rp_6", "Key Manager Request Received for origin ", requestOrigin);
-      kmResponseHandler(callback, response, requestOrigin, requestPath);
+    if ( requestS3Host.startsWith(SDK_S3_HOST) ) {
+      console.log(LOG_TAG, "rp_6", "Sdk Iframe Request Received for origin ", requestS3Host);
+      sdkResponseHandler(callback, response, requestS3Host, requestPath);
       return;
     }
 
-    console.error(ALARM_LOG_TAG, LOG_TAG, "rp_7", "The request is not for SDK or KM. Silently ignoring. requestOrigin = ", requestOrigin , "requestPath = ", requestPath);
+    console.error(ALARM_LOG_TAG, LOG_TAG, "rp_7", "The request is not for SDK or KM. Silently ignoring. requestS3Host = ", requestS3Host , "requestPath = ", requestPath);
     callback(null, response);
 }
 
 
 exports.handler = (event, context, callback) => {
-  //TODO: Remove this log.
-  console.log(LOG_TAG, "exports.handler triggered. calling responseProcessor");
-
   try {
     responseProcessor(event, context, callback);
   } catch(error) {

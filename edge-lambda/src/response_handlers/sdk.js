@@ -4,11 +4,13 @@ const config = require("../config.json");
 const errorLogger = require("../utils/error_logger");
 const cspParts = [];
 
+const LOG_TAG = "BSL_SDK";
+const ALARM_LOG_TAG = config.ALARM_LOG_TAG;
 
 /**
- * Key Manager Response Handler
+ * Sdk Iframe Response Handler
  * Adds Content Security Policy Headers to the response and triggers callback. 
- * The Caller must ensure this request is serving km-[mappy] resource.
+ * The Caller must ensure this request is serving sdk-[mappy] resource.
  * 
  * @param  {Function} callback      As provided by the lambda function
  * @param  {[type]}   response      response object as present in event of lambda function.
@@ -17,7 +19,6 @@ const cspParts = [];
  * @return {null}                   Null.
  */
 module.exports = (callback, response, requestOrigin, requestPath ) => {
-
   // Prepare response headers.
   response.headers = response.headers || {};
 
@@ -26,20 +27,48 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
   addCSPPart("base-uri 'none';");
   addCSPPart("block-all-mixed-content;");
 
+  //region - Content-Security-Policy - script-src
   // Determine the path to JS file.
-  let jsFilePath = requestPath.replace("/index.html", "/ost-sdk-key-manager-script.js");
+  let jsFilePath = requestPath.replace("/index.html", "/ost-sdk-iframe-script.js");
+  jsFilePath = jsFilePath.trimLeft("/");
+  jsFilePath = jsFilePath.trimRight("/");
+
+  // Determine the origin of JS file.
   let jsOrigin = String( config.JS_ORIGIN );
-  // Remove right side back-slash
   jsOrigin   = jsOrigin.trimRight("/");
 
-  // Remove left side back-slash
-  jsFilePath = jsFilePath.trimLeft("/");
-
-  // Join origin and path.
+  // Join origin and path to make an absolute url.
   jsFilePath = jsOrigin + "/" + jsFilePath;
 
   // Set the script-src header.
   addCSPPart(`script-src ${jsFilePath}`);
+  console.log(LOG_TAG, "script-src set to", jsFilePath);
+
+  //endregion
+
+  //region - Content-Security-Policy frame-src
+  // Determine the path to KM html file. (same as sdk path).
+  let kmFilePath = requestPath;
+  kmFilePath = kmFilePath.trimLeft("/");
+  kmFilePath = kmFilePath.trimRight("/");
+
+  // Determine the origin of km iframe.
+  let sdkDomain = config.SDK_KM_MAIN_DOMAIN;
+  sdkDomain = sdkDomain.trimRight("/");
+  let kmOrigin  = "https://*." + sdkDomain;
+
+  // Join origin and path to make an absolute url. 
+  // Yes, I know, using * does not make in an absolute url,
+  // But, I tried my best 
+  kmFilePath = kmOrigin + "/" + kmFilePath;
+
+  // Set the frame-src header.
+  addCSPPart(`frame-src ${kmFilePath}`);
+  console.log(LOG_TAG, "frame-src set to", kmFilePath);
+
+  //endregion
+
+
 
   // Set Content Security Policy Headers.
   response.headers['content-security-policy'] = [{
@@ -67,7 +96,6 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
 
   callback(null, response);
 };
-
 
 const addCSPPart = ( part ) => {
   let cleanedPart = String( part ).trimRight(";");

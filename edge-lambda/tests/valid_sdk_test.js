@@ -1,4 +1,4 @@
-const testResponse = require("./responses/km-valid-response");
+const testResponse = require("./responses/sdk-valid-response");
 const baseTest = require("./base_test");
 
 const expectedCspParts = {};
@@ -9,7 +9,8 @@ const addExpectedCSPParts = (part) => {
   expectedCspParts[ cleanedPart ] = false;
 };
 addExpectedCSPParts("default-src 'none';");
-addExpectedCSPParts("script-src https://stagingpepocoin.com/v-dev-12/ost-sdk-key-manager-script.js;");
+addExpectedCSPParts("script-src https://stagingpepocoin.com/v-dev-12/ost-sdk-iframe-script.js;");
+addExpectedCSPParts("frame-src https://*.stagingpepocoin.com/v-dev-12/index.html;");
 addExpectedCSPParts("base-uri 'none';");
 addExpectedCSPParts("block-all-mixed-content;");
 
@@ -25,8 +26,6 @@ baseTest(testResponse, (idk, response) => {
     console.error("!!! Invliad response.headers");
     process.exit(1);
   }
-
-  console.log("responseHeaders", JSON.stringify(responseHeaders));
 
   const contentSecurityPolicyHeaders = responseHeaders["Content-Security-Policy"] || responseHeaders["content-security-policy"];
   if ( typeof contentSecurityPolicyHeaders !== 'object' || !(contentSecurityPolicyHeaders instanceof Array)) {

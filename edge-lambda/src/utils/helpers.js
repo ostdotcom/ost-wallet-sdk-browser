@@ -1,11 +1,3 @@
-const lambdaFunction = require("../../edge-lambda");
-const lambdaContext = require("./responses/sample_context");
-console.log("lambdaFunction", lambdaFunction);
-module.exports = (reponseJson, callback) => {
-  return lambdaFunction.handler(reponseJson, lambdaContext, callback);
-};
-
-
 String.prototype.trimRight = function(charlist) {
   if (charlist === undefined)
     charlist = "\s";
@@ -18,4 +10,10 @@ String.prototype.trimLeft = function(charlist) {
     charlist = "\s";
 
   return this.replace(new RegExp("^[" + charlist + "]+"), "");
+};
+
+exports.addCSPPart = ( part, cspPartsArray ) => {
+  let cleanedPart = String( part ).trimRight(";");
+  cleanedPart = cleanedPart.toLowerCase();
+  cspPartsArray.push( cleanedPart );
 };

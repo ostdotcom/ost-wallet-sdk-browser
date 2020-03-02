@@ -1,6 +1,6 @@
 {
-  "SKD_PREFIX": "https://sdk-",
-  "KM_PREFIX": "https://wallet-km.stagingpepocoin.com",
+  "SDK_S3_HOST": "wallet-sdk.stagingpepocoin.com.s3.amazonaws.com",
+  "KM_S3_HOST": "wallet-km.stagingpepocoin.com.s3.amazonaws.com",
   "SDK_KM_MAIN_DOMAIN": "stagingpepocoin.com",
   "JS_ORIGIN": "https://stagingpepocoin.com/",
   "REDIRECT_URL": "about:blank",
