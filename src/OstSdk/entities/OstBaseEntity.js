@@ -3,7 +3,7 @@ import OstIndexDB from "../../common-js/OstIndexedDB";
 let dbInstance = null;
 let LOG_TAG = "OstBaseEntity :: ";
 
-const ENTITIES_DB_VERSION = 2;
+const ENTITIES_DB_VERSION = 10;
 const ENTITIES_DB_NAME = 'EntitiesDB';
 const STORES = {
 	OST_DEVICE : 'OST_DEVICE',
