@@ -11,6 +11,7 @@ const addExpectedCSPParts = (part) => {
 addExpectedCSPParts("default-src 'none';");
 addExpectedCSPParts("script-src https://stagingpepocoin.com/v-dev-12/ost-sdk-iframe-script.js;");
 addExpectedCSPParts("frame-src https://*.stagingpepocoin.com/v-dev-12/index.html;");
+addExpectedCSPParts("connect-src https://api.stagingost.com/;");
 addExpectedCSPParts("base-uri 'none';");
 addExpectedCSPParts("block-all-mixed-content;");
 

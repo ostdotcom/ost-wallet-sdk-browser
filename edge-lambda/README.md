@@ -4,6 +4,9 @@
 * [Lambda Event Structure](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-event-structure.html)
 * [Example: Using an Origin-Response Trigger to Update the Error Status Code to 200-OK](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html#lambda-examples-custom-error-static-body)
 * [Adding HTTP Security Headers Using Lambda@Edge and Amazon CloudFront](https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/)
+* (Content Security Policy)[https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP]
+* [Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin)
+* [Host](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host)
 
 ## Configuration
 Configuration file is located here [./edge-lambda/src/config.json](./src/config.json).
@@ -13,6 +16,7 @@ Configuration file is located here [./edge-lambda/src/config.json](./src/config.
   "KM_S3_HOST": "wallet-km.stagingpepocoin.com.s3.amazonaws.com",
   "SDK_KM_MAIN_DOMAIN": "stagingpepocoin.com",
   "JS_ORIGIN": "https://stagingpepocoin.com/",
+  "PLATFORM_API_ORIGIN": "https://api.stagingost.com/",
   "REDIRECT_URL": "about:blank",
   "ALARM_LOG_TAG": "BSL_UNEXPECTED"
 }
@@ -23,7 +27,8 @@ Configuration file is located here [./edge-lambda/src/config.json](./src/config.
 * `SDK_KM_MAIN_DOMAIN` - Main domain from where html files are served. In this example, it is set to stagingpepocoin.com because the html files are served from:
  + `https://sdk-[MAPPY].stagingpepocoin.com/[version]/index.html` 
  + `https://km-[MAPPY].stagingpepocoin.com/[version]/index.html`
-* `JS_ORIGIN` - Origin from where Ost Wallet Sdk JS files are served. 
+* `JS_ORIGIN` - [Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) from where Ost Wallet Sdk JS files are served. 
+* `PLATFORM_API_ORIGIN` - [Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) of Ost Platfrom Api.
 * `REDIRECT_URL` - If AWS S3 Server returns 4XX or 5XX response, it is important to redirect it.
 * `ALARM_LOG_TAG` - This is the log tag that can be used to trigger pager-duty alarms.
 

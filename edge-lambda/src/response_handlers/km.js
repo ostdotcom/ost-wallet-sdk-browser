@@ -1,8 +1,7 @@
 const zlib = require('zlib');
-require('../utils/helpers');
+const helpers = require('../utils/helpers');
 const config = require("../config.json");
 const errorLogger = require("../utils/error_logger");
-const cspParts = [];
 
 const LOG_TAG = "BSL_KM";
 const ALARM_LOG_TAG = config.ALARM_LOG_TAG;
@@ -24,9 +23,7 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
   response.headers = response.headers || {};
 
   // Add CSP (Content Security Policy) Header Parts.
-  addCSPPart("default-src 'none';");
-  addCSPPart("base-uri 'none';");
-  addCSPPart("block-all-mixed-content;");
+  const cspParts = helpers.getDefaultCSPParts();
 
   // Determine the path to JS file.
   let jsFilePath = requestPath.replace("/index.html", "/ost-sdk-key-manager-script.js");
@@ -41,14 +38,15 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
   jsFilePath = jsOrigin + "/" + jsFilePath;
 
   // Set the script-src header.
-  addCSPPart(`script-src ${jsFilePath}`);
-  console.log(LOG_TAG, "script-src set to", jsFilePath);
+  helpers.addCSPPart(`script-src ${jsFilePath}`, cspParts);
 
   // Set Content Security Policy Headers.
+  const cspValue = cspParts.join("; ");
   response.headers['content-security-policy'] = [{
     key: "Content-Security-Policy",
-    value: cspParts.join("; ")
+    value: cspValue
   }];
+  console.log(LOG_TAG, "Content-Security-Policy:", cspValue);
 
   // Set strict-transport-security header.
   response.headers['strict-transport-security'] = [{
@@ -69,11 +67,4 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
   }];
 
   callback(null, response);
-};
-
-
-const addCSPPart = ( part ) => {
-  let cleanedPart = String( part ).trimRight(";");
-  cleanedPart = cleanedPart.toLowerCase();
-  cspParts.push( cleanedPart );
 };

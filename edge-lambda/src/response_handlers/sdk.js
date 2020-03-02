@@ -1,5 +1,5 @@
 const zlib = require('zlib');
-require('../utils/helpers');
+const helpers = require('../utils/helpers');
 const config = require("../config.json");
 const errorLogger = require("../utils/error_logger");
 const cspParts = [];
@@ -23,58 +23,65 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
   response.headers = response.headers || {};
 
   // Add CSP (Content Security Policy) Header Parts.
-  addCSPPart("default-src 'none';");
-  addCSPPart("base-uri 'none';");
-  addCSPPart("block-all-mixed-content;");
+  const cspParts = helpers.getDefaultCSPParts();
 
   //region - Content-Security-Policy - script-src
-  // Determine the path to JS file.
-  let jsFilePath = requestPath.replace("/index.html", "/ost-sdk-iframe-script.js");
-  jsFilePath = jsFilePath.trimLeft("/");
-  jsFilePath = jsFilePath.trimRight("/");
+    // Determine the path to JS file.
+    let jsFilePath = requestPath.replace("/index.html", "/ost-sdk-iframe-script.js");
+    jsFilePath = jsFilePath.trimLeft("/");
+    jsFilePath = jsFilePath.trimRight("/");
 
-  // Determine the origin of JS file.
-  let jsOrigin = String( config.JS_ORIGIN );
-  jsOrigin   = jsOrigin.trimRight("/");
+    // Determine the origin of JS file.
+    let jsOrigin = String( config.JS_ORIGIN );
+    jsOrigin   = jsOrigin.trimRight("/");
 
-  // Join origin and path to make an absolute url.
-  jsFilePath = jsOrigin + "/" + jsFilePath;
+    // Join origin and path to make an absolute url.
+    jsFilePath = jsOrigin + "/" + jsFilePath;
 
-  // Set the script-src header.
-  addCSPPart(`script-src ${jsFilePath}`);
-  console.log(LOG_TAG, "script-src set to", jsFilePath);
-
+    // Set the script-src header.
+    helpers.addCSPPart(`script-src ${jsFilePath}`, cspParts);
   //endregion
 
   //region - Content-Security-Policy frame-src
-  // Determine the path to KM html file. (same as sdk path).
-  let kmFilePath = requestPath;
-  kmFilePath = kmFilePath.trimLeft("/");
-  kmFilePath = kmFilePath.trimRight("/");
+    // Determine the path to KM html file. (same as sdk path).
+    let kmFilePath = requestPath;
+    kmFilePath = kmFilePath.trimLeft("/");
+    kmFilePath = kmFilePath.trimRight("/");
 
-  // Determine the origin of km iframe.
-  let sdkDomain = config.SDK_KM_MAIN_DOMAIN;
-  sdkDomain = sdkDomain.trimRight("/");
-  let kmOrigin  = "https://*." + sdkDomain;
+    // Determine the origin of km iframe.
+    let sdkDomain = config.SDK_KM_MAIN_DOMAIN;
+    sdkDomain = sdkDomain.trimRight("/");
+    let kmOrigin  = "https://*." + sdkDomain;
 
-  // Join origin and path to make an absolute url. 
-  // Yes, I know, using * does not make in an absolute url,
-  // But, I tried my best 
-  kmFilePath = kmOrigin + "/" + kmFilePath;
+    // Join origin and path to make an absolute url. 
+    // Yes, I know, using * does not make in an absolute url,
+    // But, I tried my best 
+    kmFilePath = kmOrigin + "/" + kmFilePath;
 
-  // Set the frame-src header.
-  addCSPPart(`frame-src ${kmFilePath}`);
-  console.log(LOG_TAG, "frame-src set to", kmFilePath);
-
+    // Set the frame-src header.
+    helpers.addCSPPart(`frame-src ${kmFilePath}`, cspParts);
   //endregion
 
+  //region - Content-Security-Policy connect-src
+    let apiOrigin = config.PLATFORM_API_ORIGIN;
+    apiOrigin = apiOrigin.trimRight("/");
+    //Always add trailing back-slash.
+    apiOrigin = apiOrigin + "/";
 
+    // Set the connect-src header.
+    helpers.addCSPPart(`connect-src ${apiOrigin}`, cspParts);
+  //endregion
+  
+  
 
   // Set Content Security Policy Headers.
+  const cspValue = cspParts.join("; ");
   response.headers['content-security-policy'] = [{
     key: "Content-Security-Policy",
-    value: cspParts.join("; ")
+    value: cspValue
   }];
+
+  console.log(LOG_TAG, "Content-Security-Policy:", cspValue);
 
   // Set strict-transport-security header.
   response.headers['strict-transport-security'] = [{
@@ -95,10 +102,4 @@ module.exports = (callback, response, requestOrigin, requestPath ) => {
   }];
 
   callback(null, response);
-};
-
-const addCSPPart = ( part ) => {
-  let cleanedPart = String( part ).trimRight(";");
-  cleanedPart = cleanedPart.toLowerCase();
-  cspParts.push( cleanedPart );
 };

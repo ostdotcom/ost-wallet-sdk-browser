@@ -12,8 +12,16 @@ String.prototype.trimLeft = function(charlist) {
   return this.replace(new RegExp("^[" + charlist + "]+"), "");
 };
 
-exports.addCSPPart = ( part, cspPartsArray ) => {
+const addCSPPart = exports.addCSPPart = ( part, cspPartsArray ) => {
   let cleanedPart = String( part ).trimRight(";");
   cleanedPart = cleanedPart.toLowerCase();
   cspPartsArray.push( cleanedPart );
 };
+
+const getDefaultCSPParts = exports.getDefaultCSPParts = ()  => {
+  const cspParts = [];
+  addCSPPart("default-src 'none';" , cspParts);
+  addCSPPart("base-uri 'none';", cspParts);
+  addCSPPart("block-all-mixed-content;", cspParts);
+  return cspParts;
+}
