@@ -131,6 +131,3 @@ exports.handler = (event, context, callback) => {
     }
   }
 };
-
-//TODO: Remove this log.
-console.log("config", config);

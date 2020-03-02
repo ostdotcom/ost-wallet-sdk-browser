@@ -1,3 +1,5 @@
+const zlib = require('zlib');
+require('../utils/helpers');
 const config = require("../config.json");
 const errorLogger = require("../utils/error_logger");
 const redirectPath = config.REDIRECT_URL;
@@ -13,7 +15,6 @@ module.exports = (callback, response, requestOrigin, requestPath) => {
   response.body = bodyContent;
 
   try {
-    const zlib = require('zlib');
     const buffer = zlib.gzipSync(bodyContent);
     const base64EncodedBody = buffer.toString('base64');
     response.bodyEncoding = 'base64';

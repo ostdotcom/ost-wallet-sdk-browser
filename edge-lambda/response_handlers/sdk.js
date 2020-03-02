@@ -1,3 +1,5 @@
+const zlib = require('zlib');
+require('../utils/helpers');
 const config = require("../config.json");
 const errorLogger = require("../utils/error_logger");
 

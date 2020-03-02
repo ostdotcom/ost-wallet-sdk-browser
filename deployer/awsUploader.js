@@ -74,6 +74,8 @@ const uploadFile = (AWSS3, filePath, config) => {
   let Bucket = bucket;
   let Key = s3Path + filePath.replace(sourceFolder, "");
 
+  console.log(`Uploading ${Bucket}/${Key}...`);
+
   readFile(filePath)
     .then((fileData) => {
       let fixedParams = {
@@ -93,10 +95,10 @@ const uploadFile = (AWSS3, filePath, config) => {
       return AWSS3.upload(uploadParams)
         .promise()
         .then(function(resp) {
-          console.log(`Uploaded ${Bucket}/${Key}`);
+          console.log(`...Uploaded ${Bucket}/${Key}`);
           _resolve();    
         }).catch((err) => {
-          console.error(`Failed to upload ${Bucket}/${Key}`);
+          console.error(`### Failed to upload ${Bucket}/${Key} ###`);
           throw err;
         })
       
@@ -112,16 +114,21 @@ const uploadFile = (AWSS3, filePath, config) => {
   })
 }
 
+const createUploadFilePromise = (masterPromise, AWSS3, filePath, config) => {
+  return masterPromise.then(() => {
+    return uploadFile(AWSS3, filePath, config );
+  })
+};
+
 
 module.exports = async (AWSS3, config) => {
   let sourceFolder = config.sourceFolder;
   let fileList = await listFiles(sourceFolder);
   let len = fileList.length;
-  let allPromises = [];
+  let uploadPromise = Promise.resolve( true );
   while( len-- ) {
-    let p = uploadFile(AWSS3, fileList[ len ], config );
-    allPromises.push( p );
+    uploadPromise = createUploadFilePromise(uploadPromise, AWSS3, fileList[ len ], config );
   }
 
-  return Promise.all( allPromises );
+  return uploadPromise;
 }
