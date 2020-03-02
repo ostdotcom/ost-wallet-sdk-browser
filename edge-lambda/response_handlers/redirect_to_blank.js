@@ -9,7 +9,7 @@ const ALARM_LOG_TAG = config.ALARM_LOG_TAG;
 module.exports = (callback, response, requestOrigin, requestPath) => {
 
   response.headers = response.headers || {};
-  response.headers['content-type']: [{key:'Content-Type', value: 'text/html; charset=utf-8'}];
+  response.headers['content-type'] = [{key:'Content-Type', value: 'text/html; charset=utf-8'}];
   response.body = bodyContent;
 
   try {
