@@ -4,7 +4,7 @@
 * [Lambda Event Structure](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-event-structure.html)
 * [Example: Using an Origin-Response Trigger to Update the Error Status Code to 200-OK](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html#lambda-examples-custom-error-static-body)
 * [Adding HTTP Security Headers Using Lambda@Edge and Amazon CloudFront](https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/)
-* (Content Security Policy)[https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP]
+* [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 * [Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin)
 * [Host](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host)
 
