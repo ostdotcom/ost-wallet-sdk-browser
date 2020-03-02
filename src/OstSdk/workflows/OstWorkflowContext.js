@@ -14,11 +14,12 @@ class OstWorkflowContext extends OstBaseEntity {
 		ACKNOWLEDGED: 2,
 		CANCELLED_BY_NAVIGATION: 3,
 		COMPLETED: 4,
-		INTERRUPTED: 5
+		INTERRUPTED: 5,
+		QR_TIMEDOUT: 6
 	};
 
 	//Todo:: auto-generate it.
-	static STATUS_LOOKUP = ['CREATED', 'INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED'];
+	static STATUS_LOOKUP = ['CREATED', 'INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED', 'QR_TIMEDOUT'];
 
 	constructor(workflowObject) {
 		//Current time stamp in seconds.

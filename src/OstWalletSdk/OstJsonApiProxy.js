@@ -1,7 +1,7 @@
 
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import OstApiError from "../../common-js/OstApiError";
+import OstMessage from "../common-js/OstMessage";
+import {SOURCE} from "../common-js/OstBrowserMessenger";
+import OstApiError from "../common-js/OstApiError";
 
 const LOG_TAG = 'OstJsonApiProxy :: ';
 

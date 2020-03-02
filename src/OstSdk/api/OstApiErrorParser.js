@@ -1,6 +1,5 @@
-import OstError from "../common-js/OstError";
-import OstApiError from "../common-js/OstApiError";
-import OstErrorCodes from "../common-js/OstErrorCodes"
+import OstApiError from "../../common-js/OstApiError";
+import OstErrorCodes from "../../common-js/OstErrorCodes"
 
 const LOG_TAG = "OstApiErrorParser";
 const RESPONSE_SUCCESS = "success";

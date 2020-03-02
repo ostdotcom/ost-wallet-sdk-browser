@@ -1,7 +1,7 @@
 
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import OstError from "../../common-js/OstError";
+import OstMessage from "../common-js/OstMessage";
+import {SOURCE} from "../common-js/OstBrowserMessenger";
+import OstError from "../common-js/OstError";
 
 const LOG_TAG = 'OstSdkProxy :: ';
 

@@ -1,5 +1,5 @@
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
-import OstMessage from "../../common-js/OstMessage";
+import {SOURCE} from "../common-js/OstBrowserMessenger";
+import OstMessage from "../common-js/OstMessage";
 
 const LOG_TAG = "OstSdk :: OstKeyManagerProxy";
 

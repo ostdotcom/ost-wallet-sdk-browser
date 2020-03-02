@@ -5,11 +5,12 @@ import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
 import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
+import workflowSubscriberService from "./WorkflowSubscriberService";
+
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
-  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL,
-  "create_session_pi_timeout": CREATE_SESSION_PAGE_INITIALIZATION_TIMEOUT
+  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
 const LOG_TAG = "PageInitializer";
@@ -145,6 +146,7 @@ class PageInitializer {
     return OstWalletSdk.init( sdkConfig ).then(() => {
       console.log("OstWalletSdk.init resolved");
       this.isOstWalletSdkInitialized = true;
+      workflowSubscriberService.subscribeToEvents();    //subscribeAll events
       return true;
     }).catch(( error ) => {
       console.error("OstWalletSdk.init threw an error", error);
@@ -183,7 +185,8 @@ class PageInitializer {
       _reject  = rej;
 
       // Invoke the workflow.
-      OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      let workflowId = OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      workflowSubscriberService.addWorkflow(workflowId);
     });
   }
 
