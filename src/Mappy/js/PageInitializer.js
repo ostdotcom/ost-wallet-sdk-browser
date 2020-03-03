@@ -186,6 +186,9 @@ class PageInitializer {
 
       // Invoke the workflow.
       let workflowId = OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      // Set the workflowId for sdk-getters.
+      currentUser.setup_device_workflow_id = workflowId;
+      
       workflowSubscriberService.addWorkflow(workflowId);
     });
   }
