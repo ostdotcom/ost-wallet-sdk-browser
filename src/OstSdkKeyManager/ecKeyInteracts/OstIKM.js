@@ -16,7 +16,6 @@ import * as hdKey from "ethereumjs-wallet/hdkey";
 const LOG_TAG = "IKM";
 const SHOULD_USE_SEED_PWD = true;
 
-const KM_DB_VERSION = 1;
 const KM_DB_NAME = 'KeyManagerDB';
 const STORES = {
 	KEY_STORE_TABLE : 'KEY_STORE_TABLE'
@@ -35,7 +34,7 @@ class IKM {
 	constructor(userId, avoidKMBuilding) {
 		this.userId = userId;
 		this.avoidKMBuilding = avoidKMBuilding;
-		this.kmDB = OstIndexDB.newInstance(KM_DB_NAME, KM_DB_VERSION, STORES);
+		this.kmDB = OstIndexDB.newInstance(KM_DB_NAME);
 	}
 
 	init() {
