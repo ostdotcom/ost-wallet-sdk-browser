@@ -1,3 +1,4 @@
+const LOG_TAG = "OST_WALLET_EVENT";
 const EventNames = {
   "flowInitiated": "flowInitiated",
   "requestAcknowledged": "requestAcknowledged",
@@ -45,7 +46,7 @@ class OstWorkflowEvents {
     }
 
     const eventSubscriberName = this.getSubscriberNameForWorkflowId(eventName, workflowId);
-    this.eventTarget.addEventListener(eventSubscriberName, callback);
+    this.addEventListener(eventSubscriberName, callback);
   }
 
   /**
@@ -66,49 +67,57 @@ class OstWorkflowEvents {
 
     let eventSubscriberName = eventName;
     if(userId) {
-      console.log("subscribing for userId: ", userId);
+      console.log(LOG_TAG, "subscribing for userId: ", userId);
       eventSubscriberName = this.getSubscriberNameForUserId(eventName, userId);
     }
 
-    this.eventTarget.addEventListener(eventSubscriberName, callback);
+    this.addEventListener(eventSubscriberName, callback);
+  }
+
+  addEventListener(eventSubscriberName, callback) {
+    this.eventTarget.addEventListener(eventSubscriberName, (ostCustomEvent) => {
+      console.log(LOG_TAG, "ostCustomEvent", ostCustomEvent);
+      // Trigger actual callback.
+      let callbackArgs = [];
+      if ( ostCustomEvent.detail && ostCustomEvent.detail.ost_event_args ) {
+        callbackArgs = ostCustomEvent.detail.ost_event_args;
+      }
+      callback(...callbackArgs);
+    });
   }
   //endregion
 
 
   //region post event
-  postFlowInitiatedEvent(ostWorkflowContext, ostContextEntity) {
+  postFlowInitiatedEvent(ostWorkflowContext, ...args) {
     const eventName = EventNames.flowInitiated;
-    this.postEvent(eventName, ostWorkflowContext, ostContextEntity)
+    this.postEvent(eventName, ostWorkflowContext, args);
   }
 
-  postRequestAcknowledgedEvent(ostWorkflowContext, ostContextEntity) {
+  postRequestAcknowledgedEvent(ostWorkflowContext, ...args) {
     const eventName = EventNames.requestAcknowledged;
-    this.postEvent(eventName, ostWorkflowContext, ostContextEntity)
+    this.postEvent(eventName, ostWorkflowContext, args);
   }
 
-  postFlowCompleteEvent(ostWorkflowContext, ostContextEntity) {
+  postFlowCompleteEvent(ostWorkflowContext, ...args) {
     const eventName = EventNames.flowCompleted;
-    this.postEvent(eventName, ostWorkflowContext, ostContextEntity)
+    this.postEvent(eventName, ostWorkflowContext, args);
   }
 
-  postFlowInterruptEvent(ostWorkflowContext, ostError) {
+  postFlowInterruptEvent(ostWorkflowContext, ...args) {
     const eventName = EventNames.flowInterrupted;
-    this.postEvent(eventName, ostWorkflowContext, null, ostError);
+    this.postEvent(eventName, ostWorkflowContext, args);
   }
   //endregion
 
-  postEvent(eventName, ostWorkflowContext, ostContextEntity, ostError= null) {
+  postEvent(eventName, ostWorkflowContext, eventArgs) {
+    eventArgs = [ostWorkflowContext].concat(eventArgs || []);
+    console.log(LOG_TAG, "postEvent :: eventArgs", eventArgs);
     //create event details;
-    let detail = {ost_workflow_context: ostWorkflowContext};
-    if (ostContextEntity) {
-      detail["ost_context_entity"] = ostContextEntity;
-    }
-    if (ostError) {
-      detail["ost_error"] = ostError;
-    }
-
     const eventDetails = {
-      detail: detail
+      "detail": {
+        "ost_event_args": eventArgs        
+      }
     };
 
     let event = null
