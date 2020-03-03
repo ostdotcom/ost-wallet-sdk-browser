@@ -20,9 +20,9 @@ class PageInitializer {
 
     oThis.currentUserInfo = null;
     oThis.deleteSessionsHelper = null;
-
     oThis.validatePage();
     $(() => {
+      oThis.addPartials();
       ajaxUtils.setupAjax();
       oThis.bindEvents();
       if ( autoPerform ) {
@@ -247,6 +247,17 @@ class PageInitializer {
         // If not, throw the error.
         throw error;
       });
+  }
+
+  addPartials() {
+    if ( !window._htmlPartials ) {
+      return;
+    }
+    for(let k in _htmlPartials) {
+      let encodedHtml = _htmlPartials[k];
+      let jEl = $( decodeURIComponent( encodedHtml ) );
+      $('body').append( jEl );
+    }
   }
 }
 export default PageInitializer;

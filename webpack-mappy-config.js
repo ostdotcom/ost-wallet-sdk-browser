@@ -1,9 +1,21 @@
+const fs = require('fs');
+const path = require('path');
+
 String.prototype.trimRight = function(charlist) {
   if (charlist === undefined)
     charlist = "\s";
 
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
+
+
+const loadMappyPartial = ( fileName ) => {
+  const __dirname = path.resolve();
+  let filePath = path.resolve(__dirname, "./src/Mappy/html/partials/" + fileName);
+  fileContent = fs.readFileSync(filePath).toString();
+  return encodeURIComponent( fileContent );
+}
+
 
 const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK_PLATFORM_API_ENDPOINT, OST_BROWSER_SDK_IFRAME_ORIGIN) => {
   const sdkVersion = process.env.OST_BROWSER_SDK_VERSION || "";
@@ -22,7 +34,15 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
     "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
     "OST_TOKEN_ID": OST_TOKEN_ID,
     "DEMO_MAPPY_UI_API_ENDPOINT": DEMO_MAPPY_UI_API_ENDPOINT,
-    "OST_BROWSER_SDK_IFRAME_URL": OstSdkIframeUrl
+    "OST_BROWSER_SDK_IFRAME_URL": OstSdkIframeUrl,
+    "_htmlPartials": {
+      "AFTER_SESSION": loadMappyPartial("after_session.html"),
+      "CREATE_SESSION_MODAL": loadMappyPartial("create_session_modal.html"),
+      "DELETE_SESSION_MODAL": loadMappyPartial("delete_session_modal.html"),      
+      "JSON_API_TEMPLATE": loadMappyPartial("json_api_template.html"),
+      "METHOD_TEMPLATE": loadMappyPartial("method_template.html"),
+      "WORKFLOW_MODAL": loadMappyPartial("workflow_modal.html")
+    }
   };
 
   // Entity
