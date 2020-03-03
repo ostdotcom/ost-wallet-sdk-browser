@@ -79,10 +79,13 @@ class OstSdkAssist {
 
     return OstWorkflowContext.getById(workflowId)
       .then((workflowInfo) => {
+        if (!workflowInfo) {
+					throw new OstError("os_osa_gwi_1", OstErrorCodes.INVALID_USER_ID)
+        }
 
         let workflowUserId = workflowInfo.getUserId();
         if (userId != workflowUserId) {
-            throw new OstError("os_osa_gwi_1", OstErrorCodes.INVALID_USER_ID)
+            throw new OstError("os_osa_gwi_2", OstErrorCodes.INVALID_USER_ID)
         }
         return oThis.onSuccess(workflowInfo.getJSONObject(), subscriberId);
       })
