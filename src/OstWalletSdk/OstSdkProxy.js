@@ -104,9 +104,6 @@ class OstSdkProxy {
         .then((response) => {
           return true;
         })
-        .catch((err) => {
-          return false;
-        });
     }
 
 	/**

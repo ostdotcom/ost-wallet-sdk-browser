@@ -237,12 +237,12 @@ class OstSdkAssist {
       })
       .then(() => {
         functionName = 'onSuccess';
-        functionParams = {success: true};
+        functionParams = {data: {success: true} };
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       })
       .catch((err) => {
         let error = OstError.sdkError(err, 'os_osa_i_dls_2', OstErrorCodes.SDK_RESPONSE_ERROR);
-        this.sendToOstWalletSdk(functionName, subscriberId, error.getJSONObject());
+        this.sendToOstWalletSdk(functionName, subscriberId, {err: error.getJSONObject()});
       });
   }
 
