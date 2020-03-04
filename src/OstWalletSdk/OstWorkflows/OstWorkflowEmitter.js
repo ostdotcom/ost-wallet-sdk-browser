@@ -1,3 +1,4 @@
+import OstError from "../../common-js/OstError";
 
 const LOG_TAG = "OstWorkflowEmitter :: ";
 
@@ -50,7 +51,9 @@ export default class OstWorkflowEmitter {
 		const workflowId = this.getWorkflowId(args);
 		if (!workflowId) return;
 
-		this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, args.ost_error)
+		let error  = OstError.fromErrorPayload(args.ost_error);
+
+		this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, error)
 	}
 
 	getWorkflowId(args) {

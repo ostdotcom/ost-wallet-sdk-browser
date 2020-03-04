@@ -145,7 +145,7 @@ class WorkflowSubscriberService {
     OstWalletSdk.subscribeAll("flowInterrupted", (workflowContext, ostError) => {
       let eventName = "flowInterrupted";
       let eventData = oThis.processEvent(eventDataMap, workflowContext, eventName, subscriptionType);
-      eventData["ost_error"] = ostError;
+      eventData["ost_error"] = ostError.getJSONObject();
       oThis.workflowDataUpdated(workflowContext, eventName);
     }, userId);
   }
@@ -190,7 +190,7 @@ class WorkflowSubscriberService {
     OstWalletSdk.subscribe("flowInterrupted", workflowId, (workflowContext, ostError) => {
       let eventName = "flowInterrupted";
       let eventData = oThis.processEvent(eventDataMap, workflowContext, eventName, subscriptionType);
-      eventData["ost_error"] = ostError;
+      eventData["ost_error"] = ostError.getJSONObject();
       oThis.workflowDataUpdated(workflowContext, eventName);
     });
   }
