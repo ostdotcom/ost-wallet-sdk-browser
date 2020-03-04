@@ -467,6 +467,7 @@ class WorkflowSubscriberService {
       jCard.data("workflowId", meta.id);
       jParent.append( jCard );
       jCard.collapse();
+      meta.is_rendered = true;
     }}
   }
 

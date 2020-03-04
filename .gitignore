@@ -70,3 +70,4 @@ builds/*
 build_set_env_vars.sh
 build-test-setup.md
 post_build.sh
+set_staging_vars.sh
