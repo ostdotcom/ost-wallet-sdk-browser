@@ -19,7 +19,7 @@ class OstWorkflowContext extends OstBaseEntity {
 	};
 
 	//Todo:: auto-generate it.
-	static STATUS_LOOKUP = ['CREATED', 'INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED', 'QR_TIMEDOUT'];
+	static STATUS_LOOKUP = Object.keys(OstWorkflowContext.STATUS);//['CREATED', 'INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED', 'QR_TIMEDOUT'];
 
 	constructor(workflowObject) {
 		//Current time stamp in seconds.
@@ -88,7 +88,7 @@ class OstWorkflowContext extends OstBaseEntity {
 			name: this.data.name,
 			id: this.data.id,
 			user_id: this.data.user_id,
-			status: this.data.status,
+			status: OstWorkflowContext.STATUS_LOOKUP[this.data.status],
 			args: this.data.args,
 			context_entity_id: this.data.context_entity_id,
 			context_entity_type: this.data.context_entity_type,
