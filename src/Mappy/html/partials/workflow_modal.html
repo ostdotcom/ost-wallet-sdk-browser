@@ -1,2 +1,109 @@
-<!-- Workflow Modal -->
-<h1>I am Included!</h1>
+  <div id="workflow-accordion" class="col-12 bg-light">
+    <h3>Workflow Details</h3>
+    <script type="text/x-handlebars-template" id="j-wf-card-template">
+      <div class="card" id="j-wf-card-{{id}}">
+        <div class="card-header" id="j-wf-card-header-{{id}}">
+          <h5 class="mb-0 j-wf-card-head" data-toggle="collapse" 
+          data-target="#j-wf-card-body-{{id}}" aria-controls="j-wf-card-body-{{id}}">
+            {{name}} ({{id}})
+          </h5>
+        </div>
+        <div class="collapse" data-parent="#workflow-accordion" 
+          aria-labelledby="j-wf-card-header-{{id}}" id="j-wf-card-body-{{id}}" >
+          <div class="card-body">
+            <div class="col-12 j-workflow-details">
+              <table class="table table-bordered">
+                <thead class="table-active">
+                  <tr>
+                    <th colspan="4" scope="col">Workflow Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Name</th>
+                    <td>{{name}}</td>
+                    <th scope="row">Id</th>
+                    <td>{{id}}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Status</th>
+                    <td class='j-workflow-details-last_known_status'>{{last_known_status}}</td>
+                    <th scope="row">user_id</th>
+                    <td>{{user_id}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-12">
+              <table class="table table-bordered">
+                <thead class="table-active">
+                  <th scope="col">Event Name / Subscription Type</th>
+                  <th scope="col">All</th>
+                  <th scope="col">User-Id</th>
+                  <th scope="col">Workflow-Id</th>
+                  <th scope="col">Consistent</th>
+                </thead>
+                <tbody class='j-wf-checklist'></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+
+
+
+    <script type="text/x-handlebars-template" id="j-wf-checklist-template">
+      {{#.}}
+        <tr>
+          <td>{{event_name}}</td>
+          {{#if has_received_subscribe_all}}
+            <td class='table-success'>Received</td>
+          {{else}}
+            <td class='table-danger'>Not Received</td>
+          {{/if}}
+
+          {{#if has_received_subscribe_all_user_id}}
+            <td class='table-success'>Received</td>
+          {{else}}
+            <td class='table-danger'>Not Received</td>
+          {{/if}}
+
+          {{#if has_received_subscribe}}
+            <td class='table-success'>Received</td>
+          {{else}}
+            <td class='table-danger'>Not Received</td>
+          {{/if}}
+
+          {{#if is_consistent}}
+            <td class='table-success'>Yes</td>
+          {{else}}
+            <td class='table-danger'>NO</td>
+          {{/if}}
+        </tr>
+      {{/.}}
+    </script>
+    <script type="text/x-handlebars-template" id="j-wf-details-template">
+      <table class="table table-bordered">
+        <thead class="table-active">
+          <tr>
+            <th colspan="4" scope="col">Workflow Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Name</th>
+            <td>{{name}}</td>
+            <th scope="row">Id</th>
+            <td>{{id}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Status</th>
+            <td>{{last_known_status}}</td>
+            <th scope="row">user_id</th>
+            <td>{{user_id}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </script>
+  </div>

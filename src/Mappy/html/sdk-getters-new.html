@@ -52,20 +52,15 @@
       </ul>
     </div>
   </header>
+  <div class="phantom-header"></div>
 
-  <div id="loader-wrapper">
-    <div id="loading-text">
-      <div id="loading-user" class="d-none">Validating User</div>
-      <div id="loading-sdk-init" class="d-none"><span>Initializaing Sdk</span></div>
-      <div id="loading-setup-device" class="d-none">SetupDevice</div>
-    </div>
-    <div id="loader"></div>
-    <div class="loader-section section-left"></div>
-    <div class="loader-section section-right"></div>
-  </div>
+  <%= htmlWebpackPlugin.options.LOADER_HTML %>
 
-  <div id="page-container" class="container bg-light" style="margin-top:60px; margin-bottom:60px;">
+  <div id="page-container" class="col-12 bg-light">
     <!-- PAGE CONTENT BEGINS HERE -->
   </div><!-- container -->
+
+
+
 </body>
 </html>

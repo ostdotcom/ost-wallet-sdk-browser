@@ -9,11 +9,12 @@ import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 class CodeTesterBase {
-  constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template") {
+  constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template", jqsDataDisplayTemplate = "#j-data-display-template") {
     const oThis = this;
     // Create Page Initializer
     oThis.jqsContainer = jqsContainer;
     oThis.jqsTemplate = jqsTemplate;
+    oThis.jqsDataDisplayTemplate = jqsDataDisplayTemplate;
 
     //
     oThis.methods = [];
@@ -42,6 +43,7 @@ class CodeTesterBase {
         jsonViewId: "json-view-" + viewId,
         stringViewId: "string-view-" + viewId,
         displayCodeViewId: "display-code-" + viewId,
+        dataDisplayHeading: "Output"
       };
 
       // Copy current user info.
@@ -52,6 +54,9 @@ class CodeTesterBase {
 
       let outputHtml = oThis.methodTemplate( templateData );
       let jOutputEl = $( outputHtml );
+
+      let dataDisplayCardHtml = oThis.dataDisplayTemplate( templateData );
+      jOutputEl.find('.j-data-display-col').html( dataDisplayCardHtml );
 
       let codeEl = jOutputEl.find("#" + templateData.displayCodeViewId)[ 0 ];
       codeEl && CodeHighlight.highlightBlock( codeEl );
@@ -99,6 +104,9 @@ class CodeTesterBase {
     const oThis = this;
     let methodTemplateHtml = $(oThis.jqsTemplate).html();
     oThis.methodTemplate = Handlebars.compile( methodTemplateHtml );
+
+    let dataDisplayTemplate = $(oThis.jqsDataDisplayTemplate).html();
+    oThis.dataDisplayTemplate = Handlebars.compile( dataDisplayTemplate );
   }
 
   getMethodDisplayAppendText() {
