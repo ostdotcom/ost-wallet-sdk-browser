@@ -18,8 +18,7 @@ class OstWorkflowContext extends OstBaseEntity {
 		QR_TIMEDOUT: 6
 	};
 
-	//Todo:: auto-generate it.
-	static STATUS_LOOKUP = Object.keys(OstWorkflowContext.STATUS);//['CREATED', 'INITIATED', 'ACKNOWLEDGED', 'CANCELLED_BY_NAVIGATION', 'COMPLETED', 'INTERRUPTED', 'QR_TIMEDOUT'];
+	static STATUS_LOOKUP = Object.keys(OstWorkflowContext.STATUS);
 
 	constructor(workflowObject) {
 		//Current time stamp in seconds.
