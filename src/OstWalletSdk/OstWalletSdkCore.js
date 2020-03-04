@@ -6,6 +6,7 @@ import OstJsonApiProxy from "./OstJsonApiProxy";
 import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 import EC from "../common-js/OstErrorCodes";
 import {OstWorkflowEvents} from "./OstWorkflows/OstWorkflowEvents"
+import OstWorkflowEmitter from "./OstWorkflows/OstWorkflowEmitter"
 import './sdk-stylesheet.css';
 
 class OstWalletSdkCore extends OstBaseSdk {
@@ -32,7 +33,7 @@ class OstWalletSdkCore extends OstBaseSdk {
   onBrowserMessengerCreated( browserMessenger ) {
     const oThis = this;
 
-    return super.onBrowserMessengerCreated() 
+    return super.onBrowserMessengerCreated()
       .then( () => {
         const proxy = new OstSdkProxy(this.browserMessenger);
         const jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
@@ -47,7 +48,11 @@ class OstWalletSdkCore extends OstBaseSdk {
   createAssist() {
     // I am my own assistor.
     this.browserMessenger.subscribe(this, this.getReceiverName());
-    return Promise.resolve( true );
+
+		const ostWorkflowEmitter = new OstWorkflowEmitter(this.workflowEvents);
+		this.browserMessenger.subscribe(ostWorkflowEmitter, ostWorkflowEmitter.getReceiverName());
+
+		return Promise.resolve( true );
   }
 
   //region - Workflows.
@@ -91,7 +96,7 @@ class OstWalletSdkCore extends OstBaseSdk {
     return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
   }
   //endregion
-  
+
   //region - getter methods
   getUser( userId ) {
     return this.proxy.getUser( userId );

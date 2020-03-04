@@ -40,6 +40,17 @@ class OstSetupDevice extends OstBaseWorkflow {
         oThis.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
       });
   }
+
+	subscribeEvents() {
+		const oThis = this
+			, workflowEventsObj = this.workflowEvents
+		;
+
+		super.subscribeEvents();
+		workflowEventsObj.subscribe("registerDevice", oThis.workflowId, (ost_workflow_context, args) => {
+			oThis.registerDevice(args);
+		});
+	}
 }
 
 export default OstSetupDevice;

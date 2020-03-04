@@ -12,7 +12,11 @@ import OstConstants from '../OstConstants';
 
 const LOG_TAG = 'OstSdkBaseWorkflow :: ';
 
+
+
 export default class OstSdkBaseWorkflow {
+
+  OST_WORKFLOW_EMITTER = "OstWorkflowEmitter";
 
   constructor(args, browserMessenger, workflowContext) {
     this.args = args;
@@ -364,7 +368,7 @@ export default class OstSdkBaseWorkflow {
       , message = new OstMessage()
     ;
 
-    message.setSubscriberId(this.subscriberId);
+    message.setReceiverName(oThis.OST_WORKFLOW_EMITTER);
     message.setFunctionName('flowInitiated');
 
     return oThis.onWorkflowInitiated()
@@ -382,7 +386,7 @@ export default class OstSdkBaseWorkflow {
       , message = new OstMessage()
     ;
 
-    message.setSubscriberId(this.subscriberId);
+    message.setReceiverName(oThis.OST_WORKFLOW_EMITTER);
     message.setFunctionName('requestAcknowledged');
     let contextEntity = oThis.getRequestAckContextEntity(entity);
 
@@ -408,7 +412,7 @@ export default class OstSdkBaseWorkflow {
       , message = new OstMessage()
     ;
 
-    message.setSubscriberId(this.subscriberId);
+    message.setReceiverName(oThis.OST_WORKFLOW_EMITTER);
     message.setFunctionName('flowComplete');
 
     const contextEntity = {entity_type: entity.getType(), entity: entity.getData()};
@@ -429,7 +433,7 @@ export default class OstSdkBaseWorkflow {
     ;
 
     error = OstError.sdkError(error, 'os_w_osbw_pe_1');
-    message.setSubscriberId(this.subscriberId);
+    message.setReceiverName(oThis.OST_WORKFLOW_EMITTER);
     message.setFunctionName('flowInterrupt');
 
     return oThis.onWorkflowFailed()
