@@ -5,61 +5,75 @@ import {SOURCE} from '../../common-js/OstBrowserMessenger';
 const LOG_TAG = "OstBaseWorkflow :: ";
 
 class OstBaseWorkflow {
-  constructor(userId, ostWorkflowCallbacks, browserMessenger, workflowEvents) {
-    this.userId = userId;
-    this.browserMessenger = browserMessenger;
-    this.ostWorkflowCallbacks = ostWorkflowCallbacks;
-    this.workflowEvents = workflowEvents;
+	constructor(userId, ostWorkflowCallbacks, browserMessenger, workflowEvents) {
+		this.userId = userId;
+		this.browserMessenger = browserMessenger;
+		this.ostWorkflowCallbacks = ostWorkflowCallbacks;
+		this.workflowEvents = workflowEvents;
 
-    this.workflowId = null;
-  }
+		this.workflowId = null;
+	}
 
-  perform ( ) {
-    this.workflowId = uuidv4();
-    console.log(LOG_TAG, "perform :: workflowId ::", this.workflowId);
-  }
+	perform() {
+		this.workflowId = uuidv4();
+		console.log(LOG_TAG, "perform :: workflowId ::", this.workflowId);
+	}
 
-  flowInitiated( args ) {
-    console.log(LOG_TAG, "flowInitiated", args);
-    this.ostWorkflowCallbacks.flowInitiated(args.ost_workflow_context);
+	flowInitiated(ost_workflow_context) {
+		console.log(LOG_TAG, "flowInitiated", arguments);
+		this.ostWorkflowCallbacks.flowInitiated(ost_workflow_context);
+	}
 
-    this.workflowEvents.postFlowInitiatedEvent(args.ost_workflow_context);
-  }
+	requestAcknowledged(ost_workflow_context, ost_context_entity) {
+		console.log(LOG_TAG, "requestAcknowledged", arguments);
+		this.ostWorkflowCallbacks.requestAcknowledged(ost_workflow_context, ost_context_entity);
+	}
 
-  requestAcknowledged( args ) {
-    console.log(LOG_TAG, "requestAcknowledged", args);
-    this.ostWorkflowCallbacks.requestAcknowledged(args.ost_workflow_context, args.ost_context_entity);
+	flowComplete(ost_workflow_context, ost_context_entity) {
+		console.log(LOG_TAG, "flowComplete", arguments);
+		this.ostWorkflowCallbacks.flowComplete(ost_workflow_context, ost_context_entity);
+	}
 
-    this.workflowEvents.postRequestAcknowledgedEvent(args.ost_workflow_context, args.ost_context_entity)
-  }
+	flowInterrupt(ost_workflow_context, ost_error) {
+		console.error(LOG_TAG, "flowInterrupt", arguments);
+		this.ostWorkflowCallbacks.flowInterrupt(ost_workflow_context, ost_error);
+	}
 
-  flowComplete( args ) {
-    console.log(LOG_TAG, "flowComplete", args);
-    this.ostWorkflowCallbacks.flowComplete(args.ost_workflow_context, args.ost_context_entity);
+	startWorkflow(functionName, params) {
+		this.subscribeEvents();
 
-    this.workflowEvents.postFlowCompleteEvent(args.ost_workflow_context, args.ost_context_entity)
-  }
+		params["workflow_id"] = this.workflowId;
+		let message = new OstMessage();
+		message.setReceiverName('OstSdk');
+		message.setFunctionName(functionName);
+		message.setArgs(params, this.workflowId);
 
-  flowInterrupt( args )  {
-    console.error(LOG_TAG, "flowInterrupt", args);
-    this.ostWorkflowCallbacks.flowInterrupt(args.ost_workflow_context, args.ost_error);
+		this.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
 
-    this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, args.ost_context_entity)
-  }
+		return this.workflowId;
+	}
 
-  startWorkflow(functionName, params) {
-    this.browserMessenger.subscribe(this, this.workflowId);
+	subscribeEvents() {
+		const oThis = this
+			, workflowEventsObj = this.workflowEvents
+		;
 
-    params["workflow_id"] = this.workflowId;
-    let message = new OstMessage();
-    message.setReceiverName('OstSdk');
-    message.setFunctionName(functionName);
-    message.setArgs(params, this.workflowId);
+		workflowEventsObj.subscribe("flowInitiated", oThis.workflowId, (ost_workflow_context) => {
+			oThis.flowInitiated(ost_workflow_context);
+		});
 
-    this.browserMessenger.sendMessage(message, SOURCE.DOWNSTREAM);
+		workflowEventsObj.subscribe("requestAcknowledged", oThis.workflowId, (ost_workflow_context, ost_context_entity) => {
+			oThis.requestAcknowledged(ost_workflow_context, ost_context_entity);
+		});
 
-    return this.workflowId;
-  }
+		workflowEventsObj.subscribe("flowCompleted", oThis.workflowId, (ost_workflow_context, ost_context_entity) => {
+			oThis.flowComplete(ost_workflow_context, ost_context_entity)
+		});
+
+		workflowEventsObj.subscribe("flowInterrupted", oThis.workflowId, (ost_workflow_context, ost_error) => {
+			oThis.flowInterrupt(ost_workflow_context, ost_error)
+		});
+	}
 }
 
 export default OstBaseWorkflow
