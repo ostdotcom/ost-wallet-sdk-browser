@@ -13,7 +13,7 @@ export default class OstWorkflowEmitter {
 		const workflowId = this.getWorkflowId(args);
 		if (!workflowId) return;
 
-		this.workflowEvents.postRegisterDeviceEvent(args);
+		this.workflowEvents.postRegisterDeviceEvent(args.ost_workflow_context, args);
 	}
 
 	flowInitiated(args) {

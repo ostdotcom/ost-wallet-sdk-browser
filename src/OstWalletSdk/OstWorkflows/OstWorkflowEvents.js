@@ -1,7 +1,7 @@
 const LOG_TAG = "OST_WALLET_EVENT";
 const EventNames = {
   "flowInitiated": "flowInitiated",
-	"registerDevice": "registerDevice",
+  "registerDevice": "registerDevice",
   "requestAcknowledged": "requestAcknowledged",
   "flowCompleted": "flowCompleted",
   "flowInterrupted": "flowInterrupted"
@@ -110,9 +110,9 @@ class OstWorkflowEvents {
     this.postEvent(eventName, ostWorkflowContext, args);
   }
 
-	postRegisterDeviceEvent(ostWorkflowContext, ...args) {
-		const eventName = EventNames.registerDevice;
-		this.postEvent(eventName, ostWorkflowContext, args);
+  postRegisterDeviceEvent(ostWorkflowContext, ...args) {
+    const eventName = EventNames.registerDevice;
+    this.postEvent(eventName, ostWorkflowContext, args);
   }
   //endregion
 

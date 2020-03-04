@@ -133,10 +133,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
 
   registerDevice(deviceEntity) {
+    const oThis = this;
     let message = new OstMessage();
     message.setFunctionName("registerDevice");
-    message.setSubscriberId(this.subscriberId);
-
+    message.setReceiverName(oThis.OST_WORKFLOW_EMITTER);
 
     let params = {
       api_signer_address: deviceEntity.getApiKeyAddress(),
@@ -146,7 +146,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
-    message.setArgs({device: params}, this.deviceRegisteredUUID);
+    let args = {
+      device: params,
+      ost_workflow_context: oThis.getWorkflowContext()
+    };
+
+    message.setArgs(args, this.deviceRegisteredUUID);
 
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }

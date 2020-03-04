@@ -47,7 +47,7 @@ class OstSetupDevice extends OstBaseWorkflow {
 		;
 
 		super.subscribeEvents();
-		workflowEventsObj.subscribe("registerDevice", oThis.workflowId, (args) => {
+		workflowEventsObj.subscribe("registerDevice", oThis.workflowId, (ost_workflow_context, args) => {
 			oThis.registerDevice(args);
 		});
 	}
