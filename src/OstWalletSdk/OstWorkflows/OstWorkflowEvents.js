@@ -122,7 +122,7 @@ class OstWorkflowEvents {
 
     let event = null
       , eventSubscriberName = eventName
-      , workflowId = ostWorkflowContext.workflow_id
+      , workflowId = ostWorkflowContext.id
       , userId = ostWorkflowContext.user_id
     ;
 
