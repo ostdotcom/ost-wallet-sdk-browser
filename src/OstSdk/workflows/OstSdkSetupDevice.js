@@ -244,6 +244,6 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 	}
 
 	shouldNotSaveWorkflowContext() {
-    return true;
+    return false;
   }
 }

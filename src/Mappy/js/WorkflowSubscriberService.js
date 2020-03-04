@@ -17,7 +17,7 @@ const LOG_TAG = "MAPPY_WSS";
     },
     "wf_context_entity": {
 
-    }      
+    }
   },
   "requestAcknowledged": {
     "wf_context": {
@@ -32,7 +32,7 @@ const LOG_TAG = "MAPPY_WSS";
 
     },
     "wf_context_entity": {
-      
+
     }
   },
   "flowInterrupted": {
@@ -47,7 +47,7 @@ const LOG_TAG = "MAPPY_WSS";
 */
 
 /**
- * Meta Map. Key - WorkflowId, Value - the object below: 
+ * Meta Map. Key - WorkflowId, Value - the object below:
   {
     "id": workflowId,
     "name": workflowName,
@@ -92,7 +92,7 @@ class WorkflowSubscriberService {
 
 
     $(() => {
-      
+
       oThis.bindEvents();
     });
   }
@@ -101,7 +101,7 @@ class WorkflowSubscriberService {
     const oThis = this;
 
     oThis.compileTemplates();
-    
+
     oThis.currentUser = currentUser;
 
     // 1. OstWalletSdk.subscribeAll
@@ -150,7 +150,7 @@ class WorkflowSubscriberService {
     }, userId);
   }
 
-  subscribeAllForUserId() {  
+  subscribeAllForUserId() {
     const oThis = this;
     let userId = oThis.currentUser.user_id;
     let eventDataMap = oThis.subscribeAllUserIdMap;
@@ -201,13 +201,13 @@ class WorkflowSubscriberService {
     const wfStatus = workflowContext.status;
 
     oThis.ensureWorkflowData( workflowContext );
-    
-    
+
+
     // Update last_known_status
     let wfMetaData = oThis.workflowMetaMap[ workflowId ];
     wfMetaData.last_known_status = wfStatus;
     wfMetaData.last_context = workflowContext;
-    
+
     let wfEventData = eventDataMap[ workflowId ];
     wfEventData.last_known_status = wfStatus;
 
@@ -247,11 +247,15 @@ class WorkflowSubscriberService {
   subscribeToWorkflowId(workflowId) {
     const oThis = this;
 
+
     console.log(LOG_TAG, ":subscribeToWorkflowId: workflowId", workflowId);
-    OstWalletSdk.getWorkflowInfo(workflowId)
-      .then((workflowContext) => {
-        oThis.subscribeToWorkflow( workflowContext );
-      })
+		OstWalletSdk.getWorkflowInfo(oThis.currentUser.user_id, workflowId)
+			.then((workflowContext) => {
+				oThis.subscribeToWorkflow( workflowContext );
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "subscribeToWorkflowId" ,err);
+			})
   }
 
   ensureWorkflowData( workflow, isPending, isAutoAdded ) {
@@ -283,17 +287,17 @@ class WorkflowSubscriberService {
     // Add Event Data to maps.
     if ( !oThis.subscribeAllMap[ workflowId ] ) {
       let subscribeAllEventData = Object.assign({}, eventData);
-      oThis.subscribeAllMap[ workflowId ] = subscribeAllEventData;      
+      oThis.subscribeAllMap[ workflowId ] = subscribeAllEventData;
     }
 
     if ( !oThis.subscribeAllUserIdMap[ workflowId ] ) {
       let subscribeAllWithUserIdEventData = Object.assign({}, eventData);
-      oThis.subscribeAllUserIdMap[ workflowId ] = subscribeAllWithUserIdEventData;      
+      oThis.subscribeAllUserIdMap[ workflowId ] = subscribeAllWithUserIdEventData;
     }
 
     if ( !oThis.subscribeWorkflowIdMap[ workflowId ] ) {
       let subscribeWithWorkflowIdData = Object.assign({}, eventData);
-      oThis.subscribeWorkflowIdMap[ workflowId ] = subscribeWithWorkflowIdData;          
+      oThis.subscribeWorkflowIdMap[ workflowId ] = subscribeWithWorkflowIdData;
     }
   }
 
@@ -331,7 +335,7 @@ class WorkflowSubscriberService {
       "has_received_subscribe_all": false,
       "has_received_subscribe_all_user_id": false,
       "has_received_subscribe": false,
-      "is_consistent": true        
+      "is_consistent": true
     };
 
     return meta.checkListData[ eventName ];
@@ -351,14 +355,14 @@ class WorkflowSubscriberService {
     let workflowId = workflowContext.id;
     const checkListData = oThis.getChecklistDataForEvent(workflowContext, eventName);
 
-    const allEventsReceived = checkListData.has_received_subscribe 
-      && checkListData.has_received_subscribe_all 
+    const allEventsReceived = checkListData.has_received_subscribe
+      && checkListData.has_received_subscribe_all
       && checkListData.has_received_subscribe_all_user_id
     ;
     if ( !allEventsReceived ) {
       // Has received at-least one event
-      const atLeastOneEventReceived = checkListData.has_received_subscribe 
-        || checkListData.has_received_subscribe_all 
+      const atLeastOneEventReceived = checkListData.has_received_subscribe
+        || checkListData.has_received_subscribe_all
         || checkListData.has_received_subscribe_all_user_id
       ;
 
@@ -453,7 +457,7 @@ class WorkflowSubscriberService {
 
     console.log(LOG_TAG, "updateWorkflowList :: New workflow(s) have been added ");
     console.log(LOG_TAG, "updateWorkflowList :: oThis.workflowMetaMap", oThis.workflowMetaMap);
-    
+
     const jParent = $("#workflow-accordion");
 
     for(let wfId in oThis.workflowMetaMap ) { if ( oThis.workflowMetaMap.hasOwnProperty( wfId ) ) {
@@ -462,7 +466,7 @@ class WorkflowSubscriberService {
         continue;
       }
 
-      let cardHtml = oThis.cardTemplate( meta );      
+      let cardHtml = oThis.cardTemplate( meta );
       let jCard = $(cardHtml);
       jCard.data("workflowId", meta.id);
       jParent.append( jCard );
