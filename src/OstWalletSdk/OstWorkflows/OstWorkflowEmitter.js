@@ -50,7 +50,7 @@ export default class OstWorkflowEmitter {
 		const workflowId = this.getWorkflowId(args);
 		if (!workflowId) return;
 
-		this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, args.ost_context_entity)
+		this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, args.ost_error)
 	}
 
 	getWorkflowId(args) {
