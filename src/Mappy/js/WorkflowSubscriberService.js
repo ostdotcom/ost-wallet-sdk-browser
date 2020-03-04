@@ -226,7 +226,8 @@ class WorkflowSubscriberService {
     }
 
     // Update EventData w.r.t. event-name
-    let eventData = wfEventData[ eventName ] || {};
+    wfEventData[ eventName ] = wfEventData[ eventName ] || {};
+    let eventData = wfEventData[ eventName ];
     eventData["wf_context"] = workflowContext;
 
     return eventData;
@@ -398,19 +399,19 @@ class WorkflowSubscriberService {
     const wfIdEventData  = workflowIdWFData[ eventName ];
 
     if ( !allEventData ) {
-      console.error(LOG_TAG, "coding error. allEventData is null. workflowId:",workflowId, "allEventData", allEventData);
+      console.error(LOG_TAG, "coding error. allEventData is null. workflowId:", workflowId, "allWFData", allWFData);
       checkListData.is_consistent = false;
       return;
     }
 
     if ( !userIdEventData ) {
-      console.error(LOG_TAG, "coding error. userIdEventData is null. workflowId:",workflowId, "userIdEventData", userIdEventData);
+      console.error(LOG_TAG, "coding error. userIdEventData is null. workflowId:",workflowId, "userIdWFData", userIdWFData);
       checkListData.is_consistent = false;
       return;
     }
 
     if ( !wfIdEventData ) {
-      console.error(LOG_TAG, "coding error. wfIdEventData is null. workflowId:",workflowId, "wfIdEventData", wfIdEventData);
+      console.error(LOG_TAG, "coding error. wfIdEventData is null. workflowId:",workflowId, "workflowIdWFData", workflowIdWFData);
       checkListData.is_consistent = false;
       return;
     }
@@ -420,6 +421,12 @@ class WorkflowSubscriberService {
       jAll = JSON.stringify( allEventData );
       jUserId = JSON.stringify( userIdEventData );
       jWorkflowId = JSON.stringify( wfIdEventData );
+
+
+      console.log(LOG_TAG, "test subscriber: jAll", jAll);
+      console.log(LOG_TAG, "test subscriber: jUserId", jUserId);
+      console.log(LOG_TAG, "test subscriber: jWorkflowId", jWorkflowId);
+
     } catch(e) {
       console.error(LOG_TAG, "Codding Error.", e);
       checkListData.is_consistent = false;
