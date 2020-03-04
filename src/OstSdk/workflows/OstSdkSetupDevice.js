@@ -164,7 +164,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
 	postFlowComplete(entity) {
 		const oThis = this;
-		console.log(LOG_TAG, "post flow complete ===>");
+		console.log(LOG_TAG, "post flow complete --- > ");
 
 		super.postFlowComplete(entity)
       .then(() => {
