@@ -365,7 +365,7 @@ class UserPage {
 
 							},
 							mappyCallback);
-						workflowSubscriberService.addWorkflow(workflowId);
+						workflowSubscriberService.subscribeToWorkflowId(workflowId);
 					});
 				break;
 			case "executePayTransaction":
@@ -381,7 +381,7 @@ class UserPage {
 						}
 					},
 					mappyCallback);
-				workflowSubscriberService.addWorkflow(workflowId);
+				workflowSubscriberService.subscribeToWorkflowId(workflowId);
 				break;
 			default:
 				console.log("Not any transaction type");

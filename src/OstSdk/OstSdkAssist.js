@@ -79,10 +79,13 @@ class OstSdkAssist {
 
     return OstWorkflowContext.getById(workflowId)
       .then((workflowInfo) => {
+        if (!workflowInfo) {
+          throw new OstError("os_osa_gwi_1", OstErrorCodes.INVALID_WORKFLOW_ID)
+        }
 
         let workflowUserId = workflowInfo.getUserId();
         if (userId != workflowUserId) {
-            throw new OstError("os_osa_gwi_1", OstErrorCodes.INVALID_USER_ID)
+            throw new OstError("os_osa_gwi_2", OstErrorCodes.INVALID_USER_ID)
         }
         return oThis.onSuccess(workflowInfo.getJSONObject(), subscriberId);
       })
@@ -234,12 +237,12 @@ class OstSdkAssist {
       })
       .then(() => {
         functionName = 'onSuccess';
-        functionParams = {success: true};
+        functionParams = {data: {success: true} };
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       })
       .catch((err) => {
         let error = OstError.sdkError(err, 'os_osa_i_dls_2', OstErrorCodes.SDK_RESPONSE_ERROR);
-        this.sendToOstWalletSdk(functionName, subscriberId, error.getJSONObject());
+        this.sendToOstWalletSdk(functionName, subscriberId, {err: error.getJSONObject()});
       });
   }
 

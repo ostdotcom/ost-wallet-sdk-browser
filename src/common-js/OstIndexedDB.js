@@ -8,19 +8,18 @@ const STORES = {
 	KEY_STORE_TABLE: 'KEY_STORE_TABLE'
 };
 
+const DB_VERSION = 10;
+
 class OstIndexedDB {
-	constructor(name, version, stores) {
+	constructor(name) {
 		this.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-		if (!name || !version) {
+		if (!name || !DB_VERSION) {
 			throw new OstError("oidb_cons_1", OstErrorCodes.ILLEAGAL_ARGUMENT);
 		} else {
 			this.dbName = name;
-			this.version = version;
-			this.stores = stores || STORES;
+			this.version = DB_VERSION;
 		}
-
-		this.dbObject = null;
 	}
 
 	getConfigForStore(storeName) {
@@ -96,7 +95,7 @@ class OstIndexedDB {
 }
 
 export default {
-	newInstance: (name, version, stores) => {
-		return new OstIndexedDB(name, version, stores);
+	newInstance: (name) => {
+		return new OstIndexedDB(name);
 	}
 };

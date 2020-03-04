@@ -1,9 +1,24 @@
+const fs = require('fs');
+const path = require('path');
+
 String.prototype.trimRight = function(charlist) {
   if (charlist === undefined)
     charlist = "\s";
 
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
+
+const loadMappyPartial = ( fileName ) => {
+  const __dirname = path.resolve();
+  let filePath = path.resolve(__dirname, "./src/Mappy/html/partials/" + fileName);
+  fileContent = fs.readFileSync(filePath).toString();
+  return fileContent;
+};
+
+const loadEncodedMappyPartial = ( fileName ) => {
+  return encodeURIComponent( loadMappyPartial(fileName) );
+}
+
 
 const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK_PLATFORM_API_ENDPOINT, OST_BROWSER_SDK_IFRAME_ORIGIN) => {
   const sdkVersion = process.env.OST_BROWSER_SDK_VERSION || "";
@@ -22,8 +37,19 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
     "OST_BROWSER_SDK_PLATFORM_API_ENDPOINT": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
     "OST_TOKEN_ID": OST_TOKEN_ID,
     "DEMO_MAPPY_UI_API_ENDPOINT": DEMO_MAPPY_UI_API_ENDPOINT,
-    "OST_BROWSER_SDK_IFRAME_URL": OstSdkIframeUrl
+    "OST_BROWSER_SDK_IFRAME_URL": OstSdkIframeUrl,
+    "_htmlPartials": {
+      "DATA_DISPLAY_TEMPLATE": loadEncodedMappyPartial("data_display_template.html"),
+      "AFTER_SESSION": loadEncodedMappyPartial("after_session.html"),
+      "CREATE_SESSION_MODAL": loadEncodedMappyPartial("create_session_modal.html"),
+      "DELETE_SESSION_MODAL": loadEncodedMappyPartial("delete_session_modal.html"),      
+      "JSON_API_TEMPLATE": loadEncodedMappyPartial("json_api_template.html"),
+      "METHOD_TEMPLATE": loadEncodedMappyPartial("method_template.html"),
+      "WORKFLOW_MODAL": loadEncodedMappyPartial("workflow_modal.html")
+    }
   };
+
+  const LOADER_HTML = loadMappyPartial("page_loader.html");
 
   // Entity
   const entry = {};
@@ -51,6 +77,7 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
       /* http://devmappy.com/index.html  */
       {
           GC_VARS: JSON.stringify(GC_VARS),
+          LOADER_HTML: LOADER_HTML,
           title: "Login - Demo Mappy Web UI",
           template: "./src/Mappy/html/login.html",
           inject: true,
@@ -61,6 +88,7 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
       /* http://devmappy.com/login.html  */
       {
           GC_VARS: JSON.stringify(GC_VARS),
+          LOADER_HTML: LOADER_HTML,
           title: "Login - Demo Mappy Web UI",
           template: "./src/Mappy/html/login.html",
           inject: true,
@@ -71,6 +99,7 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
       /* http://devmappy.com/users.html  */
       {
           GC_VARS: JSON.stringify(GC_VARS),
+          LOADER_HTML: LOADER_HTML,
           title: "Users List - Demo Mappy Web UI",
           template: "./src/Mappy/html/users-new.html",
           inject: true,
@@ -81,6 +110,7 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
       /* http://devmappy.com/sdk-getters.html  */
       {
           GC_VARS: JSON.stringify(GC_VARS),
+          LOADER_HTML: LOADER_HTML,
           title: "Sdk Getter Methods - Demo Mappy Web UI",
           template: "./src/Mappy/html/sdk-getters-new.html",
           inject: true,
@@ -91,6 +121,7 @@ const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK
       /* http://devmappy.com/json-api.html  */
       {
           GC_VARS: JSON.stringify(GC_VARS),
+          LOADER_HTML: LOADER_HTML,
           title: "JSON API Methods - Demo Mappy Web UI",
           template: "./src/Mappy/html/json-api-new.html",
           inject: true,

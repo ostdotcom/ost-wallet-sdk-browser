@@ -3,7 +3,6 @@ import OstIndexDB from "../../common-js/OstIndexedDB";
 let dbInstance = null;
 let LOG_TAG = "OstBaseEntity :: ";
 
-const ENTITIES_DB_VERSION = 10;
 const ENTITIES_DB_NAME = 'EntitiesDB';
 const STORES = {
 	OST_DEVICE : 'OST_DEVICE',
@@ -123,7 +122,7 @@ class OstBaseEntity {
       if (dbInstance) {
         return Promise.resolve(dbInstance);
       } else {
-        let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME, ENTITIES_DB_VERSION, STORES);
+        let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME);
         return instance.createDatabase()
           .then(() => {
             dbInstance = instance;

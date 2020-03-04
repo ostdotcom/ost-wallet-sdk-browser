@@ -119,7 +119,7 @@ class CreateSessionHelper {
             oThis.higherUnitSpending,
             mappyCallback);
 
-            workflowSubscriberService.addWorkflow(workflowId);
+            workflowSubscriberService.subscribeToWorkflowId(workflowId);
 
     }
     getDate(duration) {

@@ -1,7 +1,6 @@
 import OstIndexDB from "../../common-js/OstIndexedDB";
 import OstError from "../../common-js/OstError";
 
-const SE_DB_VERSION = 1;
 const SE_DB_NAME = 'SecureEnclaveDB';
 const STORES = {
 	KEY_STORE_TABLE:'KEY_STORE_TABLE',
@@ -14,7 +13,7 @@ class SecureEnclave {
 
 	constructor(userId) {
 		this.userId = userId;
-		this.kmDB = OstIndexDB.newInstance(SE_DB_NAME, SE_DB_VERSION, STORES);
+		this.kmDB = OstIndexDB.newInstance(SE_DB_NAME);
 	}
 
 	init() {

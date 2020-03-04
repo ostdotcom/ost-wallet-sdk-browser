@@ -5,7 +5,7 @@ import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
 import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
-import workflowSubscriberService from "./WorkflowSubscriberService";
+import WorkflowSubscriberService from "./WorkflowSubscriberService";
 
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
@@ -20,9 +20,9 @@ class PageInitializer {
 
     oThis.currentUserInfo = null;
     oThis.deleteSessionsHelper = null;
-
     oThis.validatePage();
     $(() => {
+      oThis.addPartials();
       ajaxUtils.setupAjax();
       oThis.bindEvents();
       if ( autoPerform ) {
@@ -47,6 +47,30 @@ class PageInitializer {
         jEl.removeClass("d-none");
         return oThis.initOstWalletSdk()
       })
+
+      // Init WorkflowSubscriber Service
+      .then( () => {
+        // Hacky Logic - DO NOT COPY THIS `then`.
+        let txt = jEl.text();
+        jEl.html(txt + "<span style='float:right'>✅ Done</span>");
+
+        let wsJEl = $("#loading-workflow-subscriber");
+        let wsTxt = wsJEl.text();
+        wsJEl.removeClass("d-none");
+        return oThis.initWorkflowSubscriber()
+          .then((idk) => {
+            // Hacky Logic.
+            jEl = wsJEl;
+            return idk;
+          })
+          .catch((e) => {
+            // Some error has occoured. But, lets supress it. continue anyway.
+            wsJEl.html(wsTxt + "<span style='float:right'>⚠️ Failed</span>");
+            // Hacky Logic - reset to txt
+            jEl.html(txt);
+          })
+      })
+
 
       // Perform the setup Device
       .then( () => {
@@ -90,7 +114,7 @@ class PageInitializer {
     $('body').addClass('loaded');
     setTimeout(() => {
       $("#loader-wrapper").remove();
-    }, 10000);
+    }, 7000);
   }
 
   validatePage() {
@@ -146,13 +170,21 @@ class PageInitializer {
     return OstWalletSdk.init( sdkConfig ).then(() => {
       console.log("OstWalletSdk.init resolved");
       this.isOstWalletSdkInitialized = true;
-      workflowSubscriberService.subscribeToEvents();    //subscribeAll events
       return true;
     }).catch(( error ) => {
-      console.error("OstWalletSdk.init threw an error", error);
+      console.error("|||------- OstWalletSdk.init threw an error -------|||", error);
       // Throw the error again.
       throw error;
     });
+  }
+
+  initWorkflowSubscriber() {
+    return WorkflowSubscriberService.init(this.currentUserInfo)
+      .catch((error) => {
+        console.log("|||------- WorkflowSubscriber.init threw an error -------|||", error);
+        // Throw the error again.
+        throw error;
+      })
   }
 
   setupDeviceWorkflow() {
@@ -186,7 +218,10 @@ class PageInitializer {
 
       // Invoke the workflow.
       let workflowId = OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
-      workflowSubscriberService.addWorkflow(workflowId);
+      // Set the workflowId for sdk-getters.
+      currentUser.setup_device_workflow_id = workflowId;
+      
+      WorkflowSubscriberService.subscribeToWorkflowId(workflowId);
     });
   }
 
@@ -244,6 +279,17 @@ class PageInitializer {
         // If not, throw the error.
         throw error;
       });
+  }
+
+  addPartials() {
+    if ( !window._htmlPartials ) {
+      return;
+    }
+    for(let k in _htmlPartials) {
+      let encodedHtml = _htmlPartials[k];
+      let jEl = $( decodeURIComponent( encodedHtml ) );
+      $('body').append( jEl );
+    }
   }
 }
 export default PageInitializer;

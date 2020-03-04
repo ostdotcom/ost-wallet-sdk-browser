@@ -1,6 +1,7 @@
 import {SOURCE} from "../common-js/OstBrowserMessenger";
 import IKM from "./ecKeyInteracts/OstIKM";
 import OstMessage from "../common-js/OstMessage";
+import OstError from "../common-js/OstError";
 
 const LOG_TAG = 'IKM: OstKeyManagerAssist';
 const KEY_STORE = 'KEY_STORE';
@@ -134,7 +135,7 @@ export default class OstKeyManagerAssist {
 				return ikm.deleteLocalSessions(sessionAddresses);
 			})
 			.then( () => {
-				return oThis.onSuccess(args, subscriberId)
+              return oThis.onSuccess(args, subscriberId)
 			})
 			.catch((err) => {
 				return oThis.onError({err: err}, subscriberId);
