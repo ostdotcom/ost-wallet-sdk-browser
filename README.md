@@ -97,7 +97,7 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(i
     };
 
 
-    return return OstWalletSdk.init( sdkConfig )
+    return OstWalletSdk.init( sdkConfig )
         .then(() => {
           return oThis.setupDeviceWorkflow();
         })
