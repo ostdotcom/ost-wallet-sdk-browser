@@ -41,7 +41,7 @@ import OstWalletSdk from '@ostdotcom/ost-wallet-sdk-browser'
 ## Initialize the Sdk and setup user's device.
 Use the below code to initialize the sdk and setup user's device.
 The below code defines `initializeAndSetupOstSdk` method that you could use once your applications' page has loaded or before user's first wallet interaction by calling the `initializeAndSetupOstSdk` method.
-The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both the tasks are completed without any errors.
+The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(initialize and setup) the tasks are completed without any errors.
 
 **Note:** <u>Your code needs to <b>invoke or call</b></u> the `initializeAndSetupOstSdk` method.
 
@@ -109,7 +109,7 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both t
 
 
 # Detailed Documentaion Refrence
-  * [Setup & Initialization](./documentation/sdk_initialization.md)
+  * [Setup and Initialization](./documentation/sdk_initialization.md)
   * [Workflows](./documentation/workflows.md)
   * [OstJsonApi](./documentation/OstJsonApi.md)
   * [Other Methods](./documentation/sdk_getters.md)
