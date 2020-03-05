@@ -1,5 +1,7 @@
 import {OstBaseEntity, STORES} from "../entities/OstBaseEntity";
 
+const LOG_TAG = 'OstWorkflowContext';
+let COUNT_TO_PRESERVE = 50;
 class OstWorkflowContext extends OstBaseEntity {
 
 	static WORKFLOW_TYPE = {
@@ -82,6 +84,10 @@ class OstWorkflowContext extends OstBaseEntity {
 		return this.getData().created_at;
 	}
 
+	getUpdatedAt() {
+		return this.getData().updated_at;
+	}
+
 	getJSONObject() {
 		return {
 			name: this.data.name,
@@ -149,6 +155,59 @@ export default {
 					return new OstWorkflowContext(workflowObj);
 				});
 			});
+	},
+
+	deleteStaleWorkflows: function(userId) {
+		const dummyInstance = this.newInstanceFromParams('dummyWorkflowName', 'dummyId');
+		return dummyInstance.getAll()
+			.then((entitiesArray) => {
+				if (!entitiesArray || entitiesArray.length < 1) {
+					return;
+				}
+
+				return entitiesArray.filter(function (entity) {
+					// Check userId
+					if (userId !== entity.user_id) {
+						return false;
+					}
+
+					// filter based on workflow status which at most acknowledged
+					if (OstWorkflowContext.STATUS.CANCELLED_BY_NAVIGATION > entity.status) {
+						return false;
+					}
+
+					return true;
+				});
+			})
+			.then((workflowsToDelete) => {
+				return workflowsToDelete.map((workflowObj) => {
+					return new OstWorkflowContext(workflowObj);
+				});
+			})
+			.then((workflowsToDeleteArray) => {
+				workflowsToDeleteArray = workflowsToDeleteArray.sort((obj1, obj2) => {
+					return parseInt(obj2.getUpdatedAt()) - parseInt(obj1.getUpdatedAt());
+				});
+
+				const countToPreserve = COUNT_TO_PRESERVE || 50;
+
+				//Check whether there exist anything to delete
+				if (!workflowsToDeleteArray[countToPreserve]) {
+					return;
+				}
+
+				for (let index = countToPreserve; index<workflowsToDeleteArray.length; index++) {
+					const worflowContext = workflowsToDeleteArray[index];
+					worflowContext.deleteData();
+				}
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, 'deleteStaleWorkflows', err);
+			});
+	},
+
+	setMaxWorkflowCount: function(countToPreserve) {
+		COUNT_TO_PRESERVE = countToPreserve;
 	},
 
 	WORKFLOW_TYPE: OstWorkflowContext.WORKFLOW_TYPE,

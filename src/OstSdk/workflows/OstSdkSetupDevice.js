@@ -193,6 +193,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 				ackWorkflowContextArray.forEach((workflowContext) => {
           new OstSdkWorkflowFactory(workflowContext, this.browserMessenger).perform();
 				});
+			})
+			.then(() => {
+				console.log(LOG_TAG, "Wipe exceeded ostWorkflowContext");
+				OstWorkflowContext.deleteStaleWorkflows(oThis.userId);
 			});
   }
 
