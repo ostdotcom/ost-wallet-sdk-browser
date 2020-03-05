@@ -155,6 +155,10 @@ class OstSession extends OstBaseEntity {
 		return this.forceCommit();
 	}
 
+	getUpdatedAt() {
+		return this.getData().updated_timestamp;
+	}
+
   getNonce() {
     return this.getData().nonce;
   }

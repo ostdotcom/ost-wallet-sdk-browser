@@ -6,10 +6,11 @@ class OstBasePolling {
 
   static FIRST_REQUEST_DELAY_TIME = 1000 * 21; //21 seconds
 
-  constructor(userId, keyManagerProxy) {
+  constructor(userId, keyManagerProxy, ostWorkflowContext) {
     this.userId = userId;
     this.isFirstRequest = true;
     this.keyManagerProxy = keyManagerProxy;
+    this.ostWorkflowContext = ostWorkflowContext;
 
     this.apiClient = new OstApiClient(this.userId, OstConstants.getBaseURL(), this.keyManagerProxy);
   }
@@ -49,11 +50,12 @@ class OstBasePolling {
           oThis.getEntity(success, failure);
         })
         .catch((err) => {
-          if ( this.shouldRetryAfterError(err) ) {
-            oThis.getEntity(success, failure);
-          }else {
-            failure(err);
-          }
+					const pollingError = oThis.getPollingFailedError(err);
+					if (pollingError) {
+						failure(pollingError);
+					} else {
+						oThis.getEntity(success, failure);
+					}
         })
     }, delayTime)
   }
@@ -70,8 +72,8 @@ class OstBasePolling {
 		return false;
 	}
 
-  shouldRetryAfterError( err ) {
-    return true;
+  getPollingFailedError( err ) {
+    return null;
   }
 }
 

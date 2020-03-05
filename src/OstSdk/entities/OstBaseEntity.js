@@ -118,6 +118,14 @@ class OstBaseEntity {
 		return OstBaseEntity.initInstance();
 	}
 
+	getUpdatedAt() {
+		return this.getData().updated_at;
+	}
+
+	getCreatedAt() {
+		return this.getData().created_at;
+	}
+
 	static initInstance() {
       if (dbInstance) {
         return Promise.resolve(dbInstance);

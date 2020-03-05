@@ -16,8 +16,7 @@ class OstWorkflowContext extends OstBaseEntity {
 		ACKNOWLEDGED: 2,
 		CANCELLED_BY_NAVIGATION: 3,
 		COMPLETED: 4,
-		INTERRUPTED: 5,
-		QR_TIMEDOUT: 6
+		INTERRUPTED: 5
 	};
 
 	static STATUS_LOOKUP = Object.keys(OstWorkflowContext.STATUS);
