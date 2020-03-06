@@ -210,3 +210,47 @@ OstWalletSdk.getActiveSessions( userId )
   }
 ]
 ```
+
+### Get Workflow Info
+API returns workflow info for given workflow id and user id.
+##### Usage
+```
+/*
+  Please update userId, workflowId as per your needs. 
+  Since this userId does not belong to your economy, you will get an error if you do not change it.
+*/
+
+/**
+  getWorkflowInfo() return a promise. Promise return response in .then() and .catch() returns the error, if any occurred.
+*/
+
+let userId = 'dabd272f-b330-4c99-a3f7-aaf38012ef5f';
+let workflowId = 'b68e0278-d014-49d6-be41-33d66ccf7e82';
+OstWalletSdk.getWorkflowInfo(userId, workflowId)
+  .then( (result) => { 
+      console.log( result ); 
+  })
+  .catch( (err) => { 
+      console.log(err); 
+  });
+
+```
+##### Sample Response
+```json
+{ 
+  "name": "SETUP_DEVICE", 
+  "id": "b68e0278-d014-49d6-be41-33d66ccf7e82", 
+  "user_id": "dabd272f-b330-4c99-a3f7-aaf38012ef5f", 
+  "status": "COMPLETED", 
+  "args": [ 
+            { 
+              "user_id": "dabd272f-b330-4c99-a3f7-aaf38012ef5f", 
+              "token_id": 1129, 
+              "workflow_id": "b68e0278-d014-49d6-be41-33d66ccf7e82", 
+              "subscriber_id": "b68e0278-d014-49d6-be41-33d66ccf7e82"
+            } 
+          ], 
+  "created_at": 1583495779,
+  "updated_at": 1583495779 
+}
+```
