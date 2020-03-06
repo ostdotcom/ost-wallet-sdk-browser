@@ -2,7 +2,7 @@ import OstMessage from "../common-js/OstMessage";
 import OstError from "../common-js/OstError";
 import OstKeyManagerAssist from "./OstKeyManagerAssist";
 import OstBaseSdk from "../common-js/OstBaseSdk";
-import {SOURCE, OstBrowserMessenger} from "../common-js/OstBrowserMessenger";
+import {SOURCE} from "../common-js/OstBrowserMessenger";
 
 const LOG_TAG = "OstSdkKeyManager :: ";
 
