@@ -556,6 +556,10 @@ class OstBaseSdk {
       finalConfig.create_session_qr_timeout = 3 * 60 * 60;
     }
 
+    if ( !finalConfig.max_workflow_count ) {
+			finalConfig.max_workflow_count = 50;
+    }
+
     if ( "boolean" !== typeof finalConfig.debug ) {
       finalConfig.debug = false;
     }

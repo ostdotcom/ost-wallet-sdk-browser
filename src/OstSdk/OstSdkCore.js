@@ -6,7 +6,9 @@ import {OstBaseEntity} from "./entities/OstBaseEntity";
 import OstApiClient from "./api/OstApiClient";
 import OstError from "../common-js/OstError";
 import EC from '../common-js/OstErrorCodes';
-import OstSdkWorkflowFactory from "./workflows/OstSdkWorkflowFactory";
+import OstWorkflowContext from "./workflows/OstWorkflowContext";
+import OstSessionPolling from "./OstPolling/OstSessionPolling";
+import OstSession from "./entities/OstSession"
 
 const LOG_TAG = "OstSdk :: index :: ";
 
@@ -108,7 +110,9 @@ class OstSdk extends OstBaseSdk {
   init(...args) {
     return super.init(...args)
       .then((val) => {
-				OstSdkWorkflowFactory.setCreateSessionQRTimeout( this.sdkConfig.create_session_qr_timeout );
+				OstSessionPolling.setCreateSessionQRTimeout( this.sdkConfig.create_session_qr_timeout );
+				OstSession.setCreateSessionTimeout( this.sdkConfig.create_session_qr_timeout );
+				OstWorkflowContext.setMaxWorkflowCount( this.sdkConfig.max_workflow_count );
 				return val;
       });
   }

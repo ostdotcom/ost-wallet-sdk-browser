@@ -2,6 +2,7 @@ import {OstBaseEntity, STORES} from "./OstBaseEntity";
 import BigNumber from 'bignumber.js';
 import OstError from '../../common-js/OstError';
 
+let createSessionTimeout = 3 * 60 * 60;
 class OstSession extends OstBaseEntity {
 
   static STATUS = {
@@ -22,10 +23,22 @@ class OstSession extends OstBaseEntity {
     return 'session';
   }
 
+	static setCreateSessionTimeout(create_session_qr_timeout) {
+		createSessionTimeout = create_session_qr_timeout;
+	}
 
   static init(userId, address, spendingLimit, expiryTime) {
+		const currentTimeStamp = parseInt(Date.now() / 1000);
     const session = new OstSession(
-      {user_id: userId, address: address, spending_limit: spendingLimit || 0, expiration_height: expiryTime || 0, status: OstSession.STATUS.CREATED}
+      {
+        user_id: userId,
+        address: address,
+        spending_limit: spendingLimit || 0,
+        expiration_height: expiryTime || 0,
+        status: OstSession.STATUS.CREATED,
+				updated_timestamp:currentTimeStamp,
+        created_at: currentTimeStamp
+      }
     );
     return session.forceCommit();
   }
@@ -100,35 +113,23 @@ class OstSession extends OstBaseEntity {
     return session.deleteData();
   }
 
-  static deleteAllSessions(userId) {
-    let _resolve;
+	static handleDeletion(address) {
 
-    OstSession.getActiveSessions(userId)
-      .then((sessions) => {
-        if (!sessions) {sessions = []}
-        let promiseArray = [];
-        let sessionIds = [];
-        let promiseList = [];
-        sessions.forEach((session) => {
-          sessionIds.push(session.id);
-        });
+		return OstSession.getById(address)
+      .then((sessionObject)=> {
+        if (!sessionObject) {
+          return;
+        }
 
-        sessionIds.forEach((address) => {
-          promiseList.push(OstSession.deleteById(address))
-        });
+				if (sessionObject.isStatusCreated()) {
+					const currentTimeStamp = parseInt(Date.now() / 1000);
+          if (currentTimeStamp - parseInt(sessionObject.getUpdatedAt()) < createSessionTimeout){
+            return;
+          }
+        }
 
-        return Promise.all(promiseList)
+				return OstSession.deleteById(address);
       })
-      .then(() => {
-        _resolve()
-      })
-      .catch((err) => {
-        _resolve()
-      });
-
-    return new Promise((resolve) => {
-      _resolve = resolve
-    })
   }
 
   getStoreName() {
@@ -155,12 +156,20 @@ class OstSession extends OstBaseEntity {
 		return this.forceCommit();
 	}
 
+	getUpdatedAt() {
+		return this.getData().updated_timestamp;
+	}
+
   getNonce() {
     return this.getData().nonce;
   }
   //Status
   isStatusAuthorized() {
-    return OstSession.STATUS.AUTHORIZED === this.getStatus()
+    return OstSession.STATUS.AUTHORIZED === this.getStatus();
+  }
+
+  isStatusCreated() {
+    return OstSession.STATUS.CREATED === this.getStatus();
   }
 }
 export default OstSession;

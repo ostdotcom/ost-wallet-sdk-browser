@@ -49,11 +49,12 @@ class OstBasePolling {
           oThis.getEntity(success, failure);
         })
         .catch((err) => {
-          if ( this.shouldRetryAfterError(err) ) {
-            oThis.getEntity(success, failure);
-          }else {
-            failure(err);
-          }
+					const pollingError = oThis.getPollingFailedError(err);
+					if (pollingError) {
+						failure(pollingError);
+					} else {
+						oThis.getEntity(success, failure);
+					}
         })
     }, delayTime)
   }
@@ -70,8 +71,8 @@ class OstBasePolling {
 		return false;
 	}
 
-  shouldRetryAfterError( err ) {
-    return true;
+  getPollingFailedError( err ) {
+    return null;
   }
 }
 
