@@ -55,8 +55,8 @@ const sdkConfig = {
    }
 ```
 > <b>Note</b>
-> * create_session_qr_timeout: Sdk polls for session till `create_session_qr_timeout` seconds. It doesn't expires QR code.  
-> * max_workflow_count: It keeps `max_workflow_count` number of non pending workflows and removes remaining workflows.
+> * _create_session_qr_timeout_: Sdk polls for session till `create_session_qr_timeout` seconds. It doesn't expires QR code.  
+> * _max_workflow_count_: It keeps `max_workflow_count` number of non pending workflows and removes remaining workflows.
 
 ```js
   /*
