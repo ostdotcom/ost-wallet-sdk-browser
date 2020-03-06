@@ -254,3 +254,51 @@ OstWalletSdk.getWorkflowInfo(userId, workflowId)
   "updated_at": 1583495779 
 }
 ```
+
+### Get Pending workflows
+API returns pending workflows for user id.
+##### Usage
+```
+/*
+  Please update userId as per your needs. 
+  Since this userId does not belong to your economy, you will get an error if you do not change it.
+*/
+
+/**
+  getPendingWorkflows() return a promise. Promise return response in .then() and .catch() returns the error, if any occurred.
+*/
+
+let userId = 'dabd272f-b330-4c99-a3f7-aaf38012ef5f';
+OstWalletSdk.getPendingWorkflows(userId)
+  .then( (result) => { 
+      console.log( result ); 
+  })
+  .catch( (err) => { 
+      console.log(err); 
+  });
+
+```
+##### Sample Response
+```json
+[ 
+  { 
+    "name": "CREATE_SESSION", 
+    "id": "15b050a7-eee7-4d58-b574-bdf0e735615b", 
+    "user_id": "dabd272f-b330-4c99-a3f7-aaf38012ef5f", 
+    "status": "ACKNOWLEDGED", 
+    "args": [ 
+              { 
+                "user_id": "dabd272f-b330-4c99-a3f7-aaf38012ef5f",
+                "spending_limit": "1", 
+                "expiration_time": 1583582172,
+                "workflow_id": "15b050a7-eee7-4d58-b574-bdf0e735615b", 
+                "subscriber_id": "15b050a7-eee7-4d58-b574-bdf0e735615b" 
+              }
+            ], 
+    "context_entity_id": "0x6BfaBA7d6C7fF30a21eE18c59814bB6C8ab1F77b",
+    "context_entity_type": "session", 
+    "created_at": 1583495773, 
+    "updated_at": 1583495774 
+  }
+]
+```
