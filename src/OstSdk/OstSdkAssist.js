@@ -224,16 +224,23 @@ class OstSdkAssist {
     let functionName = 'onError';
 
     let sessionIds = [];
-    OstSession.getActiveSessions(userId)
+    OstSession.getAllSessions()
       .then((sessions) => {
         sessions.forEach((session) => {
-          sessionIds.push(session.id);
+          if (userId === session.user_id) {
+						sessionIds.push(session.id);
+					}
         });
         let km = this.getKeyManagerProxy(userId);
         return km.deleteLocalSessions(sessionIds)
       })
       .then(() => {
-        return OstSession.deleteAllSessions(userId);
+        let promiseList = [];
+				sessionIds.forEach((address) => {
+					promiseList.push(OstSession.deleteById(address))
+				});
+
+				return Promise.all(promiseList);
       })
       .then(() => {
         functionName = 'onSuccess';

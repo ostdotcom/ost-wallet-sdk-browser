@@ -107,7 +107,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   pollingForSessionAddress(sessionAddress) {
-    this.sessionPollingClass = new OstSessionPolling(this.userId, sessionAddress, this.keyManagerProxy, this.getWorkflowContext());
+    this.sessionPollingClass = new OstSessionPolling(this.userId, sessionAddress, this.keyManagerProxy);
     return this.sessionPollingClass.perform()
       .then((sessionEntity) => {
         console.log(sessionEntity);

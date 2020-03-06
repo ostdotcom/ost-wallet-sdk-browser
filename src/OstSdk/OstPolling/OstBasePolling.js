@@ -6,11 +6,10 @@ class OstBasePolling {
 
   static FIRST_REQUEST_DELAY_TIME = 1000 * 21; //21 seconds
 
-  constructor(userId, keyManagerProxy, ostWorkflowContext) {
+  constructor(userId, keyManagerProxy) {
     this.userId = userId;
     this.isFirstRequest = true;
     this.keyManagerProxy = keyManagerProxy;
-    this.ostWorkflowContext = ostWorkflowContext;
 
     this.apiClient = new OstApiClient(this.userId, OstConstants.getBaseURL(), this.keyManagerProxy);
   }

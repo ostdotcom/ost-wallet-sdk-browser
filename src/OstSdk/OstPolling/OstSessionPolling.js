@@ -6,8 +6,8 @@ import OstErrorCodes from "../../common-js/OstErrorCodes";
 let create_session_qr_timeout = 3 * 60 * 60;
 
 class OstSessionPolling extends OstBasePolling {
-  constructor(userId, sessionAddress, keyManagerProxy, ostWorkflowContext) {
-    super(userId, keyManagerProxy, ostWorkflowContext);
+  constructor(userId, sessionAddress, keyManagerProxy) {
+    super(userId, keyManagerProxy);
 
     this.sessionAddress = sessionAddress;
   }
@@ -19,8 +19,11 @@ class OstSessionPolling extends OstBasePolling {
 	fetchEntity() {
 		let oThis = this;
 		// Check whether session key exists
-		return OstSession.init(oThis.userId, oThis.sessionAddress)
+		return OstSession.getById(oThis.sessionAddress)
 			.then((sessionEntity) => {
+				if (!sessionEntity) {
+					throw new OstError('os_op_osp_fe_1', OstErrorCodes.SESSION_KEY_NOT_FOUND);
+				}
 			  oThis.sessionEntity = sessionEntity;
 				return oThis.keyManagerProxy.filterLocalSessions([oThis.sessionEntity.getData()])
 			})
@@ -28,7 +31,7 @@ class OstSessionPolling extends OstBasePolling {
 			  if (!filteredSessions.length ||
 					filteredSessions[0].id.toLowerCase() !== oThis.sessionAddress.toLowerCase()) {
 
-			    throw new OstError('os_op_osp_fe_1', OstErrorCodes.SESSION_KEY_NOT_FOUND);
+			    throw new OstError('os_op_osp_fe_2', OstErrorCodes.SESSION_KEY_NOT_FOUND);
 
 			  }
 				return filteredSessions[0];
@@ -54,12 +57,12 @@ class OstSessionPolling extends OstBasePolling {
     const oThis = this
     ;
 
-    if (!oThis.ostWorkflowContext) {
+    if (!oThis.sessionEntity) {
       return true;
     }
 
 		const currentTimeStamp = parseInt(Date.now() / 1000);
-		if (currentTimeStamp - parseInt(oThis.ostWorkflowContext.getUpdatedAt()) > create_session_qr_timeout) {
+		if (currentTimeStamp - parseInt(oThis.sessionEntity.getUpdatedAt()) > create_session_qr_timeout) {
 			return true;
 		}
 		return false;

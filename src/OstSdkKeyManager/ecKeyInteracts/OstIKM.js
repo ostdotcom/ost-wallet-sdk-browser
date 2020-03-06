@@ -279,7 +279,7 @@ class IKM {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Delete Session failed", err);
-				return Promise.resolve();
+				return Promise.reject();
 			});
 	}
 

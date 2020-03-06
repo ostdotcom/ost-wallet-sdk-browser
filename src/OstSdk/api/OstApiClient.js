@@ -80,7 +80,7 @@ export default class OstApiClient {
 
 					//Wipe session from local db if it is NOT FOUND in backend
 					if (apiError.isNotFound()) {
-						OstSession.deleteById(sessionAddress);
+						OstSession.handleDeletion(sessionAddress);
 					}
 				}
         throw err;
