@@ -96,8 +96,13 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(i
       });
     };
 
-
-    return OstWalletSdk.init( sdkConfig )
+   const sdkConfig = {
+     "token_id":"1129",
+     "api_endpoint":"https://api.stagingost.com/testnet/v2/",
+     "sdk_endpoint":"https://sdk-devmappy.ostsdkproxy.com/index.html"
+   }
+  
+  return OstWalletSdk.init( sdkConfig )
         .then(() => {
           return oThis.setupDeviceWorkflow();
         })
