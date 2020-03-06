@@ -117,5 +117,5 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(i
   * [Setup and Initialization](./documentation/sdk_initialization.md)
   * [Workflows](./documentation/workflows.md)
   * [OstJsonApi](./documentation/OstJsonApi.md)
-  * [Other Methods](./documentation/sdk_getters.md)
+  * [Other Methods](./documentation/useful_methods.md)
   * [Setup Development Environemnt](./documentation/development_environment_setup.md)
