@@ -33,7 +33,7 @@ class OstHelpers {
 // compare DataViews
   static dataViewsAreEqual(a, b) {
     if (a.byteLength !== b.byteLength) return false;
-    for (let i = 0; i < a.byteLength; i++) {
+    for (let i=0; i < a.byteLength; i++) {
       if (a.getUint8(i) !== b.getUint8(i)) return false;
     }
     return true;
@@ -45,18 +45,18 @@ class OstHelpers {
     }
   }
 
-  static strToArrayBuffer(str) {
-    var buf = new ArrayBuffer(str.length * 2);
-    var bufView = new Uint16Array(buf);
-    for (var i = 0, strLen = str.length; i < strLen; i++) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-  }
+	static strToArrayBuffer(str) {
+		var buf = new ArrayBuffer(str.length * 2);
+		var bufView = new Uint16Array(buf);
+		for (var i = 0, strLen = str.length; i < strLen; i++) {
+			bufView[i] = str.charCodeAt(i);
+		}
+		return buf;
+	}
 
-  static arrayBufferToString(buf) {
-    return String.fromCharCode.apply(null, new Uint16Array(buf));
-  }
+	static arrayBufferToString(buf) {
+		return String.fromCharCode.apply(null, new Uint16Array(buf));
+	}
 }
 
 export default OstHelpers

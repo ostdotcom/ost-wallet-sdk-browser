@@ -23,9 +23,9 @@ export {
 /**
  * Self executing method to generate wrapper methods.
  */
-(function (_win) {
+(function( _win ) {
 
-  const sdkCore = new OstWalletSdkCore(window);
+  const sdkCore = new OstWalletSdkCore( window );
 
   // Core Sdk methods to expose.
   const simpleMethods = ["init"];
@@ -64,7 +64,7 @@ export {
     getDeviceList: "getDeviceListFromServer",
     getTokenHolder: "getTokenHolderFromServer"
   };
-  const jsonApiMethods = Object.keys(jsonApiMethodsMap);
+  const jsonApiMethods = Object.keys( jsonApiMethodsMap );
 
 
   const subscribeMethods = ["subscribe", "subscribeAll"];
@@ -78,7 +78,7 @@ export {
 
   const workflowFunctionGenerator = (fromObj, methodName) => {
     return (...args) => {
-      if (sdkCore.isSdkInitialized()) {
+      if ( sdkCore.isSdkInitialized() ) {
         return fromObj[methodName](...args);
       }
       let internalErrorCode = ["ows_generator_", "workflowFunctionGenerator", methodName].join("_");
@@ -92,7 +92,7 @@ export {
 
   const getterFunctionGenerator = (fromObj, methodName) => {
     return (...args) => {
-      if (sdkCore.isSdkInitialized()) {
+      if ( sdkCore.isSdkInitialized() ) {
         return sdkCore.proxy[methodName](...args);
       }
       let internalErrorCode = ["ows_generator_", "getterFunctionGenerator", methodName].join("_");
@@ -105,10 +105,10 @@ export {
   };
 
   const jsonApiFunctionGenerator = (fromObj, externalMethodName) => {
-    const internalMethodName = jsonApiMethodsMap[externalMethodName];
+    const internalMethodName = jsonApiMethodsMap[ externalMethodName ];
     return (...args) => {
-      if (sdkCore.isSdkInitialized()) {
-        return sdkCore.jsonApiProxy[internalMethodName](...args);
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.jsonApiProxy[ internalMethodName ](...args);
       }
       let internalErrorCode = ["ows_generator_", "jsonApiFunctionGenerator", externalMethodName].join("_");
       let errorInfo = {
@@ -121,7 +121,7 @@ export {
 
   const subscriberFunctionGenerator = (fromObj, methodName) => {
     return (...args) => {
-      if (sdkCore.isSdkInitialized()) {
+      if ( sdkCore.isSdkInitialized() ) {
         return sdkCore.workflowEvents[methodName](...args);
       }
       let internalErrorCode = ["ows_generator_", "getterFunctionGenerator", methodName].join("_");
@@ -135,34 +135,34 @@ export {
 
 
   const addMethods = (fromObj, toObj, functionGenerator, methodsToAdd) => {
-    if (!fromObj) {
+    if ( !fromObj ) {
       throw new Error("addMethods: fromObj is null");
     }
 
-    if (!toObj) {
+    if ( !toObj ) {
       throw new Error("addMethods: toObj is null");
     }
 
-    if (!functionGenerator) {
+    if ( !functionGenerator ) {
       throw new Error("addMethods: functionGenerator is null");
     }
 
-    if (!methodsToAdd) {
-      methodsToAdd = Object.keys(fromObj);
+    if ( !methodsToAdd ) {
+      methodsToAdd = Object.keys( fromObj );
     }
 
     let len = methodsToAdd.length;
-    while (len--) {
-      let methodName = methodsToAdd[len];
+    while( len-- ) {
+      let methodName = methodsToAdd[ len ];
       let generatedFunction = functionGenerator(fromObj, methodName);
-      if (generatedFunction) {
-        Object.defineProperty(toObj, methodName, {
+      if ( generatedFunction ) {
+        Object.defineProperty( toObj, methodName, {
           "value": generatedFunction,
           "writable": false,
           "enumerable": true
         });
       } else {
-        let fnRef = fromObj[methodName];
+        let fnRef = fromObj[ methodName ];
         console.warn("generatedFunction is undefined for methodName", methodName, "typeof fnRef", typeof fnRef);
       }
     }

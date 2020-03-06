@@ -7,63 +7,63 @@ const LOG_TAG = "MAPPY_WSS";
 
 /**
  * Each Map has key = workflow-id and value with following structure:
- {
-   "id": "WORKFLOW_ID",
-   "last_known_status": "last_known_status",
- 
-   "flowInitiated": {
-     "wf_context": {
- 
-     },
-     "wf_context_entity": {
- 
-     }
-   },
-   "requestAcknowledged": {
-     "wf_context": {
- 
-     },
-     "wf_context_entity": {
- 
-     }
-   },
-   "flowCompleted": {
-     "wf_context": {
- 
-     },
-     "wf_context_entity": {
- 
-     }
-   },
-   "flowInterrupted": {
-     "wf_context": {
- 
-     },
-     "ost_error": {
- 
-     }
-   }
- }
- */
+{
+  "id": "WORKFLOW_ID",
+  "last_known_status": "last_known_status",
+
+  "flowInitiated": {
+    "wf_context": {
+
+    },
+    "wf_context_entity": {
+
+    }
+  },
+  "requestAcknowledged": {
+    "wf_context": {
+
+    },
+    "wf_context_entity": {
+
+    }
+  },
+  "flowCompleted": {
+    "wf_context": {
+
+    },
+    "wf_context_entity": {
+
+    }
+  },
+  "flowInterrupted": {
+    "wf_context": {
+
+    },
+    "ost_error": {
+
+    }
+  }
+}
+*/
 
 /**
  * Meta Map. Key - WorkflowId, Value - the object below:
- {
-   "id": workflowId,
-   "name": workflowName,
-   "last_known_status": workflowStatus,
-   "last_context": workflow,
-   "is_validated": false,
-   "is_panding_workflow": isPending,
-   "is_auto_added": isAutoAdded,
-   "events_validity_flags": {
-     "flowInitiated": STATUS_MAP.unknown,
-     "requestAcknowledged": STATUS_MAP.unknown,
-     "flowCompleted": STATUS_MAP.unknown,
-     "flowInterrupted": STATUS_MAP.unknown
-   }
- }
- */
+  {
+    "id": workflowId,
+    "name": workflowName,
+    "last_known_status": workflowStatus,
+    "last_context": workflow,
+    "is_validated": false,
+    "is_panding_workflow": isPending,
+    "is_auto_added": isAutoAdded,
+    "events_validity_flags": {
+      "flowInitiated": STATUS_MAP.unknown,
+      "requestAcknowledged": STATUS_MAP.unknown,
+      "flowCompleted": STATUS_MAP.unknown,
+      "flowInterrupted": STATUS_MAP.unknown
+    }
+  }
+*/
 
 const STATUS_MAP = {
   "true": true,
@@ -79,7 +79,7 @@ const SUBSCRIPTION_TYPE = {
 
 const UI_UPDATE_THROTTLE_TIMEOUT = 500;
 
-const jsonViewerSettings = {collapsed: false, withQuotes: true, withLinks: false};
+const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 
 class WorkflowSubscriberService {
   constructor() {
@@ -97,7 +97,7 @@ class WorkflowSubscriberService {
     });
   }
 
-  init(currentUser) {
+  init( currentUser ) {
     const oThis = this;
 
     oThis.compileTemplates();
@@ -108,14 +108,14 @@ class WorkflowSubscriberService {
     try {
       oThis.subscribeAll(oThis.subscribeAllMap);
       oThis.subscribeAllForUserId();
-    } catch (e) {
+    } catch( e ) {
       return Promise.reject(e);
     }
 
     // Load Pending Workflows for current user.
     return OstWalletSdk.getPendingWorkflows(currentUser.user_id)
       .then((workflows) => {
-        oThis.subscribeToPendingWorkflows(workflows);
+        oThis.subscribeToPendingWorkflows( workflows );
         return true;
       });
   }
@@ -200,20 +200,20 @@ class WorkflowSubscriberService {
     const workflowId = workflowContext.id;
     const wfStatus = workflowContext.status;
 
-    oThis.ensureWorkflowData(workflowContext);
+    oThis.ensureWorkflowData( workflowContext );
 
 
     // Update last_known_status
-    let wfMetaData = oThis.workflowMetaMap[workflowId];
+    let wfMetaData = oThis.workflowMetaMap[ workflowId ];
     wfMetaData.last_known_status = wfStatus;
     wfMetaData.last_context = workflowContext;
 
-    let wfEventData = eventDataMap[workflowId];
+    let wfEventData = eventDataMap[ workflowId ];
     wfEventData.last_known_status = wfStatus;
 
     // Update MetaData Checklist
     const checkListData = oThis.getChecklistDataForEvent(workflowContext, eventName);
-    switch (subscriptionType) {
+    switch( subscriptionType ) {
       case SUBSCRIPTION_TYPE.WORKFLOW_ID:
         checkListData.has_received_subscribe = true;
         break;
@@ -226,22 +226,22 @@ class WorkflowSubscriberService {
     }
 
     // Update EventData w.r.t. event-name
-    wfEventData[eventName] = wfEventData[eventName] || {};
-    let eventData = wfEventData[eventName];
+    wfEventData[ eventName ] = wfEventData[ eventName ] || {};
+    let eventData = wfEventData[ eventName ];
     eventData["wf_context"] = workflowContext;
 
     return eventData;
   }
 
 
-  subscribeToPendingWorkflows(workflows) {
+  subscribeToPendingWorkflows( workflows ) {
     const oThis = this;
 
     let len = workflows.length;
     const isPending = true;
-    for (let cnt = 0; cnt < len; cnt++) {
-      let currentWorkflow = workflows[cnt];
-      oThis.subscribeToWorkflow(currentWorkflow, isPending);
+    for(let cnt =0; cnt < len; cnt++ ) {
+      let currentWorkflow = workflows[ cnt ];
+      oThis.subscribeToWorkflow( currentWorkflow, isPending );
     }
   }
 
@@ -250,29 +250,29 @@ class WorkflowSubscriberService {
 
 
     console.log(LOG_TAG, ":subscribeToWorkflowId: workflowId", workflowId);
-    OstWalletSdk.getWorkflowInfo(oThis.currentUser.user_id, workflowId)
-      .then((workflowContext) => {
-        oThis.subscribeToWorkflow(workflowContext);
-      })
-      .catch((err) => {
-        console.error(LOG_TAG, "subscribeToWorkflowId", err);
-      })
+		OstWalletSdk.getWorkflowInfo(oThis.currentUser.user_id, workflowId)
+			.then((workflowContext) => {
+				oThis.subscribeToWorkflow( workflowContext );
+			})
+			.catch((err) => {
+				console.error(LOG_TAG, "subscribeToWorkflowId" ,err);
+			})
   }
 
-  ensureWorkflowData(workflow, isPending, isAutoAdded) {
+  ensureWorkflowData( workflow, isPending, isAutoAdded ) {
     const oThis = this;
-    oThis.ensureWorkflowMetaData(workflow, isPending, isAutoAdded);
-    oThis.ensureWorkflowEventData(workflow);
+    oThis.ensureWorkflowMetaData( workflow, isPending, isAutoAdded );
+    oThis.ensureWorkflowEventData( workflow );
   }
 
-  ensureWorkflowEventData(workflow) {
+  ensureWorkflowEventData( workflow ) {
     const oThis = this;
 
     let workflowId = workflow.id;
     let workflowName = workflow.name;
     let workflowStatus = workflow.status;
 
-    if (oThis.subscribeAllMap[workflowId] && oThis.subscribeAllUserIdMap[workflowId] && oThis.subscribeWorkflowIdMap[workflowId]) {
+    if ( oThis.subscribeAllMap[ workflowId ] && oThis.subscribeAllUserIdMap[ workflowId ] && oThis.subscribeWorkflowIdMap[ workflowId ] ) {
       return;
     }
 
@@ -286,29 +286,29 @@ class WorkflowSubscriberService {
     };
 
     // Add Event Data to maps.
-    if (!oThis.subscribeAllMap[workflowId]) {
+    if ( !oThis.subscribeAllMap[ workflowId ] ) {
       let subscribeAllEventData = Object.assign({}, eventData);
-      oThis.subscribeAllMap[workflowId] = subscribeAllEventData;
+      oThis.subscribeAllMap[ workflowId ] = subscribeAllEventData;
     }
 
-    if (!oThis.subscribeAllUserIdMap[workflowId]) {
+    if ( !oThis.subscribeAllUserIdMap[ workflowId ] ) {
       let subscribeAllWithUserIdEventData = Object.assign({}, eventData);
-      oThis.subscribeAllUserIdMap[workflowId] = subscribeAllWithUserIdEventData;
+      oThis.subscribeAllUserIdMap[ workflowId ] = subscribeAllWithUserIdEventData;
     }
 
-    if (!oThis.subscribeWorkflowIdMap[workflowId]) {
+    if ( !oThis.subscribeWorkflowIdMap[ workflowId ] ) {
       let subscribeWithWorkflowIdData = Object.assign({}, eventData);
-      oThis.subscribeWorkflowIdMap[workflowId] = subscribeWithWorkflowIdData;
+      oThis.subscribeWorkflowIdMap[ workflowId ] = subscribeWithWorkflowIdData;
     }
   }
 
-  ensureWorkflowMetaData(workflowContext, isPending = false, isAutoAdded = true) {
+  ensureWorkflowMetaData( workflowContext, isPending = false, isAutoAdded = true ) {
     const oThis = this;
 
     let workflowId = workflowContext.id;
     let workflowName = workflowContext.name;
     let workflowStatus = workflowContext.status;
-    if (!oThis.workflowMetaMap[workflowId]) {
+    if ( !oThis.workflowMetaMap[ workflowId ] ) {
       let workflowMeta = {
         "id": workflowId,
         "name": workflowName,
@@ -321,17 +321,17 @@ class WorkflowSubscriberService {
         "is_rendered": false,
       };
 
-      oThis.workflowMetaMap[workflowId] = workflowMeta;
+      oThis.workflowMetaMap[ workflowId ] = workflowMeta;
       oThis.workflowAdded();
     }
   }
 
   getChecklistDataForEvent(workflowContext, eventName) {
     const oThis = this;
-    const meta = oThis.workflowMetaMap[workflowContext.id];
+    const meta = oThis.workflowMetaMap[ workflowContext.id ];
     meta.checkListData = meta.checkListData || {};
 
-    meta.checkListData[eventName] = meta.checkListData[eventName] || {
+    meta.checkListData[ eventName ] = meta.checkListData[ eventName ] || {
       "event_name": eventName,
       "has_received_subscribe_all": false,
       "has_received_subscribe_all_user_id": false,
@@ -339,13 +339,13 @@ class WorkflowSubscriberService {
       "is_consistent": true
     };
 
-    return meta.checkListData[eventName];
+    return meta.checkListData[ eventName ];
   }
 
-  getChecklistData(workflowId) {
+  getChecklistData( workflowId ) {
     const oThis = this;
     console.log(LOG_TAG, "oThis.workflowMetaMap", oThis.workflowMetaMap, "workflowId", workflowId);
-    const meta = oThis.workflowMetaMap[workflowId];
+    const meta = oThis.workflowMetaMap[ workflowId ];
     meta.checkListData = meta.checkListData || {};
     return meta.checkListData;
   }
@@ -360,7 +360,7 @@ class WorkflowSubscriberService {
       && checkListData.has_received_subscribe_all
       && checkListData.has_received_subscribe_all_user_id
     ;
-    if (!allEventsReceived) {
+    if ( !allEventsReceived ) {
       // Has received at-least one event
       const atLeastOneEventReceived = checkListData.has_received_subscribe
         || checkListData.has_received_subscribe_all
@@ -372,68 +372,68 @@ class WorkflowSubscriberService {
       return;
     }
 
-    const allWFData = oThis.subscribeAllMap[workflowId];
-    const userIdWFData = oThis.subscribeAllUserIdMap[workflowId];
-    const workflowIdWFData = oThis.subscribeWorkflowIdMap[workflowId];
+    const allWFData = oThis.subscribeAllMap[ workflowId ];
+    const userIdWFData = oThis.subscribeAllUserIdMap[ workflowId ];
+    const workflowIdWFData = oThis.subscribeWorkflowIdMap[ workflowId ];
 
-    if (!allWFData) {
-      console.error(LOG_TAG, "coding error. allWFData is null. workflowId:", workflowId, " oThis.subscribeAllMap", oThis.subscribeAllMap);
+    if ( !allWFData ) {
+      console.error(LOG_TAG, "coding error. allWFData is null. workflowId:",workflowId, " oThis.subscribeAllMap", oThis.subscribeAllMap);
       checkListData.is_consistent = false;
       return;
     }
 
-    if (!userIdWFData) {
-      console.error(LOG_TAG, "coding error. userIdWFData is null. workflowId:", workflowId, " oThis.subscribeAllUserIdMap", oThis.subscribeAllUserIdMap);
+    if ( !userIdWFData ) {
+      console.error(LOG_TAG, "coding error. userIdWFData is null. workflowId:",workflowId, " oThis.subscribeAllUserIdMap", oThis.subscribeAllUserIdMap);
       checkListData.is_consistent = false;
       return;
     }
 
-    if (!workflowIdWFData) {
-      console.error(LOG_TAG, "coding error. workflowIdWFData is null. workflowId:", workflowId, " oThis.subscribeWorkflowIdMap", oThis.subscribeWorkflowIdMap);
+    if ( !workflowIdWFData ) {
+      console.error(LOG_TAG, "coding error. workflowIdWFData is null. workflowId:",workflowId, " oThis.subscribeWorkflowIdMap", oThis.subscribeWorkflowIdMap);
       checkListData.is_consistent = false;
       return;
     }
 
-    const allEventData = allWFData[eventName];
-    const userIdEventData = userIdWFData[eventName];
-    const wfIdEventData = workflowIdWFData[eventName];
+    const allEventData = allWFData[ eventName ];
+    const userIdEventData = userIdWFData[ eventName ];
+    const wfIdEventData  = workflowIdWFData[ eventName ];
 
-    if (!allEventData) {
+    if ( !allEventData ) {
       console.error(LOG_TAG, "coding error. allEventData is null. workflowId:", workflowId, "allWFData", allWFData);
       checkListData.is_consistent = false;
       return;
     }
 
-    if (!userIdEventData) {
-      console.error(LOG_TAG, "coding error. userIdEventData is null. workflowId:", workflowId, "userIdWFData", userIdWFData);
+    if ( !userIdEventData ) {
+      console.error(LOG_TAG, "coding error. userIdEventData is null. workflowId:",workflowId, "userIdWFData", userIdWFData);
       checkListData.is_consistent = false;
       return;
     }
 
-    if (!wfIdEventData) {
-      console.error(LOG_TAG, "coding error. wfIdEventData is null. workflowId:", workflowId, "workflowIdWFData", workflowIdWFData);
+    if ( !wfIdEventData ) {
+      console.error(LOG_TAG, "coding error. wfIdEventData is null. workflowId:",workflowId, "workflowIdWFData", workflowIdWFData);
       checkListData.is_consistent = false;
       return;
     }
 
     let jAll, jUserId, jWorkflowId;
     try {
-      jAll = JSON.stringify(allEventData);
-      jUserId = JSON.stringify(userIdEventData);
-      jWorkflowId = JSON.stringify(wfIdEventData);
+      jAll = JSON.stringify( allEventData );
+      jUserId = JSON.stringify( userIdEventData );
+      jWorkflowId = JSON.stringify( wfIdEventData );
 
 
       console.log(LOG_TAG, "test subscriber: jAll", jAll);
       console.log(LOG_TAG, "test subscriber: jUserId", jUserId);
       console.log(LOG_TAG, "test subscriber: jWorkflowId", jWorkflowId);
 
-    } catch (e) {
+    } catch(e) {
       console.error(LOG_TAG, "Codding Error.", e);
       checkListData.is_consistent = false;
       return;
     }
 
-    if (jAll === jUserId && jUserId === jWorkflowId) {
+    if ( jAll === jUserId && jUserId === jWorkflowId) {
       checkListData.is_consistent = true;
       return;
     }
@@ -443,87 +443,86 @@ class WorkflowSubscriberService {
   }
 
 
+
   workflowAdded() {
     const oThis = this;
     oThis.updateWorkflowList();
   }
 
-  workflowDataUpdated(workflowContext, eventName) {
+  workflowDataUpdated( workflowContext, eventName ) {
     const oThis = this;
 
     // Update the consistency flag.
     oThis.updateEventConsistency(workflowContext, eventName);
 
     const workflowId = workflowContext.id;
-    oThis.updateWorkflowView(workflowId, workflowContext, eventName);
+    oThis.updateWorkflowView( workflowId, workflowContext, eventName );
   }
 
   updateWorkflowList() {
-    const oThis = this;
+    const  oThis = this;
 
     console.log(LOG_TAG, "updateWorkflowList :: New workflow(s) have been added ");
     console.log(LOG_TAG, "updateWorkflowList :: oThis.workflowMetaMap", oThis.workflowMetaMap);
 
     const jParent = $("#workflow-accordion");
 
-    for (let wfId in oThis.workflowMetaMap) {
-      if (oThis.workflowMetaMap.hasOwnProperty(wfId)) {
-        let meta = oThis.workflowMetaMap[wfId];
-        if (meta.is_rendered) {
-          continue;
-        }
-
-        let cardHtml = oThis.cardTemplate(meta);
-        let jCard = $(cardHtml);
-        jCard.data("workflowId", meta.id);
-        jParent.append(jCard);
-        jCard.collapse();
-        meta.is_rendered = true;
+    for(let wfId in oThis.workflowMetaMap ) { if ( oThis.workflowMetaMap.hasOwnProperty( wfId ) ) {
+      let meta = oThis.workflowMetaMap[ wfId ];
+      if ( meta.is_rendered ) {
+        continue;
       }
-    }
+
+      let cardHtml = oThis.cardTemplate( meta );
+      let jCard = $(cardHtml);
+      jCard.data("workflowId", meta.id);
+      jParent.append( jCard );
+      jCard.collapse();
+      meta.is_rendered = true;
+    }}
   }
 
-  updateWorkflowView(workflowId, workflowContext) {
+  updateWorkflowView( workflowId, workflowContext ) {
     const oThis = this;
-    oThis.updateLastKnownStatus(workflowId, workflowContext);
-    oThis.updateCheckList(workflowId);
+    oThis.updateLastKnownStatus( workflowId, workflowContext );
+    oThis.updateCheckList( workflowId );
   }
 
   bindEvents() {
     const oThis = this;
   }
 
-  updateLastKnownStatus(workflowId, workflowContext) {
+  updateLastKnownStatus( workflowId, workflowContext ) {
     const oThis = this;
     const jParent = $(`#j-wf-card-body-${workflowId} .j-workflow-details-last_known_status`);
     console.log(LOG_TAG, "updateLastKnownStatus :: jParent", jParent)
     jParent.html(workflowContext.status);
   }
 
-  updateCheckList(workflowId) {
+  updateCheckList( workflowId ) {
     const oThis = this;
     const jParent = $(`#j-wf-card-body-${workflowId} .j-wf-checklist`);
     jParent.html('');
 
-    const checkListData = oThis.getChecklistData(workflowId);
+    const checkListData = oThis.getChecklistData( workflowId );
     const data = [];
-    for (let eventName in checkListData) {
-      data.push(checkListData[eventName]);
+    for(let eventName in checkListData) {
+      data.push( checkListData[ eventName ] );
     }
 
     console.log(LOG_TAG, ":displayCheckList: data", data);
-    let htmlStr = oThis.checkListTemplate(data);
-    jParent.html(htmlStr);
+    let htmlStr = oThis.checkListTemplate( data );
+    jParent.html( htmlStr );
   }
 
 
   compileTemplates() {
     const oThis = this;
     let checkListTemplateHtml = $("#j-wf-checklist-template").html();
-    oThis.checkListTemplate = Handlebars.compile(checkListTemplateHtml);
+    oThis.checkListTemplate = Handlebars.compile( checkListTemplateHtml );
 
     let cardTemplateHtml = $("#j-wf-card-template").html();
-    oThis.cardTemplate = Handlebars.compile(cardTemplateHtml);
+    oThis.cardTemplate = Handlebars.compile( cardTemplateHtml );
   }
 
 }

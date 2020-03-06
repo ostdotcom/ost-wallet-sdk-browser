@@ -12,18 +12,18 @@ const ajaxUtils = {
     let _resolve, _reject;
     //Define Success Callback
     const successCallback = (response) => {
-      if (response && response.success) {
-        _resolve(response.data);
+      if ( response && response.success ) {
+        _resolve( response.data );
       } else {
         console.error("Api call responsed with error. \n", response.err, "\n url:", url);
-        _reject(response);
+        _reject( response );
       }
     };
 
     //Define Failuer Callback
     const failuerCallback = (error) => {
       console.error("Api call responsed with error. \n", error, "\n url:", url);
-      _reject(error);
+      _reject( error );
     };
 
     return new Promise((resolve, reject) => {
@@ -48,7 +48,7 @@ const ajaxUtils = {
       },
       crossDomain: true
     });
-
+  
     $.ajaxSetup({
       type: "GET",
       xhrFields: {

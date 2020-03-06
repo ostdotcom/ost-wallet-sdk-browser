@@ -2,7 +2,6 @@ import OstConstants from '../OstConstants'
 import OstApiClient from "../api/OstApiClient";
 
 const LOG_TAG = "OstBasePolling :: ";
-
 class OstBasePolling {
 
   static FIRST_REQUEST_DELAY_TIME = 1000 * 21; //21 seconds
@@ -41,21 +40,21 @@ class OstBasePolling {
     setTimeout(() => {
       this.fetchEntity()
         .then((entity) => {
-          if (entity && oThis.isProcessCompleted(entity)) {
+          if (entity && oThis.isProcessCompleted(entity) ) {
             return success(entity);
           }
-          if (entity && oThis.isProcessFailed(entity)) {
+          if (entity && oThis.isProcessFailed(entity) ) {
             return failure(entity);
           }
           oThis.getEntity(success, failure);
         })
         .catch((err) => {
-          const pollingError = oThis.getPollingFailedError(err);
-          if (pollingError) {
-            failure(pollingError);
-          } else {
-            oThis.getEntity(success, failure);
-          }
+					const pollingError = oThis.getPollingFailedError(err);
+					if (pollingError) {
+						failure(pollingError);
+					} else {
+						oThis.getEntity(success, failure);
+					}
         })
     }, delayTime)
   }
@@ -64,15 +63,15 @@ class OstBasePolling {
 
   }
 
-  isProcessCompleted(entity) {
+  isProcessCompleted( entity ) {
     return false;
   }
 
-  isProcessFailed(entity) {
-    return false;
-  }
+	isProcessFailed( entity ) {
+		return false;
+	}
 
-  getPollingFailedError(err) {
+  getPollingFailedError( err ) {
     return null;
   }
 }

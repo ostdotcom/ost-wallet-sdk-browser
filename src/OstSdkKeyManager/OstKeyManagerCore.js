@@ -7,17 +7,17 @@ import {SOURCE} from "../common-js/OstBrowserMessenger";
 const LOG_TAG = "OstSdkKeyManager :: ";
 
 class OstSdkKeyManager extends OstBaseSdk {
-  constructor(window, parentOrigin) {
+  constructor(window, parentOrigin){
     super(window, parentOrigin);
     this.ostKeyManagerAssist = null;
   }
 
-  createOstSdkKeyManagerAssist() {
+  createOstSdkKeyManagerAssist () {
     const oThis = this;
 
     this.ostKeyManagerAssist = new OstKeyManagerAssist(this.browserMessenger, this.getReceiverName());
     this.ostKeyManagerAssist.onSetupComplete = function (args) {
-      console.log(LOG_TAG, "createOstSdkKeyManagerAssist :: onSetupComplete", args);
+      console.log(LOG_TAG,"createOstSdkKeyManagerAssist :: onSetupComplete", args);
       oThis.onSetupComplete(args)
     }
   }
@@ -85,8 +85,8 @@ class OstSdkKeyManager extends OstBaseSdk {
     console.log(LOG_TAG, "sending OstSdkKeyManager public key");
 
     let ostMessage = new OstMessage();
-    ostMessage.setFunctionName("onSetupComplete");
-    ostMessage.setReceiverName(oThis.getUpstreamReceiverName());
+    ostMessage.setFunctionName( "onSetupComplete" );
+    ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
     ostMessage.setArgs({
       publicKeyHex: this.browserMessenger.getPublicKeyHex()
     });

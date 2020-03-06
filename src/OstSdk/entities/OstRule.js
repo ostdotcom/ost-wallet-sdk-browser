@@ -32,16 +32,15 @@ class OstRule extends OstBaseEntity {
   }
 
   getAbi() {
-    return this.getData().abi;
-  }
+		return this.getData().abi;
+	}
 
-  getAddress() {
-    return this.getData().address;
-  }
+	getAddress() {
+		return this.getData().address;
+	}
 
-  getName() {
-    return this.getData().name;
-  }
+	getName() {
+		return this.getData().name;
+	}
 }
-
 export default OstRule;

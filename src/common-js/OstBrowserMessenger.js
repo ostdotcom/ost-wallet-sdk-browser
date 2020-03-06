@@ -11,7 +11,7 @@ import OstError from "./OstError";
 import OstHelpers from "./OstHelpers/OstHelpers";
 import OstMessage from "./OstMessage";
 import uuidv4 from 'uuid/v4';
-import OstErrorCodes from './OstErrorMessages'
+import OstErrorCodes  from './OstErrorMessages'
 
 const SOURCE = {
   UPSTREAM: "UPSTREAM",
@@ -19,14 +19,13 @@ const SOURCE = {
 };
 
 let LOG_TAG = "OstMessenger";
-
 class OstBrowserMessenger {
 
-  constructor(receiverName, upStreamOrigin, windowParent) {
+  constructor( receiverName, upStreamOrigin, windowParent ) {
 
     this.defineImmutableProperty("receiverName", receiverName);
     this.defineImmutableProperty("parentWindow", windowParent);
-    if (upStreamOrigin) {
+    if ( upStreamOrigin ) {
       this.defineImmutableProperty("upStreamOrigin", upStreamOrigin);
     }
 
@@ -88,25 +87,25 @@ class OstBrowserMessenger {
     // Validate Source.
     let expected_origin = null;
     let expected_signer = null;
-    let message_source = null;
+    let message_source  = null;
 
-    if (event.source === this.parentWindow) {
+    if ( event.source === this.parentWindow ) {
       // Parent sent the message downstream to us.
       expected_origin = this.upStreamOrigin;
       expected_signer = this.upstreamPublicKey;
-      message_source = SOURCE.UPSTREAM;
-    } else if (event.source === this.downStreamWindow) {
+      message_source  = SOURCE.UPSTREAM;
+    } else if ( event.source === this.downStreamWindow ) {
       // Child sent messgae to us.
       expected_origin = this.downStreamOrigin;
       expected_signer = this.downstreamPublicKey;
-      message_source = SOURCE.DOWNSTREAM;
+      message_source  = SOURCE.DOWNSTREAM;
     } else {
       //Not a valid sender. Ignore the message.
       return;
     }
 
     // Validate Origin
-    if (event.origin !== expected_origin) {
+    if ( event.origin !==  expected_origin) {
       // console.error("|||*** Not a valid expected origin.", event.origin, expected_origin);
       return;
     }
@@ -119,29 +118,29 @@ class OstBrowserMessenger {
       return;
     }
 
-    if (!eventData.ost_message) {
+    if ( !eventData.ost_message ) {
       return;
     }
 
-    const ostMessage = OstMessage.ostMessageFromReceivedMessage(eventData);
+    const ostMessage = OstMessage.ostMessageFromReceivedMessage( eventData );
 
-    if (!ostMessage) {
+    if ( !ostMessage ) {
       return;
     }
 
     oThis.verifySignature(expected_signer, ostMessage)
-      .then((isVerified) => {
-        console.log(":: onMessageReceived :: then of verifySignature  :: ", isVerified);
-        if (isVerified) {
-          oThis.onValidMessageReceived(ostMessage);
-        }
-      })
-      .catch((err) => {
-        oThis.onOtherMessageReceived(ostMessage, message_source, err);
-      });
+        .then ((isVerified) => {
+          console.log(":: onMessageReceived :: then of verifySignature  :: ", isVerified);
+          if (isVerified) {
+            oThis.onValidMessageReceived(ostMessage);
+          }
+        })
+        .catch ((err) => {
+          oThis.onOtherMessageReceived(ostMessage, message_source, err);
+        });
   }
 
-  verifySignature(expectedSigner, ostMessage) {
+  verifySignature( expectedSigner, ostMessage ) {
     const oThis = this;
 
     return oThis.isValidSignature(
@@ -149,7 +148,7 @@ class OstBrowserMessenger {
       ostMessage.buildPayloadToSign(),
       expectedSigner
     )
-      .then((isVerified) => {
+      .then ((isVerified) => {
         console.log("verifySignature :: then of isValidSignature :: ", isVerified);
         if (isVerified) {
           return isVerified
@@ -175,8 +174,8 @@ class OstBrowserMessenger {
         hash: "SHA-256"
       },
       expectedSigner,
-      OstHelpers.hexToByteArray(signature),
-      OstHelpers.getDataToSign(payloadToSign)
+      OstHelpers.hexToByteArray( signature ),
+      OstHelpers.getDataToSign( payloadToSign )
     );
   }
 
@@ -185,15 +184,15 @@ class OstBrowserMessenger {
 
     let functionId = ostMessage.getSubscriberId();
 
-    if (!functionId) {
+    if ( !functionId ) {
       functionId = ostMessage.getReceiverName()
     }
 
     console.log(LOG_TAG, ":: onValidMessageReceived : functionId: ", functionId);
 
-    let subscribedObject = this.getSubscribedObject(functionId);
+    let subscribedObject = this.getSubscribedObject( functionId );
 
-    if (subscribedObject) {
+    if ( subscribedObject ) {
       console.log(LOG_TAG, "onValidMessageReceived :: got subscribed object", subscribedObject);
       const method = subscribedObject[ostMessage.getMethodName()];
 
@@ -203,18 +202,18 @@ class OstBrowserMessenger {
       } else {
         console.error(LOG_TAG, "onValidMessageReceived :: typeof method", typeof method, "method", method);
       }
-    } else {
-      console.log(LOG_TAG, "OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId);
+    }else  {
+      console.log(LOG_TAG, "OstBrowserMessenger :: onOtherMessageReceived :: subscribed object not found for ::", functionId );
       console.log(this.idMap);
     }
   }
 
-  onOtherMessageReceived(ostMessage, message_source, err) {
+  onOtherMessageReceived( ostMessage, message_source, err) {
     console.log(LOG_TAG, "onOtherMessageReceived :: ostMessage.getMethodName() :: ", ostMessage.getMethodName());
-    if (message_source === SOURCE.DOWNSTREAM && null === this.downstreamPublicKey) {
-      if (this.receiverName === ostMessage.getReceiverName()) {
-        if ('onSetupComplete' === ostMessage.getMethodName()) {
-          return this.onValidMessageReceived(ostMessage);
+    if ( message_source === SOURCE.DOWNSTREAM && null === this.downstreamPublicKey ) {
+      if (this.receiverName === ostMessage.getReceiverName() ) {
+        if ( 'onSetupComplete' === ostMessage.getMethodName() ) {
+          return this.onValidMessageReceived(ostMessage);  
         }
       }
     }
@@ -232,25 +231,25 @@ class OstBrowserMessenger {
 
   //TODO: To be Deprecated.
   //@Deprecated
-  setUpStreamOrigin(upStreamOrigin) {
+  setUpStreamOrigin( upStreamOrigin ) {
     this.upStreamOrigin = upStreamOrigin;
   }
 
-  setDownStreamWindow(downStreamWindow) {
-    if (typeof window !== 'object' || typeof self !== 'object' || window !== self) {
+  setDownStreamWindow( downStreamWindow ) {
+    if ( typeof window !== 'object' || typeof self !== 'object' || window !== self ) {
       throw new OstError('cj_obm_obm_1', 'INVALID_TARGET_WINDOW');
     }
     this.downStreamWindow = downStreamWindow;
   }
 
-  setDownStreamOrigin(downStreamOrigin) {
+  setDownStreamOrigin( downStreamOrigin ) {
     this.downStreamOrigin = downStreamOrigin;
     console.log(LOG_TAG, 'setDownStreamOrigin', downStreamOrigin);
   }
 
   setUpstreamPublicKeyHex(hex) {
     const oThis = this;
-
+    
     return oThis.importPublicKey(hex)
       .then((cryptoKey) => {
         oThis.defineImmutableProperty("upstreamPublicKey", cryptoKey);
@@ -274,8 +273,8 @@ class OstBrowserMessenger {
 
     if (!hex || typeof hex !== 'string') {
       let err = new Error("Invalid Downstream Public Key Hex");
-      let ostError = OstError.sdkError(err, "obm_sdspkh_1");
-      return Promise.reject(ostError);
+      let ostError = OstError.sdkError(err , "obm_sdspkh_1");
+      return Promise.reject( ostError );
     }
 
     return oThis.importPublicKey(hex)
@@ -307,7 +306,7 @@ class OstBrowserMessenger {
   //getter
 
   getUpStreamWindow() {
-    if (typeof window !== 'object' || typeof self !== 'object' || window !== self) {
+    if ( typeof window !== 'object' || typeof self !== 'object' || window !== self ) {
       throw new OstError('cj_obm_gusw_1', 'INVALID_TARGET_WINDOW');
     }
 
@@ -315,7 +314,7 @@ class OstBrowserMessenger {
   }
 
   getUpStreamOrigin() {
-    if (!this.upStreamOrigin || typeof this.upStreamOrigin !== 'string') {
+    if (!this.upStreamOrigin || typeof this.upStreamOrigin !== 'string' ) {
       console.log(LOG_TAG, "this.upStreamOrigin", this.upStreamOrigin);
       throw new OstError('cj_obm_guso_1', 'INVALID_UPSTREAM_ORIGIN');
     }
@@ -350,7 +349,7 @@ class OstBrowserMessenger {
       return false
     }
 
-    if (typeof this.signer !== 'object') {
+    if (typeof this.signer !== 'object' ) {
       return false;
     }
 
@@ -360,11 +359,11 @@ class OstBrowserMessenger {
   //Performable
   sendMessage(ostMessage, receiverStream) {
 
-    if (!(ostMessage instanceof OstMessage)) {
+    if ( !(ostMessage instanceof OstMessage) ) {
       throw new OstError('cj_obm_sm_1', 'INVALID_OST_MESSAGE')
     }
 
-    if (!SOURCE.hasOwnProperty(receiverStream)) {
+    if (!SOURCE.hasOwnProperty( receiverStream )) {
       throw new OstError('cj_obm_sm_2', 'INVALID_ENUM')
     }
 
@@ -388,9 +387,9 @@ class OstBrowserMessenger {
     return this.getSignature(dataToSign)
       .then((signedMessage) => {
         console.log(LOG_TAG, "signature generated.");
-        const signature = OstHelpers.byteArrayToHex(signedMessage);
+        const signature = OstHelpers.byteArrayToHex( signedMessage );
 
-        ostMessage.setSignature(signature);
+        ostMessage.setSignature( signature );
 
         console.log(LOG_TAG, "OstBrowserMessenger :: sendMessage ::  ", ostMessage.buildPayloadToSend());
 
@@ -398,14 +397,14 @@ class OstBrowserMessenger {
       }).catch((err) => {
         console.log(LOG_TAG, "signature generation failed.");
 
-        throw OstError.sdkError(err, 'cj_obm_sm_5');
+        throw OstError.sdkError(err,'cj_obm_sm_5');
       });
   }
 
   getSignature(payload) {
     return crypto.subtle.sign({
-        name: "RSASSA-PKCS1-v1_5",
-        hash: "SHA-256"
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
       },
       this.signer.privateKey,
       OstHelpers.getDataToSign(payload));
@@ -413,8 +412,8 @@ class OstBrowserMessenger {
 
   verifyIframeInit(url, signature) {
     return crypto.subtle.verify({
-        name: "RSASSA-PKCS1-v1_5",
-        hash: "SHA-256"
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
       },
       this.upstreamPublicKey,
       OstHelpers.hexToByteArray(signature), OstHelpers.getDataToSign(url));
@@ -453,9 +452,9 @@ class OstBrowserMessenger {
    * @param  {Object} input Object to be cloned.
    * @return {Object}       Shallow cloned object.
    */
-  shallowCloneToImmutableObject(input) {
+  shallowCloneToImmutableObject( input ) {
     const output = {};
-    for (let k in input) {
+    for( let k in input ) {
       let v = input[k];
       Object.defineProperty(output, k, {
         "value": v,
@@ -472,7 +471,7 @@ class OstBrowserMessenger {
    * @param  {Any} val         Value of the property to be set.
    */
   defineImmutableProperty(propName, val) {
-    Object.defineProperty(this, propName, {
+    Object.defineProperty( this, propName, {
       "value": val,
       "writable": false
     })

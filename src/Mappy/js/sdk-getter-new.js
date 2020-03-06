@@ -1,7 +1,7 @@
 import CodeTesterPageBase from "./CodeTesterPageBase";
 
 class SdkGettersPage extends CodeTesterPageBase {
-
+  
   constructor() {
     super("#page-container", "#j-method-template");
   }
@@ -25,7 +25,7 @@ class SdkGettersPage extends CodeTesterPageBase {
   getToken() {
     const oThis = this;
     const tokenId = oThis.currentUser.token_id;
-    return OstWalletSdk.getToken(tokenId);
+    return OstWalletSdk.getToken( tokenId );
   }
 
   getDevice() {

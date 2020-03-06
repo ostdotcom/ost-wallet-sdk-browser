@@ -3,7 +3,7 @@ import OstParentOriginHelper from "../common-js/OstHelpers/ParentOriginHelper";
 
 const LOG_TAG = 'KM';
 
-(function (_window, _location) {
+(function(_window, _location ) {
 
   function destroySelf() {
     const escapeUrl = "about:blank";
@@ -11,7 +11,7 @@ const LOG_TAG = 'KM';
     _location = escapeUrl;
   }
 
-  if (_window.parent == _window) {
+  if ( _window.parent == _window ) {
     return destroySelf();
   }
 

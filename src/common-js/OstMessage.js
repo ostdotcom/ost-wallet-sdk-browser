@@ -1,5 +1,6 @@
+
 class OstMessage {
-  static ostMessageFromReceivedMessage(message) {
+  static ostMessageFromReceivedMessage( message) {
     if (!message.signature || !message.ost_message) {
       return null;
     }
@@ -7,7 +8,7 @@ class OstMessage {
     return new OstMessage(message);
   }
 
-  constructor(messagePayload = null) {
+  constructor( messagePayload = null) {
 
     this.messagePayload = messagePayload || {}; //first preference
 
@@ -21,87 +22,87 @@ class OstMessage {
   }
 
   //Setter
-  setSignature(signature) {
+  setSignature( signature ) {
     this.signature = signature;
   }
 
-  setTimestamp(timestamp) {
+  setTimestamp ( timestamp ) {
     this.timestamp = timestamp;
   }
 
-  setReceiverName(receiverName) {
+  setReceiverName ( receiverName ) {
     this.receiverName = receiverName;
   }
 
-  setSubscriberId(subscriberId) {
+  setSubscriberId ( subscriberId ) {
     this.subscriberId = subscriberId;
   }
 
-  setFunctionName(name) {
+  setFunctionName (name) {
     this.name = name;
   }
 
-  setArgs(args, subscriberId) {
-    if (subscriberId === undefined) {
-      this.args = Object.assign(args);
+  setArgs ( args, subscriberId ) {
+    if(subscriberId===undefined){
+      this.args = Object.assign( args );
     }
-    else {
-      this.args = Object.assign(args, {subscriber_id: subscriberId});
+    else{
+      this.args = Object.assign( args, {subscriber_id : subscriberId} );
     }
   }
 
   //Getter
 
-  getSignature() {
+  getSignature ( ) {
     return this.messagePayload.signature || this.signature;
   }
 
-  getOstMessage() {
-    if (!this.messagePayload) {
+  getOstMessage ( )  {
+    if ( !this.messagePayload ) {
       return {}
     }
     return this.messagePayload.ost_message || {};
   }
 
-  getTo() {
+  getTo ( ) {
     const message = this.getOstMessage();
 
     return message.to || {};
   }
 
-  getMethodDetails() {
+  getMethodDetails ( ) {
     const message = this.getOstMessage();
 
     return message.method_details || {};
   }
 
-  getTimestamp() {
+  getTimestamp ( ) {
     let timestamp = this.getOstMessage().timestamp || this.timestamp;
-    if (!timestamp) {
+    if ( !timestamp ) {
       this.timestamp = Date.now();
-      timestamp = this.timestamp;
+      timestamp  = this.timestamp;
     }
     return timestamp
   }
 
-  getReceiverName() {
+  getReceiverName ( ) {
     return this.getTo().receiver_name || this.receiverName;
   }
 
-  getSubscriberId() {
+  getSubscriberId ( ) {
     return this.getTo().subscriber_id || this.subscriberId;
   }
 
-  getMethodName() {
+  getMethodName ( ) {
     return this.getMethodDetails().name || this.name;
   }
 
-  getArgs() {
+  getArgs ( ) {
     return this.getMethodDetails().args || this.args;
   }
 
   //Build
-  buildPayloadToSign() {
+  buildPayloadToSign ( ) {
     return {
       timestamp: this.getTimestamp(),
       to: {
@@ -118,7 +119,7 @@ class OstMessage {
     }
   }
 
-  buildPayloadToSend() {
+  buildPayloadToSend ( ) {
     return {
       signature: this.getSignature(),
       ost_message: this.buildPayloadToSign()

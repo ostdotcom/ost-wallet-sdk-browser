@@ -13,6 +13,7 @@ import OstConstants from '../OstConstants';
 const LOG_TAG = 'OstSdkBaseWorkflow :: ';
 
 
+
 export default class OstSdkBaseWorkflow {
 
   OST_WORKFLOW_EMITTER = "OstWorkflowEmitter";
@@ -38,13 +39,13 @@ export default class OstSdkBaseWorkflow {
     this.determineState();
   }
 
-  determineState() {
+	determineState() {
     const oThis = this
     ;
 
     if (OstWorkflowContext.STATUS.ACKNOWLEDGED === oThis.workflowContext.getStatus()) {
-      oThis.stateManager.setState(OstStateManager.state.POLLING);
-    }
+			oThis.stateManager.setState(OstStateManager.state.POLLING);
+		}
   }
 
   initParams() {
@@ -66,7 +67,7 @@ export default class OstSdkBaseWorkflow {
       }
     ;
 
-    if (oThis.workflowContext) return;
+		if (oThis.workflowContext) return;
 
     oThis.workflowContext = OstWorkflowContext.newInstanceFromObject(workflowObj);
   }
@@ -89,7 +90,7 @@ export default class OstSdkBaseWorkflow {
   perform() {
     try {
       this.process();
-    } catch (err) {
+    }catch (err) {
 
       let error = OstError.sdkError(err, 'sk_w_osbw_p_1');
 
@@ -121,7 +122,7 @@ export default class OstSdkBaseWorkflow {
             throw OstError.sdkError(err, 'sk_w_osbw_p_pudv_1');
           });
 
-      case states.DEVICE_VALIDATED:
+        case states.DEVICE_VALIDATED:
         this.onDeviceValidated();
         break;
 
@@ -263,11 +264,11 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
 
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INITIATED);
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INITIATED);
 
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
@@ -283,11 +284,11 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
 
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.ACKNOWLEDGED);
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.ACKNOWLEDGED);
 
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
@@ -307,11 +308,11 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
 
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.COMPLETED);
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.COMPLETED);
 
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
@@ -327,11 +328,11 @@ export default class OstSdkBaseWorkflow {
     const oThis = this
     ;
 
-    if (!oThis.workflowContext) {
-      throw "Not expected";
-    }
+		if (!oThis.workflowContext) {
+			throw "Not expected";
+		}
 
-    oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INTERRUPTED);
+		oThis.workflowContext.setWorkflowStatus(OstWorkflowContext.STATUS.INTERRUPTED);
 
     //return if workflow context is not allowed by the sub-class
     if (oThis.shouldNotSaveWorkflowContext()) return Promise.resolve(false);
@@ -372,9 +373,9 @@ export default class OstSdkBaseWorkflow {
 
     return oThis.onWorkflowInitiated()
       .then(() => {
-        message.setArgs({
-          ost_workflow_context: this.getWorkflowContext().getJSONObject()
-        });
+				message.setArgs({
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         return oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -391,10 +392,10 @@ export default class OstSdkBaseWorkflow {
 
     return oThis.onWorkflowAcknowledged(entity)
       .then(() => {
-        message.setArgs({
-          ost_context_entity: contextEntity,
-          ost_workflow_context: this.getWorkflowContext().getJSONObject()
-        });
+				message.setArgs({
+					ost_context_entity: contextEntity,
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         return oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -418,10 +419,10 @@ export default class OstSdkBaseWorkflow {
 
     return oThis.onWorkflowComplete()
       .then(() => {
-        message.setArgs({
-          ost_context_entity: contextEntity,
-          ost_workflow_context: this.getWorkflowContext().getJSONObject()
-        });
+				message.setArgs({
+					ost_context_entity: contextEntity,
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -437,10 +438,10 @@ export default class OstSdkBaseWorkflow {
 
     return oThis.onWorkflowFailed()
       .then(() => {
-        message.setArgs({
-          ost_error: error.getJSONObject(),
-          ost_workflow_context: this.getWorkflowContext().getJSONObject()
-        });
+				message.setArgs({
+					ost_error: error.getJSONObject(),
+					ost_workflow_context: this.getWorkflowContext().getJSONObject()
+				});
         oThis.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
       });
   }
@@ -450,7 +451,6 @@ export default class OstSdkBaseWorkflow {
     ;
     return [oThis.userId, oThis.workflowId, oThis.subscriberId];
   }
-
   //Sync
 
   syncCurrentDevice() {

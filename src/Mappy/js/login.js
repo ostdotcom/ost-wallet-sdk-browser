@@ -10,7 +10,7 @@ export class LoginSetup {
 
     // Create an instance of PageInitializer
     let autoPerform = false;
-    oThis.pageInitializer = new PageInitializer(autoPerform);
+    oThis.pageInitializer = new PageInitializer( autoPerform );
 
     // Wait for document to be ready.
     $(() => {
@@ -20,17 +20,17 @@ export class LoginSetup {
     oThis.bindEvents();
   }
 
-  init() {
+  init(){
     const oThis = this;
 
     const dontLogout = true;
-    oThis.pageInitializer.getCurrentUserFromServer(dontLogout)
-      .then((currentUser) => {
+    oThis.pageInitializer.getCurrentUserFromServer( dontLogout )
+      .then(( currentUser ) => {
         // Already logged in.
         // Navigate to sdk-getter page.
         window.location = oThis.postLoginUrl;
       })
-      .catch((err) => {
+      .catch(( err ) => {
         $("#signupBtn").css({
           "display": "none",
           "visibility": "visible"
@@ -43,7 +43,7 @@ export class LoginSetup {
     $(function () {
       $("#signupBtn").click(function () {
         oThis.onClickLogin();
-      });
+     });
     })
   }
 
@@ -52,15 +52,15 @@ export class LoginSetup {
     const apiUrl = oThis.pageInitializer.getApiBaseUrl() + '/login';
 
     $("#signupBtn").attr("disabled", true);
-    return ajaxUtils.post(apiUrl, {
-      username: document.getElementById("usernameTb").value,
-      password: document.getElementById("password").value
-    })
-      .then((data) => {
+    return ajaxUtils.post( apiUrl, {
+        username: document.getElementById("usernameTb").value,
+        password: document.getElementById("password").value
+      })
+      .then( ( data ) =>{
         // User has loged in.
         window.location = oThis.postLoginUrl;
       })
-      .catch((error) => {
+      .catch( (error) => {
         $("#login-error-message").css({
           "display": "none",
           "visibility": "visible"

@@ -1,31 +1,29 @@
-<div class="modal fade" id="createSession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header text-center">
-                <h6 class="modal-title w-100 font-weight-bold">Create Session</h6>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body mx-3" id="modal-body">
-                <div id="beforeChange" class="beforeChange">
-                    <div class="md-form mb-5">
-                        <label data-error="wrong" data-success="right" for="transaction-amount">Spending Limit in Higher
-                            Unit</label>
-                        <input type="number" id="j-spending-limit" class="form-control validate"></div>
-                    <div class="md-form mb-4">
-                        <div class="form-group">
-                            <label for="sel1">Duration(in days):</label>
-                            <select class="form-control" id="j-duration">
-                            </select>
-                        </div>
-                    </div>
+<div class="modal fade" id="createSession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header text-center">
+              <h6 class="modal-title w-100 font-weight-bold">Create Session</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body mx-3" id="modal-body">
+            <div id="beforeChange" class="beforeChange">
+              <div class="md-form mb-5">
+                <label data-error="wrong" data-success="right" for="transaction-amount">Spending Limit in Higher Unit</label>
+                <input type="number" id="j-spending-limit" class="form-control validate"></div>
+            <div class="md-form mb-4">
+                <div class="form-group">
+                  <label for="sel1">Duration(in days):</label>
+                  <select class="form-control" id="j-duration">
+                  </select>
                 </div>
+              </div>
             </div>
-            <div class="modal-footer d-flex justify-content-center" id="modal-footer">
-                <button class="btn btn-default" id="j-create-btn">Create</button>
-            </div>
-        </div>
-    </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-center" id="modal-footer">
+            <button class="btn btn-default" id="j-create-btn">Create</button>
+          </div>
+      </div>
+  </div>
 </div>

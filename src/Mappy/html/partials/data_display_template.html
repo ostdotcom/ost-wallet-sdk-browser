@@ -1,24 +1,22 @@
 <script id="j-data-display-template" type="text/x-handlebars-template">
-    <div class="card" style="height:100%">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="navbar-text" style="margin-right:20px"><b>{{dataDisplayHeading}}</b></li>
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" role="tab" href="#{{jsonViewId}}">JSON</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" href="#{{stringViewId}}">String</a>
-                </li>
-            </ul>
-        </div>
-        <div class="tab-content">
-            <div id="{{jsonViewId}}" role="tabpanel" class="card-body tab-pane active"
-                 style="max-height: 250px; overflow: auto;">
-            </div>
-            <div id="{{stringViewId}}" role="tabpanel" class="card-body tab-pane"
-                 style="max-height: 250px; overflow: auto;">
-                <code class="language-json"></code>
-            </div>
-        </div>
+  <div class="card" style="height:100%">
+    <div class="card-header">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="navbar-text" style="margin-right:20px"><b>{{dataDisplayHeading}}</b></li>
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" role="tab" href="#{{jsonViewId}}">JSON</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" role="tab" href="#{{stringViewId}}">String</a>
+        </li>
+      </ul>
     </div>
+    <div class="tab-content">
+    <div id="{{jsonViewId}}" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
+    </div>
+    <div id="{{stringViewId}}" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
+      <code class="language-json"></code>
+    </div>
+    </div>
+  </div>
 </script>

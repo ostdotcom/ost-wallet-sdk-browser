@@ -1,6 +1,6 @@
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes from '../../common-js/OstErrorCodes'
+import OstErrorCodes from  '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
 import OstRule from "../entities/OstRule";
 import OstTransactionPolling from "../OstPolling/OstTransactionPolling";
@@ -68,7 +68,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
               })
           });
       })
-      .then((ruleData) => {
+      .then(( ruleData ) => {
         oThis.ruleData = ruleData;
         return ruleData;
       })
@@ -78,19 +78,19 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   computeExpectedSpendAmount() {
     const oThis = this;
 
-    if (oThis.expectedSpendAmount) {
+    if ( oThis.expectedSpendAmount ) {
       // Already set. Must be a custom rule.
-      return Promise.resolve(oThis.expectedSpendAmount);
+      return Promise.resolve( oThis.expectedSpendAmount );
 
-    } else if ("pricer" === oThis.ruleName) {
+    } else if ( "pricer" === oThis.ruleName ) {
       // Lets compute for pricer rule.
       return oThis.computePricerExpectedSpendAmount();
     }
 
     // Must be direct transfer;
     let amountToBtMultiplier = new BigNumber(1);
-    oThis.expectedSpendAmount = oThis.getTotalExpectedAmount(amountToBtMultiplier);
-    return Promise.resolve(oThis.expectedSpendAmount);
+    oThis.expectedSpendAmount = oThis.getTotalExpectedAmount( amountToBtMultiplier );
+    return Promise.resolve( oThis.expectedSpendAmount );
   }
 
   computePricerExpectedSpendAmount() {
@@ -101,24 +101,24 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
 
     //compute Fiat Multiplier
       .then((pricePoint) => {
-        let fiatToBtMultiplier = oThis.computeFiatMultiplier(pricePoint);
-        oThis.expectedSpendAmount = oThis.getTotalExpectedAmount(fiatToBtMultiplier);
+        let fiatToBtMultiplier = oThis.computeFiatMultiplier( pricePoint );
+        oThis.expectedSpendAmount = oThis.getTotalExpectedAmount( fiatToBtMultiplier );
         return oThis.expectedSpendAmount;
       })
   }
 
-  getTotalExpectedAmount(amountToBtMultiplier) {
+  getTotalExpectedAmount( amountToBtMultiplier ) {
     const oThis = this;
     let total = new BigNumber(0);
-    for (let i = 0; i < this.amounts.length; i++) {
+    for (let i = 0; i< this.amounts.length; i++) {
       // amount in BigNumber
       let thisAmount = new BigNumber(oThis.amounts[i]);
 
       // amount in lower unit Bt.
-      let amountInBt = thisAmount.multipliedBy(amountToBtMultiplier);
+      let amountInBt = thisAmount.multipliedBy( amountToBtMultiplier );
 
       // Add to total.
-      total = total.plus(amountInBt);
+      total = total.plus( amountInBt );
     }
     return total.toString();
   }
@@ -130,7 +130,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       .then((dataObj) => {
         const baseToken = oThis.token.getBaseToken();
         const pricePoint = dataObj['price_point'];
-        oThis.pricePoint = pricePoint[baseToken];
+        oThis.pricePoint = pricePoint[ baseToken ];
         return oThis.pricePoint;
       })
       .catch((err) => {
@@ -138,7 +138,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       })
   }
 
-  computeFiatMultiplier(pricePoint) {
+  computeFiatMultiplier( pricePoint ) {
     const oThis = this;
     pricePoint = pricePoint || oThis.pricePoint;
 
@@ -169,22 +169,21 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
     // multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
     return btInWeiNumerator.dividedBy(usdWeiDecimalDenominator);
   }
-
   //endregion
 
-  getAuthorizedSession(expectedSpendAmount) {
+  getAuthorizedSession( expectedSpendAmount ) {
     const oThis = this;
     expectedSpendAmount = expectedSpendAmount || oThis.expectedSpendAmount;
 
     return OstSession.getActiveSessions(oThis.userId, expectedSpendAmount)
-      .then((activeSessions) => {
-        if (!activeSessions || activeSessions.length < 1) {
+      .then(( activeSessions ) => {
+        if ( !activeSessions || activeSessions.length < 1 ) {
           throw new OstError('ostsdk_oset_gas_1', OstErrorCodes.SESSION_NOT_FOUND);
         }
         return oThis.keyManagerProxy.filterLocalSessions(activeSessions);
       })
-      .then((activeSessions) => {
-        if (!activeSessions || activeSessions.length < 1) {
+      .then(( activeSessions) => {
+        if ( !activeSessions || activeSessions.length < 1 ) {
           throw new OstError('ostsdk_oset_gas_2', OstErrorCodes.SESSION_NOT_FOUND);
         }
         const session = oThis.getLeastUsedSession(activeSessions);
@@ -204,6 +203,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
     // - Compute Expected Spend Amount If Needed.
     console.log(LOG_TAG, "onDeviceValidated : calling computeExpectedSpendAmount");
     let p2 = oThis.computeExpectedSpendAmount();
+
 
 
     Promise.all([p1, p2])
@@ -244,7 +244,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
           raw_calldata: JSON.stringify(struct.raw_call_data),
           nonce: txnData.session.nonce,
           calldata: struct.call_data,
-          signature: struct.signature,
+          signature:struct.signature,
           signer: txnData.session.address,
           meta_property: {},
         };
@@ -265,7 +265,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
         return oThis.processNext();
       })
       .catch((err) => {
-        console.error(LOG_TAG, "Workflow failed", err);
+        console.error(LOG_TAG, "Workflow failed" ,err);
 
         //Sync session: Session nonce could be out of sync Or Session got unauthorized
         oThis.handleSessionSync();
@@ -297,7 +297,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
   onPolling() {
     const oThis = this;
 
-    let transactionId = oThis.workflowContext.getData().context_entity_id;
+    let transactionId =  oThis.workflowContext.getData().context_entity_id;
 
     return oThis.pollingForTransaction(transactionId)
       .then((entity) => {
@@ -322,7 +322,7 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       })
   }
 
-  getWorkflowName() {
+  getWorkflowName () {
     return OstWorkflowContext.WORKFLOW_TYPE.EXECUTE_TRANSACTION;
   }
 

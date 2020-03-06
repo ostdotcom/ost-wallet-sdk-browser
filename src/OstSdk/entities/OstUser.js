@@ -3,7 +3,6 @@ import OstDevice from "./OstDevice";
 import OstError from "../../common-js/OstError";
 
 const LOG_TAG = "OstUser";
-
 class OstUser extends OstBaseEntity {
 
   static STATUS = {
@@ -31,14 +30,14 @@ class OstUser extends OstBaseEntity {
     return user.sync();
   }
 
-  static parse(data) {
-    const ostUser = new OstUser(data);
-    return ostUser.forceCommit();
-  }
+	static parse(data) {
+		const ostUser = new OstUser(data);
+		return ostUser.forceCommit();
+	}
 
-  getIdKey() {
-    return 'id';
-  }
+	getIdKey() {
+		return 'id';
+	}
 
   getType() {
     return 'user';
@@ -49,18 +48,18 @@ class OstUser extends OstBaseEntity {
     return this.getData().token_id;
   }
 
-  getCurrentDevice(keyManagerProxy) {
-    const oThis = this;
-    if (!this.currentDeviceAddress) {
-      return keyManagerProxy.getCurrentDeviceAddress()
-        .then((deviceAddress) => {
-          oThis.currentDeviceAddress = deviceAddress;
-          return OstDevice.getById(this.currentDeviceAddress);
-        });
-    }
-    console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
-    return Promise.resolve(OstDevice.getById(this.currentDeviceAddress));
-  }
+	getCurrentDevice(keyManagerProxy) {
+		const oThis = this;
+		if (!this.currentDeviceAddress) {
+			return keyManagerProxy.getCurrentDeviceAddress()
+				.then((deviceAddress) => {
+					oThis.currentDeviceAddress = deviceAddress;
+					return OstDevice.getById(this.currentDeviceAddress);
+				});
+		}
+		console.debug(LOG_TAG, "currentDeviceAddress :: ", this.currentDeviceAddress);
+		return Promise.resolve(OstDevice.getById(this.currentDeviceAddress));
+	}
 
   getStoreName() {
     return STORES.OST_USER;
@@ -107,9 +106,8 @@ class OstUser extends OstBaseEntity {
   }
 
   isStatusActivating() {
-    return OstUser.STATUS.ACTIVATING === this.getStatus();
+  	return OstUser.STATUS.ACTIVATING === this.getStatus();
   }
 
 }
-
 export default OstUser;

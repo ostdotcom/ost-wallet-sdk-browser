@@ -14,9 +14,8 @@ import OstSdkExecuteTransaction from "./workflows/OstSdkExecuteTransaction";
 import OstWorkflowContext from "./workflows/OstWorkflowContext";
 
 const LOG_TAG = "OstSdkAssist :: ";
-
 class OstSdkAssist {
-  constructor(messenger, receiverName) {
+  constructor( messenger, receiverName ) {
     this.browserMessenger = messenger;
     this.receiverName = receiverName;
     this.browserMessenger.subscribe(this, this.receiverName);
@@ -29,31 +28,31 @@ class OstSdkAssist {
     return keyManagerProxy
   }
 
-  onSetupComplete(args) {
+  onSetupComplete( args ) {
     console.log(LOG_TAG, "onSetupComplete :: ", args);
   }
 
-  setupDevice(args) {
+  setupDevice ( args ) {
     console.log(LOG_TAG, "setupDevice :: ", args);
 
-    let setupDevice = new OstSdkSetupDevice(args, this.browserMessenger);
+    let setupDevice = new OstSdkSetupDevice( args, this.browserMessenger );
     setupDevice.perform();
   }
 
-  createSession(args) {
+  createSession ( args ) {
     console.log(LOG_TAG, "createSession :: ", args);
 
-    let createSession = new OstSdkCreateSession(args, this.browserMessenger);
+    let createSession = new OstSdkCreateSession( args, this.browserMessenger );
     createSession.perform();
   }
 
-  executeTransaction(args) {
+  executeTransaction (args) {
     console.log(LOG_TAG, "executeTransaction :: ", args);
-    let executeTransaction = new OstSdkExecuteTransaction(args, this.browserMessenger);
+    let executeTransaction = new OstSdkExecuteTransaction( args, this.browserMessenger );
     executeTransaction.perform();
   }
 
-  executeDirectTransferTransaction(args) {
+  executeDirectTransferTransaction (args) {
     args.transaction_data.rule_name = 'Direct Transfer';
     args.transaction_data.rule_method = 'directTransfers';
     args.transaction_data.meta = {};
@@ -62,7 +61,7 @@ class OstSdkAssist {
     this.executeTransaction(args);
   }
 
-  executePayTransaction(args) {
+  executePayTransaction (args) {
     args.transaction_data.rule_name = 'pricer';
     args.transaction_data.rule_method = 'pay';
     args.transaction_data.meta = {};
@@ -86,7 +85,7 @@ class OstSdkAssist {
 
         let workflowUserId = workflowInfo.getUserId();
         if (userId != workflowUserId) {
-          throw new OstError("os_osa_gwi_2", OstErrorCodes.INVALID_USER_ID)
+            throw new OstError("os_osa_gwi_2", OstErrorCodes.INVALID_USER_ID)
         }
         return oThis.onSuccess(workflowInfo.getJSONObject(), subscriberId);
       })
@@ -96,7 +95,7 @@ class OstSdkAssist {
       });
   }
 
-  getPendingWorkflows(args) {
+  getPendingWorkflows( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -119,13 +118,13 @@ class OstSdkAssist {
 
   //Getter Methods
 
-  getUser(args) {
+  getUser ( args ) {
     const oThis = this
     ;
 
     console.log(LOG_TAG, "getUser :: ", args);
     const userId = args.user_id;
-    const subscriberId = args.subscriber_id;
+    const subscriberId =  args.subscriber_id;
 
     OstUser.getById(userId)
       .then((userData) => {
@@ -144,15 +143,15 @@ class OstSdkAssist {
 
   }
 
-  getToken(args) {
+  getToken ( args ) {
     const oThis = this
       , tokenId = args.token_id
       , subscriberId = args.subscriber_id
     ;
 
     console.log(LOG_TAG, "getToken :: ", args);
-    OstToken.getById(tokenId)
-      .then((tokenData) => {
+    OstToken.getById( tokenId )
+      .then( (tokenData) => {
         if (tokenData) {
           console.log(LOG_TAG, "token data ", tokenData);
           return oThis.onSuccess({token: tokenData}, subscriberId);
@@ -167,7 +166,7 @@ class OstSdkAssist {
   }
 
   //get current device Getter Method
-  getDevice(args) {
+  getDevice ( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -197,7 +196,7 @@ class OstSdkAssist {
       });
   }
 
-  getActiveSessions(args) {
+  getActiveSessions( args ) {
     const oThis = this
       , userId = args.user_id
       , spendingLimit = args.spending_limit
@@ -216,10 +215,11 @@ class OstSdkAssist {
   }
 
 
-  deleteLocalSessions(args) {
+
+  deleteLocalSessions( args ) {
     console.log(LOG_TAG, "deleteLocalSessions :: ", args);
     const userId = args.user_id;
-    const subscriberId = args.subscriber_id;
+    const subscriberId =  args.subscriber_id;
     let functionParams = {};
     let functionName = 'onError';
 
@@ -228,23 +228,23 @@ class OstSdkAssist {
       .then((sessions) => {
         sessions.forEach((session) => {
           if (userId === session.user_id) {
-            sessionIds.push(session.id);
-          }
+						sessionIds.push(session.id);
+					}
         });
         let km = this.getKeyManagerProxy(userId);
         return km.deleteLocalSessions(sessionIds)
       })
       .then(() => {
         let promiseList = [];
-        sessionIds.forEach((address) => {
-          promiseList.push(OstSession.deleteById(address))
-        });
+				sessionIds.forEach((address) => {
+					promiseList.push(OstSession.deleteById(address))
+				});
 
-        return Promise.all(promiseList);
+				return Promise.all(promiseList);
       })
       .then(() => {
         functionName = 'onSuccess';
-        functionParams = {data: {success: true}};
+        functionParams = {data: {success: true} };
         this.sendToOstWalletSdk(functionName, subscriberId, functionParams);
       })
       .catch((err) => {
@@ -255,7 +255,7 @@ class OstSdkAssist {
 
   //JSON APIs
 
-  getUserFromServer(args) {
+  getUserFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -263,7 +263,7 @@ class OstSdkAssist {
 
     let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
     apiClient.getUser()
-      .then((response) => {
+      .then(( response ) => {
         if (!response) {
           let ostError = OstError.sdkError(null, 'os_osa_i_gufs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
           return oThis.onError(ostError, subscriberId);
@@ -272,12 +272,12 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gufs_2', OstErrorCodes.SDK_API_ERROR);
+        let ostError = OstError.sdkError(err, 'os_osa_i_gufs_2',OstErrorCodes.SDK_API_ERROR);
         return oThis.onError(ostError, subscriberId);
       });
   }
 
-  getTokenFromServer(args) {
+  getTokenFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -294,13 +294,13 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gtfs_2', OstErrorCodes.SDK_API_ERROR);
+        let ostError = OstError.sdkError(err, 'os_osa_i_gtfs_2',OstErrorCodes.SDK_API_ERROR);
         console.error(ostError);
         return oThis.onError(ostError, subscriberId);
       });
   }
 
-  getTransactionsFromServer(args) {
+  getTransactionsFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -317,13 +317,13 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gtxfs_2', OstErrorCodes.SDK_API_ERROR);
+        let ostError = OstError.sdkError(err, 'os_osa_i_gtxfs_2',OstErrorCodes.SDK_API_ERROR);
         console.error(ostError);
         return oThis.onError(ostError, subscriberId);
       });
   }
 
-  getTokenHolderFromServer(args) {
+  getTokenHolderFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -340,13 +340,13 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gthfs_2', OstErrorCodes.SDK_API_ERROR);
+        let ostError = OstError.sdkError(err, 'os_osa_i_gthfs_2',OstErrorCodes.SDK_API_ERROR);
         console.error(ostError);
         return oThis.onError(ostError, subscriberId);
       });
   }
 
-  getRulesFromServer(args) {
+  getRulesFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -363,7 +363,7 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_grfs_2', OstErrorCodes.SDK_API_ERROR);
+        let ostError = OstError.sdkError(err, 'os_osa_i_grfs_2',OstErrorCodes.SDK_API_ERROR);
         console.error(ostError);
         return oThis.onError(ostError, subscriberId);
       });
@@ -376,7 +376,7 @@ class OstSdkAssist {
    * @public
    */
 
-  getCurrentDeviceFromServer(args) {
+  getCurrentDeviceFromServer( args ) {
 
     const oThis = this
       , userId = args.user_id
@@ -393,7 +393,7 @@ class OstSdkAssist {
       })
       .then((device) => {
 
-        console.log(LOG_TAG, "device =====", device['data'].address);
+        console.log(LOG_TAG,"device =====", device['data'].address);
         let address = device['data'].address;
         if (!address) {
           let ostError = OstError.sdkError(null, 'os_osa_i_gcdfs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
@@ -421,22 +421,21 @@ class OstSdkAssist {
         return oThis.onError(ostError, subscriberId);
       })
   }
-
   /**
    * Api to get user balance
    * @param {String} userId - Ost User id
    * @public
    */
-  getBalanceFromServer(args) {
+  getBalanceFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
     ;
 
-    const balance = oThis.getBalanceFromOstPlatform(args);
+    const balance = oThis.getBalanceFromOstPlatform( args );
 
     return Promise.resolve(balance)
-      .then((response) => {
+      .then((response)=>{
         const balanceResponse = response;
 
         if (!balanceResponse || balanceResponse.err) {
@@ -447,7 +446,7 @@ class OstSdkAssist {
         console.log(LOG_TAG, "balanceResponse :", balanceResponse);
         return oThis.onSuccess(balanceResponse, subscriberId);
       })
-      .catch((error) => {
+      .catch( (error) => {
         console.error(LOG_TAG, "Unexpected state error", error);
       });
   }
@@ -457,16 +456,16 @@ class OstSdkAssist {
    * @param {String} userId - Ost User id
    * @public
    */
-  getPricePointFromServer(args) {
+  getPricePointFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
     ;
 
-    const pricePoint = oThis.getPricePointFromOstPlatform(args);
+    const pricePoint = oThis.getPricePointFromOstPlatform( args );
 
     return Promise.resolve(pricePoint)
-      .then((response) => {
+      .then((response)=>{
         const pricePointResponse = response;
 
         if (!pricePointResponse || pricePointResponse.err) {
@@ -478,7 +477,7 @@ class OstSdkAssist {
         return oThis.onSuccess(pricePointResponse, subscriberId);
 
       })
-      .catch((error) => {
+      .catch( (error) => {
         console.error(LOG_TAG, "Unexpected state error", error);
       });
   }
@@ -493,7 +492,7 @@ class OstSdkAssist {
       .then((response) => {
         return Promise.resolve(response);
       })
-      .catch((err) => {
+      .catch((err)=> {
         console.error(LOG_TAG, 'getBalanceFromOstPlatform', err);
         return Promise.resolve(OstError.sdkError(err, 'os_osa_i_gbfop_1'));
       });
@@ -536,7 +535,7 @@ class OstSdkAssist {
    * @param {String} userId - Ost User id
    * @public
    */
-  getBalanceWithPricePointFromServer(args) {
+  getBalanceWithPricePointFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -572,7 +571,7 @@ class OstSdkAssist {
 
         return oThis.onSuccess(successResponse, subscriberId);
       })
-      .catch((error) => {
+      .catch( (error) => {
         console.error(LOG_TAG, "Unexpected state error", error);
       });
   }
@@ -583,7 +582,7 @@ class OstSdkAssist {
     ostMsg.setSubscriberId(subscriberId);
     ostMsg.setFunctionName('onSuccess');
     ostMsg.setArgs({data: args});
-    console.log(LOG_TAG, "onSuccess");
+    console.log(LOG_TAG,"onSuccess");
     this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
   }
 
@@ -591,7 +590,7 @@ class OstSdkAssist {
     const ostMsg = new OstMessage();
     ostMsg.setSubscriberId(subscriberId);
     ostMsg.setFunctionName('onError');
-    console.log(LOG_TAG, "onError");
+    console.log(LOG_TAG,"onError");
     ostMsg.setArgs({err: errMsgObj.getJSONObject()});
     this.browserMessenger.sendMessage(ostMsg, SOURCE.UPSTREAM);
   }
@@ -600,7 +599,7 @@ class OstSdkAssist {
    * Api to get user balance
    * @param args
    */
-  getPendingRecoveryFromServer(args) {
+  getPendingRecoveryFromServer( args ) {
     const oThis = this
       , userId = args.user_id
       , subscriberId = args.subscriber_id
@@ -627,7 +626,7 @@ class OstSdkAssist {
    * @param {String} userId - Ost User id
    * @public
    */
-  getDeviceListFromServer(args) {
+  getDeviceListFromServer( args ) {
     //const nextPagePayload = args.next_page_payload;
     const oThis = this
       , userId = args.user_id
@@ -646,7 +645,7 @@ class OstSdkAssist {
         return oThis.onSuccess(response, subscriberId);
       })
       .catch((err) => {
-        let ostError = OstError.sdkError(err, 'os_osa_i_gdlfs_2', OstErrorCodes.SDK_API_ERROR);
+        let ostError = OstError.sdkError(err, 'os_osa_i_gdlfs_2',OstErrorCodes.SDK_API_ERROR);
         console.error(ostError);
         return oThis.onError(ostError, subscriberId);
       });
@@ -654,7 +653,7 @@ class OstSdkAssist {
 
   sendToOstWalletSdk(functionName, subscriberId, functionParams) {
     let oThis = this;
-    let message = new OstMessage();
+    let message  = new OstMessage();
     message.setSubscriberId(subscriberId);
     message.setFunctionName(functionName);
     message.setArgs(functionParams);

@@ -4,73 +4,73 @@ const LOG_TAG = "OstWorkflowEmitter :: ";
 
 export default class OstWorkflowEmitter {
 
-  constructor(workflowEvents) {
-    this.workflowEvents = workflowEvents;
-  }
+	constructor(workflowEvents) {
+		this.workflowEvents = workflowEvents;
+	}
 
-  registerDevice(args) {
-    console.log(LOG_TAG, "registerDevice", args);
+	registerDevice(args) {
+		console.log(LOG_TAG, "registerDevice", args);
 
-    const workflowId = this.getWorkflowId(args);
-    if (!workflowId) return;
+		const workflowId = this.getWorkflowId(args);
+		if (!workflowId) return;
 
-    this.workflowEvents.postRegisterDeviceEvent(args.ost_workflow_context, args);
-  }
+		this.workflowEvents.postRegisterDeviceEvent(args.ost_workflow_context, args);
+	}
 
-  flowInitiated(args) {
-    console.log(LOG_TAG, "flowInitiated", args);
+	flowInitiated(args) {
+		console.log(LOG_TAG, "flowInitiated", args);
 
-    const workflowId = this.getWorkflowId(args);
-    if (!workflowId) return;
+		const workflowId = this.getWorkflowId(args);
+		if (!workflowId) return;
 
-    this.workflowEvents.postFlowInitiatedEvent(args.ost_workflow_context);
-  }
+		this.workflowEvents.postFlowInitiatedEvent(args.ost_workflow_context);
+	}
 
-  requestAcknowledged(args) {
-    console.log(LOG_TAG, "requestAcknowledged", args);
+	requestAcknowledged(args) {
+		console.log(LOG_TAG, "requestAcknowledged", args);
 
-    const workflowId = this.getWorkflowId(args);
-    if (!workflowId) return;
+		const workflowId = this.getWorkflowId(args);
+		if (!workflowId) return;
 
 
-    this.workflowEvents.postRequestAcknowledgedEvent(args.ost_workflow_context, args.ost_context_entity)
-  }
+		this.workflowEvents.postRequestAcknowledgedEvent(args.ost_workflow_context, args.ost_context_entity)
+	}
 
-  flowComplete(args) {
-    console.log(LOG_TAG, "flowComplete", args);
+	flowComplete(args) {
+		console.log(LOG_TAG, "flowComplete", args);
 
-    const workflowId = this.getWorkflowId(args);
-    if (!workflowId) return;
+		const workflowId = this.getWorkflowId(args);
+		if (!workflowId) return;
 
-    this.workflowEvents.postFlowCompleteEvent(args.ost_workflow_context, args.ost_context_entity)
-  }
+		this.workflowEvents.postFlowCompleteEvent(args.ost_workflow_context, args.ost_context_entity)
+	}
 
-  flowInterrupt(args) {
-    console.error(LOG_TAG, "flowInterrupt", args);
+	flowInterrupt(args) {
+		console.error(LOG_TAG, "flowInterrupt", args);
 
-    const workflowId = this.getWorkflowId(args);
-    if (!workflowId) return;
+		const workflowId = this.getWorkflowId(args);
+		if (!workflowId) return;
 
-    let error = OstError.fromErrorPayload(args.ost_error);
+		let error  = OstError.fromErrorPayload(args.ost_error);
 
-    this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, error)
-  }
+		this.workflowEvents.postFlowInterruptEvent(args.ost_workflow_context, error)
+	}
 
-  getWorkflowId(args) {
-    if (!args) {
-      return null;
-    }
-    if (!args.ost_workflow_context) {
-      return null;
-    }
-    if (!args.ost_workflow_context.id) {
-      return null;
-    }
+	getWorkflowId(args) {
+		if (!args) {
+			return null;
+		}
+		if (!args.ost_workflow_context) {
+			return null;
+		}
+		if (!args.ost_workflow_context.id) {
+			return null;
+		}
 
-    return args.ost_workflow_context.id;
-  }
+		return args.ost_workflow_context.id;
+	}
 
-  getReceiverName() {
-    return "OstWorkflowEmitter";
-  }
+	getReceiverName() {
+		return "OstWorkflowEmitter";
+	}
 }

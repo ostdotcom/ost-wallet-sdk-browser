@@ -1,7 +1,6 @@
 import CodeTesterBase from "./CodeTesterBase";
-
 class DeleteSessionsHelper extends CodeTesterBase {
-  constructor(currentUser) {
+  constructor( currentUser ) {
     super("#j-delete-session-container", "#j-method-template");
 
     const oThis = this;
@@ -21,7 +20,7 @@ class DeleteSessionsHelper extends CodeTesterBase {
     oThis.jModal.on('shown.bs.modal', function () {
       oThis.jModal.trigger('focus');
       $("#j-delete-session-container").html("");
-      oThis.perform(oThis.currentUser);
+      oThis.perform( oThis.currentUser );
     });
   }
 
@@ -36,5 +35,4 @@ class DeleteSessionsHelper extends CodeTesterBase {
     return OstWalletSdk.deleteLocalSessions(ostUserId);
   }
 }
-
 export default DeleteSessionsHelper;

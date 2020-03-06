@@ -63,5 +63,4 @@ class OstToken extends OstBaseEntity {
     return String(this.getData().conversion_factor);
   }
 }
-
 export default OstToken;
