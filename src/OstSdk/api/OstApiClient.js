@@ -52,7 +52,7 @@ export default class OstApiClient {
     // api token_id.user_id.device_address.personal_sign_address
     map[this.API_KEY] = `${this.user.getTokenId()}.${this.userId}.${this.device.getId()}.${this.device.getApiKeyAddress()}`;
     map[this.API_REQUEST_TIMESTAMP] = String(parseInt(Date.now() / 1000));
-    map[this.API_SIGNATURE_KIND] =  this.SIG_TYPE;
+    map[this.API_SIGNATURE_KIND] = this.SIG_TYPE;
     return map;
   }
 
@@ -74,15 +74,15 @@ export default class OstApiClient {
         return response;
       })
       .catch((err) => {
-				if (err instanceof OstApiError) {
-				  const apiError = err;
-					console.error(LOG_TAG, 'getSession return api error code', apiError.getApiErrorCode());
+        if (err instanceof OstApiError) {
+          const apiError = err;
+          console.error(LOG_TAG, 'getSession return api error code', apiError.getApiErrorCode());
 
-					//Wipe session from local db if it is NOT FOUND in backend
-					if (apiError.isNotFound()) {
-						OstSession.handleDeletion(sessionAddress);
-					}
-				}
+          //Wipe session from local db if it is NOT FOUND in backend
+          if (apiError.isNotFound()) {
+            OstSession.handleDeletion(sessionAddress);
+          }
+        }
         throw err;
       });
   }
@@ -125,8 +125,8 @@ export default class OstApiClient {
 
   validateDomain(tokenId, domain) {
     const resource = `/tokens/${tokenId}/validate-domain`
-      ,   params = {domain: domain}
-      ;
+      , params = {domain: domain}
+    ;
     return this.apiClient.get(resource, {params: params})
       .then((res) => {
         const data = res.data
@@ -137,8 +137,8 @@ export default class OstApiClient {
   }
 
   get(resource, params) {
-    const lastChar = resource.charAt( resource.length - 1 );
-    if(lastChar!=='/'){
+    const lastChar = resource.charAt(resource.length - 1);
+    if (lastChar !== '/') {
       resource += '/';
     }
     const oThis = this;
@@ -152,41 +152,41 @@ export default class OstApiClient {
       })
       .then((response) => {
         const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
-        return oThis.apiClient.get(resource, {params: paramsMap })
+        return oThis.apiClient.get(resource, {params: paramsMap})
       })
       .catch((error) => {
-        throw OstApiErrorParser.parse( error, params );
+        throw OstApiErrorParser.parse(error, params);
       })
       .then((response) => {
         return OstEntityParser.parse(response.data);
       });
   }
 
-	post(resource, params) {
-    var lastChar = resource.charAt( resource.length - 1 );
-    if(lastChar!=='/'){
+  post(resource, params) {
+    var lastChar = resource.charAt(resource.length - 1);
+    if (lastChar !== '/') {
       resource += '/';
     }
-		const oThis = this;
-		params = params || {};
-		return oThis.init()
-			.then(() => {
-				let map = oThis.getPrerequisiteMap();
-				const paramMap = Object.assign({}, map, params);
+    const oThis = this;
+    params = params || {};
+    return oThis.init()
+      .then(() => {
+        let map = oThis.getPrerequisiteMap();
+        const paramMap = Object.assign({}, map, params);
 
-				return oThis.keyManagerProxy.signApiParams(resource, paramMap);
-			})
-			.then((response) => {
-				const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
-				console.log(LOG_TAG, "params to be sent", paramsMap);
-				return oThis.apiClient.post(resource, qs.stringify(paramsMap));
-			})
-      .catch((error) => {
-        throw OstApiErrorParser.parse( error, params );
+        return oThis.keyManagerProxy.signApiParams(resource, paramMap);
       })
-			.then((response) => {
-				return OstEntityParser.parse(response.data);
-			});
-	}
+      .then((response) => {
+        const paramsMap = Object.assign({}, response.params, {[this.API_SIGNATURE]: response.signature});
+        console.log(LOG_TAG, "params to be sent", paramsMap);
+        return oThis.apiClient.post(resource, qs.stringify(paramsMap));
+      })
+      .catch((error) => {
+        throw OstApiErrorParser.parse(error, params);
+      })
+      .then((response) => {
+        return OstEntityParser.parse(response.data);
+      });
+  }
 
 }

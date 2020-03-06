@@ -13,17 +13,17 @@ import OstSession from "./entities/OstSession"
 const LOG_TAG = "OstSdk :: index :: ";
 
 class OstSdk extends OstBaseSdk {
-  constructor(window, parentOrigin){
+  constructor(window, parentOrigin) {
     super(window, parentOrigin);
     this.ostSdkAssist = null
   }
 
-  createOstSdkAssist () {
+  createOstSdkAssist() {
     let oThis = this;
     this.ostSdkAssist = new OstSdkAssist(this.browserMessenger, this.getReceiverName());
     console.log(LOG_TAG, "ostSdkAssist created");
     this.ostSdkAssist.onSetupComplete = function (args) {
-      console.log(LOG_TAG,"createOstSdkAssist :: onSetupComplete", args);
+      console.log(LOG_TAG, "createOstSdkAssist :: onSetupComplete", args);
       oThis.onSetupComplete(args)
     }
   }
@@ -46,8 +46,8 @@ class OstSdk extends OstBaseSdk {
     console.log("sending OstSdk public key");
 
     let ostMessage = new OstMessage();
-    ostMessage.setFunctionName( "onSetupComplete" );
-    ostMessage.setReceiverName( oThis.getUpstreamReceiverName() );
+    ostMessage.setFunctionName("onSetupComplete");
+    ostMessage.setReceiverName(oThis.getUpstreamReceiverName());
     ostMessage.setArgs({
       publicKeyHex: oThis.browserMessenger.getPublicKeyHex()
     });
@@ -55,10 +55,10 @@ class OstSdk extends OstBaseSdk {
     return oThis.browserMessenger.sendMessage(ostMessage, SOURCE.UPSTREAM);
   }
 
-  onSetupComplete (args) {
+  onSetupComplete(args) {
     const oThis = this;
     return super.onSetupComplete(args)
-      // Inform self.
+    // Inform self.
       .then(() => {
         oThis.onDownstreamInitialzed(args);
         return true;
@@ -78,42 +78,42 @@ class OstSdk extends OstBaseSdk {
     return kmEndpoint;
   }
 
-	verifyIframeInitData(...args) {
-		const oThis = this
-		;
-		return super.verifyIframeInitData(...args)
-			.then((verified) => {
-				if (!verified) {
-					return verified;
-				}
-				return oThis.isWhiteListedParent();
-			})
-	}
+  verifyIframeInitData(...args) {
+    const oThis = this
+    ;
+    return super.verifyIframeInitData(...args)
+      .then((verified) => {
+        if (!verified) {
+          return verified;
+        }
+        return oThis.isWhiteListedParent();
+      })
+  }
 
-	isWhiteListedParent() {
-      const oThis = this
-        , parentOrigin = oThis.ancestorOrigins[0]
-        , token_id = oThis.sdkConfig.token_id
-        , apiEndPoint = oThis.sdkConfig.api_endpoint
-      ;
+  isWhiteListedParent() {
+    const oThis = this
+      , parentOrigin = oThis.ancestorOrigins[0]
+      , token_id = oThis.sdkConfig.token_id
+      , apiEndPoint = oThis.sdkConfig.api_endpoint
+    ;
 
-      return new OstApiClient('', apiEndPoint).validateDomain(token_id, parentOrigin)
-        .then((res) => {
-          if (res) {
-            return res;
-          }
+    return new OstApiClient('', apiEndPoint).validateDomain(token_id, parentOrigin)
+      .then((res) => {
+        if (res) {
+          return res;
+        }
 
-          throw new OstError('os_osc_iwlp_1', EC.INVALID_UPSTREAM_ORIGIN);
-        })
+        throw new OstError('os_osc_iwlp_1', EC.INVALID_UPSTREAM_ORIGIN);
+      })
   }
 
   init(...args) {
     return super.init(...args)
       .then((val) => {
-				OstSessionPolling.setCreateSessionQRTimeout( this.sdkConfig.create_session_qr_timeout );
-				OstSession.setCreateSessionTimeout( this.sdkConfig.create_session_qr_timeout );
-				OstWorkflowContext.setMaxWorkflowCount( this.sdkConfig.max_workflow_count );
-				return val;
+        OstSessionPolling.setCreateSessionQRTimeout(this.sdkConfig.create_session_qr_timeout);
+        OstSession.setCreateSessionTimeout(this.sdkConfig.create_session_qr_timeout);
+        OstWorkflowContext.setMaxWorkflowCount(this.sdkConfig.max_workflow_count);
+        return val;
       });
   }
 }

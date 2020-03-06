@@ -12,46 +12,46 @@ class OstSessionPolling extends OstBasePolling {
     this.sessionAddress = sessionAddress;
   }
 
-	static setCreateSessionQRTimeout( val ) {
-		create_session_qr_timeout = val;
-	}
+  static setCreateSessionQRTimeout(val) {
+    create_session_qr_timeout = val;
+  }
 
-	fetchEntity() {
-		let oThis = this;
-		// Check whether session key exists
-		return OstSession.getById(oThis.sessionAddress)
-			.then((sessionEntity) => {
-				if (!sessionEntity) {
-					throw new OstError('os_op_osp_fe_1', OstErrorCodes.SESSION_KEY_NOT_FOUND);
-				}
-			  oThis.sessionEntity = sessionEntity;
-				return oThis.keyManagerProxy.filterLocalSessions([oThis.sessionEntity.getData()])
-			})
-			.then((filteredSessions) => {
-			  if (!filteredSessions.length ||
-					filteredSessions[0].id.toLowerCase() !== oThis.sessionAddress.toLowerCase()) {
+  fetchEntity() {
+    let oThis = this;
+    // Check whether session key exists
+    return OstSession.getById(oThis.sessionAddress)
+      .then((sessionEntity) => {
+        if (!sessionEntity) {
+          throw new OstError('os_op_osp_fe_1', OstErrorCodes.SESSION_KEY_NOT_FOUND);
+        }
+        oThis.sessionEntity = sessionEntity;
+        return oThis.keyManagerProxy.filterLocalSessions([oThis.sessionEntity.getData()])
+      })
+      .then((filteredSessions) => {
+        if (!filteredSessions.length ||
+          filteredSessions[0].id.toLowerCase() !== oThis.sessionAddress.toLowerCase()) {
 
-			    throw new OstError('os_op_osp_fe_2', OstErrorCodes.SESSION_KEY_NOT_FOUND);
+          throw new OstError('os_op_osp_fe_2', OstErrorCodes.SESSION_KEY_NOT_FOUND);
 
-			  }
-				return filteredSessions[0];
-			})
-			//If session key exists start poll
-			.then(() => {
-				return oThis.apiClient.getSession(oThis.sessionAddress)
-			})
-			.then((res) => {
-				return OstSession.getById(oThis.sessionAddress);
-			})
-	}
+        }
+        return filteredSessions[0];
+      })
+      //If session key exists start poll
+      .then(() => {
+        return oThis.apiClient.getSession(oThis.sessionAddress)
+      })
+      .then((res) => {
+        return OstSession.getById(oThis.sessionAddress);
+      })
+  }
 
-	isProcessCompleted(entity) {
+  isProcessCompleted(entity) {
     return entity.isStatusAuthorized();
   }
 
-	isProcessFailed(entity) {
-		return false;
-	}
+  isProcessFailed(entity) {
+    return false;
+  }
 
   isPollingTimeOut(entity) {
     const oThis = this
@@ -61,31 +61,31 @@ class OstSessionPolling extends OstBasePolling {
       return true;
     }
 
-		const currentTimeStamp = parseInt(Date.now() / 1000);
-		if (currentTimeStamp - parseInt(oThis.sessionEntity.getUpdatedAt()) > create_session_qr_timeout) {
-			return true;
-		}
-		return false;
+    const currentTimeStamp = parseInt(Date.now() / 1000);
+    if (currentTimeStamp - parseInt(oThis.sessionEntity.getUpdatedAt()) > create_session_qr_timeout) {
+      return true;
+    }
+    return false;
   }
 
-	getPollingFailedError(err) {
+  getPollingFailedError(err) {
     const oThis = this
     ;
 
     //Check for polling timeout
-		const isPollingTimeOut = oThis.isPollingTimeOut();
-		if (isPollingTimeOut) {
-			return new OstError('os_op_osp_gte_1', OstErrorCodes.CREATE_SESSION_QR_TIMEOUT);
+    const isPollingTimeOut = oThis.isPollingTimeOut();
+    if (isPollingTimeOut) {
+      return new OstError('os_op_osp_gte_1', OstErrorCodes.CREATE_SESSION_QR_TIMEOUT);
     }
 
-		if (err instanceof OstError) {
-			if (OstErrorCodes.CREATE_SESSION_QR_TIMEOUT == err.getErrorCode() ||
-				OstErrorCodes.SESSION_KEY_NOT_FOUND == err.getErrorCode()) {
-				return err;
-			}
-		}
-		return null;
-	}
+    if (err instanceof OstError) {
+      if (OstErrorCodes.CREATE_SESSION_QR_TIMEOUT == err.getErrorCode() ||
+        OstErrorCodes.SESSION_KEY_NOT_FOUND == err.getErrorCode()) {
+        return err;
+      }
+    }
+    return null;
+  }
 }
 
 

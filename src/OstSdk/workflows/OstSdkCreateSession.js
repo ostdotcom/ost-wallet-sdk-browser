@@ -32,7 +32,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   validateParams() {
     super.validateParams();
 
-    const currentTimeStamp = parseInt(Date.now()/1000);
+    const currentTimeStamp = parseInt(Date.now() / 1000);
 
     if (currentTimeStamp > this.expirationTime) {
       throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
@@ -59,7 +59,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
     oThis.keyManagerProxy.createSessionKey()
       .then((sessionAddress) => {
-        return oThis.createSessionEntity( sessionAddress.session_address )
+        return oThis.createSessionEntity(sessionAddress.session_address)
       })
       .then((sessionEntity) => {
         oThis.session = sessionEntity;
@@ -67,7 +67,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
           sessionEntity.getId(),
           sessionEntity.getSpendingLimit().toString(),
           sessionEntity.getExpiryTime().toString()
-          )
+        )
       })
       .then((data) => {
         oThis.qr_data = data.qr_data;
@@ -79,11 +79,11 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
       })
   }
 
-  createSessionEntity( sessionAddress ) {
+  createSessionEntity(sessionAddress) {
     return OstSession.init(this.user_id, sessionAddress, this.spendingLimit, this.expirationTime)
   }
 
-  postShowQRData( qrData ) {
+  postShowQRData(qrData) {
     this.postRequestAcknowledged(this.session)
   }
 
@@ -95,7 +95,7 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
 
   onPolling() {
     const oThis = this;
-    let sessionAddress =  oThis.workflowContext.getData().context_entity_id;
+    let sessionAddress = oThis.workflowContext.getData().context_entity_id;
 
     return oThis.pollingForSessionAddress(sessionAddress)
       .then((entity) => {

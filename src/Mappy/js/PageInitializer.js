@@ -14,8 +14,9 @@ const sdkConfig = {
 };
 
 const LOG_TAG = "PageInitializer";
+
 class PageInitializer {
-  constructor( autoPerform = true) {
+  constructor(autoPerform = true) {
     const oThis = this;
 
     oThis.currentUserInfo = null;
@@ -25,11 +26,12 @@ class PageInitializer {
       oThis.addPartials();
       ajaxUtils.setupAjax();
       oThis.bindEvents();
-      if ( autoPerform ) {
+      if (autoPerform) {
         oThis.perform();
       }
     })
   }
+
   perform() {
     const oThis = this;
 
@@ -37,8 +39,8 @@ class PageInitializer {
     let jEl = $("#loading-user");
     jEl.removeClass("d-none");
     return oThis.getCurrentUserFromServer()
-      // Init Sdk.
-      .then( () => {
+    // Init Sdk.
+      .then(() => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>✅ Done</span>");
 
@@ -49,7 +51,7 @@ class PageInitializer {
       })
 
       // Init WorkflowSubscriber Service
-      .then( () => {
+      .then(() => {
         // Hacky Logic - DO NOT COPY THIS `then`.
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>✅ Done</span>");
@@ -73,36 +75,36 @@ class PageInitializer {
 
 
       // Perform the setup Device
-      .then( () => {
+      .then(() => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>✅ Done</span>");
 
         jEl = $("#loading-setup-device");
         jEl.removeClass("d-none");
-        return oThis.setupDeviceWorkflow( oThis.currentUserInfo );
+        return oThis.setupDeviceWorkflow(oThis.currentUserInfo);
       })
 
       // Hide the loader.
-      .then( () => {
+      .then(() => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>✅ Done</span>");
         oThis.hidePageLoader();
-        if ( oThis.onPageInitializedCallback ) {
-          setTimeout( () => {
+        if (oThis.onPageInitializedCallback) {
+          setTimeout(() => {
             // Do not break promise chian.
-            oThis.onPageInitializedCallback( oThis.currentUserInfo );
+            oThis.onPageInitializedCallback(oThis.currentUserInfo);
           }, 0);
         }
-        if ( !oThis.deleteSessionsHelper ) {
-          setTimeout( () => {
+        if (!oThis.deleteSessionsHelper) {
+          setTimeout(() => {
             // Do not break promise chian.
-            oThis.deleteSessionsHelper = new DeleteSessionsHelper( oThis.currentUserInfo );
-            oThis.createSessionHelper = new CreateSessionHelper( oThis.currentUserInfo );
+            oThis.deleteSessionsHelper = new DeleteSessionsHelper(oThis.currentUserInfo);
+            oThis.createSessionHelper = new CreateSessionHelper(oThis.currentUserInfo);
           }, 0);
         }
         return true;
       })
-      .catch( (error) => {
+      .catch((error) => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>⚠️ Failed</span>");
         oThis.hidePageLoader();
@@ -127,7 +129,8 @@ class PageInitializer {
       oThis.logout();
     });
   }
-  onPageInitialized( callback ) {
+
+  onPageInitialized(callback) {
     this.onPageInitializedCallback = callback;
   }
 
@@ -147,16 +150,16 @@ class PageInitializer {
     }
 
     const apiUrl = this.getApiBaseUrl() + '/users/current-user';
-    return ajaxUtils.get( apiUrl )
-      .then( ( data ) =>{
+    return ajaxUtils.get(apiUrl)
+      .then((data) => {
         const resultType = data.result_type;
-        oThis.currentUserInfo = data[ resultType ];
+        oThis.currentUserInfo = data[resultType];
         return oThis.currentUserInfo;
       })
-      .catch( (error) => {
+      .catch((error) => {
         // Trigger logout.
         // TODO: Detect if error is 401 before triggering logout.
-        if ( !dontLogout ) {
+        if (!dontLogout) {
           oThis.logout();
         }
         throw error;
@@ -164,14 +167,14 @@ class PageInitializer {
   }
 
   initOstWalletSdk() {
-    if ( this.isOstWalletSdkInitialized ) {
+    if (this.isOstWalletSdkInitialized) {
       return Promise.resolve();
     }
-    return OstWalletSdk.init( sdkConfig ).then(() => {
+    return OstWalletSdk.init(sdkConfig).then(() => {
       console.log("OstWalletSdk.init resolved");
       this.isOstWalletSdkInitialized = true;
       return true;
-    }).catch(( error ) => {
+    }).catch((error) => {
       console.error("|||------- OstWalletSdk.init threw an error -------|||", error);
       // Throw the error again.
       throw error;
@@ -191,36 +194,36 @@ class PageInitializer {
     const oThis = this;
     const currentUser = oThis.getCurrentUser();
     let _resolve, _reject;
-    let sdkDelegate =  new OstSetupDeviceDelegate();
+    let sdkDelegate = new OstSetupDeviceDelegate();
     // Define register device.
-    sdkDelegate.registerDevice = function( apiParams ) {
+    sdkDelegate.registerDevice = function (apiParams) {
       console.log(LOG_TAG, "registerDevice");
       return oThis.registerDevice(apiParams);
     };
 
     //Define flowComplete
-    sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+    sdkDelegate.flowComplete = (ostWorkflowContext, ostContextEntity) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
 
-      _resolve( ostContextEntity );
+      _resolve(ostContextEntity);
     };
 
     //Define flowInterrupt
-    sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {
+    sdkDelegate.flowInterrupt = (ostWorkflowContext, ostError) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowInterrupt called");
-      _reject( ostError );
+      _reject(ostError);
     };
 
     // Return a promise that invokes the workflow.
-    return new Promise( (res, rej) => {
+    return new Promise((res, rej) => {
       _resolve = res;
-      _reject  = rej;
+      _reject = rej;
 
       // Invoke the workflow.
       let workflowId = OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
       // Set the workflowId for sdk-getters.
       currentUser.setup_device_workflow_id = workflowId;
-      
+
       WorkflowSubscriberService.subscribeToWorkflowId(workflowId);
     });
   }
@@ -229,19 +232,19 @@ class PageInitializer {
     const oThis = this;
     //BUG: This logout url is incorrect.
     const apiUrl = this.getApiBaseUrl() + '/users/logout';
-    return ajaxUtils.post( apiUrl )
+    return ajaxUtils.post(apiUrl)
       .catch(() => {
         // ignore error.
         return true;
       })
-      .then( () => {
+      .then(() => {
         // Very old code for clearing cookies.
         // Most likely not going to work.
         var cookies = document.cookie.split(";");
-        for(var i=0; i < cookies.length; i++) {
-            var equals = cookies[i].indexOf("=");
-            var name = equals > -1 ? cookies[i].substr(0, equals) : cookies[i];
-            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        for (var i = 0; i < cookies.length; i++) {
+          var equals = cookies[i].indexOf("=");
+          var name = equals > -1 ? cookies[i].substr(0, equals) : cookies[i];
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
 
         console.log("document.cookie", document.cookie);
@@ -254,23 +257,23 @@ class PageInitializer {
 
   registerDevice(apiParams) {
     const apiUrl = this.getApiBaseUrl() + '/devices';
-    return ajaxUtils.post( apiUrl, {
-        "address": apiParams.device_address,
-        "api_signer_address": apiParams.api_signer_address,
-        "original_payload": apiParams
-      })
-      .catch( (errorResponse) => {
+    return ajaxUtils.post(apiUrl, {
+      "address": apiParams.device_address,
+      "api_signer_address": apiParams.api_signer_address,
+      "original_payload": apiParams
+    })
+      .catch((errorResponse) => {
         let isDeviceAlreadyRegistered = false;
         // Response if already registered.
         //{"success":false,"internal_id":"l_oah_1","code":"ALREADY_EXISTS","msg":"Duplicate entity already exists."}
 
-        if ( errorResponse && errorResponse.success === false ) {
-          if ( errorResponse.code === "ALREADY_EXISTS") {
+        if (errorResponse && errorResponse.success === false) {
+          if (errorResponse.code === "ALREADY_EXISTS") {
             isDeviceAlreadyRegistered = true;
           }
         }
 
-        if ( isDeviceAlreadyRegistered ) {
+        if (isDeviceAlreadyRegistered) {
           console.log("device already registered.");
           // ignore the error.
           return true;
@@ -282,14 +285,15 @@ class PageInitializer {
   }
 
   addPartials() {
-    if ( !window._htmlPartials ) {
+    if (!window._htmlPartials) {
       return;
     }
-    for(let k in _htmlPartials) {
+    for (let k in _htmlPartials) {
       let encodedHtml = _htmlPartials[k];
-      let jEl = $( decodeURIComponent( encodedHtml ) );
-      $('body').append( jEl );
+      let jEl = $(decodeURIComponent(encodedHtml));
+      $('body').append(jEl);
     }
   }
 }
+
 export default PageInitializer;

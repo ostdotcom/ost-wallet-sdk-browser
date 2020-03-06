@@ -1,26 +1,28 @@
-.logOut
-{
-    
+.logOut {
+
 }
+
 .logOutBtn {
-    background-color: white; 
-    color: black; 
+    background-color: white;
+    color: black;
     border: 2px solid white;
-  }
-  
-  .logOutBtn:hover {
+}
+
+.logOutBtn:hover {
     background-color: #333940;
     color: white;
-  }
-  .scroll {
+}
+
+.scroll {
     overflow-x: auto;
     max-width: 50%;
 }
-.active-page
-{
-    color:green;
+
+.active-page {
+    color: green;
 }
-.navbar-header{
-    margin-left:5px;
-    width:100%;
-  }
+
+.navbar-header {
+    margin-left: 5px;
+    width: 100%;
+}

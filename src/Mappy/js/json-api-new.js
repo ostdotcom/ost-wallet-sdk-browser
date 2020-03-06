@@ -29,19 +29,19 @@ class JsonApiPage extends CodeTesterPageBase {
   getToken() {
     const oThis = this;
     const ostUserId = oThis.currentUser.user_id;
-    return OstJsonApi.getToken( ostUserId );
+    return OstJsonApi.getToken(ostUserId);
   }
 
   getRules() {
     const oThis = this;
     const ostUserId = oThis.currentUser.user_id;
-    return OstJsonApi.getRules( ostUserId );
+    return OstJsonApi.getRules(ostUserId);
   }
 
   getPricePoint() {
     const oThis = this;
     const ostUserId = oThis.currentUser.user_id;
-    return OstJsonApi.getPricePoint( ostUserId );
+    return OstJsonApi.getPricePoint(ostUserId);
   }
 
   getUser() {
@@ -86,7 +86,7 @@ class JsonApiPage extends CodeTesterPageBase {
     return OstJsonApi.getDeviceList(ostUserId);
   }
 
-  getTokenHolder(){
+  getTokenHolder() {
     const oThis = this;
     const ostUserId = oThis.currentUser.user_id;
     return OstJsonApi.getTokenHolder(ostUserId);

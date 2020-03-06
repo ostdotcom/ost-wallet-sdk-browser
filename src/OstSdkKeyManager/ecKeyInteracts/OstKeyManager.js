@@ -1,36 +1,34 @@
-
-
 let ikmInstance = null;
 export default class OstKeyManager {
-	constructor(ikm) {
-		ikmInstance = ikm;
-	}
+  constructor(ikm) {
+    ikmInstance = ikm;
+  }
 
-	getDeviceAddress() {
-		return ikmInstance.getDeviceAddress();
-	}
+  getDeviceAddress() {
+    return ikmInstance.getDeviceAddress();
+  }
 
-	getApiAddress() {
-		return ikmInstance.getApiAddress();
-	}
+  getApiAddress() {
+    return ikmInstance.getApiAddress();
+  }
 
-	createSessionKey() {
-		return ikmInstance.createSessionKey();
-	}
+  createSessionKey() {
+    return ikmInstance.createSessionKey();
+  }
 
-	isTrustable() {
-		return ikmInstance.isTrustable();
-	}
+  isTrustable() {
+    return ikmInstance.isTrustable();
+  }
 
-	setTrustable(trustable) {
-		return ikmInstance.setIsTrustable(trustable);
-	}
+  setTrustable(trustable) {
+    return ikmInstance.setIsTrustable(trustable);
+  }
 
-	deleteLocalSessions(addresses) {
-		return ikmInstance.deleteSessions(addresses);
-	}
+  deleteLocalSessions(addresses) {
+    return ikmInstance.deleteSessions(addresses);
+  }
 
-	filterValidSessions(sessions) {
-		return ikmInstance.filterValidSessions(sessions);
-	}
+  filterValidSessions(sessions) {
+    return ikmInstance.filterValidSessions(sessions);
+  }
 }

@@ -32,7 +32,7 @@ class OstWalletWorkFlowCallback {
    * @param {OstDeviceRegistered} ostDeviceRegistered - With callback to pass response
    * @override
    */
-  registerDevice( apiParams ) {
+  registerDevice(apiParams) {
     return Promise.reject();
   }
 
@@ -40,7 +40,8 @@ class OstWalletWorkFlowCallback {
    * Flow started
    * @param ostWorkflowContext - info about workflow type
    */
-  flowInitiated(ostWorkflowContext) {}
+  flowInitiated(ostWorkflowContext) {
+  }
 
   /**
    * Request acknowledged
@@ -48,7 +49,8 @@ class OstWalletWorkFlowCallback {
    * @param ostContextEntity - info about entity
    * @override
    */
-  requestAcknowledged(ostWorkflowContext , ostContextEntity ) {  }
+  requestAcknowledged(ostWorkflowContext, ostContextEntity) {
+  }
 
   /**
    * Flow complete
@@ -56,7 +58,8 @@ class OstWalletWorkFlowCallback {
    * @param ostContextEntity -  status of the flow
    * @override
    */
-  flowComplete(ostWorkflowContext , ostContextEntity ) {   }
+  flowComplete(ostWorkflowContext, ostContextEntity) {
+  }
 
   /**
    * Flow interrupt
@@ -64,7 +67,8 @@ class OstWalletWorkFlowCallback {
    * @param ostError reason of interruption
    * @override
    */
-  flowInterrupt(ostWorkflowContext , ostError)  {   }
+  flowInterrupt(ostWorkflowContext, ostError) {
+  }
 }
 
 export default OstWalletWorkFlowCallback;

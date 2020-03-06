@@ -10,7 +10,7 @@ import OstWorkflowEmitter from "./OstWorkflows/OstWorkflowEmitter"
 import './sdk-stylesheet.css';
 
 class OstWalletSdkCore extends OstBaseSdk {
-  constructor( window, parentOrigin ) {
+  constructor(window, parentOrigin) {
     super(window, parentOrigin);
   }
 
@@ -30,11 +30,11 @@ class OstWalletSdkCore extends OstBaseSdk {
     return false;
   }
 
-  onBrowserMessengerCreated( browserMessenger ) {
+  onBrowserMessengerCreated(browserMessenger) {
     const oThis = this;
 
     return super.onBrowserMessengerCreated()
-      .then( () => {
+      .then(() => {
         const proxy = new OstSdkProxy(this.browserMessenger);
         const jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
         const workflowEvents = new OstWorkflowEvents();
@@ -49,21 +49,21 @@ class OstWalletSdkCore extends OstBaseSdk {
     // I am my own assistor.
     this.browserMessenger.subscribe(this, this.getReceiverName());
 
-		const ostWorkflowEmitter = new OstWorkflowEmitter(this.workflowEvents);
-		this.browserMessenger.subscribe(ostWorkflowEmitter, ostWorkflowEmitter.getReceiverName());
+    const ostWorkflowEmitter = new OstWorkflowEmitter(this.workflowEvents);
+    this.browserMessenger.subscribe(ostWorkflowEmitter, ostWorkflowEmitter.getReceiverName());
 
-		return Promise.resolve( true );
+    return Promise.resolve(true);
   }
 
   //region - Workflows.
-  setupDevice ( userId, tokenId, ostWorkflowDelegate) {
+  setupDevice(userId, tokenId, ostWorkflowDelegate) {
     let setupDevice = new OstSetupDevice(userId, tokenId, ostWorkflowDelegate, this.browserMessenger, this.workflowEvents);
     let workflowId = setupDevice.perform();
 
     return workflowId;
   }
 
-  createSession ( userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
+  createSession(userId, expirationTime, spendingLimit, ostWorkflowDelegate) {
     let createSession = new OstCreateSession(userId, expirationTime, spendingLimit, ostWorkflowDelegate, this.browserMessenger, this.workflowEvents);
     let workflowId = createSession.perform();
 
@@ -95,29 +95,31 @@ class OstWalletSdkCore extends OstBaseSdk {
     transactionData.options = transactionData.options || {};
     return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
   }
+
   //endregion
 
   //region - getter methods
-  getUser( userId ) {
-    return this.proxy.getUser( userId );
+  getUser(userId) {
+    return this.proxy.getUser(userId);
   }
 
-  getToken( userId ) {
-    return this.proxy.getToken( userId );
+  getToken(userId) {
+    return this.proxy.getToken(userId);
   }
 
-  getDevice( userId ) {
+  getDevice(userId) {
     return this.proxy.getDevice(userId);
   }
 
-  getActiveSessions( userId, spendingLimit = '' ) {
+  getActiveSessions(userId, spendingLimit = '') {
     return this.proxy.getActiveSessions(userId, spendingLimit);
   }
+
   //endregion
 
 
   //region - Actions
-  deleteLocalSessions( userId ) {
+  deleteLocalSessions(userId) {
     return this.proxy.deleteLocalSessions(userId)
   }
 

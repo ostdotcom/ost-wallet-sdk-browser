@@ -1,5 +1,6 @@
 import PageInitializer from "./PageInitializer";
 import CodeTesterBase from "./CodeTesterBase";
+
 class CodeTesterPageBase extends CodeTesterBase {
   constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template", jqsDataDisplayTemplate = "#j-data-display-template") {
     super(jqsContainer, jqsTemplate, jqsDataDisplayTemplate);
@@ -7,16 +8,16 @@ class CodeTesterPageBase extends CodeTesterBase {
     const oThis = this;
 
     oThis.pageInitializer = new PageInitializer();
-    oThis.pageInitializer.onPageInitialized( ( currentUser ) => {
-      oThis.onPageInitialized( currentUser );
+    oThis.pageInitializer.onPageInitialized((currentUser) => {
+      oThis.onPageInitialized(currentUser);
     });
   }
 
-  onPageInitialized( currentUser ) {
+  onPageInitialized(currentUser) {
     const oThis = this;
     oThis.currentUser = currentUser;
     console.log("currentUser", currentUser);
-    oThis.perform( currentUser );
+    oThis.perform(currentUser);
   }
 }
 

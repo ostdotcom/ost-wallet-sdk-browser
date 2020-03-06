@@ -1,4 +1,3 @@
-
 import OstMessage from "../common-js/OstMessage";
 import {SOURCE} from "../common-js/OstBrowserMessenger";
 import OstError from "../common-js/OstError";
@@ -6,181 +5,181 @@ import OstError from "../common-js/OstError";
 const LOG_TAG = 'OstSdkProxy :: ';
 
 class OstSdkProxy {
-    constructor(messengerObj){
-        this.messengerObj = messengerObj;
-    }
+  constructor(messengerObj) {
+    this.messengerObj = messengerObj;
+  }
 
-    getUser(userId) {
-        let oThis = this;
-        let functionParams = {
-            user_id: userId,
-        };
+  getUser(userId) {
+    let oThis = this;
+    let functionParams = {
+      user_id: userId,
+    };
 
-        return oThis.getFromOstSdk('getUser', functionParams)
-            .then((response) => {
-              const user = response.user;
-              if (!user) {
-                return {}
-              }
+    return oThis.getFromOstSdk('getUser', functionParams)
+      .then((response) => {
+        const user = response.user;
+        if (!user) {
+          return {}
+        }
 
-              const userData = user.data;
-              if (!userData) {
-                return {}
-              }
+        const userData = user.data;
+        if (!userData) {
+          return {}
+        }
 
-              return userData;
-            })
-    }
+        return userData;
+      })
+  }
 
-    getToken( token_id) {
-        let oThis = this;
-            let functionParams = {
-                token_id: token_id,
-            };
+  getToken(token_id) {
+    let oThis = this;
+    let functionParams = {
+      token_id: token_id,
+    };
 
-            return oThis.getFromOstSdk('getToken', functionParams)
-                .then((response) => {
-                  const token = response.token;
-                  if (!token) {
-                    return {}
-                  }
+    return oThis.getFromOstSdk('getToken', functionParams)
+      .then((response) => {
+        const token = response.token;
+        if (!token) {
+          return {}
+        }
 
-                  const tokenData = token.data;
-                  if (!tokenData) {
-                    return {}
-                  }
+        const tokenData = token.data;
+        if (!tokenData) {
+          return {}
+        }
 
-                  return tokenData;
-                })
-    }
+        return tokenData;
+      })
+  }
 
-    getDevice(userId) {
-        let oThis = this;
-            let functionParams = {
-                user_id: userId,
-            };
+  getDevice(userId) {
+    let oThis = this;
+    let functionParams = {
+      user_id: userId,
+    };
 
-            return oThis.getFromOstSdk('getDevice', functionParams)
-                .then((response) => {
-                 const device = response.device;
-                  if (!device) {
-                    return {}
-                  }
+    return oThis.getFromOstSdk('getDevice', functionParams)
+      .then((response) => {
+        const device = response.device;
+        if (!device) {
+          return {}
+        }
 
-                  const deviceData = device.data;
-                  if (!deviceData) {
-                    return {}
-                  }
+        const deviceData = device.data;
+        if (!deviceData) {
+          return {}
+        }
 
-                  return deviceData;
-                })
-    }
+        return deviceData;
+      })
+  }
 
-    getActiveSessions(userId, spendingLimit) {
-        let oThis = this;
-            let functionParams = {
-                user_id: userId,
-                spending_limit: spendingLimit,
-            };
+  getActiveSessions(userId, spendingLimit) {
+    let oThis = this;
+    let functionParams = {
+      user_id: userId,
+      spending_limit: spendingLimit,
+    };
 
-            return oThis.getFromOstSdk('getActiveSessions', functionParams)
-                .then((response) => {
-                  const activeSessions = response.activeSessions;
-                  if (!activeSessions) {
-                    return []
-                  }
+    return oThis.getFromOstSdk('getActiveSessions', functionParams)
+      .then((response) => {
+        const activeSessions = response.activeSessions;
+        if (!activeSessions) {
+          return []
+        }
 
-                  return activeSessions
-                })
-    }
+        return activeSessions
+      })
+  }
 
   deleteLocalSessions(userId) {
-      let oThis = this;
-      const functionParams = {
-        user_id: userId
-      };
+    let oThis = this;
+    const functionParams = {
+      user_id: userId
+    };
 
-      return oThis.getFromOstSdk('deleteLocalSessions', functionParams)
-        .then((response) => {
-          return true;
-        })
-    }
+    return oThis.getFromOstSdk('deleteLocalSessions', functionParams)
+      .then((response) => {
+        return true;
+      })
+  }
 
-	/**
-	 * To get info data of the workflow
-	 * @param userId userId
-	 * @param workflowId workflowId
-	 * @returns {Promise<T>} Workflow Context
-	 */
-    getWorkflowInfo(userId, workflowId) {
-			const oThis = this
-				, functionParams = {
-				user_id: userId,
-				workflow_id: workflowId
-			};
+  /**
+   * To get info data of the workflow
+   * @param userId userId
+   * @param workflowId workflowId
+   * @returns {Promise<T>} Workflow Context
+   */
+  getWorkflowInfo(userId, workflowId) {
+    const oThis = this
+      , functionParams = {
+      user_id: userId,
+      workflow_id: workflowId
+    };
 
-      return oThis.getFromOstSdk('getWorkflowInfo', functionParams);
-    }
+    return oThis.getFromOstSdk('getWorkflowInfo', functionParams);
+  }
 
-	/**
-	 * To get list of pending workflow info
-	 * @param userId userId
-	 * @returns {Promise<T>} Workflow Context Array
-	 */
-    getPendingWorkflows(userId) {
-      let oThis = this;
-      const functionParams = {
-        user_id: userId
-      };
+  /**
+   * To get list of pending workflow info
+   * @param userId userId
+   * @returns {Promise<T>} Workflow Context Array
+   */
+  getPendingWorkflows(userId) {
+    let oThis = this;
+    const functionParams = {
+      user_id: userId
+    };
 
-      return oThis.getFromOstSdk('getPendingWorkflows', functionParams)
-        .then((pendingWorkflows) => {
-          if (!pendingWorkflows) {
-            return []
-          }
+    return oThis.getFromOstSdk('getPendingWorkflows', functionParams)
+      .then((pendingWorkflows) => {
+        if (!pendingWorkflows) {
+          return []
+        }
 
-          return pendingWorkflows
-        });
-    }
+        return pendingWorkflows
+      });
+  }
 
-    getFromOstSdk(functionName, functionParams) {
-        let oThis = this;
-		return new Promise((resolve, reject) => {
+  getFromOstSdk(functionName, functionParams) {
+    let oThis = this;
+    return new Promise((resolve, reject) => {
 
-			let subId = this.messengerObj.subscribe(new ResponseHandler(
-				function (args) {
-					console.log(LOG_TAG, `${functionName} get`, args);
-					oThis.messengerObj.unsubscribe(subId);
-					resolve(args);
-				},
-				function ( args ) {
-					console.log(LOG_TAG, `${functionName} error`, args);
-					oThis.messengerObj.unsubscribe(subId);
-					reject(OstError.fromErrorPayload(args));
-				}
-			));
+      let subId = this.messengerObj.subscribe(new ResponseHandler(
+        function (args) {
+          console.log(LOG_TAG, `${functionName} get`, args);
+          oThis.messengerObj.unsubscribe(subId);
+          resolve(args);
+        },
+        function (args) {
+          console.log(LOG_TAG, `${functionName} error`, args);
+          oThis.messengerObj.unsubscribe(subId);
+          reject(OstError.fromErrorPayload(args));
+        }
+      ));
 
-			let message  = new OstMessage();
-			message.setReceiverName("OstSdk");
-			message.setFunctionName(functionName);
-			message.setArgs(functionParams, subId);
-			console.log(LOG_TAG, functionName);
-			this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
-		});
-    }
+      let message = new OstMessage();
+      message.setReceiverName("OstSdk");
+      message.setFunctionName(functionName);
+      message.setArgs(functionParams, subId);
+      console.log(LOG_TAG, functionName);
+      this.messengerObj.sendMessage(message, SOURCE.DOWNSTREAM);
+    });
+  }
 
 }
 
-const ResponseHandler = function (success, error){
-	const oThis = this;
+const ResponseHandler = function (success, error) {
+  const oThis = this;
 
-	oThis.onSuccess = function(args) {
-			return success(args.data);
-	};
+  oThis.onSuccess = function (args) {
+    return success(args.data);
+  };
 
-	oThis.onError = function(args) {
-		return error(args.err);
-	};
+  oThis.onError = function (args) {
+    return error(args.err);
+  };
 
 };
 

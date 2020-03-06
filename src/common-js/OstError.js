@@ -1,4 +1,3 @@
-
 import OstErrorMessages from './OstErrorMessages'
 import OstErrorCodes from "./OstErrorCodes";
 
@@ -43,15 +42,15 @@ class OstError {
   }
 
   static sdkError(error, internalErrorCode, errorCode) {
-    if ( error instanceof OstError ) {
+    if (error instanceof OstError) {
       return error;
     }
-    if ( typeof error !== 'object') {
-      error = new Error( error );
+    if (typeof error !== 'object') {
+      error = new Error(error);
     }
 
     const errorInfo = {};
-    if ( error instanceof Error) {
+    if (error instanceof Error) {
       errorInfo['error_obj'] = {
         "is_js_error": true,
         "message": error.message,
@@ -70,12 +69,12 @@ class OstError {
     return new OstError(internalErrorCode, errorCode, errorInfo);
   }
 
-  static fromErrorPayload( errorPayload ) {
+  static fromErrorPayload(errorPayload) {
     return new OstError(
-        errorPayload.internal_error_code, 
-        errorPayload.error_code,
-        errorPayload.extra_info
-      );
+      errorPayload.internal_error_code,
+      errorPayload.error_code,
+      errorPayload.extra_info
+    );
   }
 
   getJSONObject() {

@@ -7,7 +7,8 @@ import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 
 
 CodeHighlight.registerLanguage('javascript', CodeHighlightJSLanguageSupport);
-const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
+const jsonViewerSettings = {collapsed: false, withQuotes: true, withLinks: false};
+
 class CodeTesterBase {
   constructor(jqsContainer = "#page-container", jqsTemplate = "#j-method-template", jqsDataDisplayTemplate = "#j-data-display-template") {
     const oThis = this;
@@ -22,17 +23,17 @@ class CodeTesterBase {
     oThis.addTesterConfigs();
   }
 
-  perform( currentUser ) {
+  perform(currentUser) {
     const oThis = this;
     oThis.compileTemplates();
 
     let cnt, len = oThis.methods.length;
-    for( cnt = 0; cnt < len; cnt++ ) {
+    for (cnt = 0; cnt < len; cnt++) {
 
-      let methodData = oThis.methods[ cnt ];
+      let methodData = oThis.methods[cnt];
       let methodName = methodData.selfMethodName;
       let displayCode = methodData.displayCode + oThis.getMethodDisplayAppendText();
-      let displayCodeTemplate = Handlebars.compile( displayCode );
+      let displayCodeTemplate = Handlebars.compile(displayCode);
 
 
       let viewId = "method-" + methodName + "-" + cnt;
@@ -49,19 +50,19 @@ class CodeTesterBase {
       // Copy current user info.
       Object.assign(templateData, currentUser || oThis.currentUser);
 
-      let finalDisplayCode = displayCodeTemplate( templateData );
+      let finalDisplayCode = displayCodeTemplate(templateData);
       templateData.displayCode = finalDisplayCode;
 
-      let outputHtml = oThis.methodTemplate( templateData );
-      let jOutputEl = $( outputHtml );
+      let outputHtml = oThis.methodTemplate(templateData);
+      let jOutputEl = $(outputHtml);
 
-      let dataDisplayCardHtml = oThis.dataDisplayTemplate( templateData );
-      jOutputEl.find('.j-data-display-col').html( dataDisplayCardHtml );
+      let dataDisplayCardHtml = oThis.dataDisplayTemplate(templateData);
+      jOutputEl.find('.j-data-display-col').html(dataDisplayCardHtml);
 
-      let codeEl = jOutputEl.find("#" + templateData.displayCodeViewId)[ 0 ];
-      codeEl && CodeHighlight.highlightBlock( codeEl );
+      let codeEl = jOutputEl.find("#" + templateData.displayCodeViewId)[0];
+      codeEl && CodeHighlight.highlightBlock(codeEl);
 
-      $(oThis.jqsContainer).first().append( jOutputEl );
+      $(oThis.jqsContainer).first().append(jOutputEl);
       oThis.makeMethodCall(templateData, jOutputEl);
     }
   }
@@ -73,28 +74,28 @@ class CodeTesterBase {
     let jsonViewId = templateData.jsonViewId;
     let stringViewId = templateData.stringViewId;
 
-    let jsonEl  = jOutputEl.find("#" + jsonViewId);
-    let strEl   = jOutputEl.find("#" + stringViewId);
+    let jsonEl = jOutputEl.find("#" + jsonViewId);
+    let strEl = jOutputEl.find("#" + stringViewId);
 
-    if ("function" != typeof oThis[ methodName ]) {
-      console.log("oThis.", methodName, "is not a function.\n", oThis[ methodName ]);
+    if ("function" != typeof oThis[methodName]) {
+      console.log("oThis.", methodName, "is not a function.\n", oThis[methodName]);
       return;
     }
-    oThis[ methodName ]()
+    oThis[methodName]()
       .then((response) => {
-        jsonEl.jsonViewer( response, jsonViewerSettings);
-        strEl.html( JSON.stringify(response, null, 2) );
+        jsonEl.jsonViewer(response, jsonViewerSettings);
+        strEl.html(JSON.stringify(response, null, 2));
       })
-      .catch( (error) => {
+      .catch((error) => {
         let dataToPrint = error;
 
         if (error instanceof OstError) {
           dataToPrint = error.getJSONObject();
         }
 
-        jsonEl.jsonViewer( dataToPrint, jsonViewerSettings);
+        jsonEl.jsonViewer(dataToPrint, jsonViewerSettings);
         jsonEl.addClass("alert alert-warning");
-        strEl.html( JSON.stringify(dataToPrint, null, 2) );
+        strEl.html(JSON.stringify(dataToPrint, null, 2));
         strEl.addClass("alert alert-warning");
       })
 
@@ -103,10 +104,10 @@ class CodeTesterBase {
   compileTemplates() {
     const oThis = this;
     let methodTemplateHtml = $(oThis.jqsTemplate).html();
-    oThis.methodTemplate = Handlebars.compile( methodTemplateHtml );
+    oThis.methodTemplate = Handlebars.compile(methodTemplateHtml);
 
     let dataDisplayTemplate = $(oThis.jqsDataDisplayTemplate).html();
-    oThis.dataDisplayTemplate = Handlebars.compile( dataDisplayTemplate );
+    oThis.dataDisplayTemplate = Handlebars.compile(dataDisplayTemplate);
   }
 
   getMethodDisplayAppendText() {
@@ -130,4 +131,5 @@ class CodeTesterBase {
     });
   }
 }
+
 export default CodeTesterBase;

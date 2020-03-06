@@ -10,7 +10,7 @@ class OstDevice extends OstBaseEntity {
     AUTHORIZED: 'AUTHORIZED',
     REVOKED: 'REVOKED',
     AUTHORIZING: 'AUTHORIZING',
-    REVOKING : 'REVOKING',
+    REVOKING: 'REVOKING',
     RECOVERING: 'RECOVERING'
 
   };
@@ -45,6 +45,7 @@ class OstDevice extends OstBaseEntity {
     const ostDevice = new OstDevice(data);
     return ostDevice.forceCommit();
   }
+
   getStoreName() {
     return STORES.OST_DEVICE;
   }

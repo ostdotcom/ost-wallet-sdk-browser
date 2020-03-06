@@ -2,269 +2,283 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title><%= htmlWebpackPlugin.options.title %></title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
-  <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700" rel="stylesheet" type="text/css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-  <script type="text/javascript">
-    Object.assign(window, <%= htmlWebpackPlugin.options.GC_VARS %>);
-  </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700" rel="stylesheet" type="text/css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script type="text/javascript">
+      Object.assign(window, < %= htmlWebpackPlugin.options.GC_VARS % >
+      )
+      ;
+    </script>
 </head>
 
 <body class="bg-light">
-  <header class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+<header class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Demo App</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarColor01">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <!-- This is ACTIVE LINK -->
-          <a class="nav-link" href="./sdk-getters.html">OstWalletSdk</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./json-api.html">OstJsonApi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="./users.html">Users<span class="sr-only">(current)</span></a>
-        </li>
-      </ul>
-      <ul class="navbar-nav flex-row ml-md-auto d-md-flex">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Actions and Logout
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-            <a id="j-create-session-btn" data-target="#createSession"  data-toggle="modal"
-              class="dropdown-item" href="#">Create Session</a>
-            <a id="j-delsession-btn" 
-              class="dropdown-item" href="#">Delete Local Sessions</a>
-            <div class="dropdown-divider"></div>
-            <a id="j-logout-btn" data-redirect-url="./login.html" class="dropdown-item" href="#">Logout</a>
-          </div>
-        </li>
-      </ul>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <!-- This is ACTIVE LINK -->
+                <a class="nav-link" href="./sdk-getters.html">OstWalletSdk</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="./json-api.html">OstJsonApi</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="./users.html">Users<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <ul class="navbar-nav flex-row ml-md-auto d-md-flex">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Actions and Logout
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a id="j-create-session-btn" data-target="#createSession" data-toggle="modal"
+                       class="dropdown-item" href="#">Create Session</a>
+                    <a id="j-delsession-btn"
+                       class="dropdown-item" href="#">Delete Local Sessions</a>
+                    <div class="dropdown-divider"></div>
+                    <a id="j-logout-btn" data-redirect-url="./login.html" class="dropdown-item" href="#">Logout</a>
+                </div>
+            </li>
+        </ul>
     </div>
-  </header>
-  <div class="phantom-header"></div>
-  <%= htmlWebpackPlugin.options.LOADER_HTML %>
-  
+</header>
+<div class="phantom-header"></div>
+<%= htmlWebpackPlugin.options.LOADER_HTML %>
 
-  <section class="container-datatabFle mt-4 bg-light">
+
+<section class="container-datatabFle mt-4 bg-light">
     <div id="page-container" class="col-12 fluid">
-      <div class="row data-table-row">
-        <div class="col-md-5 col-md-offset-5"><h4>User Details</h4></div>
-        <div class="col-md-3 col-md-offset-3"><h4>Balance</h4></div>
-        <div class="col-md-4 col-md-offset-4"><h4>Pay User</h4></div>
-      </div>
-      <!--template to load users-->
-      <script id="user-method-template" type="text/x-handlebars-template">
-        <div class="row data-table-row" id="{{user_row}}">
-          <div  class=" col-md-5 col-grp">
-            <div>{{username}}</div>
-            <div>{{token_holder_address}}</div>
-          </div>
-          {{#if token_holder_address}}
-            <div class="col-md-3 col-grp">
-              <div><span>Lower Unit:&nbsp;&nbsp;</span><span>{{available_balance}}</span></div>
+        <div class="row data-table-row">
+            <div class="col-md-5 col-md-offset-5"><h4>User Details</h4></div>
+            <div class="col-md-3 col-md-offset-3"><h4>Balance</h4></div>
+            <div class="col-md-4 col-md-offset-4"><h4>Pay User</h4></div>
+        </div>
+        <!--template to load users-->
+        <script id="user-method-template" type="text/x-handlebars-template">
+            <div class="row data-table-row" id="{{user_row}}">
+                <div class=" col-md-5 col-grp">
+                    <div>{{username}}</div>
+                    <div>{{token_holder_address}}</div>
+                </div>
+                {{#if token_holder_address}}
+                <div class="col-md-3 col-grp">
+                    <div><span>Lower Unit:&nbsp;&nbsp;</span><span>{{available_balance}}</span></div>
+                </div>
+                <div class="col-md-4 col-grp">
+                    <button class="j-send-1-bt btn btn-dark" data-app-user-id="{{app_user_id}}">1 BT</button>
+                    <button class="j-send-1-cent btn btn-dark" data-app-user-id="{{app_user_id}}">¢1</button>
+                    <button class="j-send-custom btn btn-dark" data-app-user-id="{{app_user_id}}">Custom</button>
+                </div>
+                {{else}}
+                <div class="col-md-7 col-grp">
+                    <div class="alert alert-secondary" role="alert">
+                        User is not activated.
+                    </div>
+                </div>
+                {{/if}}
             </div>
-            <div class="col-md-4 col-grp">
-              <button class="j-send-1-bt btn btn-dark" data-app-user-id="{{app_user_id}}">1 BT</button>
-              <button class="j-send-1-cent btn btn-dark" data-app-user-id="{{app_user_id}}">¢1</button>
-              <button class="j-send-custom btn btn-dark" data-app-user-id="{{app_user_id}}">Custom</button>
+        </script>
+        <!--load users template ended-->
+        <div id="user-row-div">
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <button id="previous" class="previous btn-page ">&laquo; Previous</button>
             </div>
-          {{else}}
-            <div class="col-md-7 col-grp">
-              <div class="alert alert-secondary" role="alert">
-                User is not activated.
-              </div>
-            </div>        
-          {{/if}}
+            <div class="col-md-6">
+                <button id="next" class="next btn-page">Next &raquo;</button>
+            </div>
         </div>
-      </script>
-      <!--load users template ended-->
-      <div id="user-row-div">
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <button id="previous" class="previous btn-page ">&laquo; Previous</button>
-        </div>
-        <div class="col-md-6">
-          <button id="next" class="next btn-page">Next &raquo;</button>
-        </div>
-      </div>
     </div>
-  </section>
+</section>
 
-  <div class="modal fade" id="custom_tx_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="custom_tx_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-center">
                 <h6 class="modal-title w-100 font-weight-bold">Transfer</h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body mx-3">
-              <div class="md-form mb-4">
-                  <label data-error="wrong" data-success="right" for="custom_tx_type">Select Trasaction Type:</label>
-                  <div class="form-group">
-                    <select id="custom_tx_type" class="form-control">
-                      <option value="executeDirectTransferTransaction">Direct Transfer</option>
-                      <option value="executePayTransaction">Pay</option>
-                    </select>
-                  </div>
-              </div>
-              <div class="md-form mb-3 d-none" id="custom_tx_currency_wrap">
-                <label data-error="wrong" data-success="right" 
-                  for="custom_tx_currency">Select Currency Type:</label>
-                <div class="form-group">
-                  <select id="custom_tx_currency" class="form-control">
-                    <option value="USD">USD</option>
-                    <option value="GBP">GBP</option>
-                    <option value="EUR">EUR</option>
-                  </select>
+                <div class="md-form mb-4">
+                    <label data-error="wrong" data-success="right" for="custom_tx_type">Select Trasaction Type:</label>
+                    <div class="form-group">
+                        <select id="custom_tx_type" class="form-control">
+                            <option value="executeDirectTransferTransaction">Direct Transfer</option>
+                            <option value="executePayTransaction">Pay</option>
+                        </select>
+                    </div>
                 </div>
-              </div>
-              <div class="md-form mb-5" id="custom_tx_amount_wrap">
-                <label data-error="wrong" data-success="right" for="custom_tx_amount">Enter Amount:</label>
-                <input type="number" id="custom_tx_amount" class="form-control validate">
-                <input type="hidden" id="custom_tx_token_holder" />
-              </div>
+                <div class="md-form mb-3 d-none" id="custom_tx_currency_wrap">
+                    <label data-error="wrong" data-success="right"
+                           for="custom_tx_currency">Select Currency Type:</label>
+                    <div class="form-group">
+                        <select id="custom_tx_currency" class="form-control">
+                            <option value="USD">USD</option>
+                            <option value="GBP">GBP</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="md-form mb-5" id="custom_tx_amount_wrap">
+                    <label data-error="wrong" data-success="right" for="custom_tx_amount">Enter Amount:</label>
+                    <input type="number" id="custom_tx_amount" class="form-control validate">
+                    <input type="hidden" id="custom_tx_token_holder"/>
+                </div>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-              <button class="btn btn-default" data-toggle="modal" id="custom_tx_perform">Send</button>
+                <button class="btn btn-default" data-toggle="modal" id="custom_tx_perform">Send</button>
             </div>
         </div>
     </div>
-  </div> 
+</div>
 
-  <!----transaction output modal-->
-  <div class="modal fade" id="transaction-output-modal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!----transaction output modal-->
+<div class="modal fade" id="transaction-output-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-center">
                 <h6 class="modal-title w-100 font-weight-bold">Transaction Status</h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body mx-3" id="tx-modal-body">
-              
-              
-              <div class="row">
-                <div class="col-md-12 col-sm-12">
-                  <label data-error="wrong" data-success="right" style="font-weight: bold;">Type: </label>
-                  <label data-error="wrong" data-success="right"  id="type-label"></label></br>
-                  <label data-error="wrong" data-success="right" style="font-weight: bold;">Amount: </label>
-                  <label data-error="wrong" data-success="right"  id="amount-label"></label></br>
-                  <label data-error="wrong" data-success="right" style="font-weight: bold;">Token Holder Address: </label>
-                  <label data-error="wrong" data-success="right" id="address-label"></label></br>
 
-                  <hr class="solid">
-                  
-                  <label id="req-ack-output-label" class="font-weight-bold"></label></br>
-                  <div class="card">
-                    <div class="card-header">
-                      <ul class="nav nav-tabs card-header-tabs">
-                        <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
-                        <li class="nav-item">
-                          <a class="nav-link active" data-toggle="tab" role="tab" href="#transaction-req-json">JSON</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" data-toggle="tab" role="tab" href="#transaction-req-string">String</a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="tab-content">
-                    <div id="transaction-req-json" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
-                   </div>
-                    <div id="transaction-req-string" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
-                      <code class="language-json"></code>
-                    </div>
-                    </div>
-                  </div>
-                </br>
-                </br>
-                
-                <label id="flow-transaction-output-label" class="font-weight-bold"></label></br>
-                  <div class="card">
-                    <div class="card-header">
-                      <ul class="nav nav-tabs card-header-tabs">
-                        <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
-                        <li class="nav-item">
-                          <a class="nav-link active" data-toggle="tab" role="tab" href="#transaction-json">JSON</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" data-toggle="tab" role="tab" href="#transaction-string">String</a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="tab-content">
-                    <div id="transaction-json" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
-                     </div>
-                    <div id="transaction-string" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
-                      <code class="language-json"></code>
-                    </div>
-                    </div>
-                  </div>
 
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                        <label data-error="wrong" data-success="right" style="font-weight: bold;">Type: </label>
+                        <label data-error="wrong" data-success="right" id="type-label"></label></br>
+                        <label data-error="wrong" data-success="right" style="font-weight: bold;">Amount: </label>
+                        <label data-error="wrong" data-success="right" id="amount-label"></label></br>
+                        <label data-error="wrong" data-success="right" style="font-weight: bold;">Token Holder
+                            Address: </label>
+                        <label data-error="wrong" data-success="right" id="address-label"></label></br>
+
+                        <hr class="solid">
+
+                        <label id="req-ack-output-label" class="font-weight-bold"></label></br>
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" role="tab"
+                                           href="#transaction-req-json">JSON</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" role="tab" href="#transaction-req-string">String</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                <div id="transaction-req-json" role="tabpanel" class="card-body tab-pane active"
+                                     style="max-height: 250px; overflow: auto;">
+                                </div>
+                                <div id="transaction-req-string" role="tabpanel" class="card-body tab-pane"
+                                     style="max-height: 250px; overflow: auto;">
+                                    <code class="language-json"></code>
+                                </div>
+                            </div>
+                        </div>
+                        </br>
+                        </br>
+
+                        <label id="flow-transaction-output-label" class="font-weight-bold"></label></br>
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" role="tab"
+                                           href="#transaction-json">JSON</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" role="tab" href="#transaction-string">String</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                <div id="transaction-json" role="tabpanel" class="card-body tab-pane active"
+                                     style="max-height: 250px; overflow: auto;">
+                                </div>
+                                <div id="transaction-string" role="tabpanel" class="card-body tab-pane"
+                                     style="max-height: 250px; overflow: auto;">
+                                    <code class="language-json"></code>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-              </div>
             </div>
             <div class="modal-footer d-flex justify-content-center" id="tx-modal-footer">
             </div>
         </div>
     </div>
-  </div>
-  <script id="j-workflow-log-template" type="text/x-handlebars-template">
+</div>
+<script id="j-workflow-log-template" type="text/x-handlebars-template">
     <div id="accordion">
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h5 class="mb-0">
-            <button class="btn btn-link" data-toggle="collapse" data-target="#{{collapseOne}}" aria-expanded="true" aria-controls="collapseOne">
-              Workflow {{id}}
-            </button>
-          </h5>
-        </div>
-    
-        <div id="{{collapseOne}}" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-          <div class="card-body">
-            <div class="row" style="display: flex;">
-              <div class="col-md-6 col-sm-12">
-                <div class="card" >
-                  <div class="card-header">
-                    <b>OstWorkflowContext</b>
-                  </div>
-                  <div class="card-body" style="max-height: 250px; overflow: auto;">
-                      <div id="{{contextCodeViewId}}">{{contextCode}}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-12">
-                <div class="card" >
-                  <div class="card-header">
-                    <b>OstWorkflowEntity</b>
-                  </div>
-                  <div class="card-body" style="max-height: 250px; overflow: auto;" >
-                    <div id="{{enityCodeViewId}}">{{entityCode}}</div>
-                  </div>
-                </div>
-              </div>
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#{{collapseOne}}"
+                            aria-expanded="true" aria-controls="collapseOne">
+                        Workflow {{id}}
+                    </button>
+                </h5>
             </div>
-          </div>
+
+            <div id="{{collapseOne}}" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <div class="row" style="display: flex;">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <b>OstWorkflowContext</b>
+                                </div>
+                                <div class="card-body" style="max-height: 250px; overflow: auto;">
+                                    <div id="{{contextCodeViewId}}">{{contextCode}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <b>OstWorkflowEntity</b>
+                                </div>
+                                <div class="card-body" style="max-height: 250px; overflow: auto;">
+                                    <div id="{{enityCodeViewId}}">{{entityCode}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </script>
+</script>
 
 </body>
 

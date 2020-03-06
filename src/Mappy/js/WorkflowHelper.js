@@ -1,7 +1,8 @@
 class WorkflowHelper {
-  
-  compileTemplates(){
+
+  compileTemplates() {
 
   }
 }
+
 export default MappyUiWorkflowCallback;

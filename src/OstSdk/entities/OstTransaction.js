@@ -2,13 +2,13 @@ import {OstBaseEntity, STORES} from "./OstBaseEntity";
 
 class OstTransaction extends OstBaseEntity {
 
-	static STATUS = {
-		CREATED: "CREATED",
-		SUBMITTED: "SUBMITTED",
-		MINED: "MINED",
-		SUCCESS: "SUCCESS",
-		FAILED: "FAILED"
-	};
+  static STATUS = {
+    CREATED: "CREATED",
+    SUBMITTED: "SUBMITTED",
+    MINED: "MINED",
+    SUCCESS: "SUCCESS",
+    FAILED: "FAILED"
+  };
 
   constructor(jsonObject) {
     super(jsonObject)
@@ -45,15 +45,16 @@ class OstTransaction extends OstBaseEntity {
   }
 
   isStatusMined() {
-  	return this.getStatus() == OstTransaction.STATUS.MINED;
-	}
+    return this.getStatus() == OstTransaction.STATUS.MINED;
+  }
 
-	isStatusSuccess() {
-		return this.getStatus() == OstTransaction.STATUS.SUCCESS;
-	}
+  isStatusSuccess() {
+    return this.getStatus() == OstTransaction.STATUS.SUCCESS;
+  }
 
-	isStatusFailed() {
-		return this.getStatus() == OstTransaction.STATUS.FAILED;
-	}
+  isStatusFailed() {
+    return this.getStatus() == OstTransaction.STATUS.FAILED;
+  }
 }
+
 export default OstTransaction;

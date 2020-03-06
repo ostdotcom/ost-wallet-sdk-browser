@@ -6,13 +6,13 @@ const LOG_TAG = "OstSdk :: index :: ";
 
 (function (_window, _location) {
 
-function destroySelf() {
-  const escapeUrl = "about:blank";
-  _location.href = escapeUrl;
-  _location = escapeUrl;
-}
+  function destroySelf() {
+    const escapeUrl = "about:blank";
+    _location.href = escapeUrl;
+    _location = escapeUrl;
+  }
 
-  if ( _window.parent == _window ) {
+  if (_window.parent == _window) {
     return destroySelf();
   }
 
@@ -26,11 +26,11 @@ function destroySelf() {
 
     console.log("||| ostSdkObj.getUpstreamOrigin()", ostSdkObj.getUpstreamOrigin());
     // Initialize the sdk.
-    ostSdkObj.init( sdkConfig );
+    ostSdkObj.init(sdkConfig);
   })
-  .catch(() => {
-    destroySelf();
-  })
+    .catch(() => {
+      destroySelf();
+    })
   ;
 
 })(window, location);

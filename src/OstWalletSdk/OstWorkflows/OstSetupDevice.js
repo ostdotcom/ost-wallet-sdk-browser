@@ -10,14 +10,14 @@ class OstSetupDevice extends OstBaseWorkflow {
     this.tokenId = tokenId
   }
 
-  perform () {
+  perform() {
     super.perform();
     console.log("OstSetupDevice :: perform");
 
     return this.startWorkflow("setupDevice", {user_id: this.userId, token_id: this.tokenId});
   }
 
-  registerDevice ( args ) {
+  registerDevice(args) {
     let oThis = this;
     console.log("OstSetupDevice :: registerDevice :: ", args);
     const subscriberId = args.subscriber_id;
@@ -41,16 +41,16 @@ class OstSetupDevice extends OstBaseWorkflow {
       });
   }
 
-	subscribeEvents() {
-		const oThis = this
-			, workflowEventsObj = this.workflowEvents
-		;
+  subscribeEvents() {
+    const oThis = this
+      , workflowEventsObj = this.workflowEvents
+    ;
 
-		super.subscribeEvents();
-		workflowEventsObj.subscribe("registerDevice", oThis.workflowId, (ost_workflow_context, args) => {
-			oThis.registerDevice(args);
-		});
-	}
+    super.subscribeEvents();
+    workflowEventsObj.subscribe("registerDevice", oThis.workflowId, (ost_workflow_context, args) => {
+      oThis.registerDevice(args);
+    });
+  }
 }
 
 export default OstSetupDevice;

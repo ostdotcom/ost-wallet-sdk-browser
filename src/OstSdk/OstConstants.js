@@ -1,5 +1,5 @@
 class OstConstants {
-  constructor( args = null ) {
+  constructor(args = null) {
     this.baseUrl = null;
     this.blockGenerationTime = args.block_generation_time || 3;
   }
@@ -17,7 +17,7 @@ class OstConstants {
   }
 
   defineImmutableProperty(propName, val) {
-    Object.defineProperty( this, propName, {
+    Object.defineProperty(this, propName, {
       "value": val,
       "writable": false,
       "enumerable": true

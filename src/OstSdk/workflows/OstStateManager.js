@@ -13,7 +13,7 @@ export default class OstStateManager {
     COMPLETED_WITH_ERROR: "COMPLETED_WITH_ERROR"
   };
 
-  constructor( states ) {
+  constructor(states) {
 
     this.orderedStates = states || [];
     this.currentStateIndex = 0;
@@ -32,7 +32,7 @@ export default class OstStateManager {
   }
 
 
-  getNextState () {
+  getNextState() {
     let stateIndex = this.currentStateIndex + 1;
     if (this.orderedStates.count > stateIndex) {
       this.currentStateIndex = stateIndex;

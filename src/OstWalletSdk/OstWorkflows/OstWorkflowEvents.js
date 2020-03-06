@@ -37,7 +37,7 @@ class OstWorkflowEvents {
    * @param callback
    */
   subscribe(eventName, workflowId, callback) {
-    if ( !this.isValidEventName(eventName) ) {
+    if (!this.isValidEventName(eventName)) {
       //throw new OstError('ows_owsc_s_1');
       return;
     }
@@ -57,7 +57,7 @@ class OstWorkflowEvents {
    * @param userId
    */
   subscribeAll(eventName, callback, userId = null) {
-    if ( !this.isValidEventName(eventName) ) {
+    if (!this.isValidEventName(eventName)) {
       //throw new OstError('ows_owsc_s_1');
       return;
     }
@@ -67,7 +67,7 @@ class OstWorkflowEvents {
     }
 
     let eventSubscriberName = eventName;
-    if(userId) {
+    if (userId) {
       console.log(LOG_TAG, "subscribing for userId: ", userId);
       eventSubscriberName = this.getSubscriberNameForUserId(eventName, userId);
     }
@@ -80,12 +80,13 @@ class OstWorkflowEvents {
       console.log(LOG_TAG, "ostCustomEvent", ostCustomEvent);
       // Trigger actual callback.
       let callbackArgs = [];
-      if ( ostCustomEvent.detail && ostCustomEvent.detail.ost_event_args ) {
+      if (ostCustomEvent.detail && ostCustomEvent.detail.ost_event_args) {
         callbackArgs = ostCustomEvent.detail.ost_event_args;
       }
       callback(...callbackArgs);
     });
   }
+
   //endregion
 
 
@@ -114,6 +115,7 @@ class OstWorkflowEvents {
     const eventName = EventNames.registerDevice;
     this.postEvent(eventName, ostWorkflowContext, args);
   }
+
   //endregion
 
   postEvent(eventName, ostWorkflowContext, eventArgs) {

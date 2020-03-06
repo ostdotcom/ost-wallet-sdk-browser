@@ -1,4 +1,3 @@
-
 const queryString = require('qs');
 
 class OstUrlHelper {
@@ -16,12 +15,12 @@ class OstUrlHelper {
       // connector = '/';
     }
 
-    return url+connector+"?"+stringifiedParams;
+    return url + connector + "?" + stringifiedParams;
   }
 
   static getStringFromParams(params) {
-		let stringifiedParams = queryString.stringify(params, { arrayFormat: 'brackets' });
-		return stringifiedParams;
+    let stringifiedParams = queryString.stringify(params, {arrayFormat: 'brackets'});
+    return stringifiedParams;
   }
 
   static getStringForOstApiSign(url, params) {
@@ -37,7 +36,7 @@ class OstUrlHelper {
       // connector = '/';
     }
 
-    return url+connector+"?"+stringifiedParams;
+    return url + connector + "?" + stringifiedParams;
   }
 
 
