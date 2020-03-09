@@ -45,7 +45,9 @@ To invoke the workflow you will need two things:
 ```
 let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
 let token_id = "YOUR ECONOMY'S Id";
-OstWalletSdk.setupDevice(ost_user_id, token_id, sdkDelegate);
+let workflowId = OstWalletSdk.setupDevice(ost_user_id, token_id, sdkDelegate);
+
+/// use workflowId to subscribe to events.
 ```
 
 ## Create Session Workflow
@@ -98,7 +100,9 @@ If value of decimals is 6 then the conversion would be 1 Higher Unit = 1000000 L
 let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
 let expiryTime = CURRENT_TIME + DAYS_SPECIFIED_BY_USER;
 let spendingLimit = SPENDING_LIMIT_IN_HIGHER_UNIT;
-OstWalletSdk.setupDevice(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
+let workflowId = OstWalletSdk.createSession(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
+
+/// use workflowId to subscribe to events.
 ```
 
 ## Execute Transaction Workflow
@@ -154,11 +158,13 @@ let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
 let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
 let amount = "CONVERTED USER ENTERED TOKEN AMOUNT TO WEI ";
 
-OstWalletSdk.executeDirectTransferTransaction(user_id, {
+let workflowId = OstWalletSdk.executeDirectTransferTransaction(user_id, {
                     token_holder_addresses : [token_holder_address],
                     amounts: [amount] 
                   },
                   sdkDelegate);
+                  
+/// use workflowId to subscribe to events.
 ```
 
 #### Execute Pay 
@@ -180,7 +186,7 @@ let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
 let amount = "CONVERTED USER ENTERED CENT AMOUNT TO WEI ";
 let currency_type = "CURRENCY CODE SELECTED BY USER";
 
-OstWalletSdk.executePayTransaction(currentUser.user_id, {
+let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
                     token_holder_addresses: [tokenHolderAddress],
                     amounts: [amount],
                     options: {
@@ -188,10 +194,98 @@ OstWalletSdk.executePayTransaction(currentUser.user_id, {
                     }
                 },
                 sdkDelegate);
+                
+/// use workflowId to subscribe to events.
 ```
 
+## Subscribe to workflow events
+Subscription to workflow events can be performed in three ways:
 
+#### Susbscribe by workflow Id
+All event of perticular workflow id can be delivered on subscribing it.
+```javascript
+ OstWalletSdk.subscribe("flowInitiated", workflowId, (workflowContext) => {
+      consloe.log("workflowContext : ", workflowContext);
+ });
 
+ OstWalletSdk.subscribe("requestAcknowledged", workflowId, (workflowContext, contextEntity) => {
+      consloe.log("workflowContext : ", workflowContext);
+      consloe.log("contextEntity : ", contextEntity);
+      
+      //Perfrom action on requestAcknowledged
+ });
 
+ OstWalletSdk.subscribe("flowCompleted", workflowId, (workflowContext, contextEntity) => {
+      consloe.log("workflowContext : ", workflowContext);
+      consloe.log("contextEntity : ", contextEntity);
+      
+      //Perfrom action on flowCompleted
+ });
+ 
+ OstWalletSdk.subscribe("flowInterrupted", workflowId, (workflowContext, ostError) => {
+      consloe.log("workflowContext : ", workflowContext);
+      consloe.log("ostError : ", ostError);
+      
+      //Perfrom action on flowInterrupted
+});
+```
 
+#### Susbscribe by user Id
+To get all workflow events performed by user, subscribe to user id.
+```javascript
 
+let userId = <OST_USER_ID>
+OstWalletSdk.subscribeAll("flowInitiated", (workflowContext) => {
+   consloe.log("workflowContext : ", workflowContext);
+   
+   //Perfrom action on flowInitiated for user id 
+}, userId);
+
+OstWalletSdk.subscribeAll("requestAcknowledged", (workflowContext, contextEntity) => {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+   
+   //Perfrom action on requestAcknowledged for user id 
+}, userId);
+
+OstWalletSdk.subscribeAll("flowCompleted", (workflowContext, contextEntity) => {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+   
+   //Perfrom action on flowCompleted for user id  
+}, userId);
+
+OstWalletSdk.subscribeAll("flowInterrupted", (workflowContext, ostError) => {
+  consloe.log("workflowContext : ", workflowContext);
+  consloe.log("ostError : ", ostError);
+      
+  //Perfrom action on flowInterrupted for user id
+}, userId);
+```
+
+#### Susbscribe to all workflow events
+Developer can subscribe to all workflow event.
+
+```js
+OstWalletSdk.subscribeAll("flowInitiated", (workflowContext) => {
+   consloe.log("workflowContext : ", workflowContext);
+});
+
+OstWalletSdk.subscribeAll("requestAcknowledged", (workflowContext, contextEntity) => {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+});
+
+OstWalletSdk.subscribeAll("flowCompleted", (workflowContext, contextEntity) => {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+   
+});
+
+OstWalletSdk.subscribeAll("flowInterrupted", (workflowContext, ostError) => {
+  consloe.log("workflowContext : ", workflowContext);
+  consloe.log("ostError : ", ostError);
+      
+});
+```
