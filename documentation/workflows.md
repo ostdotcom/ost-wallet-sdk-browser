@@ -202,7 +202,7 @@ let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
 Subscription to workflow events can be performed in three ways:
 
 #### Susbscribe by workflow Id
-All event of perticular workflow id can be delivered on subscribing it.
+All event of particular workflow id can be delivered on subscribing it.
 ```javascript
  OstWalletSdk.subscribe("flowInitiated", workflowId, (workflowContext) => {
       consloe.log("workflowContext : ", workflowContext);
