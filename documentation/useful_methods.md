@@ -211,6 +211,30 @@ OstWalletSdk.getActiveSessions( userId )
 ]
 ```
 
+### Get Delete Local Sessions
+API deletes all local sessions for the current user Id.
+##### Usage
+```
+/*
+  Please update userId, workflowId as per your needs. 
+  Since this userId does not belong to your economy, you will get an error if you do not change it.
+*/
+  
+  let userId = 'dabd272f-b330-4c99-a3f7-aaf38012ef5f';
+  OstWalletSdk.deleteLocalSessions(userId)
+    .then( (result) => { 
+      console.log( result ); 
+    })
+    .catch( (err) => { 
+      console.log(err); 
+    });
+  
+```
+##### Sample Response
+```json
+true
+```
+
 ### Get Workflow Info
 API returns workflow info for given workflow id and user id.
 ##### Usage
