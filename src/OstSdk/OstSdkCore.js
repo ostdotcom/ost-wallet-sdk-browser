@@ -112,7 +112,7 @@ class OstSdk extends OstBaseSdk {
       .then((val) => {
 				OstSessionPolling.setCreateSessionQRTimeout( this.sdkConfig.create_session_qr_timeout );
 				OstSession.setCreateSessionTimeout( this.sdkConfig.create_session_qr_timeout );
-				OstWorkflowContext.setMaxWorkflowCount( this.sdkConfig.max_workflow_count );
+				OstWorkflowContext.setMaxWorkflowRetentionCount( this.sdkConfig.max_workflow_retention_count );
 				return val;
       });
   }
