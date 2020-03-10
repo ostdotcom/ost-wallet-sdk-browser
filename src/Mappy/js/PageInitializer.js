@@ -3,7 +3,6 @@ import '../css/loader.css';
 import '../css/logged-in.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
-import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
 import WorkflowSubscriberService from "./WorkflowSubscriberService";
 
