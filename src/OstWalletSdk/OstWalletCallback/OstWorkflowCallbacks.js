@@ -37,6 +37,12 @@ class OstWalletWorkFlowCallback {
   }
 
   /**
+   * Flow started
+   * @param ostWorkflowContext - info about workflow type
+   */
+  flowInitiated(ostWorkflowContext) {}
+
+  /**
    * Request acknowledged
    * @param {Object} ostWorkflowContext - info about workflow type
    * @param ostContextEntity - info about entity

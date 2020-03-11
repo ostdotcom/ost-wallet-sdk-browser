@@ -3,15 +3,18 @@ import OstBaseSdk from '../common-js/OstBaseSdk';
 import OstSdkAssist from './OstSdkAssist'
 import OstMessage from '../common-js/OstMessage'
 import {OstBaseEntity} from "./entities/OstBaseEntity";
-import EC from "../common-js/OstErrorCodes";
-import * as axios from "axios";
+import OstApiClient from "./api/OstApiClient";
 import OstError from "../common-js/OstError";
+import EC from '../common-js/OstErrorCodes';
+import OstWorkflowContext from "./workflows/OstWorkflowContext";
+import OstSessionPolling from "./OstPolling/OstSessionPolling";
+import OstSession from "./entities/OstSession"
 
 const LOG_TAG = "OstSdk :: index :: ";
 
 class OstSdk extends OstBaseSdk {
-  constructor(window, origin, pathname, ancestorOrigins, searchParams){
-    super(window, origin, pathname, ancestorOrigins, searchParams);
+  constructor(window, parentOrigin){
+    super(window, parentOrigin);
     this.ostSdkAssist = null
   }
 
@@ -87,63 +90,32 @@ class OstSdk extends OstBaseSdk {
 			})
 	}
 
-  isWhiteListedParent() {
-    const oThis = this
-      , ancestorOrigin = oThis.ancestorOrigins[0]
-    ;
-    console.log(LOG_TAG, "AncestorOrigin of this iframe", ancestorOrigin);
+	isWhiteListedParent() {
+      const oThis = this
+        , parentOrigin = oThis.ancestorOrigins[0]
+        , token_id = oThis.sdkConfig.token_id
+        , apiEndPoint = oThis.sdkConfig.api_endpoint
+      ;
 
-    return oThis.getWhiteListedUrls()
-      .then((whiteListedUrls) => {
-        if (!Array.isArray(whiteListedUrls)) {
-          throw "whiteListedUrls is not an array"
-        }
-        for (let i=0; i < whiteListedUrls.length; i++) {
-          let urlObject = whiteListedUrls[i];
-          if (  urlObject.domain.startsWith(ancestorOrigin) ) {
-            console.log(LOG_TAG, "White listed url found", ancestorOrigin,urlObject.domain );
-            return true
+      return new OstApiClient('', apiEndPoint).validateDomain(token_id, parentOrigin)
+        .then((res) => {
+          if (res) {
+            return res;
           }
-        }
-        console.log(LOG_TAG, "White listed url NOT found", ancestorOrigin);
-        return false;
-      })
+
+          throw new OstError('os_osc_iwlp_1', EC.INVALID_UPSTREAM_ORIGIN);
+        })
   }
 
-	getWhiteListedUrls() {
-		let _resolve
-			, _reject
-		;
-
-		// GET request for Mappy Sdk Endpoint
-		axios({
-			method: 'get',
-			url: './allowed-domains.json',
-			responseType: 'json'
-		})
-			.then(function (response) {
-				const responseData = response.data;
-				const data = responseData.data;
-				console.log(LOG_TAG, "allowed-domians", data);
-				if (!responseData.success || !data.result_type || !data[data.result_type]) {
-					console.error(LOG_TAG, "allowed-domains.json response parsing failed");
-					const ostError = new OstError('os_wf_osc_gwlu_1', EC.SDK_API_ERROR);
-					return _reject(ostError);
-				}
-				const validDomains = data[data.result_type];
-				return _resolve(validDomains);
-			})
-			.catch((err) => {
-				console.error(LOG_TAG, "allowed-domains.json fetch failed", err);
-				const ostError = OstError.sdkError(err, 'os_wf_osc_gwlu_2', EC.SDK_API_ERROR);
-				return _reject(ostError);
-			});
-
-		return new Promise((resolve, reject) => {
-			_resolve = resolve;
-			_reject = reject;
-		});
-	}
+  init(...args) {
+    return super.init(...args)
+      .then((val) => {
+				OstSessionPolling.setCreateSessionQRTimeout( this.sdkConfig.create_session_qr_timeout );
+				OstSession.setCreateSessionTimeout( this.sdkConfig.create_session_qr_timeout );
+				OstWorkflowContext.setMaxWorkflowRetentionCount( this.sdkConfig.max_workflow_retention_count );
+				return val;
+      });
+  }
 }
 
 export default OstSdk;

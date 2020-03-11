@@ -1,0 +1,113 @@
+<div class="modal fade" id="afterSession" style="overflow: auto;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-xl" role="document">
+      <div class="modal-content">
+          <div class="modal-header text-center">
+              <h6 class="modal-title w-100 font-weight-bold">Session Details</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body mx-3" id="modal-body">
+            <div class="row" style="display: flex; margin-top:50px;">
+              <div class="col-md-6 col-sm-12">
+                <div class="card" style="height:100%">
+                  <div class="card-header">
+                    <b>Create Session</b>
+                  </div>
+                  <div class="card-body" style="max-height: 250px; ">
+                    <div class="md-form mb-5" >
+                      <label data-error="wrong" data-success="right" style="font-weight: bold;">Spending Limit: </label>
+                      <br />
+                      <label data-error="wrong" data-success="right" style="font-weight: bold;">In Higher Unit:</label>
+                      <label data-error="wrong" data-success="right" id="spending-limit-label-higher"></label>
+                      <br />
+                      <label data-error="wrong" data-success="right" style="font-weight: bold;">In Lower Unit:</label>
+                      <label data-error="wrong" data-success="right" id="spending-limit-label-lower" > </label>
+                      <br />
+                      <label data-error="wrong" data-success="right" style="font-weight: bold;">Expires On: </label>
+                      <br />
+                      <label data-error="wrong" data-success="right" id="expiry-label" > </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-12">
+                <div class="card" style="height:100%">
+                  <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                      <li class="navbar-text" style="margin-right:20px"><b>QR output</b></li>
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" role="tab" href="#oneString">QR Code</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" role="tab" href="#twoQR">Error</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="tab-content">
+                    <div id="oneString" role="tabpanel" class="card-body tab-pane active" >
+                      <div id="QrMainDiv" class="qr-code-wrap"></div>
+                    </div>
+                  <div id="twoQR" role="tabpanel" class="card-body tab-pane">
+                    <b>No Error</b>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" id="flow-output">
+              <div class="row" style="display: flex; margin-top:50px;">
+
+                <div class="col-md-6 col-sm-12">
+                  <div class="col-12"><h6>Flow Complete</h6></div>
+                  <div class="card" style="height:100%">
+                    <div class="card-header">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
+                        <li class="nav-item">
+                          <a class="nav-link active" data-toggle="tab" role="tab" href="#flow-complete-json">JSON</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" role="tab" href="#flow-complete-string">String</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="tab-content">
+                    <div id="flow-complete-json" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
+                    </div>
+                    <div id="flow-complete-string" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
+                      <code class="language-json"></code>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                  <div class="col-12"><h6>Flow Interrupted</h6></div>
+                  <div class="card" style="height:100%">
+                    <div class="card-header">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="navbar-text" style="margin-right:20px"><b>Output</b></li>
+                        <li class="nav-item">
+                          <a class="nav-link active" data-toggle="tab" role="tab" href="#flow-interrupt-json">JSON</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" role="tab" href="#flow-interrupt-string">String</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="tab-content">
+                    <div id="flow-interrupt-json" role="tabpanel" class="card-body tab-pane active" style="max-height: 250px; overflow: auto;">
+                    </div>
+                    <div id="flow-interrupt-string" role="tabpanel" class="card-body tab-pane" style="max-height: 250px; overflow: auto;">
+                      <code class="language-json"></code>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-center" id="modal-footer"></div>
+      </div>
+  </div>
+</div>

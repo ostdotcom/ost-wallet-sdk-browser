@@ -1,28 +1,32 @@
 import ajaxUtils from "./ajaxUtils";
 import '../css/loader.css';
+import '../css/logged-in.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
 
+import WorkflowSubscriberService from "./WorkflowSubscriberService";
+
 const sdkConfig = {
+  "token_id": window.OST_TOKEN_ID,
   "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
   "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
-const MAPPY_BASE_URL = DEMO_MAPPY_UI_BASE_URL;
-
 const LOG_TAG = "PageInitializer";
 class PageInitializer {
-  constructor() {
+  constructor( autoPerform = true) {
     const oThis = this;
 
     oThis.currentUserInfo = null;
     oThis.deleteSessionsHelper = null;
-
     oThis.validatePage();
     $(() => {
+      oThis.addPartials();
       ajaxUtils.setupAjax();
       oThis.bindEvents();
-      oThis.perform();
+      if ( autoPerform ) {
+        oThis.perform();
+      }
     })
   }
   perform() {
@@ -42,6 +46,30 @@ class PageInitializer {
         jEl.removeClass("d-none");
         return oThis.initOstWalletSdk()
       })
+
+      // Init WorkflowSubscriber Service
+      .then( () => {
+        // Hacky Logic - DO NOT COPY THIS `then`.
+        let txt = jEl.text();
+        jEl.html(txt + "<span style='float:right'>✅ Done</span>");
+
+        let wsJEl = $("#loading-workflow-subscriber");
+        let wsTxt = wsJEl.text();
+        wsJEl.removeClass("d-none");
+        return oThis.initWorkflowSubscriber()
+          .then((idk) => {
+            // Hacky Logic.
+            jEl = wsJEl;
+            return idk;
+          })
+          .catch((e) => {
+            // Some error has occoured. But, lets supress it. continue anyway.
+            wsJEl.html(wsTxt + "<span style='float:right'>⚠️ Failed</span>");
+            // Hacky Logic - reset to txt
+            jEl.html(txt);
+          })
+      })
+
 
       // Perform the setup Device
       .then( () => {
@@ -76,13 +104,16 @@ class PageInitializer {
       .catch( (error) => {
         let txt = jEl.text();
         jEl.html(txt + "<span style='float:right'>⚠️ Failed</span>");
-        $("#loader").remove();
+        oThis.hidePageLoader();
         throw error;
       })
   }
 
   hidePageLoader() {
     $('body').addClass('loaded');
+    setTimeout(() => {
+      $("#loader-wrapper").remove();
+    }, 7000);
   }
 
   validatePage() {
@@ -100,11 +131,7 @@ class PageInitializer {
   }
 
   getApiBaseUrl() {
-    return DEMO_MAPPY_UI_API_ENDPOINT;
-  }
-
-  getBaseUrl() {
-    return MAPPY_BASE_URL;
+    return window.DEMO_MAPPY_UI_API_ENDPOINT;
   }
 
   getCurrentUser() {
@@ -144,10 +171,19 @@ class PageInitializer {
       this.isOstWalletSdkInitialized = true;
       return true;
     }).catch(( error ) => {
-      console.error("OstWalletSdk.init threw an error", error);
+      console.error("|||------- OstWalletSdk.init threw an error -------|||", error);
       // Throw the error again.
       throw error;
     });
+  }
+
+  initWorkflowSubscriber() {
+    return WorkflowSubscriberService.init(this.currentUserInfo)
+      .catch((error) => {
+        console.log("|||------- WorkflowSubscriber.init threw an error -------|||", error);
+        // Throw the error again.
+        throw error;
+      })
   }
 
   setupDeviceWorkflow() {
@@ -157,13 +193,14 @@ class PageInitializer {
     let sdkDelegate =  new OstSetupDeviceDelegate();
     // Define register device.
     sdkDelegate.registerDevice = function( apiParams ) {
-      console.log(LOG_TAG, "registerDevice")
+      console.log(LOG_TAG, "registerDevice");
       return oThis.registerDevice(apiParams);
     };
 
     //Define flowComplete
     sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
       console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+
       _resolve( ostContextEntity );
     };
 
@@ -179,7 +216,11 @@ class PageInitializer {
       _reject  = rej;
 
       // Invoke the workflow.
-      OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      let workflowId = OstWalletSdk.setupDevice(currentUser.user_id, currentUser.token_id, sdkDelegate);
+      // Set the workflowId for sdk-getters.
+      currentUser.setup_device_workflow_id = workflowId;
+      
+      WorkflowSubscriberService.subscribeToWorkflowId(workflowId);
     });
   }
 
@@ -237,6 +278,17 @@ class PageInitializer {
         // If not, throw the error.
         throw error;
       });
+  }
+
+  addPartials() {
+    if ( !window._htmlPartials ) {
+      return;
+    }
+    for(let k in _htmlPartials) {
+      let encodedHtml = _htmlPartials[k];
+      let jEl = $( decodeURIComponent( encodedHtml ) );
+      $('body').append( jEl );
+    }
   }
 }
 export default PageInitializer;

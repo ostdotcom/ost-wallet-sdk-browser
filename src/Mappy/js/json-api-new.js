@@ -1,13 +1,12 @@
 import CodeTesterPageBase from "./CodeTesterPageBase";
 
-
 /**
  * Note for devs: user_id is mandatory param as it is needed to sign the api requests.
  */
 class JsonApiPage extends CodeTesterPageBase {
 
   constructor() {
-    super(".container", "#j-json-api-template");
+    super("#page-container", "#j-json-api-template");
   }
 
   addTesterConfigs() {

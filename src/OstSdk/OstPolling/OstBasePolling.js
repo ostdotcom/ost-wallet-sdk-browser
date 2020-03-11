@@ -1,7 +1,5 @@
-import OstError from "../../common-js/OstError";
-import OstErrorCode from '../../common-js/OstErrorCodes'
 import OstConstants from '../OstConstants'
-import OstApiClient from "../../Api/OstApiClient";
+import OstApiClient from "../api/OstApiClient";
 
 const LOG_TAG = "OstBasePolling :: ";
 class OstBasePolling {
@@ -51,11 +49,12 @@ class OstBasePolling {
           oThis.getEntity(success, failure);
         })
         .catch((err) => {
-          if ( this.shouldRetryAfterError(err) ) {
-            oThis.getEntity(success, failure);
-          }else {
-            failure(err);
-          }
+					const pollingError = oThis.getPollingFailedError(err);
+					if (pollingError) {
+						failure(pollingError);
+					} else {
+						oThis.getEntity(success, failure);
+					}
         })
     }, delayTime)
   }
@@ -72,8 +71,8 @@ class OstBasePolling {
 		return false;
 	}
 
-  shouldRetryAfterError( err ) {
-    return true;
+  getPollingFailedError( err ) {
+    return null;
   }
 }
 
