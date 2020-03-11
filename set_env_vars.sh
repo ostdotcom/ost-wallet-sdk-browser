@@ -4,7 +4,7 @@
 
 export OST_BROWSER_SDK_VERSION=""
 export OST_BROWSER_SDK_BASE_URL="https://localhost:9090/"
-export OST_BROWSER_SDK_PLATFORM_API_ENDPOINT="https://api.stagingost.com/testnet/v2/"
+export OST_BROWSER_SDK_PLATFORM_API_ORIGIN="https://api.stagingost.com"
 
 
 export TOKEN_IDS="1129"

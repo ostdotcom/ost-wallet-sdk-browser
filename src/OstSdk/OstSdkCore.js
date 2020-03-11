@@ -8,7 +8,8 @@ import OstError from "../common-js/OstError";
 import EC from '../common-js/OstErrorCodes';
 import OstWorkflowContext from "./workflows/OstWorkflowContext";
 import OstSessionPolling from "./OstPolling/OstSessionPolling";
-import OstSession from "./entities/OstSession"
+import OstSession from "./entities/OstSession";
+import OstConstants from "./OstConstants";
 
 const LOG_TAG = "OstSdk :: index :: ";
 
@@ -91,13 +92,14 @@ class OstSdk extends OstBaseSdk {
 	}
 
 	isWhiteListedParent() {
+    console.log("||RAC|| isWhiteListedParent called!");
       const oThis = this
         , parentOrigin = oThis.ancestorOrigins[0]
         , token_id = oThis.sdkConfig.token_id
         , apiEndPoint = oThis.sdkConfig.api_endpoint
       ;
 
-      return new OstApiClient('', apiEndPoint).validateDomain(token_id, parentOrigin)
+      return new OstApiClient('').validateDomain(token_id, parentOrigin)
         .then((res) => {
           if (res) {
             return res;
@@ -116,6 +118,17 @@ class OstSdk extends OstBaseSdk {
 				return val;
       });
   }
+
+  setSdkConfig(...args) {
+    console.log("||RAC|| setSdkConfig called!");
+    return super.setSdkConfig(...args)
+      .then((sdkConfig) => {
+        console.log("||RAC|| setSdkConfig.then called!");
+        OstConstants.setApiEnvironment( sdkConfig.environment );
+        return sdkConfig;
+      })
+  }
+  //sdkConfig.api_endpoint);
 }
 
 export default OstSdk;

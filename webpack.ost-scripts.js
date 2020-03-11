@@ -17,9 +17,9 @@ if ( !process.env.OST_BROWSER_SDK_BASE_URL )  {
     throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_BASE_URL is not set.\n" + "||| BUILD FAILED!!! |||\n";
 }
 
-const OST_BROWSER_SDK_PLATFORM_API_ENDPOINT = process.env.OST_BROWSER_SDK_PLATFORM_API_ENDPOINT;
-if ( !OST_BROWSER_SDK_PLATFORM_API_ENDPOINT ) {
-    throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_PLATFORM_API_ENDPOINT is not set.\n" + "||| BUILD FAILED!!! |||\n";
+const OST_BROWSER_SDK_PLATFORM_API_ORIGIN = process.env.OST_BROWSER_SDK_PLATFORM_API_ORIGIN;
+if ( !OST_BROWSER_SDK_PLATFORM_API_ORIGIN ) {
+    throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_PLATFORM_API_ORIGIN is not set.\n" + "||| BUILD FAILED!!! |||\n";
 }
 
 if ( !process.env.TOKEN_IDS ) {
@@ -55,7 +55,6 @@ function buildTokenInfo( tokenIds ) {
             "config": mappyConfigBuilder(
                 thisTokenId, 
                 apiEndPoint,
-                OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
                 sdkIframeOrigin
             )
         });
@@ -164,6 +163,9 @@ const devConfig = {
         new SriPlugin({
             hashFuncNames: ['sha256', 'sha384'],
             enabled: false,
+        }),
+        new webpack.DefinePlugin({
+            "WP_OST_BROWSER_SDK_PLATFORM_API_ORIGIN": JSON.stringify(OST_BROWSER_SDK_PLATFORM_API_ORIGIN)
         })
     ],
     output: {
@@ -179,6 +181,9 @@ const prodConfig = {
         new SriPlugin({
             hashFuncNames: ['sha256', 'sha384'],
             enabled: true
+        }),
+        new webpack.DefinePlugin({
+            "WP_OST_BROWSER_SDK_PLATFORM_API_ORIGIN": JSON.stringify(OST_BROWSER_SDK_PLATFORM_API_ORIGIN)
         })
     ],
     output: {
@@ -234,22 +239,6 @@ module.exports = (env) => {
 
     AddHtmlPlugins(sdkConf.htmlPlugins, pluginsArray);
 
-    // DO NOT USE webpackDefinations without discussion.
-    // Currently, mappy js is compatable with multiple mappy html clients.
-    // 
-    // // Add webpackDefinations - 
-    // 
-    // let webpackDefinations = {};
-    // let mappyWebpackDefinations = getMappyConfig("webpackDefinations", mappyEnv);
-    // if ( mappyWebpackDefinations ) {
-    //     Object.assign(webpackDefinations, mappyWebpackDefinations);
-    // }
-    // if ( sdkConf.webpackDefinations ) {
-    //     Object.assign(webpackDefinations, sdkConf.webpackDefinations);
-    // }
-    // const webpackDefinePlugin = new webpack.DefinePlugin( webpackDefinations );
-    // pluginsArray.push( webpackDefinePlugin );
-    
     return {
         ...commonConfig,
         ...envConfig

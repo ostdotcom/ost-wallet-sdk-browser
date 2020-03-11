@@ -261,7 +261,7 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getUser()
       .then(( response ) => {
         if (!response) {
@@ -283,7 +283,7 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getToken()
       .then((response) => {
         if (!response) {
@@ -306,7 +306,7 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getTransactions()
       .then((response) => {
         if (!response) {
@@ -329,7 +329,7 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getTokenHolder()
       .then((response) => {
         if (!response) {
@@ -352,7 +352,7 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getRules()
       .then((response) => {
         if (!response) {
@@ -399,7 +399,7 @@ class OstSdkAssist {
           let ostError = OstError.sdkError(null, 'os_osa_i_gcdfs_1', OstErrorCodes.SKD_INTERNAL_ERROR);
           return oThis.onError(ostError, subscriberId);
         }
-        let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+        let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
         return apiClient.getDevice(address);
 
       })
@@ -487,7 +487,7 @@ class OstSdkAssist {
     const userId = args.user_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     return apiClient.getBalance()
       .then((response) => {
         return Promise.resolve(response);
@@ -514,7 +514,7 @@ class OstSdkAssist {
               return Promise.resolve({err: new OstError('os_osa_i_gppfop_2', OstErrorCodes.SKD_INTERNAL_ERROR)});
             }
             console.log("auxiliary chain id", chainId);
-            let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+            let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
             return apiClient.getPricePoints(chainId)
               .then((pricePoint) => {
                 return Promise.resolve(pricePoint);
@@ -605,7 +605,7 @@ class OstSdkAssist {
       , subscriberId = args.subscriber_id
     ;
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getPendingRecovery()
       .then((response) => {
         if (!response) {
@@ -634,7 +634,7 @@ class OstSdkAssist {
     ;
 
 
-    let apiClient = new OstApiClient(userId, OstConstants.getBaseURL(), this.getKeyManagerProxy(userId));
+    let apiClient = new OstApiClient(userId, this.getKeyManagerProxy(userId));
     apiClient.getDeviceList()
       .then((response) => {
         if (!response) {

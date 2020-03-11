@@ -8,7 +8,7 @@ import WorkflowSubscriberService from "./WorkflowSubscriberService";
 
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
-  "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
+  "environment": "testnet",
   "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
 };
 
