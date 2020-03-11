@@ -8,6 +8,6 @@ export OST_BROWSER_SDK_PLATFORM_API_ORIGIN="https://api.stagingost.com"
 
 
 export TOKEN_IDS="1129"
-export OST_BROWSER_SDK_IFRAME_ORIGIN_1129="https://sdk-devmappy.ostsdkproxy.com/"
+export OST_BROWSER_SDK_IFRAME_ORIGIN_1129="https://sdk-testnet-1129.ostsdkproxy.com/"
 export DEMO_MAPPY_UI_API_ENDPOINT_1129='https://demo-devmappy.devmappy.com/'
 
