@@ -17,7 +17,7 @@ Users must use your mobile application to authorize the session keys and perform
  ** <<installation,Installation>>
  ** <<import-ostwalletsdk,Import OstWalletSdk>>
  ** <<initialize-the-sdk-and-setup-user-s-device,Initialize the Sdk and setup user's device.>>
-* <<,Documentation>>
+* <<documentation,Documentation>>
  ** xref:./sdk_initialization.adoc[Setup & Initialization]
  ** xref:./workflows.adoc[Workflows]
  ** xref:./ost_json_api.adoc[OstJsonApi]
@@ -128,7 +128,7 @@ ____
   }
 ----
 
-= Detailed Documentaion Refrence
+= Detailed Documentaion Reference
 
 * xref:./sdk_initialization.adoc[Setup and Initialization]
 * xref:./workflows.adoc[Workflows]
