@@ -14,7 +14,7 @@ Users must use your mobile application to authorize the session keys and perform
  ** <<Installation>>
  ** <<import-ostwalletsdk,Import OstWalletSdk>>
  ** <<Initialize the Sdk and setup device>>
-* <<Documentation>>
+* <<detailed-documentation-reference,Documentation>>
  ** xref:./documentation/sdk_initialization.md.adoc[Setup & Initialization]
  ** xref:./documentation/workflows.md.adoc[Workflows]
  ** xref:./documentation/ost_json_api.md.adoc[OstJsonApi]
@@ -239,7 +239,7 @@ This helper method can be used to easily convert amount from higher unit (such a
 
 For more information please refer link:./documentation/workflows.md#execute-transaction-workflow[Execute Transaction Workflow]
 
-= Detailed Documentaion Refrence
+= Detailed Documentation Reference
 
 * xref:./documentation/sdk_initialization.md.adoc[Setup and Initialization]
 * xref:./documentation/workflows.md.adoc[Workflows]
