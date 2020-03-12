@@ -160,7 +160,7 @@ let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
 let token_holder_address = "RECEPIENTS_TOKENHOLDER_ADDRESS";
 let amount = "CONVERTED USER ENTERED TOKEN AMOUNT TO WEI ";
 
-let workflowId = OstWalletSdk.executeDirectTransferTransaction(ost_user_id, {
+let workflowId = OstWalletSdk.executeDirectTransfer(ost_user_id, {
                     token_holder_addresses : [token_holder_address],
                     amounts: [amount] 
                   },

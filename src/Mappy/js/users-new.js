@@ -127,7 +127,7 @@ class UserPage {
 
 	sendOneBT(token_holder_address) {
 		const oThis = this;
-		oThis.sendTokens(token_holder_address, "executeDirectTransferTransaction", '1', 'USD');
+		oThis.sendTokens(token_holder_address, "executeDirectTransfer", '1', 'USD');
 	}
 
 	sendOneCent(token_holder_address) {
@@ -205,7 +205,7 @@ class UserPage {
 		jTxTokenHolder.val(token_holder_address);
 
 		// Set default tx type.
-		jTxType.val("executeDirectTransferTransaction");
+		jTxType.val("executeDirectTransfer");
 
 		oThis.toggleTxCurrencyOptionDisplay();
 
@@ -352,14 +352,14 @@ class UserPage {
 			$("#flow-transaction-output-label").text("Flow Complete:");
 		};
 		switch (transactionType) {
-			case "executeDirectTransferTransaction":
+			case "executeDirectTransfer":
 				$('#type-label').text("Direct Transfer");
 				$('#amount-label').text(amount + " BT");
 				$('#address-label').text(tokenHolderAddress);
 				userPage.convertBtToWei(amount)
 					.then((value) => {
 						const amountBN = value;
-						let workflowId = OstWalletSdk.executeDirectTransferTransaction(currentUser.user_id, {
+						let workflowId = OstWalletSdk.executeDirectTransfer(currentUser.user_id, {
 								token_holder_addresses: [tokenHolderAddress],
 								amounts: [amountBN],
 
