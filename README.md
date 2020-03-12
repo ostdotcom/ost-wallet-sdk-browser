@@ -202,7 +202,7 @@ This helper method can be used to easily convert amount from higher unit (such a
   let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
   let token_holder_address = "RECEPIENTS_TOKENHOLDER_ADDRESS";
   let amountInLowerUnit = convertBtToLowerUnit(1); /* 1 Bt. */
-  OstWalletSdk.executeDirectTransferTransaction(ost_user_id, {
+  OstWalletSdk.executeDirectTransfer(ost_user_id, {
     token_holder_addresses : [token_holder_address],
     amounts: [amountInLowerUnit] 
   },
