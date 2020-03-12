@@ -10,19 +10,19 @@ Users must use your mobile application to authorize the session keys and perform
 
 = Table of Contents
 
-* <<Client Side Ost Wallet Browser Sdk>>
- ** <<Introduction>>
-* <<Table of Contents>>
-* <<Quick start guide>>
- ** <<Installation>>
- ** <<Import OstWalletSdk>>
- ** <<Initialize the Sdk and setup device>>
-* <<Detailed Documentation Reference>>
- ** xref:./sdk_initialization.adoc[Setup & Initialization]
- ** xref:./workflows.adoc[Workflows]
- ** xref:./ost_json_api.adoc[OstJsonApi]
- ** xref:./useful_methods.adoc[Useful Methods]
- ** xref:./development_environment_setup.adoc[Setup Development Environemnt]
+* <<client-side-ost-wallet-browser-sdk,Client Side Ost Wallet Browser Sdk>>
+ ** <<introduction,Introduction>>
+* <<table-of-contents,Table of Contents>>
+* <<quick-start-guide,Quick start guide>>
+ ** <<installation,Installation>>
+ ** <<import-ostwalletsdk,Import OstWalletSdk>>
+ ** <<initialize-the-sdk-and-setup-user-s-device,Initialize the Sdk and setup user's device.>>
+* <<Documentation>>
+ ** xref:./documentation/sdk_initialization.adoc[Setup & Initialization]
+ ** xref:./documentation/workflows.adoc[Workflows]
+ ** xref:./documentation/ost_json_api.adoc[OstJsonApi]
+ ** xref:./documentation/useful_methods.adoc[Useful Methods]
+ ** xref:./documentation/development_environment_setup.adoc[Setup Development Environemnt]
 
 = Quick start guide
 
@@ -34,7 +34,7 @@ Install the npm module
 npm install @ostdotcom/ost-wallet-sdk-browser --save
 ----
 
-More more information please refer xref:./sdk_initialization.adoc[Setup And Initialization] guide.
+More more information please refer xref:./documentation/sdk_initialization.adoc[Setup And Initialization] guide.
 
 == Import OstWalletSdk
 
@@ -42,7 +42,7 @@ More more information please refer xref:./sdk_initialization.adoc[Setup And Init
 import OstWalletSdk from '@ostdotcom/ost-wallet-sdk-browser'
 ----
 
-== Initialize the Sdk and setup device
+== Initialize the Sdk and setup user's device.
 
 Use the below code to initialize the sdk and setup user's device.
 The below code defines `initializeAndSetupOstSdk` method that you could use once your applications' page has loaded or before user's first wallet interaction by calling the `initializeAndSetupOstSdk` method.
@@ -128,10 +128,10 @@ ____
   }
 ----
 
-= Detailed Documentation Reference
+= Detailed Documentaion Refrence
 
-* xref:./sdk_initialization.adoc[Setup and Initialization]
-* xref:./workflows.adoc[Workflows]
-* xref:./ost_json_api.adoc[OstJsonApi]
-* xref:./useful_methods.adoc[Other Methods]
-* xref:./development_environment_setup.adoc[Setup Development Environemnt]
+* xref:./documentation/sdk_initialization.adoc[Setup and Initialization]
+* xref:./documentation/workflows.adoc[Workflows]
+* xref:./documentation/OstJsonApi.adoc[OstJsonApi]
+* xref:./documentation/useful_methods.adoc[Other Methods]
+* xref:./documentation/development_environment_setup.adoc[Setup Development Environemnt]
