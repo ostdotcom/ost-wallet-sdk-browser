@@ -18,11 +18,11 @@ Users must use your mobile application to authorize the session keys and perform
  ** <<import-ostwalletsdk,Import OstWalletSdk>>
  ** <<Initialize the Sdk and setup device>>
 * <<Detailed Documentaion Reference>>
- ** xref:./documentation/sdk_initialization.adoc[Setup & Initialization]
- ** xref:./documentation/workflows.adoc[Workflows]
- ** xref:./documentation/ost_json_api.adoc[OstJsonApi]
- ** xref:./documentation/useful_methods.adoc[Useful Methods]
- ** xref:./documentation/development_environment_setup.adoc[Setup Development Environemnt]
+ ** xref:./documentation/sdk_initialization.md.adoc[Setup & Initialization]
+ ** xref:./documentation/workflows.md.adoc[Workflows]
+ ** xref:./documentation/ost_json_api.md.adoc[OstJsonApi]
+ ** xref:./documentation/useful_methods.md.adoc[Useful Methods]
+ ** xref:./documentation/development_environment_setup.md.adoc[Setup Development Environemnt]
 
 = Quick start guide
 
@@ -130,8 +130,8 @@ ____
 
 = Detailed Documentaion Reference
 
-* xref:./documentation/sdk_initialization.adoc[Setup and Initialization]
-* xref:./documentation/workflows.adoc[Workflows]
-* xref:./documentation/OstJsonApi.adoc[OstJsonApi]
-* xref:./documentation/useful_methods.adoc[Other Methods]
-* xref:./documentation/development_environment_setup.adoc[Setup Development Environemnt]
+ ** xref:./documentation/sdk_initialization.md.adoc[Setup & Initialization]
+ ** xref:./documentation/workflows.md.adoc[Workflows]
+ ** xref:./documentation/ost_json_api.md.adoc[OstJsonApi]
+ ** xref:./documentation/useful_methods.md.adoc[Useful Methods]
+ ** xref:./documentation/development_environment_setup.md.adoc[Setup Development Environemnt]
