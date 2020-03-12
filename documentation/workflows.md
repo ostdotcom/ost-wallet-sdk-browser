@@ -65,7 +65,7 @@ A session is a period of time during which a sessionKey is authorized to sign tr
     //Define requestAcknowledged
     sdkDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
       console.log("createSessionWorkflow :: sdkDelegate.requestAcknowledged called");
-      //  Main communication between the wallet SDK and Ost Platform server is complete.
+      /* TODO: Show the QR code to the user. */
     };
 ```
 
@@ -90,16 +90,18 @@ A session is a period of time during which a sessionKey is authorized to sign tr
 ### Invoke the workflow
 To invoke the workflow you will need three things:
 - `ost_user_id` - User Id of the logged-in user. 
-- `expiryTime`- session key expiry time.
+- `expiryTime`- session key expiry timestamp.
 - `spendingLimit`- higher unit spending limit once in a transaction of session.
 
 Higher units conversion to Lower units is seen as the decimals specified for that token economy.
 If value of decimals is 6 then the conversion would be 1 Higher Unit = 1000000 Lower units.
 
 ```
-let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
-let expiryTime = CURRENT_TIME + DAYS_SPECIFIED_BY_USER;
-let spendingLimit = SPENDING_LIMIT_IN_HIGHER_UNIT;
+let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
+/* Set session expiry to 7 days from now. */
+let expiryTime = parseInt(Date.now()/1000) + (7 * 24 * 60 * 60);
+/* Set spedning limit as 100 BTs */
+let spendingLimit = 100; 
 let workflowId = OstWalletSdk.createSession(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
 
 /// use workflowId to subscribe to events.
@@ -154,17 +156,15 @@ To invoke the Direct Transfer you will need three things:
 - 'amounts' - Amount needed to be send.
 
 ```
-let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
-let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
+let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
+let token_holder_address = "RECEPIENTS_TOKENHOLDER_ADDRESS";
 let amount = "CONVERTED USER ENTERED TOKEN AMOUNT TO WEI ";
 
-let workflowId = OstWalletSdk.executeDirectTransferTransaction(user_id, {
+let workflowId = OstWalletSdk.executeDirectTransferTransaction(ost_user_id, {
                     token_holder_addresses : [token_holder_address],
                     amounts: [amount] 
                   },
                   sdkDelegate);
-                  
-/// use workflowId to subscribe to events.
 ```
 
 #### Execute Pay 

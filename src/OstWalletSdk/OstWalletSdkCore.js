@@ -7,15 +7,58 @@ import OstExecuteTransaction from "./OstWorkflows/OstExecuteTransaction";
 import EC from "../common-js/OstErrorCodes";
 import {OstWorkflowEvents} from "./OstWorkflows/OstWorkflowEvents"
 import OstWorkflowEmitter from "./OstWorkflows/OstWorkflowEmitter"
+import packageJson from "../../package.json";
 import './sdk-stylesheet.css';
+
+const DEFAULT_SDK_IFRAME_ORIGIN = "ostwalletsdk.com";
 
 class OstWalletSdkCore extends OstBaseSdk {
   constructor( window, parentOrigin ) {
     super(window, parentOrigin);
+    this.sdkEndpoint = null;
+  }
+
+  setSdkConfig(...args) {
+    const oThis = this;
+    return super.setSdkConfig(...args)
+      .then((sdkConfig) => {
+        oThis.setSdkEndpoint( sdkConfig );
+        return sdkConfig;
+      })
+  }
+
+  getSdkMainDomain() {
+    if ( typeof WP_OST_BROWSER_SDK_MAIN_DOMAIN === 'string' && WP_OST_BROWSER_SDK_MAIN_DOMAIN ) {
+      return WP_OST_BROWSER_SDK_MAIN_DOMAIN;
+    }
+    return DEFAULT_SDK_IFRAME_ORIGIN;
+  }
+
+  getSdkVersion() {
+    if ( typeof WP_OST_BROWSER_SDK_VERSION === 'string') {
+      //Note - during dev, version is empty string.
+      //Hence not checking it's length.
+      return WP_OST_BROWSER_SDK_VERSION;
+    }
+    return `v-${packageJson.version}`;
+  }
+
+  setSdkEndpoint( sdkConfig ) {
+    const oThis = this;
+
+    const sdkMainDomain = oThis.getSdkMainDomain();
+    const sdkVersion    = oThis.getSdkVersion();
+    let sdkVersionPart = "";
+    if ( sdkVersion ) {
+      sdkVersionPart = `/${sdkVersion}`;
+    }
+
+    let sdkEndpoint = `https://sdk-${sdkConfig.environment}-${sdkConfig.token_id}.${sdkMainDomain}${sdkVersionPart}/index.html`;
+    this.defineImmutableProperty("sdkEndpoint", sdkEndpoint);
   }
 
   getDownstreamEndpoint() {
-    return this.sdkConfig.sdk_endpoint;
+    return this.sdkEndpoint;
   }
 
   getReceiverName() {

@@ -8,7 +8,8 @@ import OstError from "../common-js/OstError";
 import EC from '../common-js/OstErrorCodes';
 import OstWorkflowContext from "./workflows/OstWorkflowContext";
 import OstSessionPolling from "./OstPolling/OstSessionPolling";
-import OstSession from "./entities/OstSession"
+import OstSession from "./entities/OstSession";
+import OstConstants from "./OstConstants";
 
 const LOG_TAG = "OstSdk :: index :: ";
 
@@ -97,7 +98,7 @@ class OstSdk extends OstBaseSdk {
         , apiEndPoint = oThis.sdkConfig.api_endpoint
       ;
 
-      return new OstApiClient('', apiEndPoint).validateDomain(token_id, parentOrigin)
+      return new OstApiClient('').validateDomain(token_id, parentOrigin)
         .then((res) => {
           if (res) {
             return res;
@@ -116,6 +117,15 @@ class OstSdk extends OstBaseSdk {
 				return val;
       });
   }
+
+  setSdkConfig(...args) {
+    return super.setSdkConfig(...args)
+      .then((sdkConfig) => {
+        OstConstants.setApiEnvironment( sdkConfig.environment );
+        return sdkConfig;
+      })
+  }
+  //sdkConfig.api_endpoint);
 }
 
 export default OstSdk;

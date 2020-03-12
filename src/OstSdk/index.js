@@ -22,8 +22,6 @@ function destroySelf() {
     const urlParams = ostSdkObj.getUrlParams();
     const sdkConfig = urlParams.sdkConfig;
 
-    OstConstant.setBaseURL(sdkConfig.api_endpoint);
-
     console.log("||| ostSdkObj.getUpstreamOrigin()", ostSdkObj.getUpstreamOrigin());
     // Initialize the sdk.
     ostSdkObj.init( sdkConfig );
