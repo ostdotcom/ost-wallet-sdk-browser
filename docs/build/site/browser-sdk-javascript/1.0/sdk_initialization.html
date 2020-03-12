@@ -175,13 +175,20 @@ You will need following information to initialize the sdk:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>token_id - Id of your token.</p>
+<p><code>token_id</code> - Id of your token.</p>
 </li>
 <li>
-<p>api_endpoint - Ost Platform Api Endpoint.</p>
+<p><code>environment</code> - Ost Platform Environment.
+Can be <code>mainnet</code> or <code>testnet</code>.</p>
 </li>
 <li>
-<p>sdk_endpoint - Endpoint to sdk&#8217;s html page.</p>
+<p><code>create_session_qr_timeout</code> - Time in seconds (defaults to 3 hours) till when Sdk will check if session has been authorized.
+If this timeout is reached, the browser sdk shall declare the authorize session workflow as interupted.</p>
+</li>
+<li>
+<p><code>max_workflow_retention_count</code> - No.
+of completed workflows, workflows with status <code>flowCompleted</code> or <code>flowInterupted</code> that should be retained in browser&#8217;s DB.
+Defaults to 50.</p>
 </li>
 </ul>
 </div>
@@ -189,8 +196,7 @@ You will need following information to initialize the sdk:</p>
 <div class="content">
 <pre>const sdkConfig = {
   "token_id": "[YOUR_TOKEN_ID]",
-  "api_endpoint": "https://api.ost.com/testnet/v2/",
-  "sdk_endpoint": "https://[YOUR_TOKEN_SDK_ENDPOINT]"
+  "environment": "[OST_PLATFORM_ENVIRONMENT]"
 };
 let OstWalletSdk.init( sdkConfig );</pre>
 </div>

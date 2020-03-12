@@ -179,8 +179,8 @@ Add following hosts:</p>
 <div class="listingblock">
 <div class="content">
 <pre>127.0.0.1 devmappy.com
-127.0.0.1 sdk-devmappy.ostsdkproxy.com
-127.0.0.1 km-devmappy.ostsdkproxy.com
+127.0.0.1 sdk-testnet-1129.ostsdkproxy.com
+127.0.0.1 km-testnet-1129.ostsdkproxy.com
 127.0.0.1 demo-devmappy.devmappy.com</pre>
 </div>
 </div>
@@ -364,7 +364,7 @@ brew services stop nginx</pre>
     #Server to route sdk-devmappy.ostsdk iframe HTML server calls.
     server {
         listen       443 ssl;
-        server_name  sdk-devmappy.ostsdkproxy.com;
+        server_name  sdk-testnet-1129.ostsdkproxy.com;
 
         location / {
             proxy_pass https://localhost:9090/ost-sdk/;
@@ -374,7 +374,7 @@ brew services stop nginx</pre>
     #Server to route km-devmappy.ostsdk (Key-Manager) HTML server calls.
     server {
         listen       443 ssl;
-        server_name  km-devmappy.ostsdkproxy.com;
+        server_name  km-testnet-1129.ostsdkproxy.com;
 
         #Loading HTML and other static resources from webpack server.
         location / {
@@ -457,10 +457,10 @@ npm run dev-servers</pre>
 <p><a href="https://localhost:9090" class="bare">https://localhost:9090</a></p>
 </li>
 <li>
-<p><a href="https://km-devmappy.ostsdkproxy.com/" class="bare">https://km-devmappy.ostsdkproxy.com/</a></p>
+<p><a href="https://km-testnet-1129.ostsdkproxy.com/" class="bare">https://km-testnet-1129.ostsdkproxy.com/</a></p>
 </li>
 <li>
-<p><a href="https://sdk-devmappy.ostsdkproxy.com/" class="bare">https://sdk-devmappy.ostsdkproxy.com/</a></p>
+<p><a href="https://sdk-testnet-1129.ostsdkproxy.com/" class="bare">https://sdk-testnet-1129.ostsdkproxy.com/</a></p>
 </li>
 <li>
 <p><a href="https://demo-devmappy.devmappy.com" class="bare">https://demo-devmappy.devmappy.com</a></p>

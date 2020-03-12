@@ -231,7 +231,7 @@ Follow the these steps to perform create session workflow.</p>
 <pre>    //Define requestAcknowledged
     sdkDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) =&gt; {
       console.log("createSessionWorkflow :: sdkDelegate.requestAcknowledged called");
-      //  Main communication between the wallet SDK and Ost Platform server is complete.
+      /* TODO: Show the QR code to the user. */
     };</pre>
 </div>
 </div>
@@ -271,7 +271,7 @@ Follow the these steps to perform create session workflow.</p>
 <p><code>ost_user_id</code> - User Id of the logged-in user.</p>
 </li>
 <li>
-<p><code>expiryTime</code>- session key expiry time.</p>
+<p><code>expiryTime</code>- session key expiry timestamp.</p>
 </li>
 <li>
 <p><code>spendingLimit</code>- higher unit spending limit once in a transaction of session.</p>
@@ -284,9 +284,11 @@ If value of decimals is 6 then the conversion would be 1 Higher Unit = 1000000 L
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
-let expiryTime = CURRENT_TIME + DAYS_SPECIFIED_BY_USER;
-let spendingLimit = SPENDING_LIMIT_IN_HIGHER_UNIT;
+<pre>let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
+/* Set session expiry to 7 days from now. */
+let expiryTime = parseInt(Date.now()/1000) + (7 * 24 * 60 * 60);
+/* Set spedning limit as 100 BTs */
+let spendingLimit = 100;
 let workflowId = OstWalletSdk.createSession(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
 
 /// use workflowId to subscribe to events.</pre>
@@ -383,17 +385,15 @@ To invoke the Direct Transfer you will need three things:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
-let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
+<pre>let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
+let token_holder_address = "RECEPIENTS_TOKENHOLDER_ADDRESS";
 let amount = "CONVERTED USER ENTERED TOKEN AMOUNT TO WEI ";
 
-let workflowId = OstWalletSdk.executeDirectTransferTransaction(user_id, {
+let workflowId = OstWalletSdk.executeDirectTransferTransaction(ost_user_id, {
                     token_holder_addresses : [token_holder_address],
                     amounts: [amount]
                   },
-                  sdkDelegate);
-
-/// use workflowId to subscribe to events.</pre>
+                  sdkDelegate);</pre>
 </div>
 </div>
 </div>

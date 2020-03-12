@@ -39,15 +39,19 @@ Sdk *must* be initialized *before* using any-other OstWalletSdk methods.
 To initialize the sdk, create the sdk-configuration and invloke the `OstWalletSdk.init` method.
 You will need following information to initialize the sdk:
 
-* token_id - Id of your token.
-* api_endpoint - Ost Platform Api Endpoint.
-* sdk_endpoint - Endpoint to sdk's html page.
+* `token_id` - Id of your token.
+* `environment` - Ost Platform Environment.
+Can be `mainnet` or `testnet`.
+* `create_session_qr_timeout` - Time in seconds (defaults to 3 hours) till when Sdk will check if session has been authorized.
+If this timeout is reached, the browser sdk shall declare the authorize session workflow as interupted.
+* `max_workflow_retention_count` - No.
+of completed workflows, workflows with status `flowCompleted` or `flowInterupted` that should be retained in browser's DB.
+Defaults to 50.
 
 ----
 const sdkConfig = {
   "token_id": "[YOUR_TOKEN_ID]",
-  "api_endpoint": "https://api.ost.com/testnet/v2/",
-  "sdk_endpoint": "https://[YOUR_TOKEN_SDK_ENDPOINT]"
+  "environment": "[OST_PLATFORM_ENVIRONMENT]"
 };
 let OstWalletSdk.init( sdkConfig );
 ----
