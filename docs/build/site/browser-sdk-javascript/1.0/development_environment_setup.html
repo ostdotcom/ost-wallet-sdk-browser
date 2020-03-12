@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Development environment Setup :: Antora Example</title>
+    <link rel="canonical" href="http://example.com/browser-sdk-javascript/1.0/development_environment_setup.html">
+    <meta name="generator" content="Antora 2.2.0">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="http://example.com">Antora Example</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Home</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Products</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Product A</a>
+            <a class="navbar-item" href="#">Product B</a>
+            <a class="navbar-item" href="#">Product C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Services</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Service A</a>
+            <a class="navbar-item" href="#">Service B</a>
+            <a class="navbar-item" href="#">Service C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Resources</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Resource A</a>
+            <a class="navbar-item" href="#">Resource B</a>
+            <a class="navbar-item" href="#">Resource C</a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="#">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="browser-sdk-javascript" data-version="1.0">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Ost Browser SDK JavaScript</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="start-page.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="sdk_initialization.html">Setup &amp; Initialization</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="workflows.html">Workflows</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ost_json_api.html">OstJsonApi</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="useful_methods.html">Useful Methods</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="development_environment_setup.html">Setup Development Environemnt</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ost Browser SDK JavaScript</span>
+    <span class="version">1.0</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Ost Browser SDK JavaScript</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">1.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main>
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ost Browser SDK JavaScript</a></li>
+    <li><a href="development_environment_setup.html">Setup Development Environemnt</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/OST/browser-sdk/ost-wallet-sdk-browser/docs/component/modules/ROOT/pages/development_environment_setup.adoc">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1 class="page">Development environment Setup</h1>
+<div class="sect1">
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OST Wallet SDK Browser is a web application development SDK that enables developers to integrate the functionality of a non-custodial crypto-wallet into consumer applications.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ost_wallet_sdk_browser"><a class="anchor" href="#_ost_wallet_sdk_browser"></a>OST Wallet SDK Browser&#8230;&#8203;</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Safely generates and stores keys on the user&#8217;s mobile device</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_supportdependencies"><a class="anchor" href="#_supportdependencies"></a>Support(Dependencies)</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>npm</p>
+</li>
+<li>
+<p>nginx</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_setup"><a class="anchor" href="#_setup"></a>Setup</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_add_hosts"><a class="anchor" href="#_add_hosts"></a>Add hosts</h3>
+<div class="paragraph">
+<p>The <code>hosts</code> file is genererally located at:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/etc/hosts</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the <code>hosts</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo vi /etc/hosts</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For development environment, 3 domains are needed.
+Add following hosts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>127.0.0.1 devmappy.com
+127.0.0.1 sdk-devmappy.ostsdkproxy.com
+127.0.0.1 km-devmappy.ostsdkproxy.com
+127.0.0.1 demo-devmappy.devmappy.com</pre>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>As webpack in breaks when routing through nginx in dev-environment, we shall server JS directly from webpack We shall use localhost:9090 for all Ost Hosted Scripts and localhost:9000 for Mappy JS Script.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><a href="https://css-tricks.com/getting-around-revoked-certificate-osx/" class="bare">https://css-tricks.com/getting-around-revoked-certificate-osx/</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setup_self_signed_for_nginx_proxy"><a class="anchor" href="#_setup_self_signed_for_nginx_proxy"></a>Setup self-signed for nginx proxy.</h3>
+<div class="paragraph">
+<p>Skip this step if you have already setup ssl on local nginx.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mkdir -p /usr/local/etc/nginx/dev-proxy-https-certificates/
+cd /usr/local/etc/nginx/dev-proxy-https-certificates/
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out dev-proxy-https.crt -keyout dev-proxy-https.key</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_the_self_signing_certificate_into_keychain_access"><a class="anchor" href="#_add_the_self_signing_certificate_into_keychain_access"></a>Add the self-signing certificate into Keychain Access</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Run the following command to locate your certificate in finder.</p>
+<div class="listingblock">
+<div class="content">
+<pre>cd /usr/local/etc/nginx/dev-proxy-https-certificates/
+open .</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open System&#8217;s <strong>Keychain Access</strong></p>
+</li>
+<li>
+<p>Unlock <strong>login</strong> Keychains (left top pannel).</p>
+</li>
+<li>
+<p>Select <strong>Certificates</strong> in Category Pannel (left bottom pannel).</p>
+</li>
+<li>
+<p>Drag and drop the <code>dev-proxy-https.crt</code> from finder into the Keychain Access App.</p>
+</li>
+<li>
+<p>Right click on the added certificate.</p>
+</li>
+<li>
+<p>Choose <strong>Get Info</strong> to open the certificate information popup.</p>
+</li>
+<li>
+<p>Expand <strong>Trust</strong> in the certificate information popup.</p>
+</li>
+<li>
+<p>Set the 'When Using This Certificate:' option to <code>Always Trust</code>.</p>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>All other trust options should automatically be set to <code>Always Trust</code>.</p>
+</div>
+</blockquote>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>More information is also available <a href="https://css-tricks.com/getting-around-revoked-certificate-osx/">here</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setup_nginx"><a class="anchor" href="#_setup_nginx"></a>Setup Nginx</h3>
+<div class="sect3">
+<h4 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>on Mac</p>
+<div class="listingblock">
+<div class="content">
+<pre>brew install nginx</pre>
+</div>
+</div>
+</li>
+<li>
+<p>To start and stop nginx -</p>
+<div class="listingblock">
+<div class="content">
+<pre>brew services start nginx
+brew services stop nginx</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_nginx_configuration"><a class="anchor" href="#_nginx_configuration"></a>Nginx Configuration</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Do the following changes to nginx.conf file</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The configuration is genererally located at:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/usr/local/etc/nginx/nginx.conf</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the following server blocks to your nginx configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>http {
+
+    ssl_certificate     /usr/local/etc/nginx/dev-proxy-https-certificates/dev-proxy-https.crt;
+    ssl_certificate_key /usr/local/etc/nginx/dev-proxy-https-certificates/dev-proxy-https.key;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_protocols       TLSv1.1 TLSv1.2;
+
+    # Other existing sever blocks
+    # .
+    # .
+    # .
+    #
+
+
+    #Server to route mappy HTML server calls.
+    server {
+        listen       443 ssl;
+        server_name  devmappy.com;
+
+        add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.devmappy.com' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
+        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
+
+        #Loading HTML and other static resources from webpack server.
+        location / {
+
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.devmappy.com' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
+                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
+                add_header 'Access-Control-Max-Age' 1728000;
+                add_header 'Content-Type' 'text/plain charset=UTF-8';
+                add_header 'Content-Length' 0;
+                return 204;
+            }
+            proxy_pass https://localhost:9090/mappy/;
+        }
+    }
+
+    # Mappy Api Server Reverse Proxy
+    server {
+        listen       443 ssl;
+        server_name  demo-devmappy.devmappy.com;
+
+        #Loading HTML and other static resources from webpack server.
+        location / {
+            proxy_cookie_domain stagingost.com devmappy.com;
+
+            proxy_pass https://demo-mappy.stagingost.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/;
+        }
+    }
+
+
+    #Server to route sdk-devmappy.ostsdk iframe HTML server calls.
+    server {
+        listen       443 ssl;
+        server_name  sdk-devmappy.ostsdkproxy.com;
+
+        location / {
+            proxy_pass https://localhost:9090/ost-sdk/;
+        }
+    }
+
+    #Server to route km-devmappy.ostsdk (Key-Manager) HTML server calls.
+    server {
+        listen       443 ssl;
+        server_name  km-devmappy.ostsdkproxy.com;
+
+        #Loading HTML and other static resources from webpack server.
+        location / {
+            proxy_pass https://localhost:9090/ost-sdk-key-manager/;
+        }
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Stop nginx and restart it to apply configuration changes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>brew services stop nginx</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>brew services start nginx</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_install_npm_dependencies"><a class="anchor" href="#_install_npm_dependencies"></a>Install NPM Dependencies.</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>To install all the dependencies, run following command:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>npm install</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you don&#8217;t have npm installed on your machine then go to <a href="https://www.npmjs.com/get-npm" class="bare">https://www.npmjs.com/get-npm</a> for installing npm and node.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_set_environment_variables_and_fire_up_the_servers"><a class="anchor" href="#_set_environment_variables_and_fire_up_the_servers"></a>Set Environment variables and Fire Up the servers</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>To run servers on browser, run command-</p>
+<div class="listingblock">
+<div class="content">
+<pre>source ./set_env_vars.sh
+npm run dev-servers</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace file_name with your environment variables file name.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_grant_permission_to_all_proxied_domains"><a class="anchor" href="#_grant_permission_to_all_proxied_domains"></a>Grant permission to all proxied domains.</h3>
+<div class="paragraph">
+<p>Open the follwoing links in browser and grant permission</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Click on <code>Proceed to...</code> On Chrome</p>
+</div>
+<div class="paragraph">
+<p>Click on <code>Accept Risk and Continue</code> on Firefox</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://localhost:9090" class="bare">https://localhost:9090</a></p>
+</li>
+<li>
+<p><a href="https://km-devmappy.ostsdkproxy.com/" class="bare">https://km-devmappy.ostsdkproxy.com/</a></p>
+</li>
+<li>
+<p><a href="https://sdk-devmappy.ostsdkproxy.com/" class="bare">https://sdk-devmappy.ostsdkproxy.com/</a></p>
+</li>
+<li>
+<p><a href="https://demo-devmappy.devmappy.com" class="bare">https://demo-devmappy.devmappy.com</a></p>
+</li>
+<li>
+<p><a href="https://devmappy.com" class="bare">https://devmappy.com</a></p>
+</li>
+</ul>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing"><a class="anchor" href="#_testing"></a>Testing</h3>
+<div class="paragraph">
+<p>Open the browser and access <a href="https://devmappy.com/" class="bare">https://devmappy.com/</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

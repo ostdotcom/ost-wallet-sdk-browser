@@ -1,0 +1,13 @@
+site:
+  title: Antora Example
+  url: http://example.com
+content:
+  sources:
+  - url: ./../
+    start_path: docs/component
+    branches: 'dj/antora-docs'
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+

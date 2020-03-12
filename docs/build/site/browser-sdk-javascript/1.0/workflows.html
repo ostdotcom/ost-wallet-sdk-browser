@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ost Wallet Browser Sdk Workflows :: Antora Example</title>
+    <link rel="canonical" href="http://example.com/browser-sdk-javascript/1.0/workflows.html">
+    <meta name="generator" content="Antora 2.2.0">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="http://example.com">Antora Example</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Home</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Products</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Product A</a>
+            <a class="navbar-item" href="#">Product B</a>
+            <a class="navbar-item" href="#">Product C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Services</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Service A</a>
+            <a class="navbar-item" href="#">Service B</a>
+            <a class="navbar-item" href="#">Service C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Resources</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Resource A</a>
+            <a class="navbar-item" href="#">Resource B</a>
+            <a class="navbar-item" href="#">Resource C</a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="#">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="browser-sdk-javascript" data-version="1.0">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Ost Browser SDK JavaScript</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="start-page.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="sdk_initialization.html">Setup &amp; Initialization</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="workflows.html">Workflows</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ost_json_api.html">OstJsonApi</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="useful_methods.html">Useful Methods</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="development_environment_setup.html">Setup Development Environemnt</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ost Browser SDK JavaScript</span>
+    <span class="version">1.0</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Ost Browser SDK JavaScript</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">1.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main>
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ost Browser SDK JavaScript</a></li>
+    <li><a href="workflows.html">Workflows</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/OST/browser-sdk/ost-wallet-sdk-browser/docs/component/modules/ROOT/pages/workflows.adoc">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1 class="page">Ost Wallet Browser Sdk Workflows</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Workflows are a sequency of tasks that need to performed to achive the intended outcome.
+Ost Wallet Browser Sdk supports following workflows:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_setup_device_workflow"><a class="anchor" href="#_setup_device_workflow"></a>Setup Device Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This workflow enables the browser-sdk to communicate with the Ost Platform and should be performed on every page load.
+Follow the these steps to perform setup device workflow.</p>
+</div>
+<div class="sect2">
+<h3 id="_create_an_object_of_setup_device_workflow_delegate"><a class="anchor" href="#_create_an_object_of_setup_device_workflow_delegate"></a>Create an object of setup device workflow delegate,</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    let sdkDelegate =  new OstSetupDeviceDelegate();</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_registerdevice_method"><a class="anchor" href="#_define_registerdevice_method"></a>Define registerDevice method.</h3>
+<div class="paragraph">
+<p>When the instance gets the callback, your application must post this data to your application server.
+When your application receives the request, the application sever must use the server side sdk&#8217;s create device api.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    // Define register device.
+    sdkDelegate.registerDevice = function( apiParams ) {
+      // YOUR CODE HERE.
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_flowcomplete_method"><a class="anchor" href="#_define_flowcomplete_method"></a>Define flowComplete method.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define flowComplete
+    sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) =&gt; {
+      console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+      // Other things your application might want to do.
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_flowinterupt_method"><a class="anchor" href="#_define_flowinterupt_method"></a>Define flowInterupt method.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define flowInterrupt
+    sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) =&gt; {
+      console.log("setupDeviceWorkflow :: sdkDelegate.flowInterrupt called");
+      // Your application may want to disable wallet related functionality here.
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_invoke_the_workflow"><a class="anchor" href="#_invoke_the_workflow"></a>Invoke the workflow</h3>
+<div class="paragraph">
+<p>To invoke the workflow you will need two things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ost_user_id</code> - User Id of the logged-in user.</p>
+</li>
+<li>
+<p><code>token_id</code>- Token Id of your brand token economy.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
+let token_id = "YOUR ECONOMY'S Id";
+let workflowId = OstWalletSdk.setupDevice(ost_user_id, token_id, sdkDelegate);
+
+/// use workflowId to subscribe to events.</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_session_workflow"><a class="anchor" href="#_create_session_workflow"></a>Create Session Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A session is a period of time during which a sessionKey is authorized to sign transactions under a pre-set limit per transaction on behalf of the user.
+Follow the these steps to perform create session workflow.</p>
+</div>
+<div class="sect2">
+<h3 id="_create_an_object_of_create_session_workflow_delegate"><a class="anchor" href="#_create_an_object_of_create_session_workflow_delegate"></a>Create an object of create session workflow delegate.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    let sdkDelegate =  new OstWorkflowDelegate();</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_requestacknowledged_method"><a class="anchor" href="#_define_requestacknowledged_method"></a>Define requestAcknowledged method.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define requestAcknowledged
+    sdkDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) =&gt; {
+      console.log("createSessionWorkflow :: sdkDelegate.requestAcknowledged called");
+      //  Main communication between the wallet SDK and Ost Platform server is complete.
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_flowcomplete_method_2"><a class="anchor" href="#_define_flowcomplete_method_2"></a>Define flowComplete method.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define flowComplete
+    sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) =&gt; {
+      console.log("createSessionWorkflow :: sdkDelegate.flowComplete called");
+      // Other things your application might want to do like executing transaction
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_flowinterupt_method_2"><a class="anchor" href="#_define_flowinterupt_method_2"></a>Define flowInterupt method.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define flowInterrupt
+    sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) =&gt; {
+      console.log("createSessionWorkflow :: sdkDelegate.flowInterrupt called");
+      // Session creation failed
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_invoke_the_workflow_2"><a class="anchor" href="#_invoke_the_workflow_2"></a>Invoke the workflow</h3>
+<div class="paragraph">
+<p>To invoke the workflow you will need three things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ost_user_id</code> - User Id of the logged-in user.</p>
+</li>
+<li>
+<p><code>expiryTime</code>- session key expiry time.</p>
+</li>
+<li>
+<p><code>spendingLimit</code>- higher unit spending limit once in a transaction of session.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Higher units conversion to Lower units is seen as the decimals specified for that token economy.
+If value of decimals is 6 then the conversion would be 1 Higher Unit = 1000000 Lower units.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
+let expiryTime = CURRENT_TIME + DAYS_SPECIFIED_BY_USER;
+let spendingLimit = SPENDING_LIMIT_IN_HIGHER_UNIT;
+let workflowId = OstWalletSdk.createSession(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
+
+/// use workflowId to subscribe to events.</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_execute_transaction_workflow"><a class="anchor" href="#_execute_transaction_workflow"></a>Execute Transaction Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A transaction where tokens are transferred from a user to another actor within are signed using sessionKey if there is an active session.
+In the absence of an active session, a new session is authorized.
+Follow the these steps to perform Execute Transaction workflow.</p>
+</div>
+<div class="sect2">
+<h3 id="_create_an_object_of_create_session_workflow_delegate_2"><a class="anchor" href="#_create_an_object_of_create_session_workflow_delegate_2"></a>Create an object of create session workflow delegate</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    let sdkDelegate =  new OstWorkflowDelegate();</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_requestacknowledged_method_2"><a class="anchor" href="#_define_requestacknowledged_method_2"></a>Define requestAcknowledged method</h3>
+<div class="listingblock">
+<div class="content">
+<pre>  //Define requestAcknowledged
+  sdkDelegate.requestAcknowledged = function(ostWorkflowContext, ostContextEntity) {
+    console.log("ExecuteTransactionWorkflow :: sdkDelegate.requestAcknowledged called");
+    //  Main communication between the wallet SDK and Ost Platform server is complete.
+  };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_flowcomplete_method_3"><a class="anchor" href="#_define_flowcomplete_method_3"></a>Define flowComplete method</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define flowComplete
+    sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) =&gt; {
+      console.log("ExecuteTransactionWorkflow :: sdkDelegate.flowComplete called");
+      // Execute Transaction is successfully executed.
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_flowinterupt_method_3"><a class="anchor" href="#_define_flowinterupt_method_3"></a>Define flowInterupt method</h3>
+<div class="listingblock">
+<div class="content">
+<pre>    //Define flowInterrupt
+    sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) =&gt; {
+      console.log("ExecuteTransactionWorkflow :: sdkDelegate.flowInterrupt called");
+      // Execute Transaction failed.
+    };</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_invoke_the_workflow_3"><a class="anchor" href="#_invoke_the_workflow_3"></a>Invoke the workflow</h3>
+<div class="paragraph">
+<p>There are two types of method available for invoking execute transaction.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Direct Transfer</p>
+</li>
+<li>
+<p>Execute Pay</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_direct_transfer"><a class="anchor" href="#_direct_transfer"></a>Direct Transfer</h4>
+<div class="paragraph">
+<p>It is direct token to token transfer.
+To invoke the Direct Transfer you will need three things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>'ost_user_id' - User Id of the logged-in user.</p>
+</li>
+<li>
+<p>'token_holder_addresses' - Token Holder Address of the receiver.</p>
+</li>
+<li>
+<p>'amounts' - Amount needed to be send.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
+let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
+let amount = "CONVERTED USER ENTERED TOKEN AMOUNT TO WEI ";
+
+let workflowId = OstWalletSdk.executeDirectTransferTransaction(user_id, {
+                    token_holder_addresses : [token_holder_address],
+                    amounts: [amount]
+                  },
+                  sdkDelegate);
+
+/// use workflowId to subscribe to events.</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_execute_pay"><a class="anchor" href="#_execute_pay"></a>Execute Pay</h4>
+<div class="paragraph">
+<p>It accepts amount in cent and then internally converts it into token and send resultant amount to the receiver.
+To invoke the Execute Pay you will need three things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>'ost_user_id' - User Id of the logged-in user.</p>
+</li>
+<li>
+<p>'token_holder_addresses' - Token Holder Address of the receiver.</p>
+</li>
+<li>
+<p>'amounts' - Amount needed to be send.</p>
+</li>
+<li>
+<p>options parameter in which currency_code is passed.
+Currency_code determines currency type.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There are three currency type -</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>USD</p>
+</li>
+<li>
+<p>GBP</p>
+</li>
+<li>
+<p>EUR</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>let ost_user_id = "LOGGED_IN USER'S OST-USER-ID";
+let token_holder_address = "TOKEN HOLDER ADDRESS OF RECEIVER";
+let amount = "CONVERTED USER ENTERED CENT AMOUNT TO WEI ";
+let currency_type = "CURRENCY CODE SELECTED BY USER";
+
+let workflowId = OstWalletSdk.executePayTransaction(currentUser.user_id, {
+                    token_holder_addresses: [tokenHolderAddress],
+                    amounts: [amount],
+                    options: {
+                        currency_code: currency_type
+                    }
+                },
+                sdkDelegate);
+
+/// use workflowId to subscribe to events.</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_subscribe_to_workflow_events"><a class="anchor" href="#_subscribe_to_workflow_events"></a>Subscribe to workflow events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Subscription to workflow events can be performed in three ways:</p>
+</div>
+<h4 id="_susbscribe_by_workflow_id" class="discrete">Susbscribe by workflow Id</h4>
+<div class="paragraph">
+<p>All event of particular workflow id can be delivered on subscribing it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript"> OstWalletSdk.subscribe("flowInitiated", workflowId, (workflowContext) =&gt; {
+      consloe.log("workflowContext : ", workflowContext);
+ });
+
+ OstWalletSdk.subscribe("requestAcknowledged", workflowId, (workflowContext, contextEntity) =&gt; {
+      consloe.log("workflowContext : ", workflowContext);
+      consloe.log("contextEntity : ", contextEntity);
+
+      //Perfrom action on requestAcknowledged
+ });
+
+ OstWalletSdk.subscribe("flowCompleted", workflowId, (workflowContext, contextEntity) =&gt; {
+      consloe.log("workflowContext : ", workflowContext);
+      consloe.log("contextEntity : ", contextEntity);
+
+      //Perfrom action on flowCompleted
+ });
+
+ OstWalletSdk.subscribe("flowInterrupted", workflowId, (workflowContext, ostError) =&gt; {
+      consloe.log("workflowContext : ", workflowContext);
+      consloe.log("ostError : ", ostError);
+
+      //Perfrom action on flowInterrupted
+});</code></pre>
+</div>
+</div>
+<h4 id="_susbscribe_by_user_id" class="discrete">Susbscribe by user Id</h4>
+<div class="paragraph">
+<p>To get all workflow events performed by user, subscribe to user id.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">let userId = &lt;OST_USER_ID&gt;
+OstWalletSdk.subscribeAll("flowInitiated", (workflowContext) =&gt; {
+   consloe.log("workflowContext : ", workflowContext);
+
+   //Perfrom action on flowInitiated for user id
+}, userId);
+
+OstWalletSdk.subscribeAll("requestAcknowledged", (workflowContext, contextEntity) =&gt; {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+   //Perfrom action on requestAcknowledged for user id
+}, userId);
+
+OstWalletSdk.subscribeAll("flowCompleted", (workflowContext, contextEntity) =&gt; {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+   //Perfrom action on flowCompleted for user id
+}, userId);
+
+OstWalletSdk.subscribeAll("flowInterrupted", (workflowContext, ostError) =&gt; {
+  consloe.log("workflowContext : ", workflowContext);
+  consloe.log("ostError : ", ostError);
+
+  //Perfrom action on flowInterrupted for user id
+}, userId);</code></pre>
+</div>
+</div>
+<h4 id="_susbscribe_to_all_workflow_events" class="discrete">Susbscribe to all workflow events</h4>
+<div class="paragraph">
+<p>Developer can subscribe to all workflow event.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js">OstWalletSdk.subscribeAll("flowInitiated", (workflowContext) =&gt; {
+   consloe.log("workflowContext : ", workflowContext);
+});
+
+OstWalletSdk.subscribeAll("requestAcknowledged", (workflowContext, contextEntity) =&gt; {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+});
+
+OstWalletSdk.subscribeAll("flowCompleted", (workflowContext, contextEntity) =&gt; {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+});
+
+OstWalletSdk.subscribeAll("flowInterrupted", (workflowContext, ostError) =&gt; {
+  consloe.log("workflowContext : ", workflowContext);
+  consloe.log("ostError : ", ostError);
+
+});</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
