@@ -11,7 +11,7 @@ class OstBasePolling {
     this.isFirstRequest = true;
     this.keyManagerProxy = keyManagerProxy;
 
-    this.apiClient = new OstApiClient(this.userId, OstConstants.getBaseURL(), this.keyManagerProxy);
+    this.apiClient = new OstApiClient(this.userId, this.keyManagerProxy);
   }
 
   perform() {

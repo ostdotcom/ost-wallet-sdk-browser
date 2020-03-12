@@ -32,7 +32,7 @@ export default class OstSdkBaseWorkflow {
     this.stateManager = new OstStateManager(orderedStates);
 
     this.keyManagerProxy = new OstKeyManagerProxy(this.browserMessenger, this.userId);
-    this.apiClient = new OstApiClient(this.userId, OstConstants.getBaseURL(), this.keyManagerProxy);
+    this.apiClient = new OstApiClient(this.userId, this.keyManagerProxy);
 
     this.initParams();
 
