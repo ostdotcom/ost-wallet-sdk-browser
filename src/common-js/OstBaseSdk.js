@@ -8,6 +8,7 @@ import OstMessage from './OstMessage';
 let hasBeenInitialized = false;
 let hasDownstreamBeenInitialized = false;
 let downstreamIframe = null;
+const VALID_ENVIRONMENTS = ["testnet", "mainnet"];
 
 let LOG_TAG = "OstBaseSdk";
 
@@ -412,10 +413,11 @@ class OstBaseSdk {
    */
   static getDefaultConfig() {
     return {
-      "token_id"            : null,
-      "api_endpoint"        : null,
-      "sdk_endpoint"        : null,
-      "debug"               : false
+      "token_id"                      : null,
+      "environment"                   : null,
+      "create_session_qr_timeout"     : 3 * 60 * 60,
+      "max_workflow_retention_count"  : 50,
+      "debug"                         : false
     };
   }
 
@@ -531,16 +533,18 @@ class OstBaseSdk {
     Object.assign( finalConfig, sdkConfig);
 
     // Validate Config
-    if ( !this.isValidHttpsUrl(finalConfig.api_endpoint) ) {
-      let error = new OstError("obsdk_setSdkConfig_1", EC.INVALID_INITIALIZATION_CONFIGURATION, {
-        "api_endpoint": finalConfig.api_endpoint
+    if ( !finalConfig.environment || typeof finalConfig.environment !== 'string') { 
+      let error = new OstError("obsdk_setSdkConfig_1_a", EC.INVALID_INITIALIZATION_CONFIGURATION, {
+        "environment": finalConfig.api_endpoint
       });
       return Promise.reject( error );
     }
 
-    if ( !this.isValidHttpsUrl(finalConfig.sdk_endpoint) ) {
-      let error = new OstError("obsdk_setSdkConfig_2", EC.INVALID_INITIALIZATION_CONFIGURATION, {
-        "sdk_endpoint": finalConfig.sdk_endpoint
+    finalConfig.environment = finalConfig.environment.toLowerCase();
+    if ( VALID_ENVIRONMENTS.indexOf( finalConfig.environment ) < 0 ) {
+      // Not a valid environment.
+      let error = new OstError("obsdk_setSdkConfig_1_b", EC.INVALID_INITIALIZATION_CONFIGURATION, {
+        "environment": finalConfig.api_endpoint
       });
       return Promise.reject( error );
     }
@@ -550,14 +554,6 @@ class OstBaseSdk {
         "token_id": finalConfig.token_id
       });
       return Promise.reject( error );
-    }
-
-    if ( !finalConfig.create_session_qr_timeout ) {
-      finalConfig.create_session_qr_timeout = 3 * 60 * 60;
-    }
-
-    if ( !finalConfig.max_workflow_count ) {
-			finalConfig.max_workflow_count = 50;
     }
 
     if ( "boolean" !== typeof finalConfig.debug ) {

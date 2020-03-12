@@ -3,14 +3,12 @@ import '../css/loader.css';
 import '../css/logged-in.css';
 import DeleteSessionsHelper from './DeleteSessionsHelper';
 import CreateSessionHelper from './CreateSessionHelper';
-import mappyUiWorkflowCallback from './MappyUiWorkflowCallback';
 
 import WorkflowSubscriberService from "./WorkflowSubscriberService";
 
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
-  "api_endpoint": OST_BROWSER_SDK_PLATFORM_API_ENDPOINT,
-  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
+  "environment": "testnet"
 };
 
 const LOG_TAG = "PageInitializer";

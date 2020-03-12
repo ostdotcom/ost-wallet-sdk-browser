@@ -5,6 +5,7 @@ import * as qs from "qs";
 import OstSession from "../entities/OstSession";
 import OstApiErrorParser from "./OstApiErrorParser";
 import OstApiError from "../../common-js/OstApiError";
+import OstConstants from "../OstConstants";
 
 const LOG_TAG = 'OstApiClient';
 export default class OstApiClient {
@@ -15,12 +16,12 @@ export default class OstApiClient {
   SIG_TYPE = "OST1-PS";
   API_SIGNATURE = 'api_signature';
 
-  constructor(userId, baseUrl, keyManagerProxy) {
+  constructor(userId, keyManagerProxy) {
     this.userId = userId;
-    this.baseUrl = baseUrl;
+    this.apiEndpoint = OstConstants.getApiEndpoint();
     this.keyManagerProxy = keyManagerProxy;
     this.apiClient = axios.create({
-      baseURL: baseUrl,
+      baseURL: this.apiEndpoint,
       timeout: 10000,
       headers: {
         'Content-Type': "application/x-www-form-urlencoded",

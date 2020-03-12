@@ -46,6 +46,19 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(i
 **Note:** <u>Your code needs to <b>invoke or call</b></u> the `initializeAndSetupOstSdk` method.
 
 ```js
+const sdkConfig = {
+     token_id: "1129"
+     api_endpoint: "https://api.stagingost.com/testnet/v2/"
+     sdk_endpoint: "https://sdk-mappy.stagingpepocoin.com/v1/index.html"
+     create_session_qr_timeout: 300
+     max_workflow_count: 50
+   }
+```
+> <b>Note</b>
+> * _create_session_qr_timeout_: Sdk polls for session till `create_session_qr_timeout` seconds. It doesn't expires QR code.  
+> * _max_workflow_count_: It keeps `max_workflow_count` number of non pending workflows and removes remaining workflows.
+
+```js
   /*
       Define a method initializeAndSetupOstSdk to combine init sdk method and setupdevice workflow.
    */
@@ -95,9 +108,8 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(i
         OstWalletSdk.setupDevice(ost_user_id, token_id, sdkDelegate);
       });
     };
-
-
-    return OstWalletSdk.init( sdkConfig )
+    
+  return OstWalletSdk.init( sdkConfig )
         .then(() => {
           return oThis.setupDeviceWorkflow();
         })
@@ -112,5 +124,5 @@ The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(i
   * [Setup and Initialization](./documentation/sdk_initialization.md)
   * [Workflows](./documentation/workflows.md)
   * [OstJsonApi](./documentation/OstJsonApi.md)
-  * [Other Methods](./documentation/sdk_getters.md)
+  * [Other Methods](./documentation/useful_methods.md)
   * [Setup Development Environemnt](./documentation/development_environment_setup.md)

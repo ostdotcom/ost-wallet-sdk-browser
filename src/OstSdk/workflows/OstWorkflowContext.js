@@ -1,7 +1,7 @@
 import {OstBaseEntity, STORES} from "../entities/OstBaseEntity";
 
 const LOG_TAG = 'OstWorkflowContext';
-let COUNT_TO_PRESERVE = 50;
+let RETENTION_COUNT = 50;
 class OstWorkflowContext extends OstBaseEntity {
 
 	static WORKFLOW_TYPE = {
@@ -188,7 +188,7 @@ export default {
 					return parseInt(obj2.getUpdatedAt()) - parseInt(obj1.getUpdatedAt());
 				});
 
-				const countToPreserve = COUNT_TO_PRESERVE || 50;
+				const countToPreserve = RETENTION_COUNT || 50;
 
 				//Check whether there exist anything to delete
 				if (!workflowsToDeleteArray[countToPreserve]) {
@@ -205,8 +205,8 @@ export default {
 			});
 	},
 
-	setMaxWorkflowCount: function(countToPreserve) {
-		COUNT_TO_PRESERVE = countToPreserve;
+	setMaxWorkflowRetentionCount: function(countToPreserve) {
+		RETENTION_COUNT = countToPreserve;
 	},
 
 	WORKFLOW_TYPE: OstWorkflowContext.WORKFLOW_TYPE,
