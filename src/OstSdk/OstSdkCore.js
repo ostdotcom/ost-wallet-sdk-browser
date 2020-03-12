@@ -92,7 +92,6 @@ class OstSdk extends OstBaseSdk {
 	}
 
 	isWhiteListedParent() {
-    console.log("||RAC|| isWhiteListedParent called!");
       const oThis = this
         , parentOrigin = oThis.ancestorOrigins[0]
         , token_id = oThis.sdkConfig.token_id
@@ -120,10 +119,8 @@ class OstSdk extends OstBaseSdk {
   }
 
   setSdkConfig(...args) {
-    console.log("||RAC|| setSdkConfig called!");
     return super.setSdkConfig(...args)
       .then((sdkConfig) => {
-        console.log("||RAC|| setSdkConfig.then called!");
         OstConstants.setApiEnvironment( sdkConfig.environment );
         return sdkConfig;
       })

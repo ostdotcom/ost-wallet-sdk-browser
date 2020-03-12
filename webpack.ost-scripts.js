@@ -12,19 +12,42 @@ String.prototype.trimRight = function(charlist) {
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
 
+// Define variables that need to be available in Ost JS files.
+const webpackVariables = {};
+
 //region - validations
 if ( !process.env.OST_BROWSER_SDK_BASE_URL )  {
     throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_BASE_URL is not set.\n" + "||| BUILD FAILED!!! |||\n";
 }
 
-const OST_BROWSER_SDK_PLATFORM_API_ORIGIN = process.env.OST_BROWSER_SDK_PLATFORM_API_ORIGIN;
+let OST_BROWSER_SDK_PLATFORM_API_ORIGIN = process.env.OST_BROWSER_SDK_PLATFORM_API_ORIGIN;
 if ( !OST_BROWSER_SDK_PLATFORM_API_ORIGIN ) {
-    throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable OST_BROWSER_SDK_PLATFORM_API_ORIGIN is not set.\n" + "||| BUILD FAILED!!! |||\n";
+    OST_BROWSER_SDK_PLATFORM_API_ORIGIN = "https://api.ost.com";
+    console.log("!! OST_BROWSER_SDK_PLATFORM_API_ORIGIN not specified.");
+    console.log("-- OST_BROWSER_SDK_PLATFORM_API_ORIGIN set to", OST_BROWSER_SDK_PLATFORM_API_ORIGIN);
 }
+webpackVariables.WP_OST_BROWSER_SDK_PLATFORM_API_ORIGIN = JSON.stringify(OST_BROWSER_SDK_PLATFORM_API_ORIGIN);
 
 if ( !process.env.TOKEN_IDS ) {
   throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable TOKEN_ID is not set.\n" + "||| BUILD FAILED!!! |||\n";
 }
+
+let OST_BROWSER_SDK_MAIN_DOMAIN = process.env.OST_BROWSER_SDK_MAIN_DOMAIN;
+if ( !OST_BROWSER_SDK_MAIN_DOMAIN ) {
+    OST_BROWSER_SDK_MAIN_DOMAIN = "ostwalletsdk.com";
+    console.log("!! OST_BROWSER_SDK_MAIN_DOMAIN not specified.");
+    console.log("-- OST_BROWSER_SDK_MAIN_DOMAIN set to", OST_BROWSER_SDK_MAIN_DOMAIN);
+}
+webpackVariables.WP_OST_BROWSER_SDK_MAIN_DOMAIN = JSON.stringify(OST_BROWSER_SDK_MAIN_DOMAIN);
+
+let OST_BROWSER_SDK_VERSION = process.env.OST_BROWSER_SDK_VERSION;
+if ( typeof OST_BROWSER_SDK_VERSION !== 'string') {
+    const packageJson = require("./package.json");
+    OST_BROWSER_SDK_VERSION = `v-${packageJson.version}`;
+    console.log("!! OST_BROWSER_SDK_VERSION not specified.");
+    console.log("-- OST_BROWSER_SDK_VERSION set to", OST_BROWSER_SDK_VERSION);
+}
+webpackVariables.WP_OST_BROWSER_SDK_VERSION = JSON.stringify( OST_BROWSER_SDK_VERSION );
 
 const TOKEN_IDS = process.env.TOKEN_IDS.split(",");
 
@@ -43,19 +66,12 @@ function buildTokenInfo( tokenIds ) {
             throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable " + envVarName + " is not set.\n" + "||| BUILD FAILED!!! |||\n";
         }
 
-        let sdkIframeVarName = "OST_BROWSER_SDK_IFRAME_ORIGIN_" + thisTokenId;
-        let sdkIframeOrigin  = process.env[sdkIframeVarName];
-        if ( !sdkIframeOrigin ) {
-            throw "||| BUILD FAILED!!! |||\n||| ATTENTION NEEDED|||\n"  + "Environemnt Variable " + sdkIframeVarName + " is not set.\n" + "||| BUILD FAILED!!! |||\n";
-        }
-
         mappyConfigs.push( {
             "token_id": thisTokenId,
             "api_end_point": apiEndPoint,
             "config": mappyConfigBuilder(
                 thisTokenId, 
-                apiEndPoint,
-                sdkIframeOrigin
+                apiEndPoint
             )
         });
     }
@@ -164,9 +180,7 @@ const devConfig = {
             hashFuncNames: ['sha256', 'sha384'],
             enabled: false,
         }),
-        new webpack.DefinePlugin({
-            "WP_OST_BROWSER_SDK_PLATFORM_API_ORIGIN": JSON.stringify(OST_BROWSER_SDK_PLATFORM_API_ORIGIN)
-        })
+        new webpack.DefinePlugin(webpackVariables)
     ],
     output: {
         publicPath: publicPath
@@ -182,9 +196,7 @@ const prodConfig = {
             hashFuncNames: ['sha256', 'sha384'],
             enabled: true
         }),
-        new webpack.DefinePlugin({
-            "WP_OST_BROWSER_SDK_PLATFORM_API_ORIGIN": JSON.stringify(OST_BROWSER_SDK_PLATFORM_API_ORIGIN)
-        })
+        new webpack.DefinePlugin(webpackVariables)
     ],
     output: {
         path: path.resolve(__dirname, distPath),

@@ -20,23 +20,13 @@ const loadEncodedMappyPartial = ( fileName ) => {
 }
 
 
-const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT, OST_BROWSER_SDK_IFRAME_ORIGIN) => {
+const configBuilder = (OST_TOKEN_ID, DEMO_MAPPY_UI_API_ENDPOINT) => {
   const sdkVersion = process.env.OST_BROWSER_SDK_VERSION || "";
-
-  let OstSdkIframeUrl = OST_BROWSER_SDK_IFRAME_ORIGIN;
-  OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
-
-  if ( sdkVersion && sdkVersion.length ) {
-      OstSdkIframeUrl = OstSdkIframeUrl + "/" + sdkVersion;
-  }
-  OstSdkIframeUrl = OstSdkIframeUrl.trimRight("/");
-  OstSdkIframeUrl = OstSdkIframeUrl + "/index.html";
 
   // Global Vars
   let GC_VARS = {
     "OST_TOKEN_ID": OST_TOKEN_ID,
     "DEMO_MAPPY_UI_API_ENDPOINT": DEMO_MAPPY_UI_API_ENDPOINT,
-    "OST_BROWSER_SDK_IFRAME_URL": OstSdkIframeUrl,
     "_htmlPartials": {
       "DATA_DISPLAY_TEMPLATE": loadEncodedMappyPartial("data_display_template.html"),
       "AFTER_SESSION": loadEncodedMappyPartial("after_session.html"),

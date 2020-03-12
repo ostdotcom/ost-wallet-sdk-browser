@@ -8,8 +8,7 @@ import WorkflowSubscriberService from "./WorkflowSubscriberService";
 
 const sdkConfig = {
   "token_id": window.OST_TOKEN_ID,
-  "environment": "testnet",
-  "sdk_endpoint": OST_BROWSER_SDK_IFRAME_URL
+  "environment": "testnet"
 };
 
 const LOG_TAG = "PageInitializer";
