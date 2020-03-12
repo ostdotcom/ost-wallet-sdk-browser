@@ -16,8 +16,8 @@ Users must use your mobile application to authorize the session keys and perform
 * <<quick-start-guide,Quick start guide>>
  ** <<installation,Installation>>
  ** <<import-ostwalletsdk,Import OstWalletSdk>>
- ** <<initialize-the-sdk-and-setup-user-s-device,Initialize the Sdk and setup user's device.>>
-* <<Documentation>>
+ ** <<Initialize the Sdk and setup device>>
+* <<Detailed Documentaion Reference>>
  ** xref:./documentation/sdk_initialization.adoc[Setup & Initialization]
  ** xref:./documentation/workflows.adoc[Workflows]
  ** xref:./documentation/ost_json_api.adoc[OstJsonApi]
@@ -42,7 +42,7 @@ More more information please refer xref:./documentation/sdk_initialization.adoc[
 import OstWalletSdk from '@ostdotcom/ost-wallet-sdk-browser'
 ----
 
-== Initialize the Sdk and setup user's device.
+== Initialize the Sdk and setup device
 
 Use the below code to initialize the sdk and setup user's device.
 The below code defines `initializeAndSetupOstSdk` method that you could use once your applications' page has loaded or before user's first wallet interaction by calling the `initializeAndSetupOstSdk` method.
@@ -128,7 +128,7 @@ ____
   }
 ----
 
-= Detailed Documentaion Refrence
+= Detailed Documentaion Reference
 
 * xref:./documentation/sdk_initialization.adoc[Setup and Initialization]
 * xref:./documentation/workflows.adoc[Workflows]
