@@ -6,21 +6,22 @@ import OstRule from "../entities/OstRule";
 import OstTransactionPolling from "../OstPolling/OstTransactionPolling";
 import BigNumber from 'bignumber.js';
 import OstWorkflowContext from "./OstWorkflowContext";
+import OstTransaction from "../entities/OstTransaction";
 
 const LOG_TAG = "OstSdk :: OstSdkExecuteTransaction :: ";
 
 class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
-  constructor(args, browserMessenger) {
-    super(args, browserMessenger);
+  constructor(args, browserMessenger, workflowContext) {
+    super(args, browserMessenger, workflowContext);
     console.log(LOG_TAG, "constructor :: ", args);
 
     this.transactionData = args.transaction_data;
 
-		this.token_holder_addresses = this.transactionData.token_holder_addresses;
+    this.token_holder_addresses = this.transactionData.token_holder_addresses;
     this.amounts = this.transactionData.amounts;
     this.ruleName = this.transactionData.rule_name;
-		this.ruleMethod = this.transactionData.rule_method;
-		this.meta = this.transactionData.meta;
+    this.ruleMethod = this.transactionData.rule_method;
+    this.meta = this.transactionData.meta;
     this.options = this.transactionData.options;
     this.expectedSpendAmount = this.transactionData.expected_spend_amount;
   }
@@ -46,153 +47,265 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
       })
   }
 
-  getAuthorizedSession() {
-  	const oThis = this;
-		return OstSession.getActiveSessions(oThis.userId)
-			.then((sessionArray) => {
-				if (!oThis.expectedSpendAmount) {
-					oThis.expectedSpendAmount = oThis.getTotalAmount();
-				}
-				const expectedSpendingAmount = new BigNumber(oThis.expectedSpendAmount);
-				for (let i=0; i < sessionArray.length; i++) {
-					const session = sessionArray[i];
-					if (session.status === OstSession.STATUS.AUTHORIZED &&
-						new BigNumber(session.spending_limit).isGreaterThanOrEqualTo(expectedSpendingAmount)
-					) {
-						return [session];
-					}
-				}
-				console.warn(LOG_TAG, "Session not found");
-				return [];
-			})
-			.catch((err) => {
-				console.error(LOG_TAG, "Error while fetching authorized session" ,err);
-				return Promise.resolve(null);
-			})
+  getRule(ruleName) {
+    const oThis = this;
+    ruleName = ruleName || oThis.ruleName;
+
+    return OstRule.getById(ruleName)
+      .then((res) => {
+        if (res) return res.getData();
+
+        // If rule Not found fetch rules
+        return oThis.apiClient.getRules()
+          .then(() => {
+            return OstRule.getById(ruleName)
+              .then((res) => {
+                if (!res) {
+                  let errInfo = {"rule_name": ruleName};
+                  throw new OstError("ostsdk_oset_gr_1", OstErrorCodes.RULE_NOT_FOUND, errInfo);
+                }
+                return res.getData();
+              })
+          });
+      })
+      .then(( ruleData ) => {
+        oThis.ruleData = ruleData;
+        return ruleData;
+      })
   }
 
-	getTotalAmount (){
-  	const oThis = this;
+  //region - expected spend amount computation
+  computeExpectedSpendAmount() {
+    const oThis = this;
 
-  	let total = new BigNumber(0);
-  	for (let i = 0;i< this.amounts.length;i++) {
-  		total = total.plus(new BigNumber(oThis.amounts[i]));
-		}
-		return total.toString();
-	}
+    if ( oThis.expectedSpendAmount ) {
+      // Already set. Must be a custom rule.
+      return Promise.resolve( oThis.expectedSpendAmount );
 
-	getRule(ruleName) {
-		const oThis = this;
-		return new Promise((resolve) => {
-			OstRule.getById(ruleName)
-				.then((res) => {
-					if (res) return resolve(res.getData());
+    } else if ( "pricer" === oThis.ruleName ) {
+      // Lets compute for pricer rule.
+      return oThis.computePricerExpectedSpendAmount();
+    }
 
-					// If rule Not found fetch rules
-					return oThis.syncRules()
-						.then(() => {
-							return OstRule.getById(ruleName)
-								.then((res) => {
-									if (!res) throw "Rule not found";
+    // Must be direct transfer;
+    let amountToBtMultiplier = new BigNumber(1);
+    oThis.expectedSpendAmount = oThis.getTotalExpectedAmount( amountToBtMultiplier );
+    return Promise.resolve( oThis.expectedSpendAmount );
+  }
 
-									return resolve(res.getData());
-								})
-						});
-				})
-				.catch((err) => {
-					console.error(LOG_TAG, "Error while fetching rule", err);
-					return resolve();
-				})
-		});
-	}
+  computePricerExpectedSpendAmount() {
+    const oThis = this;
 
-	getPricePoint() {
-		const oThis = this;
-		return new Promise((resolve) => {
-			const chainId = oThis.token.getAuxiliaryChainId();
-			oThis.apiClient.getPricePoints(chainId)
-				.then((dataObj) => {
-					console.log(LOG_TAG, "Price point response", dataObj);
+    // Get price points
+    return oThis.getPricePoint()
 
-					const pricePoint = dataObj['price_point'];
-					const pricePointOfBaseToken = pricePoint[oThis.token.getBaseToken()];
-					return resolve(pricePointOfBaseToken);
-				})
-				.catch((err) => {
-					console.error(LOG_TAG, "Error while fetching price point", err);
-					return resolve();
-				})
-		});
-	}
+    //compute Fiat Multiplier
+      .then((pricePoint) => {
+        let fiatToBtMultiplier = oThis.computeFiatMultiplier( pricePoint );
+        oThis.expectedSpendAmount = oThis.getTotalExpectedAmount( fiatToBtMultiplier );
+        return oThis.expectedSpendAmount;
+      })
+  }
+
+  getTotalExpectedAmount( amountToBtMultiplier ) {
+    const oThis = this;
+    let total = new BigNumber(0);
+    for (let i = 0; i< this.amounts.length; i++) {
+      // amount in BigNumber
+      let thisAmount = new BigNumber(oThis.amounts[i]);
+
+      // amount in lower unit Bt.
+      let amountInBt = thisAmount.multipliedBy( amountToBtMultiplier );
+
+      // Add to total.
+      total = total.plus( amountInBt );
+    }
+    return total.toString();
+  }
+
+  getPricePoint() {
+    const oThis = this;
+    const chainId = oThis.token.getAuxiliaryChainId();
+    return oThis.apiClient.getPricePoints(chainId)
+      .then((dataObj) => {
+        const baseToken = oThis.token.getBaseToken();
+        const pricePoint = dataObj['price_point'];
+        oThis.pricePoint = pricePoint[ baseToken ];
+        return oThis.pricePoint;
+      })
+      .catch((err) => {
+        throw OstError.sdkError(err, "ostsdk_oset_gpp_1");
+      })
+  }
+
+  computeFiatMultiplier( pricePoint ) {
+    const oThis = this;
+    pricePoint = pricePoint || oThis.pricePoint;
+
+    // @Dev: Is it ok to default currency_code to USD?
+    // Should we validate it instead?
+    const currencyCode = oThis.options.currency_code || 'USD';
+
+    const ppOstToUsd = pricePoint[currencyCode];
+    const ppDecimalExponent = pricePoint.decimals;
+    const conversionFactorOstToBT = oThis.token.getConversionFactor();
+    const tokenDecimalExponent = oThis.token.getDecimals();
+
+    // weiDecimal = ppOstToUsd * 10^ppDecimalExponent
+    const bigDecimal = new BigNumber(String(ppOstToUsd));
+    const toWeiMultiplier = new BigNumber(10).pow(new BigNumber(ppDecimalExponent));
+    const usdWeiDecimalDenominator = bigDecimal.multipliedBy(toWeiMultiplier);
+
+    // toBtWeiMultiplier = 10^tokenDecimalExponent
+    const toBtWeiMultiplier = new BigNumber(10).pow(new BigNumber(tokenDecimalExponent));
+
+    // btInWeiNumerator = conversionFactorOstToBT * toBtWeiMultiplier
+    const conversionFactorOstToPin = new BigNumber(String(conversionFactorOstToBT));
+    const btInWeiNumerator = conversionFactorOstToPin.multipliedBy(toBtWeiMultiplier);
+
+    let precision = ppDecimalExponent - tokenDecimalExponent;
+    if (precision < 1) precision = 2;
+
+    // multiplierForFiat = btInWeiNumerator / usdWeiDecimalDenominator
+    return btInWeiNumerator.dividedBy(usdWeiDecimalDenominator);
+  }
+  //endregion
+
+  getAuthorizedSession( expectedSpendAmount ) {
+    const oThis = this;
+    expectedSpendAmount = expectedSpendAmount || oThis.expectedSpendAmount;
+
+    return OstSession.getActiveSessions(oThis.userId, expectedSpendAmount)
+      .then(( activeSessions ) => {
+        if ( !activeSessions || activeSessions.length < 1 ) {
+          throw new OstError('ostsdk_oset_gas_1', OstErrorCodes.SESSION_NOT_FOUND);
+        }
+        return oThis.keyManagerProxy.filterLocalSessions(activeSessions);
+      })
+      .then(( activeSessions) => {
+        if ( !activeSessions || activeSessions.length < 1 ) {
+          throw new OstError('ostsdk_oset_gas_2', OstErrorCodes.SESSION_NOT_FOUND);
+        }
+        const session = oThis.getLeastUsedSession(activeSessions);
+        oThis.session = new OstSession(session);
+        return oThis.session;
+      })
+  }
 
   onDeviceValidated() {
     const oThis = this;
-    console.log(LOG_TAG, " onDeviceValidated");
-    Promise.all([oThis.getAuthorizedSession(), oThis.getRule(oThis.ruleName), oThis.getPricePoint()])
-			.then((resp) => {
-				if (!resp[0]) {
-					console.error(LOG_TAG, "Session fetch failed");
-					return Promise.reject("Session fetch failed");
-				}
-				const sessionArray = resp[0];
-				if (!sessionArray.length) {
-					throw new OstError('o_w_rt_odv_1', 'SESSION_NOT_FOUND');
-				}
-				const session = sessionArray[0];
-				this.session = new OstSession(session);
 
-				if (!resp[1]) {
-					console.error(LOG_TAG, "Rule fetch failed");
-					return Promise.reject("Rule fetch failed");
-				}
-				const rule = resp[1];
 
-				if (!resp[2]) {
-					console.error(LOG_TAG, "Price point fetch failed");
-					return Promise.reject("Price point fetch failed");
-				}
-				const pricePointOfBaseToken = resp[2];
+    // - Get the rule
+    console.log(LOG_TAG, "onDeviceValidated : calling getRule");
+    let p1 = oThis.getRule(oThis.ruleName);
 
-				return oThis.keyManagerProxy.signTransaction(session,
-					oThis.user.getTokenHolderAddress(),
-					oThis.token_holder_addresses,
-					oThis.amounts,
-					rule,
-					oThis.ruleMethod,
-					pricePointOfBaseToken,
-					oThis.options);
-			})
-			.then((response) => {
-				const struct = response.signed_transaction_struct;
-				const txnData = response.transaction_data;
+    // - Compute Expected Spend Amount If Needed.
+    console.log(LOG_TAG, "onDeviceValidated : calling computeExpectedSpendAmount");
+    let p2 = oThis.computeExpectedSpendAmount();
+
+
+
+    Promise.all([p1, p2])
+    // - Determine if we have authorized session to do this transaction.
+      .then(() => {
+        console.log(LOG_TAG, "onDeviceValidated : calling getAuthorizedSession");
+        return oThis.getAuthorizedSession();
+      })
+      .then(() => {
+        console.log(LOG_TAG, "onDeviceValidated : calling signTransaction");
+        console.log(LOG_TAG, "\t oThis.session.getData()", oThis.session.getData());
+        console.log(LOG_TAG, "\t oThis.user.getTokenHolderAddress()", oThis.user.getTokenHolderAddress());
+        console.log(LOG_TAG, "\t oThis.token_holder_addresses", oThis.token_holder_addresses);
+        console.log(LOG_TAG, "\t oThis.amounts", oThis.amounts);
+        console.log(LOG_TAG, "\t oThis.ruleData", oThis.ruleData);
+        console.log(LOG_TAG, "\t oThis.pricePoint", oThis.pricePoint);
+        console.log(LOG_TAG, "\t oThis.options", oThis.options);
+
+        return oThis.keyManagerProxy.signTransaction(
+          oThis.session.getData(),
+          oThis.user.getTokenHolderAddress(),
+          oThis.token_holder_addresses,
+          oThis.amounts,
+          oThis.ruleData,
+          oThis.ruleMethod,
+          oThis.pricePoint,
+          oThis.options
+        );
+      })
+      .then((response) => {
+        const struct = response.signed_transaction_struct;
+        const txnData = response.transaction_data;
 
         console.log(struct);
 
         const params = {
-					to: txnData.rule.address,
-					raw_calldata: JSON.stringify(struct.raw_call_data),
-					nonce: txnData.session.nonce,
-					calldata: struct.call_data,
-					signature:struct.signature,
-					signer: txnData.session.address,
-					meta_property: {},
+          to: txnData.rule.address,
+          raw_calldata: JSON.stringify(struct.raw_call_data),
+          nonce: txnData.session.nonce,
+          calldata: struct.call_data,
+          signature:struct.signature,
+          signer: txnData.session.address,
+          meta_property: {},
         };
 
         console.log(LOG_TAG, "TXN PARAMS", params);
         return oThis.apiClient.executeTransaction(params);
       })
-			.then((dataObject) => {
-				return oThis.session.addNonce()
-					.then(() => {
-						return oThis.pollingForTransaction(dataObject['transaction'].id);
-					});
-			})
-      .then((entity) => {
-        this.postFlowComplete(entity);
+      .then((dataObject) => {
+        const transactionId = dataObject['transaction'].id;
+        return OstTransaction.getById(transactionId);
+      })
+      .then((transaction) => {
+        oThis.transaction = transaction;
+        oThis.postRequestAcknowledged(oThis.transaction);
+        return oThis.session.addNonce();
+      })
+      .then(() => {
+        return oThis.processNext();
       })
       .catch((err) => {
-      	console.error(LOG_TAG, "Workflow failed" ,err);
-        this.postError(err);
+        console.error(LOG_TAG, "Workflow failed" ,err);
+
+        //Sync session: Session nonce could be out of sync Or Session got unauthorized
+        oThis.handleSessionSync();
+        //Close workflow with error
+        return oThis.postError(err);
+      })
+  }
+
+  handleSessionSync() {
+    //If no session assigned, then return
+    if (!this.session) return Promise.resolve();
+
+    return this.apiClient.getSession(this.session.getId())
+      .catch(() => {
+        //No need to handle
+      });
+  }
+
+  getLeastUsedSession(sessionArray = []) {
+    // Sort session based on updated timestamp
+    sessionArray = sessionArray.sort((sessionFirst, sessionSecond) => {
+      return parseInt(sessionFirst.updated_timestamp) - parseInt(sessionSecond.updated_timestamp);
+    });
+
+    //return the last used session based on updated timestamp
+    return sessionArray[0];
+  }
+
+  onPolling() {
+    const oThis = this;
+
+    let transactionId =  oThis.workflowContext.getData().context_entity_id;
+
+    return oThis.pollingForTransaction(transactionId)
+      .then((entity) => {
+        oThis.postFlowComplete(entity);
+      })
+      .catch((err) => {
+        oThis.handleSessionSync();
+        oThis.postError(err);
       })
   }
 
@@ -204,14 +317,14 @@ class OstSdkExecuteTransaction extends OstSdkBaseWorkflow {
         return txnEntity;
       })
       .catch((err) => {
-      	console.error(LOG_TAG, "Transaction Failed.. Decrementing nonce", err);
-      	 return this.apiClient.getSession(this.session.getId());
+        console.error(LOG_TAG, "Transaction Failed.. Decrementing nonce", err);
+        throw OstError.sdkError(err, 'os_w_oset_pft_1', OstErrorCodes.SKD_INTERNAL_ERROR);
       })
   }
 
   getWorkflowName () {
-		return OstWorkflowContext.WORKFLOW_TYPE.EXECUTE_TRANSACTION;
-	}
+    return OstWorkflowContext.WORKFLOW_TYPE.EXECUTE_TRANSACTION;
+  }
 
 }
 

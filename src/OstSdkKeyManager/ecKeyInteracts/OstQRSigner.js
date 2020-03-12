@@ -1,4 +1,4 @@
-import OstHelpers from "../../common-js/OstHelpers";
+import OstHelpers from "../../common-js/OstHelpers/OstHelpers";
 
 const LOG_TAG = "OstQRSigner";
 

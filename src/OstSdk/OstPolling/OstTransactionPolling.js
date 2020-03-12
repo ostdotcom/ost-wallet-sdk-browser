@@ -24,10 +24,6 @@ class OstTransactionPolling extends OstBasePolling {
   isProcessFailed(entity) {
     return entity.isStatusFailed();
   }
-
-  shouldRetryAfterError( err ) {
-    return true
-  }
 }
 
 

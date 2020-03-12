@@ -1,20 +1,34 @@
-import {SOURCE} from '../common-js/OstBrowserMessenger'
-import OstURLHelpers from '../common-js/OstHelpers/OstUrlHelper'
-import OstError from "../common-js/OstError";
-import OstBaseSdk from '../common-js/OstBaseSdk';
-import OstSdkAssist from './OstSdkAssist'
-import OstMessage from '../common-js/OstMessage'
 import OstSdk from "./OstSdkCore";
+import OstConstant from './OstConstants';
+import OstParentOriginHelper from '../common-js/OstHelpers/ParentOriginHelper';
 
 const LOG_TAG = "OstSdk :: index :: ";
-(function (window) {
 
-  const ostSdkObj = new OstSdk(window);
-  const urlParams = ostSdkObj.getUrlParams();
-  const sdkConfig = urlParams.sdkConfig;
+(function (_window, _location) {
 
-  // Initialize the sdk.
-  ostSdkObj.init( sdkConfig );
+function destroySelf() {
+  const escapeUrl = "about:blank";
+  _location.href = escapeUrl;
+  _location = escapeUrl;
+}
 
+  if ( _window.parent == _window ) {
+    return destroySelf();
+  }
 
-})(window);
+  OstParentOriginHelper.getParentOrigin(_window, _location, LOG_TAG).then((parentOrigin) => {
+    console.log("||| Initializing OstSdk with parentOrigin", parentOrigin);
+    const ostSdkObj = new OstSdk(_window, parentOrigin);
+    const urlParams = ostSdkObj.getUrlParams();
+    const sdkConfig = urlParams.sdkConfig;
+
+    console.log("||| ostSdkObj.getUpstreamOrigin()", ostSdkObj.getUpstreamOrigin());
+    // Initialize the sdk.
+    ostSdkObj.init( sdkConfig );
+  })
+  .catch(() => {
+    destroySelf();
+  })
+  ;
+
+})(window, location);

@@ -16,7 +16,6 @@ import * as hdKey from "ethereumjs-wallet/hdkey";
 const LOG_TAG = "IKM";
 const SHOULD_USE_SEED_PWD = true;
 
-const KM_DB_VERSION = 1;
 const KM_DB_NAME = 'KeyManagerDB';
 const STORES = {
 	KEY_STORE_TABLE : 'KEY_STORE_TABLE'
@@ -35,7 +34,7 @@ class IKM {
 	constructor(userId, avoidKMBuilding) {
 		this.userId = userId;
 		this.avoidKMBuilding = avoidKMBuilding;
-		this.kmDB = OstIndexDB.newInstance(KM_DB_NAME, KM_DB_VERSION, STORES);
+		this.kmDB = OstIndexDB.newInstance(KM_DB_NAME);
 	}
 
 	init() {
@@ -66,6 +65,7 @@ class IKM {
 				}
 			}).catch((err) => {
 				console.error(LOG_TAG, "IKM initialization failed", err);
+				throw OstError.sdkError(err, "okm_e_ikm_i_1");
 			});
 	}
 
@@ -116,7 +116,7 @@ class IKM {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Error while building meta", err);
-				throw "Meta Struct building failed";
+				throw OstError.sdkError(err, "okm_e_ikm_bkms_1");
 			})
 	}
 
@@ -279,7 +279,7 @@ class IKM {
 			})
 			.catch((err) => {
 				console.error(LOG_TAG, "Delete Session failed", err);
-				return Promise.resolve();
+				return Promise.reject();
 			});
 	}
 
@@ -306,6 +306,43 @@ class IKM {
 		return bip39.entropyToMnemonic(randBytes);
 	}
 
+	filterValidSessions(sessions) {
+		const oThis = this
+			, promiseList = []
+			, filteredSessionList = []
+		;
+
+		sessions.forEach((sessionData) => {
+			let fetchPromise = oThis.filterDataForSession(sessionData)
+				.then(( isValid ) => {
+					isValid && filteredSessionList.push(sessionData);
+				});
+			promiseList.push(fetchPromise);
+		});
+
+		return Promise.all(promiseList)
+			.then(() => {
+				return filteredSessionList;
+			});
+	}
+
+	filterDataForSession(sessionData) {
+		const oThis = this
+		;
+		let ethKeyMetaId = oThis.createEthKeyMetaId(sessionData.address);
+		return oThis.kmDB.getData(STORES.KEY_STORE_TABLE, ethKeyMetaId)
+			.then((data) => {
+				if (data) {
+					return true;
+				}
+				return false;
+			})
+			.catch(() => {
+				// suppressed so as to not hamper promise.all
+				return false;
+			});
+	}
+
 	generateECKeyPair(keyType) {
 		const mnemonics = this.generateMnemonics();
 		return this.generateECWalletWithMnemonics(mnemonics, keyType)
@@ -322,18 +359,16 @@ class IKM {
 		let seedPassword = "";
 		if (SHOULD_USE_SEED_PWD) {
 			seedPassword = this.buildSeedPassword(keyType);
-			console.info(LOG_TAG, "Seed pwd being used:", seedPassword);
 		}
 
 		const seed = bip39.mnemonicToSeedSync(mnemonics, seedPassword).toString('hex');
-		console.info(LOG_TAG, "Generated Hex seed ", seed);
 
 		const hdMasterKey = hdKey.fromMasterSeed(seed);
 
 		const derivedKey =  hdMasterKey.derivePath(HD_DERIVATION_PATH_FIRST_CHILD);
 
 		const ethWallet = derivedKey.getWallet();
-		console.info(LOG_TAG, "hdWallet public address", ethWallet.getChecksumAddressString());
+		console.log(LOG_TAG, "hdWallet public address", ethWallet.getChecksumAddressString());
 
 		return ethWallet;
 	}
@@ -400,9 +435,6 @@ const getInstance = (userId, avoidKMBuilding) => {
           ostKeyManager = okm;
           ostKeyManagerUserId = uid;
 		  return ostKeyManager;
-		})
-		.catch((err) => {
-			console.err(LOG_TAG, "getInstance failed", err);
 		})
 };
 

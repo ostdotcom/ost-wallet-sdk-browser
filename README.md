@@ -1,303 +1,219 @@
-# ost-wallet-sdk-browser
+# Client Side Ost Wallet Browser Sdk
 
 ## Introduction
-OST Wallet SDK Browser is a web application development SDK that enables developers to integrate the functionality of a non-custodial crypto-wallet into consumer applications.
-
-## OST Wallet SDK Browser...
-Safely generates and stores keys on the user's mobile device
-
-## Support(Dependencies)
-- npm 
-- nginx
-
-## Setup
-
-### Add hosts
-
-The `hosts` file is genererally located at:
-```
-/etc/hosts
-```
-
-Edit the `hosts` file:
-```
-sudo vi /etc/hosts
-```
-
-For development environment, 3 domains are needed. Add following hosts:
-```
-127.0.0.1 devmappy.com
-127.0.0.1 sdk-devmappy.ostsdkproxy.com
-127.0.0.1 km-devmappy.ostsdkproxy.com
-127.0.0.1 demo-devmappy.stagingostproxy.com
-127.0.0.1 api.stagingostproxy.com
-```
-> As webpack in breaks when routing through nginx in dev-environment, we shall server JS directly from webpack
-> We shall use localhost:9090 for all Ost Hosted Scripts and localhost:9000 for Mappy JS Script.
-
-https://css-tricks.com/getting-around-revoked-certificate-osx/
+OST Wallet SDK Browser is a web application development SDK that enables developers to integrate the functionality of a non-custodial crypto-wallet into consumer applications. The sdk creates user's Api and session keys. Altough the device keys are created, they are not stored in the browser. Users must use your mobile application to authorize the session keys and perform transactions.
 
 
-### Setup self-signed for nginx proxy.
-Skip this step if you have already setup ssl on local nginx.
-```
-mkdir -p /usr/local/etc/nginx/dev-proxy-https-certificates/
-cd /usr/local/etc/nginx/dev-proxy-https-certificates/
-openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out dev-proxy-https.crt -keyout dev-proxy-https.key
-```
+# Table of Contents
 
-### Add the self-signing certificate into Keychain Access
-* Run the following command to locate your certificate in finder.
-```
-cd /usr/local/etc/nginx/dev-proxy-https-certificates/
-open .
-```
-* Open System's **Keychain Access**
-* Unlock **login** Keychains (left top pannel).
-* Select **Certificates** in Category Pannel (left bottom pannel).
-* Drag and drop the `dev-proxy-https.crt` from finder into the Keychain Access App.
-* Right click on the added certificate.
-* Choose **Get Info** to open the certificate information popup.
-* Expand **Trust** in the certificate information popup.
-* Set the 'When Using This Certificate:' option to `Always Trust`.
-  > All other trust options should automatically be set to `Always Trust`.
-
-More information is also available [here](https://css-tricks.com/getting-around-revoked-certificate-osx/).
+- [Quick start guide](#quick-start-guide)
+  * [Installation](#installation)
+  * [Import OstWalletSdk](#import-ostwalletsdk)
+  * [Initialize the Sdk and setup user's device.](#initialize-the-sdk-and-setup-user-s-device)
+- [Documentation](#)
+  * [Setup & Initialization](./documentation/sdk_initialization.md)
+  * [Workflows](./documentation/workflows.md)
+  * [OstJsonApi](./documentation/ost_json_api.md)
+  * [Useful Methods](./documentation/useful_methods.md)
+  * [Setup Development Environemnt](./documentation/development_environment_setup.md)
 
 
-### Setup Nginx 
+# Quick start guide
 
-#### Installation
-- on Mac
-```
-brew install nginx
-```
-- To start and stop nginx -
-```
-brew services start nginx
-brew services stop nginx
-```
-  
-#### Nginx Configuration 
-- Do the following changes to nginx.conf file 
+## Installation
 
-The configuration is genererally located at:
+Install the npm module
 ```
-/usr/local/etc/nginx/nginx.conf
+npm install @ostdotcom/ost-wallet-sdk-browser --save
+```
+For more information please refer [Setup And Initialization](./documentation/sdk_initialization.md) guide.
+
+
+## Import OstWalletSdk
+```
+import OstWalletSdk from '@ostdotcom/ost-wallet-sdk-browser'
 ```
 
-Add the following server blocks to your nginx configuration:
+
+## Initialize the Sdk and setup user's device.
+Use the below code to initialize the sdk and setup user's device.
+The below code defines `initializeAndSetupOstSdk` method that you could use once your applications' page has loaded or before user's first wallet interaction by calling the `initializeAndSetupOstSdk` method.
+The `initializeAndSetupOstSdk` return a `Promise` that only resolves when both(initialize and setup) the tasks are completed without any errors.
+
+> The below example is a code template. <b>Copy and pasting it will NOT work.</b>
+> <br />You need to change `YOUR_TOKEN_ID` and write code inside `registerDevice` method and <b>invoke or call</b> the `initializeAndSetupOstSdk` method defined below.
+
+
+```js
+  /* Deifne the sdk config */
+  const sdkConfig = {
+    token_id: "YOUR_TOKEN_ID",
+    environment: "testnet",
+    create_session_qr_timeout: 3 * 60 *60,
+    max_workflow_count: 50
+  };
 ```
-http {
+For more information regarding configuration please refer [Setup And Initialization](./documentation/sdk_initialization.md) guide.
+
+```js
+  /*
+      Define a method initializeAndSetupOstSdk to combine init sdk method and setupdevice workflow.
+   */
+
+  /**
+   * initializeAndSetupOstSdk - initializes the sdk and then performs setup device workflow for the logged-in user.
+   * @param  {String} ost_user_id Ost User Id of the logged-in user.
+   * @param  {String} token_id    Token-Id of the your brand token economy.
+   * @return {Promise}            a Promise that only resolves when both the tasks are completed without any failuers.
+   */
+  const initializeAndSetupOstSdk = (ost_user_id, token_id) => {
+    const registerDevice(apiParams) { 
+      /**
+       * Write your code here to send the api params to your server.
+       * Use the server side sdk to register the device.
+       */
+
+    }
+
+    const setupDeviceWorkflow = () => {
+      let sdkDelegate =  new OstSetupDeviceDelegate();
+      // Define register device.
+      sdkDelegate.registerDevice = function( apiParams ) {
+        console.log(LOG_TAG, "registerDevice");
+        return registerDevice(apiParams);
+      };
+
+      //Define flowComplete
+      sdkDelegate.flowComplete = (ostWorkflowContext , ostContextEntity ) => {
+        console.log("setupDeviceWorkflow :: sdkDelegate.flowComplete called");
+        
+        _resolve( ostContextEntity );
+      };
+
+      //Define flowInterrupt
+      sdkDelegate.flowInterrupt = (ostWorkflowContext , ostError) => {
+        console.log("setupDeviceWorkflow :: sdkDelegate.flowInterrupt called");
+        _reject( ostError );
+      };
+
+      // Return a promise that invokes the workflow.
+      return new Promise( (res, rej) => {
+        _resolve = res;
+        _reject  = rej;
+
+        // Invoke the workflow.
+        OstWalletSdk.setupDevice(ost_user_id, token_id, sdkDelegate);
+      });
+    };
     
-    ssl_certificate     /usr/local/etc/nginx/dev-proxy-https-certificates/dev-proxy-https.crt;
-    ssl_certificate_key /usr/local/etc/nginx/dev-proxy-https-certificates/dev-proxy-https.key;
-    ssl_ciphers         HIGH:!aNULL:!MD5;
-    ssl_protocols       TLSv1.1 TLSv1.2;
-
-    # Other existing sever blocks
-    # .
-    # .
-    # .  
-    #
-
-
-    #Server to route mappy HTML server calls.
-    server {
-        listen       443 ssl;
-        server_name  devmappy.com;
-
-        add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.stagingostproxy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-        #Loading HTML and other static resources from webpack server.
-        location / {
-
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://demo-devmappy.stagingostproxy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-            proxy_pass http://localhost:9090/mappy/;
-            #proxy_pass http://localhost:9090/v-dev/mappy/;
-        }
-    }
-
-    # Mappy Api Server Reverse Proxy
-    server {
-        listen       443 ssl;
-        server_name  demo-devmappy.stagingostproxy.com;
-
-        add_header 'Access-Control-Allow-Origin' 'https://devmappy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-
-        #Loading HTML and other static resources from webpack server.
-        location / {
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://devmappy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-
-            proxy_cookie_domain demo-mappy.stagingost.com demo-devmappy.stagingostproxy.com;
-            proxy_pass https://demo-mappy.stagingost.com/demo/api/1129/3213e2cfeed268d4ff0e067aa9f5f528d85bdf577e30e3a266f22556865db23a/;
-        }
-    }
-
-
-    #Server to route sdk-devmappy.ostsdk iframe HTML server calls.
-    server {
-        listen       443 ssl;
-        server_name  sdk-devmappy.ostsdkproxy.com;
-
-        add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-
-        #Loading HTML and other static resources from webpack server.
-        location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/ost-sdk/;
-        }
-
-        location / {
-
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-            proxy_pass http://localhost:9090/ost-sdk/;
-        }
-    }
-
-    #Server to route km-devmappy.ostsdk (Key-Manager) HTML server calls.
-    server {
-        listen       443 ssl;
-        server_name  km-devmappy.ostsdkproxy.com;
-
-        add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-        location /v-dev/ {
-            proxy_pass http://localhost:9090/v-dev/ost-sdk-key-manager/;
-        }
-
-        #Loading HTML and other static resources from webpack server.
-        location / {
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://api.stagingostproxy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-            proxy_pass http://localhost:9090/ost-sdk-key-manager/;
-        }
-    }
-
-
-    # Ost Platform Api Server Reverse Proxy
-    server {
-        listen       443 ssl;
-        server_name  api.stagingostproxy.com;
-
-        add_header 'Access-Control-Allow-Origin' 'https://sdk-devmappy.ostsdkproxy.com' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-        add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-        #Loading HTML and other static resources from webpack server.
-        location / {
-
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'https://sdk-devmappy.ostsdkproxy.com' always;
-                add_header 'Access-Control-Allow-Credentials' 'true' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range' always;
-                add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS,PUT,DELETE,PATCH' always;
-
-                add_header 'Access-Control-Max-Age' 1728000;
-                add_header 'Content-Type' 'text/plain charset=UTF-8';
-                add_header 'Content-Length' 0;
-                return 204;
-            }
-
-            proxy_cookie_domain api.stagingost.com api.stagingostproxy.com;
-            proxy_pass https://api.stagingost.com/;
-        }
-    }
-}
+  return OstWalletSdk.init( sdkConfig )
+        .then(() => {
+          return oThis.setupDeviceWorkflow();
+        })
+  }
 ```
 
-Stop nginx and restart it to apply configuration changes.
+## Subscribe to workflow events
+> The below example is a code template. Please wirte code inside the functions as per your application's need.
+
+```js
+OstWalletSdk.subscribeAll("flowInitiated", (workflowContext) => {
+   consloe.log("workflowContext : ", workflowContext);
+});
+
+OstWalletSdk.subscribeAll("requestAcknowledged", (workflowContext, contextEntity) => {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+   /* TODO: Update your server if needed. */   
+});
+
+OstWalletSdk.subscribeAll("flowCompleted", (workflowContext, contextEntity) => {
+   consloe.log("workflowContext : ", workflowContext);
+   consloe.log("contextEntity : ", contextEntity);
+
+  /* TODO: Show success to the user. */   
+});
+
+OstWalletSdk.subscribeAll("flowInterrupted", (workflowContext, ostError) => {
+  consloe.log("workflowContext : ", workflowContext);
+  consloe.log("ostError : ", ostError);
+
+  /* TODO: Show errors to the user. */
+      
+});
 ```
-brew services stop nginx
+
+## Create session key
+> The below example is a code template. <b>Copy and pasting it will NOT work.</b>
+> <br />You need to change `LOGGED_IN_USERS_OST_USER_ID` and show the QR code to the user.
+
+```js
+  let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
+  let sdkDelegate =  new OstWorkflowDelegate();
+
+  //Define requestAcknowledged
+  sdkDelegate.requestAcknowledged = (ostWorkflowContext , ostContextEntity) => {
+    console.log("createSessionWorkflow :: sdkDelegate.requestAcknowledged called");
+    /* TODO: Show the QR code to the user. */
+  };
+  
+  /* Set session expiry to 7 days from now. */
+  let expiryTime = parseInt(Date.now()/1000) + (7 * 24 * 60 * 60);
+
+  /* Set spedning limit as 100 BTs */
+  let spendingLimit = 100; 
+
+  //Invoke the workflow.
+  OstWalletSdk.createSession(ost_user_id, expiryTime, spendingLimit ,sdkDelegate);
+```
+For more information please refer [Create Session Workflow](./documentation/workflows.md#create-session-workflow)
+
+## Perform Transactions
+> The below example is a code template. <b>Copy and pasting it will NOT work.</b>
+> <br />The below code uses [bignumber.js](https://github.com/MikeMcl/bignumber.js/) library. Make sure to install it.
+> <br />You need to change `LOGGED_IN_USERS_OST_USER_ID`, `RECEPIENTS_TOKENHOLDER_ADDRESS` and set `BT_DECIMALS`.
+
+### convertBtToLowerUnit Helper method
+This helper method can be used to easily convert amount from higher unit (such as `Eth`) into lower unit (such as `Wei`).
+```js
+  import BigNumber from 'bignumber.js';
+
+  let BT_DECIMALS = 18; /* TODO: Set it to your token's decimal */
+  /* If you do not know your token's decimal, Use below code  */ 
+  //  OstWalletSdk.getToken(tokenId)
+  //    .then((token) => {
+  //      console.log("My token's deciaml is", token.decimals);
+  //    });
+
+  const convertBtToLowerUnit = (amount) => {
+    const decimals = BT_DECIMALS;
+    const decimalBN = new BigNumber(decimals);
+    const multiplier = new BigNumber(10).pow(decimalBN);
+    const amountBN = new BigNumber(amount);
+    const amountInLowerUnit = amountBN.multipliedBy(multiplier);
+    return amountInLowerUnit.toString(10);
+  };
 ```
 
+### Execute Direct Transfer
+```js
+  let sdkDelegate = new OstWorkflowDelegate();
+  let ost_user_id = "LOGGED_IN_USERS_OST_USER_ID";
+  let token_holder_address = "RECEPIENTS_TOKENHOLDER_ADDRESS";
+  let amountInLowerUnit = convertBtToLowerUnit(1); /* 1 Bt. */
+  OstWalletSdk.executeDirectTransferTransaction(ost_user_id, {
+    token_holder_addresses : [token_holder_address],
+    amounts: [amountInLowerUnit] 
+  },
+  sdkDelegate);
 ```
-brew services start nginx
-```
-
-### Install NPM Dependencies.
-- To install all the dependencies, run following command:
-
-```
-npm install
-```
-If you don't have npm installed on your machine then go to https://www.npmjs.com/get-npm for installing npm and node.
+For more information please refer [Execute Transaction Workflow](./documentation/workflows.md#execute-transaction-workflow)
 
 
-## Set Environment variables and Fire Up the servers
-- To run servers on browser, run command-
-```
-source ./set_env_vars.sh
-npm run dev-servers
-```
-Replace file_name with your environment variables file name.
-
-### Grant permission to all proxied domains.
-Open the follwoing links in browser and grant permission
-> Click on `Proceed to...` On Chrome
->
-> Click on `Accept Risk and Continue` on Firefox
-* [https://api.stagingostproxy.com/testnet/v2/tokens](https://api.stagingostproxy.com/testnet/v2/token)
-* [https://km-devmappy.ostsdkproxy.com/](https://km-devmappy.ostsdkproxy.com/)
-* [https://sdk-devmappy.ostsdkproxy.com/](https://sdk-devmappy.ostsdkproxy.com/)
-* [https://demo-devmappy.stagingostproxy.com](https://demo-devmappy.stagingostproxy.com)
-* [https://devmappy.com](https://devmappy.com)
-
-### Testing
-Open the browser and access [https://devmappy.com/](https://devmappy.com/).
-
-
-
-
+# Detailed Documentaion Refrence
+  * [Setup and Initialization](./documentation/sdk_initialization.md)
+  * [Workflows](./documentation/workflows.md)
+  * [OstJsonApi](./documentation/OstJsonApi.md)
+  * [Other Methods](./documentation/useful_methods.md)
+  * [Setup Development Environemnt](./documentation/development_environment_setup.md)
