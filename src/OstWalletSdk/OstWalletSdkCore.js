@@ -131,7 +131,7 @@ class OstWalletSdkCore extends OstBaseSdk {
     return this.executeTransaction(userId, transactionData, ostWorkflowDelegate);
   }
 
-  executeDirectTransferTransaction(userId, transactionData, ostWorkflowDelegate) {
+  executeDirectTransfer(userId, transactionData, ostWorkflowDelegate) {
     transactionData.rule_name = 'Direct Transfer';
     transactionData.rule_method = 'directTransfers';
     transactionData.meta = transactionData.meta || {};

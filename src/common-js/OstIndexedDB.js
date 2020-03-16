@@ -78,7 +78,6 @@ class OstIndexedDB {
 		let instance = localForage.createInstance(oThis.getConfigForStore(name));
 
 		return instance.iterate(function (value, key, iterationNumber) {
-			console.log(LOG_TAG, value, key, iterationNumber);
 			responseArray.push(value);
 		}).then(() => {
 			return responseArray;

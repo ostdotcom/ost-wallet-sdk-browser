@@ -34,7 +34,7 @@ export {
     "createSession",
     "executeTransaction",
     "executePayTransaction",
-    "executeDirectTransferTransaction"];
+    "executeDirectTransfer"];
 
   const getterMethods = ["getUser",
     "getToken",

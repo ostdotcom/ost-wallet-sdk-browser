@@ -52,7 +52,7 @@ class OstSdkAssist {
     executeTransaction.perform();
   }
 
-  executeDirectTransferTransaction (args) {
+  executeDirectTransfer (args) {
     args.transaction_data.rule_name = 'Direct Transfer';
     args.transaction_data.rule_method = 'directTransfers';
     args.transaction_data.meta = {};
