@@ -12,7 +12,7 @@ Safely generates and stores keys on the user's mobile device
 
 ## Setup
 
-To setup nginx for local development you need to know your `token id` respective to `environment`. Setup process demonstrated with `Popcorn` economy which is having token id `1400`. Developer should replace `1400` token id with their own token id.
+To setup nginx for local development you need to know your `token id` respective to `environment`. Setup process demonstrated with `Popcorn` economy having token id `1400`. Developer should replace `1400` token id with their own token id.
 
 ### Add hosts
 
