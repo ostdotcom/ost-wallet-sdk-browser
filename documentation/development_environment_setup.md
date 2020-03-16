@@ -12,6 +12,8 @@ Safely generates and stores keys on the user's mobile device
 
 ## Setup
 
+To setup nginx for local development you need to know your `token id` respective to `environment`. Setup process demonstrated with `Popcorn` economy which is having token id `1400`. Developer should replace `1400` token id with their own token id.
+
 ### Add hosts
 
 The `hosts` file is genererally located at:
@@ -27,8 +29,8 @@ sudo vi /etc/hosts
 For development environment, 3 domains are needed. Add following hosts:
 ```
 127.0.0.1 devmappy.com
-127.0.0.1 sdk-testnet-1129.ostsdkproxy.com
-127.0.0.1 km-testnet-1129.ostsdkproxy.com
+127.0.0.1 sdk-testnet-1400.ostsdkproxy.com
+127.0.0.1 km-testnet-1400.ostsdkproxy.com
 127.0.0.1 demo-devmappy.devmappy.com
 ```
 > As webpack in breaks when routing through nginx in dev-environment, we shall server JS directly from webpack
@@ -142,20 +144,20 @@ http {
     }
 
 
-    #Server to route sdk-devmappy.ostsdk iframe HTML server calls.
+    #Server to route sdk-testnet-1400.ostsdkproxy iframe HTML server calls.
     server {
         listen       443 ssl;
-        server_name  sdk-testnet-1129.ostsdkproxy.com;
+        server_name  sdk-testnet-1400.ostsdkproxy.com;
 
         location / {
             proxy_pass https://localhost:9090/ost-sdk/;
         }
     }
 
-    #Server to route km-devmappy.ostsdk (Key-Manager) HTML server calls.
+    #Server to route km-testnet-1400.ostsdkproxy (Key-Manager) HTML server calls.
     server {
         listen       443 ssl;
-        server_name  km-testnet-1129.ostsdkproxy.com;
+        server_name  km-testnet-1400.ostsdkproxy.com;
 
         #Loading HTML and other static resources from webpack server.
         location / {
@@ -197,8 +199,8 @@ Open the follwoing links in browser and grant permission
 >
 > Click on `Accept Risk and Continue` on Firefox
 * [https://localhost:9090](https://localhost:9090)
-* [https://km-testnet-1129.ostsdkproxy.com/](https://km-testnet-1129.ostsdkproxy.com/)
-* [https://sdk-testnet-1129.ostsdkproxy.com/](https://sdk-testnet-1129.ostsdkproxy.com/)
+* [https://km-testnet-1400.ostsdkproxy.com/](https://km-testnet-1400.ostsdkproxy.com/)
+* [https://sdk-testnet-1400.ostsdkproxy.com/](https://sdk-testnet-1400.ostsdkproxy.com/)
 * [https://demo-devmappy.devmappy.com](https://demo-devmappy.devmappy.com)
 * [https://devmappy.com](https://devmappy.com)
 
