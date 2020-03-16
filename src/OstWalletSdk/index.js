@@ -45,6 +45,10 @@ export {
     "getPendingWorkflows"
   ];
 
+  const txHelperMethods = [
+    "setTxConfig"
+  ];
+
   /**
    * jsonApiMethodsMap - is a map of sdkCore.jsonApiProxy methods names
    * key - names of methods exposed to the api consumer.
@@ -133,6 +137,20 @@ export {
     }
   };
 
+  const txHelperFunctionGenerator = (fromObj, methodName) => {
+    return (...args) => {
+      if ( sdkCore.isSdkInitialized() ) {
+        return sdkCore.transactionHelper[methodName](...args);
+      }
+      let internalErrorCode = ["ows_generator_", "getterFunctionGenerator", methodName].join("_");
+      let errorInfo = {
+        "methodName": methodName,
+        "reason": "Sdk must be initialized before using this method."
+      };
+      throw new OstError(internalErrorCode, EC.SDK_NOT_INITIALIZED, errorInfo);
+    }
+  };
+
 
   const addMethods = (fromObj, toObj, functionGenerator, methodsToAdd) => {
     if ( !fromObj ) {
@@ -173,6 +191,7 @@ export {
   addMethods(sdkCore, OstWalletSdk, workflowFunctionGenerator, workflowMethods);
   addMethods(sdkCore, OstWalletSdk, getterFunctionGenerator, getterMethods);
   addMethods(sdkCore, OstWalletSdk, subscriberFunctionGenerator, subscribeMethods);
+  addMethods(sdkCore, OstWalletSdk, txHelperFunctionGenerator, txHelperMethods);
 
   // Add wrapper methods to OstJsonApi
   addMethods(sdkCore, OstJsonApi, jsonApiFunctionGenerator, jsonApiMethods);

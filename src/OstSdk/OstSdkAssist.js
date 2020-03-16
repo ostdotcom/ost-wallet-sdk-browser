@@ -7,11 +7,11 @@ import {SOURCE} from "../common-js/OstBrowserMessenger";
 import KeyManagerProxy from "./OstKeyManagerProxy";
 import OstSession from "./entities/OstSession";
 import OstApiClient from "./api/OstApiClient";
-import OstConstants from "./OstConstants";
 import OstError from "../common-js/OstError";
 import OstErrorCodes from '../common-js/OstErrorCodes'
 import OstSdkExecuteTransaction from "./workflows/OstSdkExecuteTransaction";
 import OstWorkflowContext from "./workflows/OstWorkflowContext";
+import OstSdkTransactionHelper from "./transactionHelper/OstSdkTransactionHelper";
 
 const LOG_TAG = "OstSdkAssist :: ";
 class OstSdkAssist {
@@ -649,6 +649,18 @@ class OstSdkAssist {
         console.error(ostError);
         return oThis.onError(ostError, subscriberId);
       });
+  }
+
+  setTxConfig( args ) {
+    const oThis = this
+      , txConfig = args.tx_config
+      , subscriberId = args.subscriber_id
+    ;
+
+    console.log(LOG_TAG, "setTxConfig :: ", txConfig);
+    OstSdkTransactionHelper.setExternalTxConfig(txConfig);
+
+    this.onSuccess(true, subscriberId);
   }
 
   sendToOstWalletSdk(functionName, subscriberId, functionParams) {

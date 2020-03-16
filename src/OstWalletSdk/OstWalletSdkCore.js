@@ -9,6 +9,7 @@ import {OstWorkflowEvents} from "./OstWorkflows/OstWorkflowEvents"
 import OstWorkflowEmitter from "./OstWorkflows/OstWorkflowEmitter"
 import packageJson from "../../package.json";
 import './sdk-stylesheet.css';
+import OstTransactionHelper from "./OstTransactionHelper";
 
 const DEFAULT_SDK_IFRAME_ORIGIN = "ostwalletsdk.com";
 
@@ -79,11 +80,17 @@ class OstWalletSdkCore extends OstBaseSdk {
     return super.onBrowserMessengerCreated()
       .then( () => {
         const proxy = new OstSdkProxy(this.browserMessenger);
-        const jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
-        const workflowEvents = new OstWorkflowEvents();
         oThis.defineImmutableProperty("proxy", proxy);
+
+        const jsonApiProxy = new OstJsonApiProxy(this.browserMessenger);
         oThis.defineImmutableProperty("jsonApiProxy", jsonApiProxy);
+
+        const workflowEvents = new OstWorkflowEvents();
         oThis.defineImmutableProperty("workflowEvents", workflowEvents);
+
+        const txHelper = new OstTransactionHelper(this.browserMessenger);
+        oThis.defineImmutableProperty("transactionHelper", txHelper);
+
         return Promise.resolve();
       });
   }
