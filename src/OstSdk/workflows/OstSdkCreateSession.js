@@ -1,17 +1,15 @@
 import OstSdkBaseWorkflow from "./OstSdkBaseWorkflow";
 import OstError from "../../common-js/OstError";
-import OstErrorCodes from  '../../common-js/OstErrorCodes'
+import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstSession from "../entities/OstSession";
-import OstMessage from "../../common-js/OstMessage";
-import {SOURCE} from "../../common-js/OstBrowserMessenger";
 import OstSessionPolling from "../OstPolling/OstSessionPolling";
 import OstWorkflowContext from "./OstWorkflowContext";
 
 const LOG_TAG = "OstSdk :: OstSdkCreateSession :: ";
 
 class OstSdkCreateSession extends OstSdkBaseWorkflow {
-  constructor(args, browserMessenger) {
-    super(args, browserMessenger);
+  constructor(args, browserMessenger, workflowContext) {
+    super(args, browserMessenger, workflowContext);
     console.log(LOG_TAG, "constructor :: ", args);
 
     this.user_id = args.user_id;
@@ -39,6 +37,11 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
     if (currentTimeStamp > this.expirationTime) {
       throw new OstError('os_w_oscs_vp_1', OstErrorCodes.INVALID_SESSION_EXPIRY_TIME)
     }
+
+    const num = Number(this.spendingLimit);
+    if (!this.spendingLimit || isNaN(num)) {
+      throw new OstError('os_w_oscs_vp_2', OstErrorCodes.INVALID_SESSION_SPENDING_LIMIT, {spending_limit: this.spendingLimit})
+    }
   }
 
   performUserDeviceValidation() {
@@ -51,15 +54,15 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   onDeviceValidated() {
-
+    const oThis = this;
     console.log(LOG_TAG, " onDeviceValidated");
 
-    this.keyManagerProxy.createSessionKey()
+    oThis.keyManagerProxy.createSessionKey()
       .then((sessionAddress) => {
-        return this.createSessionEntity( sessionAddress.session_address )
+        return oThis.createSessionEntity( sessionAddress.session_address )
       })
       .then((sessionEntity) => {
-        this.session = sessionEntity;
+        oThis.session = sessionEntity;
         return this.keyManagerProxy.signQRSessionData(
           sessionEntity.getId(),
           sessionEntity.getSpendingLimit().toString(),
@@ -67,14 +70,12 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
           )
       })
       .then((data) => {
-        this.postShowQRData(data.qr_data);
-        return this.pollingForSessionAddress()
-      })
-      .then((entity) => {
-        this.postFlowComplete(entity);
+        oThis.qr_data = data.qr_data;
+        oThis.postShowQRData();
+        return oThis.processNext();
       })
       .catch((err) => {
-        this.postError(err);
+        oThis.postError(err);
       })
   }
 
@@ -83,17 +84,30 @@ class OstSdkCreateSession extends OstSdkBaseWorkflow {
   }
 
   postShowQRData( qrData ) {
-
-    let params = {
-        entity_type: "qr_data",
-        qr_data : qrData
-    };
-
-    this.postRequestAcknowledged(params)
+    this.postRequestAcknowledged(this.session)
   }
 
-  pollingForSessionAddress() {
-    this.sessionPollingClass = new OstSessionPolling(this.userId, this.session.getId(), this.keyManagerProxy);
+  getRequestAckContextEntity(entity) {
+    let contextEntity = super.getRequestAckContextEntity(entity);
+    contextEntity['qr_data'] = this.qr_data;
+    return contextEntity;
+  }
+
+  onPolling() {
+    const oThis = this;
+    let sessionAddress =  oThis.workflowContext.getData().context_entity_id;
+
+    return oThis.pollingForSessionAddress(sessionAddress)
+      .then((entity) => {
+        oThis.postFlowComplete(entity);
+      })
+      .catch((err) => {
+        oThis.postError(err);
+      })
+  }
+
+  pollingForSessionAddress(sessionAddress) {
+    this.sessionPollingClass = new OstSessionPolling(this.userId, sessionAddress, this.keyManagerProxy);
     return this.sessionPollingClass.perform()
       .then((sessionEntity) => {
         console.log(sessionEntity);

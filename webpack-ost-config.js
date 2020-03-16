@@ -13,14 +13,6 @@ const produtionHtmlPlugins = [
         inject: true
     },
 
-    /* sdk-[mappy]-ostsdk.com/allowed-domains.json */
-    {
-        template: "./src/OstSdk/html/allowed-domains",
-        ALLOWED_DOMAIN: process.env.DEMO_MAPPY_UI_ORIGIN,
-        filename: "../ost-sdk/allowed-domains.json",
-        inject: false
-    },
-
     /* km-[mappy]-ostsdk.com/index.html */
     {
         template: "./src/blank/blank.html",

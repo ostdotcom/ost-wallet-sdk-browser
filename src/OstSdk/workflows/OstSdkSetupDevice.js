@@ -7,8 +7,9 @@ import OstStateManager from "./OstStateManager";
 import OstErrorCodes from '../../common-js/OstErrorCodes'
 import OstError from "../../common-js/OstError";
 import OstWorkflowContext from "./OstWorkflowContext";
+import OstSdkWorkflowFactory from "./OstSdkWorkflowFactory";
 
-const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: ";
+const LOG_TAG = "OstSdk :: OstSdkSetupDevice :: |*| ";
 
 export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
@@ -85,9 +86,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
       })
       .then((deviceEntity) => {
         oThis.currentDevice = deviceEntity;
-
+        console.log(LOG_TAG, "Created Device entity", deviceEntity);
         if (deviceEntity.isStatusCreated()) {
-          console.log(LOG_TAG, "Created Device entity", deviceEntity);
           return oThis.registerDevice(deviceEntity);
 
         } else {
@@ -110,7 +110,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return OstToken.init(oThis.tokenId);
       })
       .catch((err) => {
-        console.log(LOG_TAG, "error while init user => ", err);
+        console.log(LOG_TAG, "error while init user --> ", err);
         return OstToken.init(oThis.tokenId);
       })
   }
@@ -125,7 +125,7 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
         return OstUser.init(oThis.userId, oThis.tokenId);
       })
       .catch((err) => {
-        console.log(LOG_TAG, "error while init user => ", err);
+        console.log(LOG_TAG, "error while init user --> ", err);
         return OstUser.init(oThis.userId, oThis.tokenId);
       })
 
@@ -133,10 +133,10 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
 
   registerDevice(deviceEntity) {
+    const oThis = this;
     let message = new OstMessage();
     message.setFunctionName("registerDevice");
-    message.setSubscriberId(this.subscriberId);
-
+    message.setReceiverName(oThis.OST_WORKFLOW_EMITTER);
 
     let params = {
       api_signer_address: deviceEntity.getApiKeyAddress(),
@@ -146,7 +146,12 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     this.deviceRegisteredUUID = this.browserMessenger.subscribe(this);
 
-    message.setArgs({device: params}, this.deviceRegisteredUUID);
+    let args = {
+      device: params,
+      ost_workflow_context: oThis.getWorkflowContext()
+    };
+
+    message.setArgs(args, this.deviceRegisteredUUID);
 
     this.browserMessenger.sendMessage(message, SOURCE.UPSTREAM);
   }
@@ -155,6 +160,44 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
     this.browserMessenger.unsubscribe(this.deviceRegisteredUUID);
     this.performState( OstStateManager.state.REGISTERED, args);
+  }
+
+	postFlowComplete(entity) {
+		const oThis = this;
+		console.log(LOG_TAG, "post flow complete --- > ");
+
+		super.postFlowComplete(entity)
+      .then(() => {
+				oThis.handlePendingWorkflows();
+      });
+	}
+
+	handlePendingWorkflows() {
+    const oThis = this
+    ;
+
+		return OstWorkflowContext.getPendingWorkflows(oThis.userId)
+			.then((workflowContextArray) => {
+				console.log(LOG_TAG, "handlePendingWorkflows :: pendingWorkflowsArray", workflowContextArray);
+        return workflowContextArray.filter((workflowEntity) => {
+          if (workflowEntity.getStatus() !== OstWorkflowContext.STATUS.ACKNOWLEDGED){
+            workflowEntity.setWorkflowStatus(OstWorkflowContext.STATUS.CANCELLED_BY_NAVIGATION);
+						workflowEntity.forceCommit();
+            return false;
+          }
+          return true;
+        })
+			})
+			.then((ackWorkflowContextArray) => {
+				console.log(LOG_TAG, "handlePendingWorkflows :: acknowledgedWorkflowsArray", ackWorkflowContextArray);
+				ackWorkflowContextArray.forEach((workflowContext) => {
+          new OstSdkWorkflowFactory(workflowContext, this.browserMessenger).perform();
+				});
+			})
+			.then(() => {
+				console.log(LOG_TAG, "Wipe exceeded ostWorkflowContext");
+				OstWorkflowContext.deleteStaleWorkflows(oThis.userId);
+			});
   }
 
   syncEntities() {
@@ -184,14 +227,18 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 
   verifyDeviceRegistered() {
     const oThis = this;
-
-    return oThis.syncCurrentDevice()
+    const deviceAddress = this.currentDevice.getId();
+    return oThis.apiClient.getDevice( deviceAddress )
+      .then((response) => {
+        console.log(LOG_TAG, "get device api response", response);
+        return oThis.getCurrentDeviceFromDB()
+      })
       .then((deviceEntity) => {
-        if (deviceEntity && deviceEntity.hasOwnProperty(canMakeApiCall)) {
-          if (!deviceEntity.canMakeApiCall()) {
-            throw OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP)
-          }
+        console.log(LOG_TAG, "getCurrentDeviceFromDB deviceEntity", deviceEntity);
+        if (deviceEntity && deviceEntity.canMakeApiCall() ) {
+          return true;
         }
+        throw new OstError("os_w_ossd_vdr_1", OstErrorCodes.DEVICE_NOT_SETUP);
       });
   }
 
@@ -206,4 +253,8 @@ export default class OstSdkSetupDevice extends OstSdkBaseWorkflow {
 				return isTrustable;
 			});
 	}
+
+	shouldNotSaveWorkflowContext() {
+    return false;
+  }
 }

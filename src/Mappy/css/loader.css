@@ -10,8 +10,8 @@
     position: relative;
     top: 60px;
     left: 50%;
-    width: 300px;
-    margin-left: -150px;
+    width: 400px;
+    margin-left: -200px;
     text-align: left;
     z-index: 1002;
     font-size: 18px;
@@ -141,8 +141,17 @@
             -ms-transform: translateY(-100%);  /* IE 9 */
                 transform: translateY(-100%);  /* Firefox 16+, IE 10+, Opera */
 
-        -webkit-transition: all 0.3s 1s ease-out;  
-                transition: all 0.3s 1s ease-out;
+        -webkit-transition: all 0.3s 2s ease-out;  
+                transition: all 0.3s 2s ease-out;
+    }
+
+    #loading-text {
+        padding: 10px;
+    }
+    
+    .loaded #loader-wrapper #loading-text {
+        
+        background: rgba(50, 50, 50, 0.9);
     }
 
     .qr-code-wrap img {

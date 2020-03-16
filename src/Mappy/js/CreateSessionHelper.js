@@ -2,6 +2,8 @@ import BigNumber from 'bignumber.js';
 import "jquery.json-viewer/json-viewer/jquery.json-viewer.css";
 import "jquery.json-viewer/json-viewer/jquery.json-viewer";
 
+import workflowSubscriberService from "./WorkflowSubscriberService";
+
 const LOG_TAG = "CreateSessionHelper :: ";
 const jsonViewerSettings = { collapsed: false, withQuotes: true, withLinks: false};
 
@@ -22,33 +24,39 @@ class CreateSessionHelper {
         for (var k = 1; k < 30; k++) {
             $('#j-duration').append(`<option value="${k}"> ${k} </option>`);
         }
+
+        $('#j-create-session-btn').click(() => {
+           $("#flow-complete-json").html("");
+           $("#flow-complete-string").html("");
+           $("#flow-interrupt-json").html("");
+           $("#flow-interrupt-string").html("");
+        });
         $('#j-create-btn').click(() => {
-            oThis.create();
+            oThis.perform();
         });
     }
-    create() {
+    perform() {
         const oThis = this;
         var value = $('#j-spending-limit').val();
         oThis.higherUnitSpending = value;
         var index = document.getElementById("j-duration");
         var duration = index.options[index.selectedIndex].value;
         oThis.getDate(duration);
-        var spendingLimit = parseInt(value, 10);
         $('#createSession').modal('toggle');
         $("#expiry-label").text(oThis.expiry);
 
-        oThis.convertSessionLimit(spendingLimit)
+        oThis.convertSessionLimit(value)
             .then((limit) => {
                 oThis.spendingLimit = limit;
                 console.log("spending limit", limit);
                 $("#spending-limit-label-lower").text(oThis.spendingLimit);
                 $("#spending-limit-label-higher").text(value);
-                
+
                 //var html = $("div.changeSession").html();
                 //$('#modal-body').html(html);
                 //$('#j-create-session-btn').hide();
                 $('#afterSession').modal('toggle');
-                oThis.getQRCode();
+                oThis.createSession();
             })
             .catch((error) => {
                 oThis.spendingLimit = 0;
@@ -74,18 +82,18 @@ class CreateSessionHelper {
             correctLevel: QRCode.CorrectLevel.H
         });
     }
-    getQRCode() {
+    createSession() {
         const oThis = this;
         let mappyCallback = new OstWorkflowDelegate();
+
         mappyCallback.requestAcknowledged = function (ostWorkflowContext, ostContextEntity) {
             console.log("request ack");
-            const entityType = ostContextEntity.entity_type,
-                entity = ostContextEntity[entityType];
+            const entity = ostContextEntity.qr_data;
             oThis.makeCode(entity);
-        }
+        };
 
         mappyCallback.flowComplete = function (ostWorkflowContext, ostContextEntity) {
-            console.log(LOG_TAG, "getQRCode");
+            console.log(LOG_TAG, "createSession");
             console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
             console.log(LOG_TAG, "ostContextEntity :: ", ostContextEntity);
             var html = "<div>" + ostContextEntity + "</div>";
@@ -95,7 +103,7 @@ class CreateSessionHelper {
         };
 
         mappyCallback.flowInterrupt = function (ostWorkflowContext, ostError) {
-            console.log(LOG_TAG, "getQRCode");
+            console.log(LOG_TAG, "createSession");
             console.log(LOG_TAG, "ostWorkflowContext :: ", ostWorkflowContext);
             console.log(LOG_TAG, "ostError :: ", ostError);
             var html = "<div>" + ostError + "</div>";
@@ -104,11 +112,14 @@ class CreateSessionHelper {
             $("#flow-interrupt-string").html( JSON.stringify(ostError, null, 2) );
         };
 
+        console.log("Initiating OstWalletSdk.createSession with spendingLimit", oThis.higherUnitSpending, ". The higherUnitSpendingLimit is", oThis.higherUnitSpending);
         let workflowId = OstWalletSdk.createSession(
             oThis.currentUser.user_id,
             parseInt(oThis.expiryTime.getTime()/1000),
             oThis.higherUnitSpending,
             mappyCallback);
+
+            workflowSubscriberService.subscribeToWorkflowId(workflowId);
 
     }
     getDate(duration) {
@@ -131,7 +142,7 @@ class CreateSessionHelper {
                     console.error("Token not found");
                     return Promise.resolve('0');
                 }
-                let decimals = data.data.token.decimals;
+                let decimals = data.token.decimals;
                 let decimalBN = new BigNumber(decimals);
                 let multiplier = new BigNumber(10).pow(decimalBN);
                 let amountBN = new BigNumber(amount);

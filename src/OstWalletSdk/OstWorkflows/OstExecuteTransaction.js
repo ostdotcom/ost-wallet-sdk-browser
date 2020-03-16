@@ -3,25 +3,27 @@ import OstBaseWorkflow from "./OstBaseWorkflow";
 const LOG_TAG = "OstExecuteTransaction :: ";
 
 class OstExecuteTransaction extends OstBaseWorkflow {
-	constructor(userId,
-							transactionData,
-							ostWorkflowCallbacks,
-							browserMessenger) {
-		super(userId, ostWorkflowCallbacks, browserMessenger);
+  constructor(userId,
+              transactionData,
+              ostWorkflowCallbacks,
+              browserMessenger,
+              workflowEvents) {
 
-		this.transactionData = transactionData;
-	}
+    super(userId, ostWorkflowCallbacks, browserMessenger, workflowEvents);
 
-	perform() {
-		super.perform();
-		return this.startWorkflow(
-			"executeTransaction",
-			{
-				user_id: this.userId,
-				transaction_data: this.transactionData
-			}
-		);
-	}
+    this.transactionData = transactionData;
+  }
+
+  perform() {
+    super.perform();
+    return this.startWorkflow(
+      "executeTransaction",
+      {
+        user_id: this.userId,
+        transaction_data: this.transactionData
+      }
+    );
+  }
 }
 
 

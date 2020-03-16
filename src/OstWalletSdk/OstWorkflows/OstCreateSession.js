@@ -3,8 +3,8 @@ import OstBaseWorkflow from "./OstBaseWorkflow";
 const LOG_TAG = "OstCreateSession :: ";
 
 class OstCreateSession extends OstBaseWorkflow{
-  constructor(userId, expirationTime, spendingLimit, ostWorkflowCallbacks, browserMessenger) {
-    super(userId, ostWorkflowCallbacks, browserMessenger);
+  constructor(userId, expirationTime, spendingLimit, ostWorkflowCallbacks, browserMessenger, workflowEvents) {
+    super(userId, ostWorkflowCallbacks, browserMessenger, workflowEvents);
 
     this.expirationTime = expirationTime;
     this.spendingLimit = spendingLimit;

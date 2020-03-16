@@ -6,9 +6,9 @@
 }
 
 .data-table-row.row {
-    border-bottom: 1px solid black;
-    width: 100%;
-    position: relative;
+    border-left: 1px solid #888;
+    border-right: 1px solid #888;
+    border-bottom: 1px solid #888;
 }
 
 .btn-group {
@@ -45,7 +45,7 @@
 
 .btn-group:hover {
     background-color: white;
-    color: 17A2B8;
+    color: #17A2B8;
 }
 
 .data-table-row.row:hover {
@@ -149,9 +149,9 @@
 .label-class {
     top: 10%;
 }
-.qr-container {  
-    display: grid;  
-    grid-gap: 5px;  
+.qr-container {
+    display: grid;
+    grid-gap: 5px;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    grid-template-rows: repeat(2, 100px);  
+    grid-template-rows: repeat(2, 100px);
 }

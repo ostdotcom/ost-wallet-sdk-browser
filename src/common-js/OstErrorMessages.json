@@ -9,6 +9,7 @@
   "DEVICE_NOT_SETUP": "Unable to recognize the device. Please setup this device for the user using workflows provided at; https://dev.ost.com/platform/docs/sdk",
   "DEVICE_UNAUTHORIZED": "Unable to perform the operation as the device is not authorized. For details on how to authorize a device; please visit https://dev.ost.com/platform/docs/sdk",
   "INVALID_SESSION_EXPIRY_TIME": "Invalid expiration timestamp. Please ensure timestamp is passed in required format. For parameter details please vist https://dev.ost.com/platform/docs/api",
+  "INVALID_SESSION_SPENDING_LIMIT": "Spending limit provided is invalid. Spending limit should be in atto BT and can not be decimal value. Please inspect the value being sent is correct and not null, rectify and re-submit.",
   "INVALID_API_END_POINT": "API address not found.",
   "INVALID_ENUM": "Unexpected enum provided. Please check valid 'SOURCE' enum.",
   "INVALID_OST_MESSAGE": "OstMessage you have passed is improperly built. Please rectify and try again.",
@@ -23,11 +24,15 @@
   "INVALID_UPSTREAM_ORIGIN": "Invalid upstream origin",
   "INVALID_DOWNSTREAM_ORIGIN": "Invalid downstream origin",
   "SESSION_NOT_FOUND": "Session for the provided spending limit is not found",
-  "SKD_INTERNAL_ERROR": "Something expected happen.",
+  "SESSION_KEY_NOT_FOUND": "Session signing key not found",
+  "CREATE_SESSION_QR_TIMEOUT": "Session failed due to timeout.",
+  "RULE_NOT_FOUND": "Transaction Rule Not found for the provided rule name",
+  "SKD_INTERNAL_ERROR": "Something unexpected happen.",
   "SDK_RESPONSE_ERROR": "SDK returned error",
   "SDK_API_ERROR": "Sdk Api returned error response",
   "BROWSER_VALIDATION_FAILED": "Browser prerequisites needed to run sdk are missing ",
   "BROWSER_IS_NOT_TRUSTED": "Browser is not trusted",
-  "WORKFLOW_CANCELLED": "User canceled"
+  "WORKFLOW_CANCELLED": "User canceled",
+  "INVALID_WORKFLOW_ID": "Unable to recognize the workflow id. Either workflow is completed or id is invalid."
 }
 

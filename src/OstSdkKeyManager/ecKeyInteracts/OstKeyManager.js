@@ -29,4 +29,8 @@ export default class OstKeyManager {
 	deleteLocalSessions(addresses) {
 		return ikmInstance.deleteSessions(addresses);
 	}
+
+	filterValidSessions(sessions) {
+		return ikmInstance.filterValidSessions(sessions);
+	}
 }

@@ -3,7 +3,6 @@ import OstIndexDB from "../../common-js/OstIndexedDB";
 let dbInstance = null;
 let LOG_TAG = "OstBaseEntity :: ";
 
-const ENTITIES_DB_VERSION = 2;
 const ENTITIES_DB_NAME = 'EntitiesDB';
 const STORES = {
 	OST_DEVICE : 'OST_DEVICE',
@@ -11,7 +10,8 @@ const STORES = {
 	OST_TOKEN: 'OST_TOKEN',
 	OST_SESSION: 'OST_SESSION',
 	OST_RULE: 'OST_RULE',
-	OST_TRANSACTION: 'OST_TRANSACTION'
+	OST_TRANSACTION: 'OST_TRANSACTION',
+	OST_WORKFLOW_CONTEXT: 'OST_WORKFLOW_CONTEXT'
 };
 
 class OstBaseEntity {
@@ -118,18 +118,26 @@ class OstBaseEntity {
 		return OstBaseEntity.initInstance();
 	}
 
+	getUpdatedAt() {
+		return this.getData().updated_at;
+	}
+
+	getCreatedAt() {
+		return this.getData().created_at;
+	}
+
 	static initInstance() {
       if (dbInstance) {
         return Promise.resolve(dbInstance);
       } else {
-        let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME, ENTITIES_DB_VERSION, STORES);
+        let instance = OstIndexDB.newInstance(ENTITIES_DB_NAME);
         return instance.createDatabase()
           .then(() => {
             dbInstance = instance;
             return dbInstance;
           })
           .catch((err) => {
-            console.err(LOG_TAG, "Error while creating db for Entities", err);
+            console.error(LOG_TAG, "Error while creating db for Entities", err);
           });
       }
 	}
