@@ -1,5 +1,7 @@
 # Client Side Ost Wallet Browser Sdk
 
+**warning**: this code base is still in alpha and not ready for production use!
+
 ## Introduction
 OST Wallet SDK Browser is a web application development SDK that enables developers to integrate the functionality of a non-custodial crypto-wallet into consumer applications. The sdk creates user's Api and session keys. Altough the device keys are created, they are not stored in the browser. Users must use your mobile application to authorize the session keys and perform transactions.
 
