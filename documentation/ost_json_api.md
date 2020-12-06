@@ -254,13 +254,13 @@ OstJsonApi.getToken (userId)
   "data": {
     "result_type": "token",
     "token": {
-    "id": 1129,
-    "name": "STC1",
-    "symbol": "SC1",
-    "base_token": "USDC",
+    "id": 1400,
+    "name": "Popcorn",
+    "symbol": "POP",
+    "base_token": "OST",
     "conversion_factor": 10,
     "total_supply": "1000000000000",
-    "decimals": 6,
+    "decimals": 18,
     "origin_chain": {
       "chain_id": 3,
       "branded_token": "0x18cbeae2f1785abf68c9984f9186a29ed062c3ca",
@@ -324,7 +324,7 @@ OstJsonApi.getUser (userId)
     "result_type": "user",
     "user": {
       "id": "dabd272f-b330-4c99-a3f7-aaf38012ef5f",
-      "token_id": 1129,
+      "token_id": 1400,
       "token_holder_address": "0x3677e3e20f389332a4855c44260767eca55a5599",
       "device_manager_address": "0xb2b29acf564647d1d924b0f06b9539d0c65cc34a",
       "recovery_address": "0xb94768e6373d05454e828d5128e9f37120d26722",
